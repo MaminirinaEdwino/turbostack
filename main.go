@@ -12,7 +12,7 @@ func main() {
 	debug := true
 	w := webview.New(debug)
 	defer w.Destroy()
-	w.SetTitle("Basic Example")
+	w.SetTitle("Turbo Stack")
 	w.SetSize(800, 600, webview.HintNone)
 	go func() {
 		fs := http.FileServer(http.FS(assets))

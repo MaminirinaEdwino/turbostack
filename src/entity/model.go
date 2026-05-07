@@ -1,5 +1,9 @@
 package entity
 
+import (
+	"fmt"
+)
+
 type Model struct {
 	Nom       string   `json:"nom"`
 	Attributs []Champs `json:"attributs"`
@@ -13,8 +17,12 @@ func (m *Model) GetAttributs() []Champs {
 	return m.Attributs
 }
 
-func (m *Model) SetNom(nom string) {
+func (m *Model) SetNom(nom string) (error) {
+	if nom == "" {
+		return fmt.Errorf("Empty value")
+	}
 	m.Nom = nom
+	return nil
 }
 
 func (m *Model) SetAttributs(attr []Champs) {
@@ -22,14 +30,10 @@ func (m *Model) SetAttributs(attr []Champs) {
 }
 
 func (m *Model) AddAttribut(attr Champs) {
-	m.Attributs = append(m.Attributs, attr)
+	m.Attributs = addChamps(m.Attributs, attr)
 }
 
 func (m *Model) DeleteAttribut(attrId int) {
-	for i := range m.Attributs {
-		if attrId == i {
-			m.Attributs = append(m.Attributs[:i-1], m.Attributs[i:]...)
-		}
-	}
+	m.Attributs = deleteChamp(m.Attributs, attrId)
 }
 

@@ -4,14 +4,22 @@ import (
 	"embed"
 	"net/http"
 
+	"github.com/MaminirinaEdwino/turbostack/src/api"
 	webview "github.com/webview/webview_go"
 )
+
 //go:embed ui-dist/*
 var assets embed.FS
 func main() {
 	debug := true
 	w := webview.New(debug)
 	defer w.Destroy()
+
+	mgr := api.NewManager()
+	mgr.Add(&api.UserService{})
+	mgr.Add(&api.SystemService{})
+
+	mgr.RegisterAll(w)
 	w.SetTitle("Turbo Stack")
 	w.SetSize(800, 600, webview.HintNone)
 	go func() {

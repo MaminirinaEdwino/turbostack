@@ -1,24 +1,24 @@
 package entity
 
 type Page struct {
-	Nom     string
-	Contenu []any
+	nom     string
+	contenu []any
 }
 
 func (page *Page) GetNom() string {
-	return page.Nom
+	return page.nom
 }
 
 func (page *Page) GetContenu() any {
-	return page.Contenu
+	return page.contenu
 }
 
 func (page *Page) SetNom(Nom string) *Page {
-	page.Nom = Nom
+	page.nom = Nom
 	return page
 }
 
 func (page *Page) SetContenu(Contenu []any) *Page {
-	page.Contenu = Contenu
+	page.contenu = Contenu
 	return page
 }

@@ -1,58 +1,58 @@
 package entity
 
 type Endpoint struct {
-	Nom    string
-	Uri    string
-	Method string
-	Model  []Model
-	Params []string
-	Role   string
+	nom    string
+	uri    string
+	method string
+	model  []Model
+	params []string
+	role   string
 }
 
 func (e *Endpoint) GetNom() string {
-	return e.Nom
+	return e.nom
 }
 
 func (e *Endpoint) GetUri() string {
-	return e.Uri
+	return e.uri
 }
 
 func (e *Endpoint) GetMethod() string {
-	return e.Method
+	return e.method
 }
 
 func (e *Endpoint) GetModel() []Model {
-	return e.Model
+	return e.model
 }
 
 func (e *Endpoint) GetParams() []string {
-	return e.Params
+	return e.params
 }
 
 func (e *Endpoint) GetRole() string {
-	return e.Role
+	return e.role
 }
 
-func (e *Endpoint) SetNom(Nom string) {
-	e.Nom = Nom
+func (e *Endpoint) SetNom(nom string) {
+	e.nom = nom
 }
 
-func (e *Endpoint) SetUri(Uri string) {
-	e.Uri = Uri
+func (e *Endpoint) SetUri(uri string) {
+	e.uri = uri
 }
 
-func (e *Endpoint) SetMethod(Method string) {
-	e.Method = Method
+func (e *Endpoint) SetMethod(method string) {
+	e.method = method
 }
 
 func (e *Endpoint) SetModel(Model []Model) {
-	e.Model = Model
+	e.model = Model
 }
 
 func (e *Endpoint) SetParams(Params []string) {
-	e.Params = Params
+	e.params = Params
 }
 
 func (e *Endpoint) SetRole(Role string) {
-	e.Role = Role
+	e.role = Role
 }

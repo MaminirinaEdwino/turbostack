@@ -1,64 +1,65 @@
 package entity
 
 type Project struct {
-	Nom          string
-	Type         string
-	BDD          BDD
-	RestApi      RestApi
-	WebApp       WebApp
-	SiteStatique SiteStatique
+	nom          string
+	type_project         string
+	bdd          BDD
+	rest_api      RestApi
+	web_app       WebApp
+	site_statique SiteStatique
 }
 
+
 func (project *Project) GetNom() string {
-	return project.Nom
+	return project.nom
 }
 
 func (project *Project) GetType() string {
-	return project.Type
+	return project.type_project
 }
 
 func (project *Project) GetBDD() BDD {
-	return project.BDD
+	return project.bdd
 }
 
 func (project *Project) GetRestApi() RestApi {
-	return project.RestApi
+	return project.rest_api
 }
 
 func (project *Project) GetWebApp() WebApp {
-	return project.WebApp
+	return project.web_app
 }
 
 func (project *Project) GetSiteStatique() SiteStatique {
-	return project.SiteStatique
+	return project.site_statique
 }
 
 func (project *Project) SetNom(Nom string) *Project {
-	project.Nom = Nom
+	project.nom = Nom
 	return project
 }
 
 func (project *Project) SetType(Type string) *Project {
-	project.Type = Type
+	project.type_project = Type
 	return project
 }
 
 func (project *Project) SetBDD(BDD BDD) *Project {
-	project.BDD = BDD
+	project.bdd = BDD
 	return project
 }
 
 func (project *Project) SetRestApi(RestApi RestApi) *Project {
-	project.RestApi = RestApi
+	project.rest_api = RestApi
 	return project
 }
 
 func (project *Project) SetWebApp(WebApp WebApp) *Project {
-	project.WebApp = WebApp
+	project.web_app = WebApp
 	return project
 }
 
 func (project *Project) SetSiteStatique(SiteStatique SiteStatique) *Project {
-	project.SiteStatique = SiteStatique
+	project.site_statique = SiteStatique
 	return project
 }

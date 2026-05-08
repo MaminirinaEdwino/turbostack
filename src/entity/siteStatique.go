@@ -1,23 +1,25 @@
 package entity
 
 type SiteStatique struct {
-	Pages []Page
-	Composants []Composant
+	pages      []Page
+	composants []Composant
 }
+
+
 func (sitestatique *SiteStatique) GetPages() []Page {
-	return sitestatique.Pages
+	return sitestatique.pages
 }
 
 func (sitestatique *SiteStatique) GetComposants() []Composant {
-	return sitestatique.Composants
+	return sitestatique.composants
 }
 
 func (sitestatique *SiteStatique) SetPages(Pages []Page) *SiteStatique {
-	sitestatique.Pages = Pages
+	sitestatique.pages = Pages
 	return sitestatique
 }
 
 func (sitestatique *SiteStatique) SetComposants(Composants []Composant) *SiteStatique {
-	sitestatique.Composants = Composants
+	sitestatique.composants = Composants
 	return sitestatique
 }

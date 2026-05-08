@@ -1,44 +1,44 @@
 package entity
 
 type WebApp struct {
-	Pages     []Page
-	Role      []string
-	Composant []Composant
-	BDD       BDD
+	pages     []Page
+	role      []string
+	composant []Composant
+	bdd       BDD
 }
 
 func (webapp *WebApp) GetPages() []Page {
-	return webapp.Pages
+	return webapp.pages
 }
 
 func (webapp *WebApp) GetRole() []string {
-	return webapp.Role
+	return webapp.role
 }
 
 func (webapp *WebApp) GetComposant() []Composant {
-	return webapp.Composant
+	return webapp.composant
 }
 
 func (webapp *WebApp) GetBDD() BDD {
-	return webapp.BDD
+	return webapp.bdd
 }
 
 func (webapp *WebApp) SetPages(Pages []Page) *WebApp {
-	webapp.Pages = Pages
+	webapp.pages = Pages
 	return webapp
 }
 
 func (webapp *WebApp) SetRole(Role []string) *WebApp {
-	webapp.Role = Role
+	webapp.role = Role
 	return webapp
 }
 
 func (webapp *WebApp) SetComposant(Composant []Composant) *WebApp {
-	webapp.Composant = Composant
+	webapp.composant = Composant
 	return webapp
 }
 
 func (webapp *WebApp) SetBDD(BDD BDD) *WebApp {
-	webapp.BDD = BDD
+	webapp.bdd = BDD
 	return webapp
 }

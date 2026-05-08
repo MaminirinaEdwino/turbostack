@@ -1,37 +1,37 @@
 package entity
 
 type BDD struct {
-	Models []Model
-	SGBD   string
+	models []Model
+	sgbd   string
 }
+
 
 func (db *BDD) GetModels() []Model {
-	return db.Models
+	return db.models
 }
 
-func (db *BDD) GetSGBD() string  {
-	return db.SGBD
+func (db *BDD) GetSGBD() string {
+	return db.sgbd
 }
 
-func (db *BDD) SetModels(models []Model)  {
-	db.Models = models
+func (db *BDD) SetModels(models []Model) {
+	db.models = models
 }
 
 func (db *BDD) SetSGBD(sgbd string) {
-	db.SGBD = sgbd
+	db.sgbd = sgbd
 }
 
 func (db *BDD) AddModel(model Model) []Model {
-	db.Models = append(db.Models, model)
-	return db.Models
+	db.models = append(db.models, model)
+	return db.models
 }
 
 func (db *BDD) DeleteModel(model_id int) []Model {
-	for i := range db.Models {
+	for i := range db.models {
 		if i == model_id {
-			db.Models = append(db.Models[:i-1], db.Models[i:]...)
+			db.models = append(db.models[:i-1], db.models[i:]...)
 		}
 	}
-	return db.Models
+	return db.models
 }
-

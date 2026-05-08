@@ -1,34 +1,34 @@
 package entity
 
 type Composant struct {
-	Nom     string
-	Contenu []any
-	Params  []any
+	nom     string
+	contenu []any
+	params  []any
 }
 
 func (composant *Composant) GetNom() string {
-	return composant.Nom
+	return composant.nom
 }
 
 func (composant *Composant) GetContenu() any {
-	return composant.Contenu
+	return composant.contenu
 }
 
 func (composant *Composant) GetParams() any {
-	return composant.Params
+	return composant.params
 }
 
-func (composant *Composant) SetNom(Nom string) *Composant {
-	composant.Nom = Nom
+func (composant *Composant) SetNom(nom string) *Composant {
+	composant.nom = nom
 	return composant
 }
 
-func (composant *Composant) SetContenu(Contenu []any) *Composant {
-	composant.Contenu = Contenu
+func (composant *Composant) SetContenu(contenu []any) *Composant {
+	composant.contenu = contenu
 	return composant
 }
 
-func (composant *Composant) SetParams(Params []any) *Composant {
-	composant.Params = Params
+func (composant *Composant) SetParams(params []any) *Composant {
+	composant.params = params
 	return composant
 }

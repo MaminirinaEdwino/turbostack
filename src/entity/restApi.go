@@ -1,34 +1,35 @@
 package entity
 
 type RestApi struct {
-	Endpoints []Endpoint
-	Role []string
-	BDD BDD
+	endpoints []Endpoint
+	role      []string
+	bdd       BDD
 }
 
+
 func (restapi *RestApi) GetEndpoints() []Endpoint {
-	return restapi.Endpoints
+	return restapi.endpoints
 }
 
 func (restapi *RestApi) GetRole() []string {
-	return restapi.Role
+	return restapi.role
 }
 
 func (restapi *RestApi) GetBDD() BDD {
-	return restapi.BDD
+	return restapi.bdd
 }
 
 func (restapi *RestApi) SetEndpoints(Endpoints []Endpoint) *RestApi {
-	restapi.Endpoints = Endpoints
+	restapi.endpoints = Endpoints
 	return restapi
 }
 
 func (restapi *RestApi) SetRole(Role []string) *RestApi {
-	restapi.Role = Role
+	restapi.role = Role
 	return restapi
 }
 
 func (restapi *RestApi) SetBDD(BDD BDD) *RestApi {
-	restapi.BDD = BDD
+	restapi.bdd = BDD
 	return restapi
 }

@@ -1,40 +1,40 @@
 package entity
 
 type Champs struct {
-	Nom          string
-	Type         string
-	DefaultValue any
-	Constraint   []any
+	nom          string
+	type_champs         string
+	default_value any
+	constraint   []any
 }
 
 func (c *Champs) GetNom() string  {
-	return c.Nom
+	return c.nom
 }
 
 func (c *Champs) GetType() string {
-	return c.Type
+	return c.type_champs
 }
 
 func (c *Champs) GetDefaultValue() any {
-	return c.DefaultValue
+	return c.default_value
 }
 
 func (c *Champs) GetConstraint() []any {
-	return c.Constraint
+	return c.constraint
 }
 
-func (c *Champs) SetNom(Nom string) {
-	c.Nom = Nom
+func (c *Champs) SetNom(nom string) {
+	c.nom = nom
 }
 
-func (c *Champs) SetType(Type string) {
-	c.Type = Type
+func (c *Champs) SetType(type_champs string) {
+	c.type_champs = type_champs
 }
 
 func (c *Champs) SetDefaultValue(defaultValue any) {
-	c.DefaultValue = defaultValue
+	c.default_value = defaultValue
 }
 
 func (c *Champs) SetContraint(constraint []any) {
-	c.Constraint = constraint
+	c.constraint = constraint
 }

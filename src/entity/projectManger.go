@@ -19,6 +19,19 @@ func (mgr *ProjectManager) LoadProjects() error {
 	return nil
 }
 
+func (mgr *ProjectManager) SaveProjects() error {
+	file, err := os.OpenFile("project.json", os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
+	if err != nil {
+		return err
+	}
+	jsonValue, err := json.MarshalIndent(mgr.Projects, "", "    ")
+	if err != nil {
+		return err
+	}
+	file.Write(jsonValue)
+	return nil
+}
+
 func (mgr *ProjectManager) GetAll() []Project {
 	return mgr.Projects
 }

@@ -8,6 +8,13 @@ type Abonnement struct {
 	fin             time.Time
 }
 
+func (a *Abonnement) ToJSON() AbonnementJSON {
+	return AbonnementJSON{
+		Type_abonnement: a.type_abonnement,
+		Debut: a.debut,
+		Fin: a.fin,
+	}
+}
 
 func (a *Abonnement) GetType() string {
 	return a.type_abonnement

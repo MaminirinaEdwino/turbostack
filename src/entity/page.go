@@ -5,6 +5,13 @@ type Page struct {
 	contenu []any
 }
 
+func (p *Page) ToJSON() PageJSON {
+	return PageJSON{
+		Nom: p.nom,
+		Contenu: p.contenu,
+	}
+}
+
 func (page *Page) GetNom() string {
 	return page.nom
 }

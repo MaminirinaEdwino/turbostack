@@ -9,6 +9,12 @@ type Model struct {
 	attributs []Champs
 }
 
+func (m *Model) ToJSON() ModelJSON {
+	return ModelJSON{
+		Nom: m.nom,
+		Attributs: m.attributs,
+	}
+}
 func (m *Model) GetNom() string {
 	return m.nom
 }

@@ -7,6 +7,15 @@ type WebApp struct {
 	bdd       BDD
 }
 
+func (w *WebApp) ToJSON() WebAppJSON {
+	return WebAppJSON{
+		Pages:     w.pages,
+		Role:      w.role,
+		Composant: w.composant,
+		BDD:       w.bdd,
+	}
+}
+
 func (webapp *WebApp) GetPages() []Page {
 	return webapp.pages
 }

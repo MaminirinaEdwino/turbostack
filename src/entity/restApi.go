@@ -6,6 +6,13 @@ type RestApi struct {
 	bdd       BDD
 }
 
+func (r *RestApi) ToJSON() RestApiJSON {
+	return RestApiJSON{
+		Endpoints: r.endpoints,
+		Role: r.role,
+		BDD: r.bdd,
+	}
+}
 
 func (restapi *RestApi) GetEndpoints() []Endpoint {
 	return restapi.endpoints

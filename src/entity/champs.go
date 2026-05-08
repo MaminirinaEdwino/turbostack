@@ -7,6 +7,15 @@ type Champs struct {
 	constraint   []any
 }
 
+func (c *Champs) ToJSON() ChampsJSON  {
+	return ChampsJSON{
+		Nom: c.nom,
+		Type: c.type_champs,
+		DefaultValue: c.default_value,
+		Constraint: c.constraint,
+	}
+}
+
 func (c *Champs) GetNom() string  {
 	return c.nom
 }

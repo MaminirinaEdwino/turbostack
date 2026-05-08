@@ -9,6 +9,16 @@ type Project struct {
 	site_statique SiteStatique
 }
 
+func (p *Project) ToJSON() ProjectJSON {
+	return ProjectJSON{
+		Nom: p.nom,
+		Type: p.type_project,
+		BDD: p.bdd,
+		RestApi: p.rest_api,
+		WebApp: p.web_app,
+		SiteStatique: p.site_statique,
+	}
+}
 
 func (project *Project) GetNom() string {
 	return project.nom

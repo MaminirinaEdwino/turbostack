@@ -6,6 +6,14 @@ type Composant struct {
 	params  []any
 }
 
+func (c *Composant) ToJSON() ComposantJSON  {
+	return ComposantJSON{
+		Nom: c.nom,
+		Contenu: c.contenu,
+		Params: c.params,
+	}
+}
+
 func (composant *Composant) GetNom() string {
 	return composant.nom
 }

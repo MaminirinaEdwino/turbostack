@@ -5,6 +5,12 @@ type BDD struct {
 	sgbd   string
 }
 
+func (db *BDD) ToJSON() BDDJSON {
+	return BDDJSON{
+		Models: db.models,
+		Sgbd: db.sgbd,
+	}
+}
 
 func (db *BDD) GetModels() []Model {
 	return db.models

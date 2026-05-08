@@ -9,6 +9,17 @@ type Endpoint struct {
 	role   string
 }
 
+func (e *Endpoint) ToJSON() EndpointJSON {
+	return EndpointJSON{
+		Nom: e.nom,
+		Uri: e.uri,
+		Method: e.method,
+		Model: e.model,
+		Params: e.params,
+		Role: e.role,
+	}
+}
+
 func (e *Endpoint) GetNom() string {
 	return e.nom
 }

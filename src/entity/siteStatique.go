@@ -5,6 +5,12 @@ type SiteStatique struct {
 	composants []Composant
 }
 
+func (s *SiteStatique) ToJSON() SiteStatiqueJSON {
+	return SiteStatiqueJSON{
+		Pages: s.pages,
+		Composants: s.composants,
+	}
+}
 
 func (sitestatique *SiteStatique) GetPages() []Page {
 	return sitestatique.pages

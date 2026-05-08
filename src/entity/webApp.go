@@ -1,40 +1,44 @@
 package entity
 
-type Champs struct {
-	Nom          string
-	Type         string
-	DefaultValue any
-	Constraint   []any
+type WebApp struct {
+	Pages     []Page
+	Role      []string
+	Composant []Composant
+	BDD       BDD
 }
 
-func (c *Champs) GetNom() string  {
-	return c.Nom
+func (webapp *WebApp) GetPages() []Page {
+	return webapp.Pages
 }
 
-func (c *Champs) GetType() string {
-	return c.Type
+func (webapp *WebApp) GetRole() []string {
+	return webapp.Role
 }
 
-func (c *Champs) GetDefaultValue() any {
-	return c.DefaultValue
+func (webapp *WebApp) GetComposant() []Composant {
+	return webapp.Composant
 }
 
-func (c *Champs) GetConstraint() []any {
-	return c.Constraint
+func (webapp *WebApp) GetBDD() BDD {
+	return webapp.BDD
 }
 
-func (c *Champs) SetNom(Nom string) {
-	c.Nom = Nom
+func (webapp *WebApp) SetPages(Pages []Page) *WebApp {
+	webapp.Pages = Pages
+	return webapp
 }
 
-func (c *Champs) SetType(Type string) {
-	c.Type = Type
+func (webapp *WebApp) SetRole(Role []string) *WebApp {
+	webapp.Role = Role
+	return webapp
 }
 
-func (c *Champs) SetDefaultValue(defaultValue any) {
-	c.DefaultValue = defaultValue
+func (webapp *WebApp) SetComposant(Composant []Composant) *WebApp {
+	webapp.Composant = Composant
+	return webapp
 }
 
-func (c *Champs) SetContraint(constraint []any) {
-	c.Constraint = constraint
+func (webapp *WebApp) SetBDD(BDD BDD) *WebApp {
+	webapp.BDD = BDD
+	return webapp
 }

@@ -9,3 +9,28 @@
     --color-couleur6: #2c3e50; /* Texte */
     --color-couleur7: #95a5a6; /* Bordures et texte secondaire */
 }
+
+.newProjectForm{
+  @apply w-2/3 flex flex-col p-4 border rounded border-couleur1 m-2 box-border;
+  &>div {
+    @apply flex flex-col p-2 ;
+    &>label{
+      @apply text-couleur1;
+    }
+    input, select, textarea{
+      @apply border-couleur1 border rounded px-2 py-1;
+    }
+  }
+  main{
+    @apply flex gap-2 justify-end p-2;
+    button{
+      @apply py-2 px-6 rounded cursor-pointer; 
+    }
+    button:first-child{
+      @apply bg-couleur1 text-couleur3;
+    }
+    button:last-child{
+      @apply bg-couleur3 text-couleur1 border border-couleur1;
+    }
+  }
+}

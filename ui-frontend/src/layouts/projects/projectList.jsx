@@ -1,5 +1,4 @@
 import { Folder, FolderPlus } from "lucide-react";
-import LayoutHeader from "../../components/layoutHeader";
 import SideMenu from "../../components/sideMenu";
 import ProjectListCard from "./projectListCard";
 import ListView from "../../components/listView";

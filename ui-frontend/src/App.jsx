@@ -11,9 +11,11 @@ import Pageslist from './layouts/page/pagelist';
 import BDDModelList from './layouts/models/modelList';
 import Subscription from './pages/subscription';
 import NewProject from './layouts/projects/newProject';
+import ProjectHomePage from './layouts/projects/projectHomePage';
 
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
+  const actualProject = useSelector((state) => state.app.actualProject);
 
   const renderContent = () => {
     switch (actualWindow) {
@@ -26,6 +28,7 @@ function App() {
       case 'Models': return <BDDModelList />;
       case 'Subscription': return <Subscription/>;
       case 'New Project': return <NewProject/>
+      case 'Project Home Page': return <ProjectHomePage projectName={actualProject}></ProjectHomePage>
       default: return <HomePage />; // Fallback
     }
   };

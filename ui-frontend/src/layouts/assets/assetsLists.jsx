@@ -1,4 +1,4 @@
-import { ImageIcon } from "lucide-react"
+import { ImageIcon, ImagePlusIcon } from "lucide-react"
 import ListView from "../../components/listView"
 import ProjectListCard from "../projects/projectListCard"
 import SideMenu from "../../components/sideMenu"
@@ -18,7 +18,7 @@ export default function Assetslist(){
             sectionName={"Assets Lists"}
             content={ComponentList}
             elementView={ProjectListCard}
-            newIcon={<ImageIcon size={50}></ImageIcon>}
+            newIcon={<ImagePlusIcon size={50}></ImagePlusIcon>}
         ></ListView>
     </div> 
 }

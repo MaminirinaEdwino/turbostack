@@ -10,6 +10,7 @@ import APIlist from './layouts/api/apiList';
 import Pageslist from './layouts/page/pagelist';
 import BDDModelList from './layouts/models/modelList';
 import Subscription from './pages/subscription';
+import NewProject from './layouts/projects/newProject';
 
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
@@ -24,6 +25,7 @@ function App() {
       case 'Pages': return <Pageslist />;
       case 'Models': return <BDDModelList />;
       case 'Subscription': return <Subscription/>;
+      case 'New Project': return <NewProject/>
       default: return <HomePage />; // Fallback
     }
   };

@@ -1,6 +1,7 @@
 import LayoutHeader from "./layoutHeader";
 
 export default function ListView({ content, elementView, newIcon, sectionName, newText, listIcon }) {
+    
     return <main className="flex-1 p-8 overflow-y-auto">
         <LayoutHeader layoutName={sectionName} />
         <div className="projectSection flex flex-wrap">

@@ -4,15 +4,9 @@ import {
     Folder,
     LucidePuzzle
 } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { setActualWindow } from "../appSlice";
+import { useNavigate } from "../hooks/useNavigate";
 export default function SideMenu() {
-    const dispatch = useDispatch();
-
-    // Fonction pour changer la fenêtre actuelle
-    const navigateTo = (windowName) => {
-        dispatch(setActualWindow(windowName));
-    };
+    const navigateTo = useNavigate();
     const menuItems = [
         { name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
         { name: 'Project', icon: <Folder size={18} /> },

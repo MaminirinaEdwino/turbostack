@@ -34,14 +34,19 @@ func (mgr *ProjectManager) LoadProjects() error {
 	return nil
 }
 
-
 func (mgr *ProjectManager) SaveProjects() error {
 
 	file, err := os.OpenFile("project.json", os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
-	jsonValue, err := json.MarshalIndent(mgr.Projects, "", "    ")
+
+	pJson := make([]ProjectJSON, 0, len(mgr.Projects))
+	for i := range mgr.Projects {
+		pJson = append(pJson, mgr.Projects[i].ToJSON())
+	}
+
+	jsonValue, err := json.MarshalIndent(pJson, "", "    ")
 	if err != nil {
 		return err
 	}

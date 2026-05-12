@@ -3,8 +3,16 @@ import {
     Image as ImageIcon, Database, FileText, LogOut, Settings,
     Folder,
     LucidePuzzle
-} from "lucide-react"; 
+} from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setActualWindow } from "../appSlice";
 export default function SideMenu() {
+    const dispatch = useDispatch();
+
+    // Fonction pour changer la fenêtre actuelle
+    const navigateTo = (windowName) => {
+        dispatch(setActualWindow(windowName));
+    };
     const menuItems = [
         { name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
         { name: 'Project', icon: <Folder size={18} /> },
@@ -25,13 +33,14 @@ export default function SideMenu() {
                 <div
                     key={item.name}
                     className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 border-couleur7 hover:text-couleur3 text-couleur1"
+                    onClick={()=>navigateTo(item.name)}
                 >
                     {item.icon}
                     <span className="font-medium">{item.name}</span>
                 </div>
             ))}
         </nav>
-        
+
     </aside>
 
 }

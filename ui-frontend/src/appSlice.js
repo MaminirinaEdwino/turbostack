@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const appSlice = createSlice({
   name: 'app',
   initialState: {
-    actualWindow: 'home', // La fenêtre par défaut au démarrage de l'application
+    actualWindow: 'Dashboard', // La fenêtre par défaut au démarrage de l'application
   },
   reducers: {
     setActualWindow: (state, action) => {

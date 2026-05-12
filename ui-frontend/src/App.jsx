@@ -1,9 +1,9 @@
 
 import './App.css'
 import { GoApp } from './services/bridge'
-import { useSelector, useDispatch } from 'react-redux'
-import { setActualWindow } from './appSlice'
+import { useSelector } from 'react-redux'
 import HomePage from './layouts/homepage/homePage';
+import ProjectList from './layouts/projects/projectList';
 
 
 // Composants factices pour la démonstration du routage
@@ -16,18 +16,13 @@ function App() {
   // Récupérer l'état actuel de la fenêtre depuis le store Redux
   const actualWindow = useSelector((state) => state.app.actualWindow);
   // Obtenir la fonction dispatch pour envoyer des actions
-  const dispatch = useDispatch();
-
-  // Fonction pour changer la fenêtre actuelle
-  const navigateTo = (windowName) => {
-    dispatch(setActualWindow(windowName));
-  };
+  
 
   // Rendu conditionnel basé sur la valeur de actualWindow
   const renderContent = () => {
     switch (actualWindow) {
-      case 'home': return <HomePage />;
-      case 'about': return <About />;
+      case 'Dashboard': return <HomePage />;
+      case 'Project': return <ProjectList />;
       case 'settings': return <Settings />;
       case 'projects': return <Projects />;
       default: return <Home />; // Fallback

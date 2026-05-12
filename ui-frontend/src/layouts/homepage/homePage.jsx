@@ -4,6 +4,7 @@ import { ProjectCard } from "../../components/projectCard";
 import { StatCard } from "../../components/statCard";
 import SideMenu from "../../components/sideMenu";
 import { Database, Settings, Folder } from "lucide-react";
+import LayoutHeader from "../../components/layoutHeader";
 
 
 const HomePage = () => {
@@ -15,9 +16,7 @@ const HomePage = () => {
 
             {/* --- MAIN CONTENT --- */}
             <main className="flex-1 p-8 overflow-y-auto">
-                <header className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-semibold text-couleur1" >Dashboard</h1>
-                </header>
+                <LayoutHeader layoutName={"Dashboard"}/>
 
                 {/* --- LAST PROJECTS --- */}
                 <section className="mb-10">
@@ -29,23 +28,23 @@ const HomePage = () => {
                 </section>
 
                 {/* --- STATISTICS --- */}
-                <section className="mb-10">
+                {/* <section className="mb-10">
                     <h2 className="text-xl mb-4 opacity-60 text-couleur6" >Statistics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <StatCard title="Components" total="5" icon={<Settings size={32} />} />
                         <StatCard title="Projects" total="5" icon={<Folder size={32} />} />
                         <StatCard title="Models" total="5" icon={<Database size={32} />} />
                     </div>
-                </section>
+                </section> */}
 
                 {/* --- DEPLOYED STATS --- */}
-                <section>
+                {/* <section>
                     <h2 className="text-xl mb-4 opacity-60 text-couleur6" >Deployed Project Statistics</h2>
                     <div className="flex justify-around items-center p-10 bg-white rounded-xl shadow-sm border border-gray-100">
                         <div className="w-48 h-48 rounded-full border-16 border-gray-100 rotate-45 border-t-couleur1 border-r-couleur2" ></div>
                         <div className="w-48 h-48 rounded-full border-16 border-gray-100 -rotate-12 border-t-couleur1 border-r-couleur2" ></div>
                     </div>
-                </section>
+                </section> */}
             </main>
         </div>
     );

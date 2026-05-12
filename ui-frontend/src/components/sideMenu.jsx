@@ -17,10 +17,10 @@ export default function SideMenu() {
         { name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
         { name: 'Project', icon: <Folder size={18} /> },
         { name: 'Components', icon: <LucidePuzzle size={18} /> },
-        { name: 'Subscription', icon: <CreditCard size={18} /> },
         { name: 'Assets', icon: <ImageIcon size={18} /> },
         { name: 'Models', icon: <Database size={18} /> },
         { name: 'Pages', icon: <FileText size={18} /> },
+        { name: 'Subscription', icon: <CreditCard size={18} /> },
     ];
 
     return <aside className="w-64 flex flex-col p-6 bg-couleur3" >

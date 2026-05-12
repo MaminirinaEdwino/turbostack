@@ -2,8 +2,11 @@ package main
 
 import (
 	"embed"
+	"fmt"
+	"log"
 
 	"github.com/MaminirinaEdwino/turbostack/src/api"
+	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
 )
 
@@ -15,6 +18,12 @@ func main() {
 	w := webview.New(debug)
 	defer w.Destroy()
 
+	// Initialisation du gestionnaire de projet et chargement de la sauvegarde
+	projectMgr := &entity.ProjectManager{}
+	if err := projectMgr.LoadProjects(); err != nil {
+		log.Printf("Erreur lors du chargement des projets : %v", err)
+	}
+	fmt.Println(projectMgr.Projects)
 	mgr := api.NewManager()
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})

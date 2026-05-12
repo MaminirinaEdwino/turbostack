@@ -14,8 +14,8 @@ type ProjectManager struct {
 
 func (mgr *ProjectManager) LoadProjects() error {
 
-	var pJson ProjectJSON
-
+	var pJson []ProjectJSON
+	var p Project
 	if !service.FileExists("project.json") {
 		saveFile, _ := os.Create("project.json")
 		jsonData, _ := json.MarshalIndent(pJson, "", "    ")
@@ -26,17 +26,14 @@ func (mgr *ProjectManager) LoadProjects() error {
 		return err
 	}
 	json.Unmarshal(file, &pJson)
-	
+	for _, val := range pJson {
+		p = val.ToModel()
+		mgr.Projects = append(mgr.Projects, p)
+	}
+
 	return nil
 }
 
-func (mgr *ProjectManager) RevertToProjectModel() ProjectJSON {
-
-	return ProjectJSON{}
-}
-func (mgr *ProjectManager) TransformToJsonMOdel() ProjectJSON {
-	return ProjectJSON{}
-}
 
 func (mgr *ProjectManager) SaveProjects() error {
 

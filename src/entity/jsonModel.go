@@ -8,8 +8,6 @@ type AbonnementJSON struct {
 	Fin             time.Time `json:"fin"`
 }
 
-
-
 type BDDJSON struct {
 	Models []Model `json:"models"`
 	Sgbd   string  `json:"sgbd"`

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"slices"
+
+	"github.com/MaminirinaEdwino/turbostack/src/service"
 )
 
 type ProjectManager struct {
@@ -11,15 +13,33 @@ type ProjectManager struct {
 }
 
 func (mgr *ProjectManager) LoadProjects() error {
+
+	var pJson ProjectJSON
+
+	if !service.FileExists("project.json") {
+		saveFile, _ := os.Create("project.json")
+		jsonData, _ := json.MarshalIndent(pJson, "", "    ")
+		saveFile.Write(jsonData)
+	}
 	file, err := os.ReadFile("project.json")
 	if err != nil {
 		return err
 	}
-	json.Unmarshal(file, &mgr.Projects)
+	json.Unmarshal(file, &pJson)
+	
 	return nil
 }
 
+func (mgr *ProjectManager) RevertToProjectModel() ProjectJSON {
+
+	return ProjectJSON{}
+}
+func (mgr *ProjectManager) TransformToJsonMOdel() ProjectJSON {
+	return ProjectJSON{}
+}
+
 func (mgr *ProjectManager) SaveProjects() error {
+
 	file, err := os.OpenFile("project.json", os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
 	if err != nil {
 		return err

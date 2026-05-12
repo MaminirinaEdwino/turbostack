@@ -16,3 +16,5 @@ func (s *SystemService) GetStats() map[string]string {
 func (s *SystemService) Bind(w webview.WebView) {
 	w.Bind("getStats", s.GetStats)
 }
+
+

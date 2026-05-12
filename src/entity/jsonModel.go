@@ -52,6 +52,7 @@ type ProjectJSON struct {
 	RestApi      RestApi      `json:"rest_api"`
 	WebApp       WebApp       `json:"web_app"`
 	SiteStatique SiteStatique `json:"site_statique"`
+	Description  string       `json:"description"`
 }
 
 type RestApiJSON struct {

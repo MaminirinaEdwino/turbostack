@@ -61,6 +61,7 @@ func (pj *ProjectJSON) ToModel() Project {
 	return Project{
 		nom:           pj.Nom,
 		type_project:  pj.Type,
+		description:   pj.Description,
 		bdd:           pj.BDD,
 		rest_api:      pj.RestApi,
 		web_app:       pj.WebApp,

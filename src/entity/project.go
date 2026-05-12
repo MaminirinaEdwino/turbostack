@@ -2,8 +2,9 @@ package entity
 
 type Project struct {
 	nom          string
-	type_project         string
-	bdd          BDD
+	type_project string
+	description string
+	bdd           BDD
 	rest_api      RestApi
 	web_app       WebApp
 	site_statique SiteStatique
@@ -11,11 +12,12 @@ type Project struct {
 
 func (p *Project) ToJSON() ProjectJSON {
 	return ProjectJSON{
-		Nom: p.nom,
-		Type: p.type_project,
-		BDD: p.bdd,
-		RestApi: p.rest_api,
-		WebApp: p.web_app,
+		Nom:          p.nom,
+		Type:         p.type_project,
+		Description: p.description,
+		BDD:          p.bdd,
+		RestApi:      p.rest_api,
+		WebApp:       p.web_app,
 		SiteStatique: p.site_statique,
 	}
 }
@@ -23,7 +25,9 @@ func (p *Project) ToJSON() ProjectJSON {
 func (project *Project) GetNom() string {
 	return project.nom
 }
-
+func (project *Project) GetDescription() string {
+	return project.description
+}
 func (project *Project) GetType() string {
 	return project.type_project
 }
@@ -48,6 +52,11 @@ func (project *Project) SetNom(Nom string) *Project {
 	project.nom = Nom
 	return project
 }
+func (project *Project) SetDescription(Description string) *Project {
+	project.description = Description
+	return project
+}
+
 
 func (project *Project) SetType(Type string) *Project {
 	project.type_project = Type

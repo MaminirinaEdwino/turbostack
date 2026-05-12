@@ -15,4 +15,7 @@ export const GoApp = {
     fetchProjects: async ()=>{
         return await window.fetchProjects();
     },
+    fetchProjectByName: async (name)=>{
+        return await window.fetchByProjectName(name)
+    } 
 }

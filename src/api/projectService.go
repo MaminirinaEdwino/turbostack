@@ -1,8 +1,6 @@
 package api
 
 import (
-	"fmt"
-
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
 )
@@ -22,9 +20,10 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 		Description: description,
 		Type:        projectType,
 	}
-
+	if s.Manager.CheckIfExist(name) {
+		return "Project already exists"
+	}
 	s.Manager.Create(pJson.ToModel())
 	s.Manager.SaveProjects()
-	fmt.Println(name, description, projectType)
 	return "Success"
 }

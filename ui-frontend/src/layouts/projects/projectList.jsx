@@ -5,6 +5,7 @@ import ProjectListCard from "./projectListCard";
 import ListView from "../../components/listView";
 
 export default function ProjectList() {
+    
     const ProjectList = [
         "Project 1",
         "Project 2",

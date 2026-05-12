@@ -15,7 +15,10 @@ export default function NewProject() {
         e.preventDefault()
         
         // Appel au backend Go via le bridge
-        console.log(await GoApp.createProject(newProjectValue.name, newProjectValue.description, newProjectValue.type))
+        if(await GoApp.createProject(newProjectValue.name, newProjectValue.description, newProjectValue.type) == "Project already exists"){
+            alert("Project already exists")
+            return
+        }
         
         // setNewProject({
         //     name: "",
@@ -23,7 +26,8 @@ export default function NewProject() {
         //     type: ""
         // })
         // Redirection vers la liste des projets après création
-        // navigateTo("Project")
+        
+        navigateTo("Project")
     }
     return <MainLayout child={
         <div className="flex-1 p-8 overflow-y-auto">

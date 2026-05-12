@@ -54,6 +54,15 @@ func (mgr *ProjectManager) SaveProjects() error {
 	return nil
 }
 
+func (mgr *ProjectManager) CheckIfExist(name string) bool {
+	for _, project := range mgr.Projects {
+		if project.GetNom() == name {
+			return true
+		}
+	}
+	return false
+}
+
 func (mgr *ProjectManager) GetAll() []Project {
 	return mgr.Projects
 }

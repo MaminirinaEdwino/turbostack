@@ -26,6 +26,7 @@ func main() {
 	mgr := api.NewManager()
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})
+	mgr.Add(&api.ProjectService{Manager: projectMgr})
 
 	mgr.RegisterAll(w)
 	w.SetTitle("Turbo Stack")

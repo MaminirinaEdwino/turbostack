@@ -3,6 +3,7 @@ import MainLayout from "../mainLayout";
 import newProjetIllustration from "../../assets/newProject.svg";
 import { useNavigate } from "../../hooks/useNavigate";
 import { useState } from "react";
+import { GoApp } from "../../services/bridge";
 export default function NewProject() {
     const navigateTo = useNavigate();
     const [newProjectValue, setNewProject] = useState({
@@ -10,14 +11,19 @@ export default function NewProject() {
         description: "",
         type: ""
     })
-    const handleCreateProject = (e) => {
+    const handleCreateProject = async (e) => {
         e.preventDefault()
-        setNewProject({
-            name: "",
-            description: "",
-            type: ""
-        })
-        console.log(newProjectValue)
+        
+        // Appel au backend Go via le bridge
+        console.log(await GoApp.createProject(newProjectValue.name, newProjectValue.description, newProjectValue.type))
+        
+        // setNewProject({
+        //     name: "",
+        //     description: "",
+        //     type: ""
+        // })
+        // Redirection vers la liste des projets après création
+        // navigateTo("Project")
     }
     return <MainLayout child={
         <div className="flex-1 p-8 overflow-y-auto">

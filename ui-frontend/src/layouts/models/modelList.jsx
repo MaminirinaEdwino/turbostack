@@ -1,25 +1,25 @@
-import { ImageIcon, ImagePlusIcon } from "lucide-react"
 import ListView from "../../components/listView"
 import ProjectListCard from "../projects/projectListCard"
 import SideMenu from "../../components/sideMenu"
+import { Database, DatabaseIcon } from "lucide-react"
 
-export default function Assetslist(){
+export default function BDDModelList(){
     const ComponentList = [
-        "Asset 1",
-        "Asset 2",
-        "Asset 3",
-        "Asset 4",
-        "Asset 5"
+        "BDD Model 1",
+        "BDD Model 2",
+        "BDD Model 3",
+        "BDD Model 4",
+        "BDD Model 5"
     ]
     return <div className="flex h-screen w-full font-san bg-couleur3">
         <SideMenu></SideMenu>
         <ListView
-            listIcon={<ImageIcon size={100}></ImageIcon>}
-            newText={"Upload asset"}
-            sectionName={"Assets Lists"}
+            listIcon={<DatabaseIcon size={100}></DatabaseIcon>}
+            newText={"New BDD Model"}
+            sectionName={"BDD Model Lists"}
             content={ComponentList}
             elementView={ProjectListCard}
-            newIcon={<ImagePlusIcon size={50}></ImagePlusIcon>}
+            newIcon={<Database size={50}></Database>}
         ></ListView>
     </div> 
 }

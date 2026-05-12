@@ -1,25 +1,25 @@
-import { ImageIcon, ImagePlusIcon } from "lucide-react"
 import ListView from "../../components/listView"
 import ProjectListCard from "../projects/projectListCard"
 import SideMenu from "../../components/sideMenu"
+import { LucideSheet, SheetIcon } from "lucide-react"
 
-export default function Assetslist(){
+export default function Pageslist() {
     const ComponentList = [
-        "Asset 1",
-        "Asset 2",
-        "Asset 3",
-        "Asset 4",
-        "Asset 5"
+        "Page 1",
+        "Page 2",
+        "Page 3",
+        "Page 4",
+        "Page 5"
     ]
     return <div className="flex h-screen w-full font-san bg-couleur3">
         <SideMenu></SideMenu>
         <ListView
-            listIcon={<ImageIcon size={100}></ImageIcon>}
-            newText={"Upload asset"}
-            sectionName={"Assets Lists"}
+            listIcon={<SheetIcon size={100}></SheetIcon> }
+            newText={"New Page"}
+            sectionName={"Page Lists"}
             content={ComponentList}
             elementView={ProjectListCard}
-            newIcon={<ImagePlusIcon size={50}></ImagePlusIcon>}
+            newIcon={<LucideSheet size={50}></LucideSheet>}
         ></ListView>
-    </div> 
+    </div>
 }

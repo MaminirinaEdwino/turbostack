@@ -14,6 +14,7 @@ export default function ComponentsList() {
     return <div className="flex h-screen w-full font-san bg-couleur3">
         <SideMenu></SideMenu>
         <ListView
+        listIcon={<PuzzleIcon size={100}></PuzzleIcon>}
             newText={"New Component"}
             sectionName={"Component Lists"}
             content={ComponentList}

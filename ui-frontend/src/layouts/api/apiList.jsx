@@ -1,25 +1,25 @@
-import { ImageIcon, ImagePlusIcon } from "lucide-react"
 import ListView from "../../components/listView"
 import ProjectListCard from "../projects/projectListCard"
 import SideMenu from "../../components/sideMenu"
+import { Settings, SettingsIcon } from "lucide-react"
 
-export default function Assetslist(){
+export default function APIlist() {
     const ComponentList = [
-        "Asset 1",
-        "Asset 2",
-        "Asset 3",
-        "Asset 4",
-        "Asset 5"
+        "API 1",
+        "API 2",
+        "API 3",
+        "API 4",
+        "API 5"
     ]
     return <div className="flex h-screen w-full font-san bg-couleur3">
         <SideMenu></SideMenu>
         <ListView
-            listIcon={<ImageIcon size={100}></ImageIcon>}
-            newText={"Upload asset"}
-            sectionName={"Assets Lists"}
+            listIcon={<Settings size={100}></Settings>}
+            newText={"New API"}
+            sectionName={"API Lists"}
             content={ComponentList}
             elementView={ProjectListCard}
-            newIcon={<ImagePlusIcon size={50}></ImagePlusIcon>}
+            newIcon={<SettingsIcon size={50}></SettingsIcon>}
         ></ListView>
-    </div> 
+    </div>
 }

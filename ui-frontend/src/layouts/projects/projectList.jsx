@@ -1,4 +1,4 @@
-import { FolderPlus } from "lucide-react";
+import { Folder, FolderPlus } from "lucide-react";
 import LayoutHeader from "../../components/layoutHeader";
 import SideMenu from "../../components/sideMenu";
 import ProjectListCard from "./projectListCard";
@@ -15,6 +15,7 @@ export default function ProjectList() {
     return <div className="flex h-screen w-full font-san bg-couleur3">
         <SideMenu></SideMenu>
         <ListView
+        listIcon={<Folder size={100}></Folder>}
             newText={"New Project"}
             sectionName={"Project Lists"}
             content={ProjectList}

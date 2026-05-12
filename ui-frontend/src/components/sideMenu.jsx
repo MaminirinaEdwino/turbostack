@@ -20,6 +20,7 @@ export default function SideMenu() {
         { name: 'Assets', icon: <ImageIcon size={18} /> },
         { name: 'Models', icon: <Database size={18} /> },
         { name: 'Pages', icon: <FileText size={18} /> },
+        { name: 'Api', icon: <Settings size={18} /> },
         { name: 'Subscription', icon: <CreditCard size={18} /> },
     ];
 
@@ -33,7 +34,7 @@ export default function SideMenu() {
                 <div
                     key={item.name}
                     className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 border-couleur7 hover:text-couleur3 text-couleur1"
-                    onClick={()=>navigateTo(item.name)}
+                    onClick={() => navigateTo(item.name)}
                 >
                     {item.icon}
                     <span className="font-medium">{item.name}</span>

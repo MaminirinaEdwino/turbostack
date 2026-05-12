@@ -11,6 +11,7 @@ type ProjectService struct {
 
 func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("createProject", ps.CreateProject)
+	w.Bind("fetchProjects", ps.FetchProjects)
 }
 
 func (s *ProjectService) CreateProject(name, description, projectType string) string {
@@ -26,4 +27,13 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 	s.Manager.Create(pJson.ToModel())
 	s.Manager.SaveProjects()
 	return "Success"
+}
+
+func (s *ProjectService) FetchProjects() []string  {
+	var projectList []string
+
+	for _, val := range s.Manager.Projects{
+		projectList = append(projectList, val.GetNom())
+	}
+	return projectList
 }

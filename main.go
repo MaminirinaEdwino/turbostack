@@ -18,7 +18,6 @@ func main() {
 	w := webview.New(debug)
 	defer w.Destroy()
 
-	// Initialisation du gestionnaire de projet et chargement de la sauvegarde
 	projectMgr := &entity.ProjectManager{}
 	if err := projectMgr.LoadProjects(); err != nil {
 		log.Printf("Erreur lors du chargement des projets : %v", err)

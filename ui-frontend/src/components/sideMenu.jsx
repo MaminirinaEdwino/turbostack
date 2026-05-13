@@ -2,11 +2,17 @@ import {
     LayoutDashboard, CreditCard,
     Image as ImageIcon, Database, FileText, LogOut, Settings,
     Folder,
-    LucidePuzzle
+    LucidePuzzle,
+    SidebarClose,
+    SidebarOpen
 } from "lucide-react";
 import { useNavigate } from "../hooks/useNavigate";
+import { useDispatch, useSelector } from "react-redux";
+import { setToggleMenuSide } from "../appSlice";
 export default function SideMenu() {
     const navigateTo = useNavigate();
+    const dispatch = useDispatch();
+    const toggleMenu = useSelector((state)=>state.app.toggleMenuSide)
     const menuItems = [
         { name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
         { name: 'Project', icon: <Folder size={18} /> },
@@ -17,21 +23,29 @@ export default function SideMenu() {
         { name: 'Api', icon: <Settings size={18} /> },
         { name: 'Subscription', icon: <CreditCard size={18} /> },
     ];
-
-    return <aside className="w-64 flex flex-col p-6 bg-couleur3" >
-        <div className="flex items-center gap-2 mb-10">
+    
+    const handleToggleMenu = (e)=>{
+        e.preventDefault()
+        dispatch(setToggleMenuSide())
+    }
+    return <aside className={"flex flex-col p-6 bg-couleur3 transition-all transition-delay-500 "+(toggleMenu? "w-64": "w-fit")} >
+        <div className="flex items-center gap-2 mb-10" >
             <div className="w-8 h-8 rounded-full bg-red-500"></div>
-            <span className="text-xl font-bold text-couleur1" >TurboStack</span>
+            {toggleMenu && <span className="text-xl font-bold text-couleur1" >TurboStack</span>}
         </div>
         <nav className="flex-1 space-y-2">
+            <button onClick={handleToggleMenu} className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 border-couleur7 hover:text-couleur3 text-couleur1">
+                {toggleMenu ? <SidebarClose size={20}></SidebarClose > : <SidebarOpen size={20}></SidebarOpen>}
+                
+            </button>
             {menuItems.map((item) => (
                 <div
                     key={item.name}
-                    className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 border-couleur7 hover:text-couleur3 text-couleur1"
+                    className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 border-couleur7 hover:text-couleur3 text-couleur1 "
                     onClick={() => navigateTo(item.name)}
                 >
                     {item.icon}
-                    <span className="font-medium">{item.name}</span>
+                    {toggleMenu  && <span className="font-medium">{item.name}</span>}
                 </div>
             ))}
         </nav>

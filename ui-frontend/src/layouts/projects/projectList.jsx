@@ -12,8 +12,10 @@ export default function ProjectList() {
         const loadData = async () => {
             try {
                 const response = await GoApp.fetchProjects()// Ton URL Go
-
-                setProjects(response);
+                console.log(response)
+                if (response != null) {
+                    setProjects(response)
+                } 
             } catch (err) {
                 console.error("Erreur Turbo Stack:", err);
             }

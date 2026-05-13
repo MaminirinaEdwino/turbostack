@@ -12,6 +12,7 @@ import BDDModelList from './layouts/models/modelList';
 import Subscription from './pages/subscription';
 import NewProject from './layouts/projects/newProject';
 import ProjectHomePage from './layouts/projects/projectHomePage';
+import DbEditor from './layouts/projects/databaseEditor/dbEditor';
 
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
@@ -29,6 +30,7 @@ function App() {
       case 'Subscription': return <Subscription/>;
       case 'New Project': return <NewProject/>
       case 'Project Home Page': return <ProjectHomePage projectName={actualProject}></ProjectHomePage>
+      case 'db_editor': return <DbEditor projectName={actualProject}></DbEditor>
       default: return <HomePage />; // Fallback
     }
   };

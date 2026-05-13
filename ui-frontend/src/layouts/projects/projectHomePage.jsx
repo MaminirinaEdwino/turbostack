@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import MainContainer from '../mainContainer';
 import MainLayout from '../mainLayout';
 import { GoApp } from '../../services/bridge';
+import ProjectPageView from './projectPageContent';
 
 export default function ProjectHomePage({ projectName }) {
-    const [loading, setLoading ] = useState(true)
+    const [loading, setLoading] = useState(true)
     const [project, setProject] = useState(null)
     useEffect(() => {
         const fetchData = async () => {
@@ -15,7 +16,8 @@ export default function ProjectHomePage({ projectName }) {
         fetchData()
     }, [projectName])
     return <MainLayout child={
-        <MainContainer child={!loading && <> {projectName} {project.nom}
-        </>} layoutName={"Project " + projectName}></MainContainer>
+        <MainContainer
+            child={!loading && <ProjectPageView project={project}></ProjectPageView>}
+            layoutName={"Project " + projectName}></MainContainer>
     }></MainLayout>
 }

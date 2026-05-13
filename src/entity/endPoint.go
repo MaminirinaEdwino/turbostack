@@ -10,11 +10,15 @@ type Endpoint struct {
 }
 
 func (e *Endpoint) ToJSON() EndpointJSON {
+	var model []ModelJSON
+	for _, val := range e.model{
+		model = append(model, val.ToJSON())
+	}
 	return EndpointJSON{
 		Nom: e.nom,
 		Uri: e.uri,
 		Method: e.method,
-		Model: e.model,
+		Model: model,
 		Params: e.params,
 		Role: e.role,
 	}

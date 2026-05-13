@@ -10,9 +10,13 @@ type Model struct {
 }
 
 func (m *Model) ToJSON() ModelJSON {
+	var attr []ChampsJSON
+	for _, val := range m.attributs{
+		attr = append(attr, val.ToJSON())
+	}
 	return ModelJSON{
 		Nom: m.nom,
-		Attributs: m.attributs,
+		Attributs: attr,
 	}
 }
 func (m *Model) GetNom() string {

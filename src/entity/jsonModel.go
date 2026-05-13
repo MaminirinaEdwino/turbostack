@@ -30,14 +30,14 @@ type EndpointJSON struct {
 	Nom    string   `json:"nom"`
 	Uri    string   `json:"uri"`
 	Method string   `json:"method"`
-	Model  []Model  `json:"model"`
+	Model  []ModelJSON  `json:"model"`
 	Params []string `json:"params"`
 	Role   string   `json:"role"`
 }
 
 type ModelJSON struct {
 	Nom       string   `json:"nom"`
-	Attributs []Champs `json:"attributs"`
+	Attributs []ChampsJSON `json:"attributs"`
 }
 
 type PageJSON struct {
@@ -46,29 +46,31 @@ type PageJSON struct {
 }
 
 type ProjectJSON struct {
-	Nom          string       `json:"nom"`
-	Type         string       `json:"type"`
-	BDD          BDD          `json:"bdd"`
-	RestApi      RestApi      `json:"rest_api"`
-	WebApp       WebApp       `json:"web_app"`
-	SiteStatique SiteStatique `json:"site_statique"`
-	Description  string       `json:"description"`
+	Nom          string           `json:"nom"`
+	Type         string           `json:"type"`
+	BDD          BDDJSON          `json:"bdd"`
+	RestApi      RestApiJSON      `json:"rest_api"`
+	WebApp       WebAppJSON       `json:"web_app"`
+	SiteStatique SiteStatiqueJSON `json:"site_statique"`
+	Description  string           `json:"description"`
 }
 
 type RestApiJSON struct {
-	Endpoints []Endpoint `json:"endpoints"`
+	Endpoints []EndpointJSON `json:"endpoints"`
 	Role      []string   `json:"role"`
-	BDD       BDD        `json:"bdd"`
+	BDD       BDDJSON        `json:"bdd"`
 }
 
 type SiteStatiqueJSON struct {
-	Pages      []Page      `json:"pages"`
-	Composants []Composant `json:"composants"`
+	Pages      []PageJSON      `json:"pages"`
+	Composants []ComposantJSON `json:"composants"`
 }
 
 type WebAppJSON struct {
-	Pages     []Page      `json:"pages"`
+	Pages     []PageJSON      `json:"pages"`
 	Role      []string    `json:"role"`
-	Composant []Composant `json:"composant"`
-	BDD       BDD         `json:"bdd"`
+	Composant []ComposantJSON `json:"composant"`
+	BDD       BDDJSON         `json:"bdd"`
 }
+
+

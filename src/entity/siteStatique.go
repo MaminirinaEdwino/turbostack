@@ -6,9 +6,17 @@ type SiteStatique struct {
 }
 
 func (s *SiteStatique) ToJSON() SiteStatiqueJSON {
+	var pages []PageJSON
+	var composants []ComposantJSON
+	for _, val := range s.pages{
+		pages = append(pages, val.ToJSON())
+	}
+	for _, val := range s.composants{
+		composants = append(composants, val.ToJSON())
+	}
 	return SiteStatiqueJSON{
-		Pages: s.pages,
-		Composants: s.composants,
+		Pages: pages,
+		Composants: composants,
 	}
 }
 

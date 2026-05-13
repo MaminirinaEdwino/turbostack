@@ -1,12 +1,5 @@
 package entity
 
-func (bddjson *BDDJSON) ToModel() BDD {
-	var bdd BDD
-	bdd.sgbd = bddjson.Sgbd
-	bdd.models = bddjson.Models
-	return bdd
-}
-
 func (aj *AbonnementJSON) ToModel() Abonnement {
 	return Abonnement{
 		type_abonnement: aj.Type_abonnement,
@@ -33,20 +26,28 @@ func (cj *ComposantJSON) ToModel() Composant {
 }
 
 func (ej *EndpointJSON) ToModel() Endpoint {
+	var model []Model
+	for _, val := range ej.Model {
+		model = append(model, val.ToModel())
+	}
 	return Endpoint{
 		nom:    ej.Nom,
 		uri:    ej.Uri,
 		method: ej.Method,
-		model:  ej.Model,
+		model:  model,
 		params: ej.Params,
 		role:   ej.Role,
 	}
 }
 
 func (mj *ModelJSON) ToModel() Model {
+	var attr []Champs
+	for _, val := range mj.Attributs {
+		attr = append(attr, val.ToModel())
+	}
 	return Model{
 		nom:       mj.Nom,
-		attributs: mj.Attributs,
+		attributs: attr,
 	}
 }
 
@@ -57,38 +58,66 @@ func (pj *PageJSON) ToModel() Page {
 	}
 }
 
+func (bddjson *BDDJSON) ToModel() BDD {
+	return BDD{
+		sgbd:   bddjson.Sgbd,
+		models: bddjson.Models,
+	}
+}
+
 func (pj *ProjectJSON) ToModel() Project {
 	return Project{
 		nom:           pj.Nom,
 		type_project:  pj.Type,
 		description:   pj.Description,
-		bdd:           pj.BDD,
-		rest_api:      pj.RestApi,
-		web_app:       pj.WebApp,
-		site_statique: pj.SiteStatique,
+		bdd:           pj.BDD.ToModel(),
+		rest_api:      pj.RestApi.ToModel(),
+		web_app:       pj.WebApp.ToModel(),
+		site_statique: pj.SiteStatique.ToModel(),
 	}
 }
 
 func (rj *RestApiJSON) ToModel() RestApi {
+	var endpoints []Endpoint
+
+	for _, val := range rj.Endpoints {
+		endpoints = append(endpoints, val.ToModel())
+	}
 	return RestApi{
-		endpoints: rj.Endpoints,
+		endpoints: endpoints,
 		role:      rj.Role,
-		bdd:       rj.BDD,
+		bdd:       rj.BDD.ToModel(),
 	}
 }
 
 func (sj *SiteStatiqueJSON) ToModel() SiteStatique {
+	var pages []Page
+	var composants []Composant
+	for _, val := range sj.Pages {
+		pages = append(pages, val.ToModel())
+	}
+	for _, val := range sj.Composants {
+		composants = append(composants, val.ToModel())
+	}
 	return SiteStatique{
-		pages:      sj.Pages,
-		composants: sj.Composants,
+		pages:      pages,
+		composants: composants,
 	}
 }
 
 func (wj *WebAppJSON) ToModel() WebApp {
+	var pages []Page
+	var composants []Composant
+	for _, val := range wj.Pages {
+		pages = append(pages, val.ToModel())
+	}
+	for _, val := range wj.Composant {
+		composants = append(composants, val.ToModel())
+	}
 	return WebApp{
-		pages:     wj.Pages,
+		pages:     pages,
 		role:      wj.Role,
-		composant: wj.Composant,
-		bdd:       wj.BDD,
+		composant: composants,
+		bdd:       wj.BDD.ToModel(),
 	}
 }

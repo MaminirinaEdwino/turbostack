@@ -15,10 +15,10 @@ func (p *Project) ToJSON() ProjectJSON {
 		Nom:          p.nom,
 		Type:         p.type_project,
 		Description: p.description,
-		BDD:          p.bdd,
-		RestApi:      p.rest_api,
-		WebApp:       p.web_app,
-		SiteStatique: p.site_statique,
+		BDD:          p.bdd.ToJSON(),
+		RestApi:      p.rest_api.ToJSON(),
+		WebApp:       p.web_app.ToJSON(),
+		SiteStatique: p.site_statique.ToJSON(),
 	}
 }
 

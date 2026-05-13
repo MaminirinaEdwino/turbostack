@@ -7,10 +7,14 @@ type RestApi struct {
 }
 
 func (r *RestApi) ToJSON() RestApiJSON {
+	var endpoints []EndpointJSON
+	for _, val := range r.endpoints{
+		endpoints = append(endpoints, val.ToJSON())
+	}
 	return RestApiJSON{
-		Endpoints: r.endpoints,
+		Endpoints: endpoints,
 		Role: r.role,
-		BDD: r.bdd,
+		BDD: r.bdd.ToJSON(),
 	}
 }
 

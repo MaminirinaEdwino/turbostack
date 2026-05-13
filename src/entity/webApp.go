@@ -8,11 +8,19 @@ type WebApp struct {
 }
 
 func (w *WebApp) ToJSON() WebAppJSON {
+	var pages []PageJSON
+	var composants []ComposantJSON
+	for _, val := range w.pages{
+		pages = append(pages, val.ToJSON())
+	}
+	for _, val := range w.composant{
+		composants = append(composants, val.ToJSON())
+	}
 	return WebAppJSON{
-		Pages:     w.pages,
+		Pages:     pages,
 		Role:      w.role,
-		Composant: w.composant,
-		BDD:       w.bdd,
+		Composant: composants,
+		BDD:       w.bdd.ToJSON(),
 	}
 }
 

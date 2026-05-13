@@ -4,7 +4,7 @@ export default function DbModel({data}){
             {data.nom}
          </div>
          <div>
-            {data.champs.map((item)=><div className="p-2">{item}</div>)}
+            {data.champs.map((item)=><div className="p-2">{item.nom} {item.type} {item.default_value}</div>)}
          </div>
     </div>
 }

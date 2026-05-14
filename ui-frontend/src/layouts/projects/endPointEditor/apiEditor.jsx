@@ -6,8 +6,9 @@ import '@xyflow/react/dist/style.css';
 import EndpointNode from "./endpointNode";
 import NewEndpoint from "./newEndpoint";
 import EditEndpoint from "./editEndpoint";
+import GenerateCrud from "./generateCrud";
 import { FcPrevious } from "react-icons/fc";
-import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid } from "lucide-react";
+import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid, Layers } from "lucide-react";
 
 const nodeType = { "endpoint": EndpointNode }
 
@@ -17,6 +18,7 @@ export default function ApiEditor({ projectName }) {
     const [nodes, setNodes] = useState([]);
     const [toggleModal, setToggleModal] = useState("none");
     const [toggleEditModal, setToggleEditModal] = useState("none");
+    const [toggleCrudModal, setToggleCrudModal] = useState("none");
     const [selectedEndpointIndex, setSelectedEndpointIndex] = useState(null);
     const [toast, setToast] = useState(null);
 
@@ -86,7 +88,7 @@ export default function ApiEditor({ projectName }) {
         setNodes((prevNodes) =>
             prevNodes.map((node, index) => ({
                 ...node,
-                position: { x: (index % 3) * 300, y: Math.floor(index / 3) * 200 }
+                position: { x: (index % 5) * 300, y: Math.floor(index / 5) * 200 }
             }))
         );
     };
@@ -116,6 +118,9 @@ export default function ApiEditor({ projectName }) {
                     <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={reorganizeNodes}>
                         <LayoutGrid size={20} /> Reorganize
                     </button>
+                    <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={() => setToggleCrudModal("block")}>
+                        <Layers size={20} /> Auto CRUD
+                    </button>
                     <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={() => setToggleModal("block")}>
                         <Plus /> Add Endpoint
                     </button>
@@ -144,6 +149,17 @@ export default function ApiEditor({ projectName }) {
                         project={project}
                         setProject={setProject}
                         setToggle={setToggleEditModal}
+                    />
+                )}
+            </div>
+
+            {/* Modal de génération CRUD */}
+            <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleCrudModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}>
+                {project && (
+                    <GenerateCrud
+                        project={project}
+                        setProject={setProject}
+                        setToggle={setToggleCrudModal}
                     />
                 )}
             </div>

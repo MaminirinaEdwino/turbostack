@@ -50,6 +50,7 @@ func (s *ProjectService) SaveProjectBDD(name string, bddJson string) string {
 	s.Manager.SaveProject(pJson)
 	return "Success"
 }
+
 func (s *ProjectService) FetchProjects() []string {
 	var projectList []string
 

@@ -3,7 +3,7 @@ import {
     Type, Image as ImageIcon, Trash2, 
     Plus, Edit3, Settings2,
     MousePointer2, Heading1, Heading2, Pilcrow, Box, Square, 
-    ChevronDown, Layers, GripVertical
+    ChevronDown, Layers, GripVertical, Link
 } from "lucide-react";
 
 const BLOCK_TYPES = [
@@ -11,11 +11,12 @@ const BLOCK_TYPES = [
     { label: "Titre 1", tag: "h1", icon: <Heading1 size={14} />, defaultContent: "Titre principal" },
     { label: "Titre 2", tag: "h2", icon: <Heading2 size={14} />, defaultContent: "Sous-titre" },
     { label: "Paragraphe", tag: "p", icon: <Pilcrow size={14} />, defaultContent: "Votre texte ici..." },
+    { label: "Lien", tag: "a", icon: <Link size={14} />, defaultContent: "Cliquez ici", defaultHref: "/" },
     { label: "Image", tag: "img", icon: <ImageIcon size={14} />, defaultContent: "https://via.placeholder.com/800x400" },
     { label: "Bouton", tag: "button", icon: <Square size={14} />, defaultContent: "Cliquez ici" },
 ];
 
-export default function VisualEditor({ content, onChange }) {
+export default function VisualEditor({ content, onChange, availablePages = [] }) {
     const [blocks, setBlocks] = useState([]);
     const [activeBlock, setActiveBlock] = useState(null);
     const [activeTab, setActiveTab] = useState("blocks"); // "blocks" or "props"
@@ -42,6 +43,7 @@ export default function VisualEditor({ content, onChange }) {
                 id: el.getAttribute("data-block-id") || Math.random().toString(36).substr(2, 9),
                 tag: el.tagName.toLowerCase(),
                 content: el.innerHTML,
+                href: el.getAttribute("href") || "",
                 className: el.className,
                 styles: el.getAttribute("style") || ""
             }));
@@ -125,6 +127,7 @@ export default function VisualEditor({ content, onChange }) {
             id,
             tag: type.tag,
             content: type.defaultContent,
+            href: type.defaultHref || "",
             className: "", 
             styles: ""
         };
@@ -259,6 +262,33 @@ export default function VisualEditor({ content, onChange }) {
                                         ))}
                                     </select>
                                 </div>
+
+                                {currentActiveBlock.tag === 'a' && (
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Destination du lien</label>
+                                        <select
+                                            className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
+                                            value={availablePages.some(p => p.uri === currentActiveBlock.href) ? currentActiveBlock.href : "custom"}
+                                            onChange={(e) => {
+                                                if (e.target.value !== "custom") {
+                                                    updateBlock(currentActiveBlock.id, { href: e.target.value });
+                                                }
+                                            }}
+                                        >
+                                            <option value="custom">-- Lien personnalisé --</option>
+                                            {availablePages.map(page => (
+                                                <option key={page.uri} value={page.uri}>Page: {page.nom} ({page.uri})</option>
+                                            ))}
+                                        </select>
+                                        <input
+                                            className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                            type="text"
+                                            placeholder="URL externe ou chemin..."
+                                            value={currentActiveBlock.href || ""}
+                                            onChange={(e) => updateBlock(currentActiveBlock.id, { href: e.target.value })}
+                                        />
+                                    </div>
+                                )}
 
                                 <div className="flex flex-col gap-2">
                                     <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Content Content</label>

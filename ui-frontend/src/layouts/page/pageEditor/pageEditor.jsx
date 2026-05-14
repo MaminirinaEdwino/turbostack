@@ -81,8 +81,10 @@ export default function PageEditor({ projectName }) {
             const className = b.className || "";
             const styles = b.styles || "";
             const content = b.content || "";
+            const href = b.href || "#";
             if (b.tag === 'img') return `<img src="${content}" class="${className}" style="${styles}" />`;
             if (b.tag === 'button') return `<button class="${className}" style="${styles}">${content}</button>`;
+            if (b.tag === 'a') return `<a href="${href}" class="${className}" style="${styles}">${content}</a>`;
             return `<${b.tag} class="${className}" style="${styles}">${content}</${b.tag}>`;
         }).join('\n');
     }, [currentPage?.content]);
@@ -185,7 +187,11 @@ export default function PageEditor({ projectName }) {
                                     />
                                 </div>
                             </div>
-                            <VisualEditor key={selectedPageIndex} content={currentPage?.content} onChange={(blocks) => updatePageField("content", blocks)} />
+                            <VisualEditor 
+                                key={selectedPageIndex} 
+                                content={currentPage?.content} 
+                                availablePages={siteData?.pages || []}
+                                onChange={(blocks) => updatePageField("content", blocks)} />
                         </div>
                     </div>
                 ) : (

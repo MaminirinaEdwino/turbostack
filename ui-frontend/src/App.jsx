@@ -13,7 +13,7 @@ import NewProject from './layouts/projects/newProject';
 import ProjectHomePage from './layouts/projects/projectHomePage';
 import DbEditor from './layouts/projects/databaseEditor/dbEditor';
 import ApiEditor from './layouts/projects/endPointEditor/apiEditor';
-
+import PageEditor from './layouts/page/pageEditor/pageEditor';
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
@@ -42,6 +42,7 @@ function App() {
       case 'Project Home Page': return <ProjectHomePage projectName={actualProject}></ProjectHomePage>
       case 'db_editor': return <DbEditor projectName={actualProject}></DbEditor>
       case 'api_editor': return <ApiEditor projectName={actualProject}></ApiEditor>
+      case 'page_editor': return <PageEditor projectName={actualProject}></PageEditor>
       default: return <HomePage />; // Fallback
     }
   };

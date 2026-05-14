@@ -1,4 +1,4 @@
-import { Check, Delete, Edit, Plus } from "lucide-react";
+import { Check, Delete, Edit, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 export default function NewModel({ modelList, setModelList, setToggle }) {
@@ -16,8 +16,11 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
     }
     const handleNewModel = (e) => {
         e.preventDefault()
-        console.log(modelList)
-        if (modelList.models == null) {
+        // Vérifie si un modèle avec le même nom existe déjà
+        if (modelList.models && modelList.models.some(m => m.nom === modelName)) {
+            alert(`A model named "${modelName}" already exists. Please choose a different name.`);
+            return;
+        } else if (modelList.models == null) {
             setModelList({
                 sgbd: "",
                 models: [{ nom: modelName, champs: fields }]
@@ -26,6 +29,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
             setModelList({ ...modelList, models: [...modelList.models, { nom: modelName, champs: fields }] })
         }
 
+        setToggle("none"); // Ferme le modal après la sauvegarde
     }
     const handleCancel = (e) => {
         e.preventDefault()

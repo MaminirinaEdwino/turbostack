@@ -121,10 +121,10 @@ export default function DbEditor({ projectName }) {
             </div>
         </div>
 
-        <div className={`fixed top-20 z-10 transition-all duration-300 ease-out transform ${toggleModal === "block" ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4 pointer-events-none invisible"}`}>
+        <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}>
             <NewModel setModelList={setProject} modelList={project} setToggle={setToggleModal}></NewModel>
         </div>
-        <div className={`fixed top-20 z-10 transition-all duration-300 ease-out transform ${toggleEditModal === "block" ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4 pointer-events-none invisible"}`}>
+        <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-300 ease-out transform ${toggleEditModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}>
             {selectedModelIndex !== null && <EditModel setModelList={setProject} modelList={project} setToggle={setToggleEditModal} index={selectedModelIndex}></EditModel>}
         </div>
         <div className="w-auto h-full bg-white m-5 rounded border border-couleur1">

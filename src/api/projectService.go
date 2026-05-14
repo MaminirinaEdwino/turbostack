@@ -16,7 +16,6 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 }
 
 func (s *ProjectService) CreateProject(name, description, projectType string) string {
-	// Utilisation du modèle JSON pour la transition puis conversion en modèle interne
 	pJson := entity.ProjectJSON{
 		Nom:         name,
 		Description: description,
@@ -26,7 +25,7 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 		return "Project already exists"
 	}
 	s.Manager.Create(pJson.ToModel())
-	s.Manager.SaveProjects()
+	s.Manager.SaveProject(pJson)
 	return "Success"
 }
 

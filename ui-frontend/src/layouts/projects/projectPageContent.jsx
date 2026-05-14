@@ -13,18 +13,18 @@ export default function ProjectPageView({ project }) {
         let stats = [];
 
         // Toujours afficher les modèles de la BDD racine
-        stats.push({ 
-            title: "DB Models", 
-            total: project.bdd?.models?.length || 0, 
+        stats.push({
+            title: "DB Models",
+            total: project.bdd?.models?.length || 0,
             icon: <Database size={24} />,
-            onClick: () => dispatch(setActualWindow('db_editor')) 
+            onClick: () => dispatch(setActualWindow('db_editor'))
         });
 
         // Section API REST
         if (project.type === "api") {
-            stats.push({ 
-                title: "Endpoints", 
-                total: project.rest_api.endpoints?.length || 0, 
+            stats.push({
+                title: "Endpoints",
+                total: project.rest_api.endpoints?.length || 0,
                 icon: <Settings size={24} />,
                 onClick: () => dispatch(setActualWindow('api_editor'))
             });
@@ -38,13 +38,13 @@ export default function ProjectPageView({ project }) {
 
         // Section Web App
         if (project.type === "webapp") {
-            stats.push({ title: "App Pages", total: project.web_app.pages?.length || 0, icon: <FileText size={24} /> });
+            stats.push({ title: "App Pages", total: project.web_app.pages?.length || 0, icon: <FileText size={24} />  });
             stats.push({ title: "App Components", total: project.web_app.composant?.length || 0, icon: <LucidePuzzle size={24} /> });
         }
 
         // Section Site Statique
         if (project.type === "static") {
-            stats.push({ title: "Static Pages", total: project.site_statique.pages?.length || 0, icon: <FileText size={24} /> });
+            stats.push({ title: "Static Pages", total: project.site_statique.pages?.length || 0, icon: <FileText size={24} />, onClick: () => dispatch(setActualWindow('page_editor')) });
             stats.push({ title: "Static Components", total: project.site_statique.composants?.length || 0, icon: <LucidePuzzle size={24} /> });
         }
         return stats;

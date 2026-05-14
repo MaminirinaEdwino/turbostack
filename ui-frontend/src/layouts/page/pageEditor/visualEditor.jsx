@@ -3,7 +3,7 @@ import {
     Type, Image as ImageIcon, Trash2, 
     Plus, Edit3, 
     MousePointer2, Heading1, Heading2, Pilcrow, Box, Square, 
-    ChevronDown, Layers
+    ChevronDown, Layers, GripVertical
 } from "lucide-react";
 
 const BLOCK_TYPES = [
@@ -18,6 +18,7 @@ const BLOCK_TYPES = [
 export default function VisualEditor({ content, onChange }) {
     const [blocks, setBlocks] = useState([]);
     const [activeBlock, setActiveBlock] = useState(null);
+    const [draggedIndex, setDraggedIndex] = useState(null);
     const [showAddMenu, setShowAddMenu] = useState(false);
 
     // Initialisation unique des blocs à partir du HTML reçu pour éviter les boucles infinies
@@ -60,6 +61,34 @@ export default function VisualEditor({ content, onChange }) {
     const sync = (currentBlocks) => {
         // On renvoie le tableau directement
         onChange(currentBlocks); 
+    };
+
+    // Gestion du Drag and Drop
+    const handleDragStart = (e, index) => {
+        setDraggedIndex(index);
+        // Stocker l'index dans le dataTransfer pour une récupération fiable au drop
+        e.dataTransfer.setData("sourceIndex", index.toString());
+        e.dataTransfer.effectAllowed = "move";
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+    };
+
+    const handleDrop = (e, targetIndex) => {
+        e.preventDefault();
+        const sourceIndex = parseInt(e.dataTransfer.getData("sourceIndex"));
+        
+        if (isNaN(sourceIndex) || sourceIndex === targetIndex) return;
+
+        const updatedBlocks = [...blocks];
+        const [movedBlock] = updatedBlocks.splice(sourceIndex, 1);
+        updatedBlocks.splice(targetIndex, 0, movedBlock);
+
+        setBlocks(updatedBlocks);
+        sync(updatedBlocks);
+        setDraggedIndex(null);
     };
 
     const updateBlock = (id, fields) => {
@@ -128,11 +157,22 @@ export default function VisualEditor({ content, onChange }) {
                 {blocks.map((block, index) => (
                     <div 
                         key={block.id}
-                        className={`group p-4 rounded-2xl border transition-all ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-xl ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={handleDragOver}
+                        onDragEnter={handleDragOver}
+                        onDrop={(e) => handleDrop(e, index)}
+                        onDragEnd={() => setDraggedIndex(null)}
+                        className={`group p-4 rounded-2xl border transition-all ${
+                            draggedIndex === index ? "opacity-20 border-dashed border-couleur1 scale-95" : ""
+                        } ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-xl ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
                         onClick={() => setActiveBlock(block.id)}
                     >
                         <div className="flex justify-between items-center mb-2">
                             <div className="flex items-center gap-2">
+                                <div className="cursor-grab active:cursor-grabbing text-couleur1/20 group-hover:text-couleur1/60 transition-colors">
+                                    <GripVertical size={14} />
+                                </div>
                                 <div className="p-1.5 bg-couleur1/10 rounded-lg text-couleur1">
                                     {getIconForTag(block.tag)}
                                 </div>
@@ -157,7 +197,7 @@ export default function VisualEditor({ content, onChange }) {
                                 {block.tag === 'img' ? (
                                     <img src={block.content} alt="Image preview" className="max-w-full h-auto max-h-20 object-contain" />
                                 ) : (
-                                    activeBlock === block.id && <p className="line-clamp-2">{block.content || "Contenu vide"}</p>
+                                    <p className="line-clamp-2">{block.content || "Contenu vide"}</p>
                                 )}
                             </div>
                         )}

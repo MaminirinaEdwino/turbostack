@@ -1,7 +1,7 @@
-import { Delete, Edit, Plus } from "lucide-react";
+import { Check, Delete, Edit, Plus } from "lucide-react";
 import { useState } from "react";
 
-export default function NewModel({ modelList, setModelList }) {
+export default function NewModel({ modelList, setModelList, setToggle }) {
     const [modelName, setModelName] = useState('')
     const [addField, setAddfield] = useState(false)
     const [fields, setFields] = useState([])
@@ -27,8 +27,20 @@ export default function NewModel({ modelList, setModelList }) {
         }
 
     }
-    return (<form className="border border-couleur1 m-2 p-4 rounded-lg flex flex-col">
-        <h3 className="font-semibold text-2xl text-couleur1">New Model</h3>
+    const handleCancel = (e) => {
+        e.preventDefault()
+        setModelName('')
+        setAddfield(false)
+        setFields([])
+        setNewField({
+            nom: "",
+            type: "",
+            default_value: ""
+        })
+        setToggle("none")
+    }
+    return (<form className="bg-couleur5 border border-couleur1 m-2 p-4 rounded-lg flex flex-col">
+        <h3 className="font-semibold text-2xl text-couleur1">New Table</h3>
         <div className=" p-2 ">
             <label className="text-couleur1" htmlFor="modelName">Model Name</label>
             <input className="border border-couleur1 m-2 px-2 py-1 rounded-lg" type="text" id="modelName" onInput={(e) => setModelName(e.target.value)} value={modelName} />
@@ -65,18 +77,18 @@ export default function NewModel({ modelList, setModelList }) {
                         </>)}
                         {addField && <tr className="p-1">
                             <td>
-                                <input type="text" placeholder="Field Name" onInput={(e) => setNewField({ ...newField, nom: e.target.value })} value={newField.nom} />
+                                <input type="text" placeholder="Field Name" onInput={(e) => setNewField({ ...newField, nom: e.target.value })} value={newField.nom} className="m-2 p-2 border-b border-couleur1 outline-0 "/>
                             </td>
                             <td>
-                                <select name="type" id="fieldType" onInput={(e) => { setNewField({ ...newField, type: e.target.value }) }}>
+                                <select className="bg-couleur3 m-2 p-2 border-b border-couleur1 outline-0 " name="type" id="fieldType" onInput={(e) => { setNewField({ ...newField, type: e.target.value }) }}>
                                     <option value="">Choose a type</option>
                                     <option value="int">INT</option>
                                     <option value="string">VARCHAR</option>
                                 </select>
                             </td>
-                            <td><input type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
+                            <td><input className="m-2 p-2 border-b border-couleur1 outline-0 " type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
                             <td>
-                                <button onClick={handleNewField}>Add</button>
+                                <button onClick={handleNewField} className="bg-couleur1 text-white font-semibold p-2 rounded"><Check></Check></button>
                             </td>
                         </tr>}
                     </tbody>
@@ -84,7 +96,7 @@ export default function NewModel({ modelList, setModelList }) {
             </div>
             <div className="flex justify-end gap-2">
                 <button onClick={handleNewModel} className="px-6 py-2 bg-couleur1 rounded text-couleur3">Save</button>
-            <button className="px-6 py-2 bg-couleur3 rounded text-couleur1 border border-couleur1">Cancel</button>
+                <button className="px-6 py-2 bg-couleur3 rounded text-couleur1 border border-couleur1" onClick={handleCancel}>Cancel</button>
             </div>
         </div>
     </form>)

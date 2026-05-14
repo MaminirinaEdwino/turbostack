@@ -18,6 +18,8 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("createProject", ps.CreateProject)
 	w.Bind("fetchProjects", ps.FetchProjects)
 	w.Bind("fetchByProjectName", ps.FetchProjectByName)
+	w.Bind("saveProject", ps.SaveProject)
+	w.Bind("saveBdd", ps.SaveProjectBDD)
 }
 
 func (s *ProjectService) CreateProject(name, description, projectType string) string {
@@ -34,6 +36,18 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 	return "Success"
 }
 
+func (s *ProjectService) SaveProject(pJson entity.ProjectJSON) string {
+	s.Manager.SaveProject(pJson)
+	return "Success"
+}
+
+func (s *ProjectService) SaveProjectBDD(name string ,bddJson map[string]any) string {
+	fmt.Println(bddJson)
+	pJson := s.Manager.LoadProject(name)
+	
+	s.Manager.SaveProject(pJson)
+	return "Success"
+}
 func (s *ProjectService) FetchProjects() []string {
 	var projectList []string
 

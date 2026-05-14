@@ -17,5 +17,8 @@ export const GoApp = {
     },
     fetchProjectByName: async (name)=>{
         return await window.fetchByProjectName(name)
+    },
+    savedb: async (name, project)=>{
+        return await window.saveBdd(name, project)
     } 
 }

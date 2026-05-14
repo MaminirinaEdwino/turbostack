@@ -41,11 +41,13 @@ func (s *ProjectService) SaveProject(pJson entity.ProjectJSON) string {
 	return "Success"
 }
 
-func (s *ProjectService) SaveProjectBDD(name string ,bddJson map[string]any) string {
-	fmt.Println(bddJson)
+func (s *ProjectService) SaveProjectBDD(name string, bddJson string) string {
+	var bdd entity.BDDJSON
 	pJson := s.Manager.LoadProject(name)
-	
+	json.Unmarshal([]byte(bddJson), &bdd)
+	pJson.BDD = bdd
 	s.Manager.SaveProject(pJson)
+	
 	return "Success"
 }
 func (s *ProjectService) FetchProjects() []string {
@@ -59,7 +61,7 @@ func (s *ProjectService) FetchProjects() []string {
 
 func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
 	var pJson entity.ProjectJSON
-	filePath := fmt.Sprintf("turbo_projects/%s.json", strings.ReplaceAll(name, " ", "", ))
+	filePath := fmt.Sprintf("turbo_projects/%s.json", strings.ReplaceAll(name, " ", ""))
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)

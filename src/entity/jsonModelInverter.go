@@ -59,9 +59,13 @@ func (pj *PageJSON) ToModel() Page {
 }
 
 func (bddjson *BDDJSON) ToModel() BDD {
+	var dbModel []Model
+	for _, val := range bddjson.Models {
+		dbModel = append(dbModel, val.ToModel())
+	}
 	return BDD{
 		sgbd:   bddjson.Sgbd,
-		models: bddjson.Models,
+		models: dbModel,
 	}
 }
 

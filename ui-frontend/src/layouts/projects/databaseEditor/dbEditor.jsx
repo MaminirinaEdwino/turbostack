@@ -86,7 +86,7 @@ export default function DbEditor({ projectName }) {
         }
     }
     const savedb = async () => {
-        const res = await GoApp.savedb(projectName, project)
+        const res = await GoApp.savedb(projectName, JSON.stringify(project))
         console.log(res)
     }
     return <div className="flex w-screen h-screen flex-col bg-couleur3">

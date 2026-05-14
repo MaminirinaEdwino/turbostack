@@ -6,8 +6,12 @@ type BDD struct {
 }
 
 func (db *BDD) ToJSON() BDDJSON {
+	var dbModel []ModelJSON
+	for _, val := range db.models{
+		dbModel = append(dbModel, val.ToJSON())
+	}
 	return BDDJSON{
-		Models: db.models,
+		Models: dbModel,
 		Sgbd: db.sgbd,
 	}
 }

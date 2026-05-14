@@ -9,8 +9,8 @@ type AbonnementJSON struct {
 }
 
 type BDDJSON struct {
-	Models []Model `json:"models"`
-	Sgbd   string  `json:"sgbd"`
+	Models []ModelJSON `json:"models"`
+	Sgbd   string      `json:"sgbd"`
 }
 
 type ChampsJSON struct {
@@ -27,17 +27,17 @@ type ComposantJSON struct {
 }
 
 type EndpointJSON struct {
-	Nom    string   `json:"nom"`
-	Uri    string   `json:"uri"`
-	Method string   `json:"method"`
-	Model  []ModelJSON  `json:"model"`
-	Params []string `json:"params"`
-	Role   string   `json:"role"`
+	Nom    string      `json:"nom"`
+	Uri    string      `json:"uri"`
+	Method string      `json:"method"`
+	Model  []ModelJSON `json:"model"`
+	Params []string    `json:"params"`
+	Role   string      `json:"role"`
 }
 
 type ModelJSON struct {
-	Nom       string   `json:"nom"`
-	Attributs []ChampsJSON `json:"attributs"`
+	Nom       string       `json:"nom"`
+	Attributs []ChampsJSON `json:"champs"`
 }
 
 type PageJSON struct {
@@ -57,7 +57,7 @@ type ProjectJSON struct {
 
 type RestApiJSON struct {
 	Endpoints []EndpointJSON `json:"endpoints"`
-	Role      []string   `json:"role"`
+	Role      []string       `json:"role"`
 	BDD       BDDJSON        `json:"bdd"`
 }
 
@@ -68,9 +68,7 @@ type SiteStatiqueJSON struct {
 
 type WebAppJSON struct {
 	Pages     []PageJSON      `json:"pages"`
-	Role      []string    `json:"role"`
+	Role      []string        `json:"role"`
 	Composant []ComposantJSON `json:"composant"`
 	BDD       BDDJSON         `json:"bdd"`
 }
-
-

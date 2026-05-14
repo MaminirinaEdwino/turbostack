@@ -10,6 +10,10 @@
     --color-couleur7: #95a5a6; /* Bordures et texte secondaire */
 }
 
+.sidemenu{
+  scrollbar-width: none;
+}
+
 .newProjectForm{
   @apply w-2/3 flex flex-col p-4 border rounded border-couleur1 m-2 box-border;
   &>div {

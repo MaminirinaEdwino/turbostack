@@ -53,12 +53,12 @@ export default function SideMenu() {
         e.preventDefault()
         dispatch(setToggleMenuSide())
     }
-    return <aside className={`flex flex-col p-6 bg-couleur3 dark:bg-gray-900 transition-all duration-300 ease-in-out border-r border-couleur1/10 dark:border-white/10 ${toggleMenu ? "w-64" : "w-24"}`} >
+    return <aside className={`flex flex-col p-6 bg-couleur3 dark:bg-gray-900 transition-all duration-300 ease-in-out border-r border-couleur1/10 dark:border-white/10 ${toggleMenu ? "w-64" : "w-24"} `} >
         <div className="flex items-center gap-2 mb-10 overflow-hidden whitespace-nowrap" >
             <div className="w-8 h-8 rounded-full bg-red-500 shrink-0"></div>
             <span className={`text-xl font-bold text-couleur1 transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`} >TurboStack</span>
         </div>
-        <nav className="flex-1 space-y-2 overflow-hidden">
+        <nav className="sidemenu flex-1 space-y-2 overflow-y-scroll">
             <button onClick={handleToggleMenu} className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 border-couleur7 hover:text-couleur3 text-couleur1 w-full justify-start">
                 <div className="shrink-0">
                     {toggleMenu ? <SidebarClose size={20}></SidebarClose > : <SidebarOpen size={20}></SidebarOpen>}
@@ -66,13 +66,10 @@ export default function SideMenu() {
             </button>
 
             {/* Theme Toggle */}
-            <button onClick={() => dispatch(setToggleDarkMode())} className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all border-couleur7 text-couleur1 hover:bg-couleur1 hover:text-white w-full justify-start">
+            <button onClick={() => dispatch(setToggleDarkMode())} className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all border-couleur7 text-couleur1 hover:bg-couleur1 hover:text-white justify-start fixed w-fit bottom-0 right-1">
                 <div className="shrink-0">
                     {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
                 </div>
-                <span className={`font-medium transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}>
-                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-                </span>
             </button>
 
             {menuItems.map((item) => {

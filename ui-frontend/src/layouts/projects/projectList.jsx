@@ -4,9 +4,12 @@ import ProjectListCard from "./projectListCard";
 import ListView from "../../components/listView";
 import { GoApp } from "../../services/bridge";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setActualProject, setActualWindow } from "../../appSlice";
 
 export default function ProjectList() {
     const [ProjectList, setProjects] = useState([])
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const loadData = async () => {
@@ -23,6 +26,11 @@ export default function ProjectList() {
         loadData()
     }, [])
 
+    const handleProjectSelection = (projectName) => {
+        dispatch(setActualProject(projectName));
+        dispatch(setActualWindow('Dashboard'));
+    };
+
     return <div className="flex h-screen w-full font-san bg-couleur3">
 
         <SideMenu></SideMenu>
@@ -31,7 +39,7 @@ export default function ProjectList() {
             newText={"New Project"}
             sectionName={"Project Lists"}
             content={ProjectList}
-            elementView={ProjectListCard}
+            elementView={(name, icon) => ProjectListCard(name, icon, handleProjectSelection)}
             newIcon={<FolderPlus size={50}></FolderPlus>}
         ></ListView>
     </div>

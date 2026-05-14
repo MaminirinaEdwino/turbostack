@@ -1,10 +1,12 @@
-import { Check, X, Plus } from "lucide-react";
+import { Check, X, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export default function NewEndpoint({ project, setProject, setToggle }) {
     const [endpoint, setEndpoint] = useState({
-        nom: "", uri: "/", method: "GET", role: "public", model: [], params: []
+        nom: "", uri: "/", method: "GET", role: "public", model: [], params: [],
+        manual_fields: []
     });
+    const [manualField, setManualField] = useState({ nom: "", type: "string" });
 
     const availableModels = project.bdd?.models || [];
 
@@ -34,6 +36,21 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
         }
     };
 
+    const addManualField = () => {
+        if (!manualField.nom || endpoint.manual_fields.some(f => f.nom === manualField.nom)) return;
+        setEndpoint({ ...endpoint, manual_fields: [...endpoint.manual_fields, manualField] });
+        setManualField({ nom: "", type: "string" });
+    };
+
+    const removeManualField = (nom) => {
+        setEndpoint(prev => ({
+            ...prev,
+            manual_fields: prev.manual_fields.filter(f => f.nom !== nom),
+            params: prev.params.filter(p => p !== nom),
+            model: prev.model.map(m => m.nom === "Manual" ? { ...m, champs: m.champs.filter(f => f.nom !== nom) } : m).filter(m => m.nom !== "Manual" || m.champs.length > 0)
+        }));
+    };
+
     const toggleUriParam = (fieldName) => {
         const isSelected = endpoint.params.includes(fieldName);
         if (isSelected) {
@@ -41,6 +58,24 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
         } else {
             setEndpoint({ ...endpoint, params: [...endpoint.params, fieldName] });
         }
+    };
+
+    const toggleManualBodyField = (field) => {
+        setEndpoint(prev => {
+            const hasManual = prev.model.some(m => m.nom === "Manual");
+            let newModels;
+
+            if (!hasManual) {
+                newModels = [...prev.model, { nom: "Manual", champs: [field] }];
+            } else {
+                newModels = prev.model.map(m => {
+                    if (m.nom !== "Manual") return m;
+                    const hasField = m.champs.some(f => f.nom === field.nom);
+                    return { ...m, champs: hasField ? m.champs.filter(f => f.nom !== field.nom) : [...m.champs, field] };
+                }).filter(m => m.nom !== "Manual" || m.champs.length > 0);
+            }
+            return { ...prev, model: newModels };
+        });
     };
 
     const toggleBodyField = (modelName, field) => {
@@ -103,10 +138,68 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                 </div>
             </div>
 
-            {endpoint.model.length > 0 && (
+            <div className="flex flex-col gap-1 mb-6">
+                <label className="text-xs font-bold opacity-50 uppercase">Manual Fields</label>
+                <div className="flex gap-2 mt-2">
+                    <input className="flex-1 border border-couleur1 p-2 rounded-lg text-sm" type="text" placeholder="Field name" value={manualField.nom} onChange={(e) => setManualField({ ...manualField, nom: e.target.value })} />
+                    <select className="border border-couleur1 p-2 rounded-lg text-sm bg-white" value={manualField.type} onChange={(e) => setManualField({ ...manualField, type: e.target.value })}>
+                        <option value="string">String</option>
+                        <option value="int">Integer</option>
+                        <option value="boolean">Boolean</option>
+                    </select>
+                    <button type="button" onClick={addManualField} className="bg-couleur1 text-white p-2 rounded-lg"><Plus size={18}/></button>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                    {endpoint.manual_fields.map((f, i) => (
+                        <div key={i} className="flex items-center gap-2 bg-couleur3 px-3 py-1 rounded-full border border-couleur1/20 text-xs">
+                            <span className="font-medium">{f.nom}</span>
+                            <span className="opacity-50">({f.type})</span>
+                            <button type="button" onClick={() => removeManualField(f.nom)} className="text-red-500 hover:text-red-700">
+                                <X size={12} />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {(endpoint.model.length > 0 || endpoint.manual_fields.length > 0) && (
                 <div className="flex flex-col gap-3 mb-6 border-t border-couleur1/10 pt-4">
                     <label className="text-xs font-bold opacity-50 uppercase">Fields Configuration (URI vs Body)</label>
+                    
+                    {/* Config pour les champs manuels */}
+                    {endpoint.manual_fields.length > 0 && (
+                        <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-200 shadow-inner mb-2">
+                            <h4 className="text-sm font-bold text-blue-700 mb-3 flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                Manual Fields
+                            </h4>
+                            <table className="w-full text-xs">
+                                <thead>
+                                    <tr className="text-left opacity-60">
+                                        <th className="pb-2">Field Name</th>
+                                        <th className="pb-2 text-center">URI Param</th>
+                                        <th className="pb-2 text-center">Body Request</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {endpoint.manual_fields.map((f) => (
+                                        <tr key={f.nom} className="border-t border-blue-100">
+                                            <td className="py-2 text-blue-800 font-medium">{f.nom} <span className="text-[10px] opacity-40">[{f.type}]</span></td>
+                                            <td className="py-2 text-center">
+                                                <input type="checkbox" checked={endpoint.params.includes(f.nom)} onChange={() => toggleUriParam(f.nom)} className="accent-blue-600 cursor-pointer w-4 h-4" />
+                                            </td>
+                                            <td className="py-2 text-center">
+                                                <input type="checkbox" checked={endpoint.model.find(m => m.nom === "Manual")?.champs.some(bc => bc.nom === f.nom)} onChange={() => toggleManualBodyField(f)} className="accent-blue-600 cursor-pointer w-4 h-4" />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
                     {endpoint.model.map((m) => {
+                        if (m.nom === "Manual") return null;
                         const originalModel = availableModels.find(om => om.nom === m.nom);
                         return (
                             <div key={m.nom} className="bg-couleur3/30 p-4 rounded-lg border border-couleur1/10 shadow-inner">

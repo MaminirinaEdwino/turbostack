@@ -7,7 +7,7 @@ import EndpointNode from "./endpointNode";
 import NewEndpoint from "./newEndpoint";
 import EditEndpoint from "./editEndpoint";
 import { FcPrevious } from "react-icons/fc";
-import { Plus, Save } from "lucide-react";
+import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid } from "lucide-react";
 
 const nodeType = { "endpoint": EndpointNode }
 
@@ -18,6 +18,7 @@ export default function ApiEditor({ projectName }) {
     const [toggleModal, setToggleModal] = useState("none");
     const [toggleEditModal, setToggleEditModal] = useState("none");
     const [selectedEndpointIndex, setSelectedEndpointIndex] = useState(null);
+    const [toast, setToast] = useState(null);
 
     const onNodesChange = useCallback(
         (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
@@ -62,7 +63,7 @@ export default function ApiEditor({ projectName }) {
             const updatedNodes = project.rest_api.endpoints.map((ep, index) => ({
                 id: `ep-${index}`,
                 type: "endpoint",
-                position: nodes[index]?.position || { x: index * 300, y: 50 },
+                position: nodes[index]?.position || { x: index * 100, y: 50 },
                 data: {
                     ...ep,
                     onDelete: () => deleteEndpoint(index),
@@ -74,8 +75,30 @@ export default function ApiEditor({ projectName }) {
         console.log("api ",JSON.stringify(project))
     }, [project]); // Added nodes to dependency array
 
+    const showToast = (message, type = "success") => {
+        setToast({ message, type });
+        if (type !== "loading") {
+            setTimeout(() => setToast(null), 3000);
+        }
+    };
+
+    const reorganizeNodes = () => {
+        setNodes((prevNodes) =>
+            prevNodes.map((node, index) => ({
+                ...node,
+                position: { x: (index % 3) * 300, y: Math.floor(index / 3) * 200 }
+            }))
+        );
+    };
+
     const saveApi = async () => {
-        await GoApp.saveProject(projectName, JSON.stringify(project))
+        showToast("Sauvegarde en cours...", "loading");
+        try {
+            await GoApp.saveProject(projectName, JSON.stringify(project));
+            showToast("API saved successfully !");
+        } catch (error) {
+            showToast("Erreur lors de la sauvegarde", error);
+        }
     }
 
     return (
@@ -90,6 +113,9 @@ export default function ApiEditor({ projectName }) {
                     </h1>
                 </div>
                 <div className="flex ">
+                    <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={reorganizeNodes}>
+                        <LayoutGrid size={20} /> Reorganize
+                    </button>
                     <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={() => setToggleModal("block")}>
                         <Plus /> Add Endpoint
                     </button>
@@ -121,6 +147,19 @@ export default function ApiEditor({ projectName }) {
                     />
                 )}
             </div>
+
+            {/* Toast Notification */}
+            {toast && (
+                <div className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${
+                    toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
+                    toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
+                    "bg-green-50 border-green-200 text-green-700"
+                }`}>
+                    {toast.type === "loading" ? <Loader2 size={18} className="animate-spin" /> : 
+                     toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
+                    <span className="font-medium text-sm">{toast.message}</span>
+                </div>
+            )}
 
             <div className="w-auto h-full bg-white m-5 rounded border border-couleur1">
                 <ReactFlow

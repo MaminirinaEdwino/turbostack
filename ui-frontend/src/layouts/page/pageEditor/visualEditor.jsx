@@ -108,7 +108,7 @@ export default function VisualEditor({ content, onChange }) {
             id: Math.random().toString(36).substr(2, 9),
             tag: type.tag,
             content: type.defaultContent,
-            className: type.tag === "div" ? "p-8 border border-dashed border-gray-200 rounded-xl" : "",
+            className: "", // Les blocs sont non stylisés par défaut
             styles: ""
         };
         const updated = [...blocks, newBlock];
@@ -184,14 +184,29 @@ export default function VisualEditor({ content, onChange }) {
                                 <Trash2 size={14} />
                             </button>
                         </div>
-                        {activeBlock === block.id ? (
-                            <textarea
-                                className="w-full bg-transparent border-none outline-none text-sm resize-none dark:text-gray-200 font-sans leading-relaxed"
-                                value={block.content}
-                                onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-                                rows={2}
-                                placeholder="Entrez le contenu de ce bloc..."
-                            />
+                        {activeBlock === block.id ? ( // Si le bloc est actif, on affiche l'éditeur complet
+                            <>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase">Type de Bloc:</label>
+                                    <select
+                                        className="bg-couleur3/30 dark:bg-gray-800 p-1.5 rounded-lg border border-couleur1/10 outline-none text-xs font-semibold text-couleur1 dark:text-white"
+                                        value={block.tag}
+                                        onChange={(e) => updateBlock(block.id, { tag: e.target.value })}
+                                        onClick={(e) => e.stopPropagation()} // Empêche de désactiver le bloc en cliquant sur le select
+                                    >
+                                        {BLOCK_TYPES.map((type) => (
+                                            <option key={type.tag} value={type.tag}>{type.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <textarea
+                                    className="w-full bg-transparent border-none outline-none text-sm resize-none dark:text-gray-200 font-sans leading-relaxed"
+                                    value={block.content}
+                                    onChange={(e) => updateBlock(block.id, { content: e.target.value })}
+                                    rows={2}
+                                    placeholder="Entrez le contenu de ce bloc..."
+                                />
+                            </>
                         ) : (
                             <div className="text-sm dark:text-gray-400 font-sans leading-relaxed overflow-hidden">
                                 {block.tag === 'img' ? (

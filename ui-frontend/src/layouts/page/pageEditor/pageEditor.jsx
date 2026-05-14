@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
-import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, PanelLeftOpen } from "lucide-react"; // Added X, PanelLeftOpen
+import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, PanelLeftOpen, CheckCircle, AlertCircle } from "lucide-react";
 import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../../../hooks/useNavigate";
@@ -12,6 +12,14 @@ export default function PageEditor({ projectName }) {
     const [loading, setLoading] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // New state for sidebar visibility
     const [editMode, setEditMode] = useState(false);
+    const [toast, setToast] = useState(null);
+
+    const showToast = (message, type = "success") => {
+        setToast({ message, type });
+        if (type !== "loading") {
+            setTimeout(() => setToast(null), 3000);
+        }
+    };
 
     useEffect(() => {
         loadProject();
@@ -80,10 +88,14 @@ export default function PageEditor({ projectName }) {
     }, [currentPage?.content]);
 
     const handleSave = async () => {
+        showToast("Saving project...", "loading");
         try {
             await GoApp.saveProject(projectName, JSON.stringify(project));
-            // console.log("page", project)
-        } catch (e) { console.error(e); }
+            showToast("Project saved successfully!");
+        } catch (e) { 
+            console.error(e); 
+            showToast("Error saving project", "error");
+        }
     };
 
     if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
@@ -220,6 +232,19 @@ export default function PageEditor({ projectName }) {
                     </div>
                 )}
             </div>
+
+            {/* Toast Notification */}
+            {toast && (
+                <div className={`fixed bottom-10 right-10 z-[100] flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${
+                    toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
+                    toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
+                    "bg-green-50 border-green-200 text-green-700"
+                }`}>
+                    {toast.type === "loading" ? <Loader2 size={18} className="animate-spin" /> : 
+                     toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
+                    <span className="font-medium text-sm">{toast.message}</span>
+                </div>
+            )}
         </div>
     );
 }

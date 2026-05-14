@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
-import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Globe, Type } from "lucide-react";
+import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, PanelLeftOpen } from "lucide-react"; // Added X, PanelLeftOpen
 import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../../../hooks/useNavigate";
@@ -10,6 +10,7 @@ export default function PageEditor({ projectName }) {
     const [project, setProject] = useState(null);
     const [selectedPageIndex, setSelectedPageIndex] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // New state for sidebar visibility
     const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
@@ -62,6 +63,22 @@ export default function PageEditor({ projectName }) {
         setProject(updatedProject);
     };
 
+    const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
+    const currentPage = selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null;
+
+    // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
+    const previewHtml = useMemo(() => {
+        if (!currentPage?.content || !Array.isArray(currentPage.content)) return "";
+        return currentPage.content.map(b => {
+            const className = b.className || "";
+            const styles = b.styles || "";
+            const content = b.content || "";
+            if (b.tag === 'img') return `<img src="${content}" class="${className}" style="${styles}" />`;
+            if (b.tag === 'button') return `<button class="${className}" style="${styles}">${content}</button>`;
+            return `<${b.tag} class="${className}" style="${styles}">${content}</${b.tag}>`;
+        }).join('\n');
+    }, [currentPage?.content]);
+
     const handleSave = async () => {
         try {
             await GoApp.saveProject(projectName, JSON.stringify(project));
@@ -70,9 +87,6 @@ export default function PageEditor({ projectName }) {
     };
 
     if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
-
-    const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
-    const currentPage = selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null;
 
     return (
         <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
@@ -83,7 +97,10 @@ export default function PageEditor({ projectName }) {
                         onClick={() => editMode ? setEditMode(false) : navigateTo("Dashboard")}
                         className="p-2 rounded-xl border hover:bg-white transition-all"
                     >
-                        <FcPrevious size={20} />
+                        <div className="flex items-center gap-1 pr-1">
+                            <FcPrevious size={18} />
+                            {editMode && <span className="text-[10px] font-bold uppercase text-couleur1">Retour</span>}
+                        </div>
                     </button>
                     <h1 className="text-xl font-bold text-couleur1">
                         {editMode ? `Editing: ${currentPage?.nom}` : `Pages : ${projectName}`}
@@ -97,31 +114,67 @@ export default function PageEditor({ projectName }) {
             {/* Vue Conditionnelle */}
             <div className="flex-1 overflow-y-auto p-8">
                 {editMode ? (
-                    <div className="flex flex-col gap-6 animate-in fade-in duration-300">
-                        {/* Barre de configuration de la page */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-gray-900 p-6 rounded-3xl border border-couleur1/10 shadow-sm">
-                            <div className="flex flex-col gap-1">
-                                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase flex items-center gap-1">
-                                    <Type size={10}/> Page Name
-                                </label>
-                                <input
-                                    className="bg-couleur3/30 dark:bg-gray-800 p-2.5 rounded-xl border-none outline-none focus:ring-2 ring-couleur1/20 font-bold text-couleur1 dark:text-white"
-                                    value={currentPage?.nom || ""}
-                                    onChange={(e) => updatePageField("nom", e.target.value)}
-                                />
+                    <div className="flex h-full min-h-[600px]"> {/* Changed to flex container */}
+                        {/* Main content: Prévisualisation isolée (Iframe) */}
+                        <div className={`flex-1 flex flex-col bg-white dark:bg-gray-900 rounded-[2.5rem] border border-couleur1/10 shadow-2xl overflow-hidden h-[calc(100vh-140px)] animate-in slide-in-from-left-4 duration-500 ${isSidebarOpen ? 'mr-96' : ''}`}>
+                            {/* Button to open sidebar (if closed) */}
+                            {!isSidebarOpen && (
+                                <button onClick={() => setIsSidebarOpen(true)} className="absolute  right-4 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform">
+                                    <PanelLeftOpen size={24} />
+                                </button>
+                            )}
+
+                            <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between">
+                                <div className="flex gap-1.5">
+                                    <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
+                                    <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-400/40"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-400/40"></div>
+                                </div>
+                                <span className="text-[10px] font-bold text-couleur1/40 uppercase tracking-widest">Live Canvas Preview</span>
+                                <div className="w-12"></div>
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase flex items-center gap-1">
-                                    <Globe size={10}/> Path (URI)
-                                </label>
-                                <input
-                                    className="bg-couleur3/30 dark:bg-gray-800 p-2.5 rounded-xl border-none outline-none focus:ring-2 ring-couleur1/20 font-mono text-sm text-couleur1 dark:text-white"
-                                    value={currentPage?.uri || ""}
-                                    onChange={(e) => updatePageField("uri", e.target.value)}
+                            <iframe
+                                title="Page Preview"
+                                className="w-full h-full bg-white"
+                                srcDoc={`
+                                    <!DOCTYPE html>
+                                    <html lang="en">
+                                        <head>
+                                            <meta charset="UTF-8">
+                                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                            
+                                            <style>
+                                                body { margin: 0; padding: 0; min-height: 100vh; font-family: sans-serif; }
+                                                img { max-width: 100%; height: auto; }
+                                            </style>
+                                        </head>
+                                        <body>${previewHtml}</body>
+                                    </html>
+                                `}
                                 />
-                            </div>
                         </div>
-                        <VisualEditor key={selectedPageIndex} content={currentPage?.content} onChange={(blocks) => updatePageField("content", blocks)} />
+
+                        {/* Sidebar: Édition des blocs (collapsible) */}
+                        <div className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}>
+                            <div className="flex justify-end mb-4">
+                                <button onClick={() => setIsSidebarOpen(false)} className="p-2 rounded-full hover:bg-couleur1/10 text-couleur1 dark:text-gray-300">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 bg-white dark:bg-gray-900 p-6 rounded-3xl border border-couleur1/10 shadow-sm">
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase flex items-center gap-1">
+                                        <Type size={10}/> Page Name
+                                    </label>
+                                    <input
+                                        className="bg-couleur3/30 dark:bg-gray-800 p-2.5 rounded-xl border-none outline-none focus:ring-2 ring-couleur1/20 font-bold text-couleur1 dark:text-white"
+                                        value={currentPage?.nom || ""}
+                                        onChange={(e) => updatePageField("nom", e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <VisualEditor key={selectedPageIndex} content={currentPage?.content} onChange={(blocks) => updatePageField("content", blocks)} />
+                        </div>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">

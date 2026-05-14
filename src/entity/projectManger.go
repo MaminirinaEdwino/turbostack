@@ -84,7 +84,9 @@ func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 }
 
 func (mgr *ProjectManager) SaveProject(project ProjectJSON) error {
-	filepath := fmt.Sprintf("turbo_projects/%s.json", strings.ReplaceAll(project.Nom, " ", "", ))
+	filename := strings.Replace(project.Nom, " ", "", -1)
+	fmt.Println(project.Nom)
+	filepath := fmt.Sprintf("turbo_projects/%s.json",filename )
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
 	if err != nil {
 		return err

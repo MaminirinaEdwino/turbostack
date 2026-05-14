@@ -3,7 +3,7 @@ import { useNavigate } from "../../hooks/useNavigate";
 import { GoApp } from "../../services/bridge";
 import SideMenu from "../../components/sideMenu";
 import { useSelector } from "react-redux"; // Assuming projectName is in Redux
-import { Settings, List, Database, User, Globe, Tag } from "lucide-react";
+import { Settings, List, Database, User, Globe, Tag, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function APIlist() {
     const navigateTo = useNavigate();
@@ -13,6 +13,8 @@ export default function APIlist() {
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
 
     useEffect(() => {
         const loadProject = async () => {
@@ -40,6 +42,14 @@ export default function APIlist() {
         };
         loadProject();
     }, [projectName]);
+
+    useEffect(() => {
+        const endpoints = project?.rest_api?.endpoints || [];
+        const totalPages = Math.ceil(endpoints.length / itemsPerPage);
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [project, currentPage]);
 
     // Derive available roles (same logic as in endpoint forms)
     const availableModels = project?.bdd?.models || [];
@@ -84,6 +94,12 @@ export default function APIlist() {
 
     const endpoints = project?.rest_api?.endpoints || [];
     const totalEndpoints = endpoints.length;
+    const totalPages = Math.ceil(totalEndpoints / itemsPerPage);
+
+    const currentEndpoints = endpoints.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     return <div className="flex h-screen w-full font-san bg-couleur3">
         <SideMenu></SideMenu>
@@ -128,38 +144,77 @@ export default function APIlist() {
             {totalEndpoints === 0 ? (
                 <p className="text-gray-600 italic">No endpoints defined yet. Use the API Editor to add some.</p>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {endpoints.map((ep, index) => (
-                        <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-couleur1/10">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className={`text-xs font-bold text-white px-2 py-1 rounded ${methodColors[ep.method] || 'bg-gray-500'}`}>{ep.method}</span>
-                                <span className="text-sm font-semibold text-couleur1">{ep.nom}</span>
-                            </div>
-                            <p className="text-xs text-gray-600 font-mono mb-2">{ep.uri}</p>
-                            <p className="text-xs text-gray-500 flex items-center gap-1 mb-2">
-                                <Tag size={12} /> Role: <span className="capitalize font-medium">{ep.role || "public"}</span>
-                            </p>
-
-                            {(ep.model?.length > 0 || ep.manual_fields?.length > 0) && (
-                                <div className="mt-3 pt-3 border-t border-couleur1/5">
-                                    <p className="text-xs font-bold text-gray-500 mb-1">Associated Models/Fields:</p>
-                                    <div className="flex flex-wrap gap-1">
-                                        {ep.model?.map((m, i) => (
-                                            <span key={i} className="px-2 py-0.5 bg-couleur3 text-couleur1 rounded-full text-[10px]">
-                                                {m.nom} ({m.champs?.length || 0} fields)
-                                            </span>
-                                        ))}
-                                        {ep.manual_fields?.map((f, i) => (
-                                            <span key={`manual-${i}`} className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px]">
-                                                {f.nom} ({f.type})
-                                            </span>
-                                        ))}
-                                    </div>
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {currentEndpoints.map((ep, index) => (
+                            <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-couleur1/10">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className={`text-xs font-bold text-white px-2 py-1 rounded ${methodColors[ep.method] || 'bg-gray-500'}`}>{ep.method}</span>
+                                    <span className="text-sm font-semibold text-couleur1">{ep.nom}</span>
                                 </div>
-                            )}
+                                <p className="text-xs text-gray-600 font-mono mb-2">{ep.uri}</p>
+                                <p className="text-xs text-gray-500 flex items-center gap-1 mb-2">
+                                    <Tag size={12} /> Role: <span className="capitalize font-medium">{ep.role || "public"}</span>
+                                </p>
+
+                                {(ep.model?.length > 0 || ep.manual_fields?.length > 0) && (
+                                    <div className="mt-3 pt-3 border-t border-couleur1/5">
+                                        <p className="text-xs font-bold text-gray-500 mb-1">Associated Models/Fields:</p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {ep.model?.map((m, i) => (
+                                                <span key={i} className="px-2 py-0.5 bg-couleur3 text-couleur1 rounded-full text-[10px]">
+                                                    {m.nom} ({m.champs?.length || 0} fields)
+                                                </span>
+                                            ))}
+                                            {ep.manual_fields?.map((f, i) => (
+                                                <span key={`manual-${i}`} className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px]">
+                                                    {f.nom} ({f.type})
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-4 mt-8 pb-4">
+                            <button 
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                className="p-2 rounded-lg border border-couleur1 text-couleur1 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-couleur3 transition-colors"
+                            >
+                                <ChevronLeft size={20} />
+                            </button>
+                            
+                            <div className="flex gap-2">
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <button
+                                        key={i + 1}
+                                        onClick={() => setCurrentPage(i + 1)}
+                                        className={`w-10 h-10 rounded-lg border transition-all ${
+                                            currentPage === i + 1 
+                                            ? "bg-couleur1 text-white border-couleur1 shadow-md" 
+                                            : "border-couleur1/30 text-couleur1 hover:border-couleur1"
+                                        }`}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button 
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                className="p-2 rounded-lg border border-couleur1 text-couleur1 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-couleur3 transition-colors"
+                            >
+                                <ChevronRight size={20} />
+                            </button>
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
             )}
         </div>
     </div>

@@ -6,8 +6,9 @@ import '@xyflow/react/dist/style.css';
 import DbModel from "./dbModel";
 import NewModel from "./newModel";
 import EditModel from "./editModel";
+import GenerateUserTable from "./generateUserTable";
 import { FcPrevious } from "react-icons/fc";
-import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid } from "lucide-react";
+import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid, User } from "lucide-react";
 
 
 const initialNodes = [];
@@ -20,6 +21,7 @@ export default function DbEditor({ projectName }) {
     const [edges, setEdges] = useState(initialEdges);
     const [toggleModal, setToggleModal] = useState("none");
     const [toggleEditModal, setToggleEditModal] = useState("none");
+    const [toggleUserModal, setToggleUserModal] = useState("none");
     const [selectedModelIndex, setSelectedModelIndex] = useState(null);
     const [toast, setToast] = useState(null);
     const onNodesChange = useCallback(
@@ -76,7 +78,7 @@ export default function DbEditor({ projectName }) {
                     return {
                         id: nodeId,
                         type: "model",
-                        position: existingNode ? existingNode.position : { x: index * 10, y: 50 },
+                        position: existingNode ? existingNode.position : { x: (index % 3) * 350, y: Math.floor(index / 3) * 300 },
                         data: {
                             "nom": model.nom,
                             "champs": [...model.champs],
@@ -141,6 +143,7 @@ export default function DbEditor({ projectName }) {
             </div>
             <div className="flex ">
                 <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={reorganizeNodes}><LayoutGrid size={20} /> Reorganize</button>
+                <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={() => setToggleUserModal("block")}><User size={20} /> Gen User Table</button>
                 <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={handleNewModelModal}><Plus></Plus> Add Table</button>
                 <button className="flex gap-2 text-white bg-couleur1  rounded px-4 py-1 m-2" onClick={savedb}><Save></Save>Save</button>
             </div>
@@ -148,6 +151,9 @@ export default function DbEditor({ projectName }) {
 
         <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}>
             <NewModel setModelList={setProject} modelList={project} setToggle={setToggleModal}></NewModel>
+        </div>
+        <div className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleUserModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}>
+            <GenerateUserTable setModelList={setProject} modelList={project} setToggle={setToggleUserModal}></GenerateUserTable>
         </div>
         <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-300 ease-out transform ${toggleEditModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}>
             {selectedModelIndex !== null && <EditModel setModelList={setProject} modelList={project} setToggle={setToggleEditModal} index={selectedModelIndex}></EditModel>}

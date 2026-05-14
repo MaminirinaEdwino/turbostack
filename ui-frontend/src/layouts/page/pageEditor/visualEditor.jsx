@@ -157,7 +157,7 @@ export default function VisualEditor({ content, onChange }) {
                                 {block.tag === 'img' ? (
                                     <img src={block.content} alt="Image preview" className="max-w-full h-auto max-h-20 object-contain" />
                                 ) : (
-                                    <p className="line-clamp-2">{block.content || "Contenu vide"}</p>
+                                    activeBlock === block.id && <p className="line-clamp-2">{block.content || "Contenu vide"}</p>
                                 )}
                             </div>
                         )}

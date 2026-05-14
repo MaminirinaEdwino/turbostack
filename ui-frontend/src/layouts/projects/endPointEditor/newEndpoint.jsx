@@ -24,14 +24,42 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
     const toggleModelSelection = (model) => {
         const isSelected = endpoint.model.some(m => m.nom === model.nom);
         if (isSelected) {
-            setEndpoint({ ...endpoint, model: endpoint.model.filter(m => m.nom !== model.nom) });
+            setEndpoint({ 
+                ...endpoint, 
+                model: endpoint.model.filter(m => m.nom !== model.nom),
+                params: endpoint.params.filter(p => !model.champs.some(c => c.nom === p))
+            });
         } else {
-            setEndpoint({ ...endpoint, model: [...endpoint.model, model] });
+            setEndpoint({ ...endpoint, model: [...endpoint.model, { ...model }] });
         }
     };
 
+    const toggleUriParam = (fieldName) => {
+        const isSelected = endpoint.params.includes(fieldName);
+        if (isSelected) {
+            setEndpoint({ ...endpoint, params: endpoint.params.filter(p => p !== fieldName) });
+        } else {
+            setEndpoint({ ...endpoint, params: [...endpoint.params, fieldName] });
+        }
+    };
+
+    const toggleBodyField = (modelName, field) => {
+        const updatedModels = endpoint.model.map(m => {
+            if (m.nom === modelName) {
+                const hasField = m.champs.some(f => f.nom === field.nom);
+                if (hasField) {
+                    return { ...m, champs: m.champs.filter(f => f.nom !== field.nom) };
+                } else {
+                    return { ...m, champs: [...m.champs, field] };
+                }
+            }
+            return m;
+        });
+        setEndpoint({ ...endpoint, model: updatedModels });
+    };
+
     return (
-        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-[450px]">
+        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-[550px] max-h-[85vh] overflow-y-auto">
             <h3 className="font-bold text-2xl text-couleur1 mb-4">New Endpoint</h3>
             
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -74,6 +102,45 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                     ))}
                 </div>
             </div>
+
+            {endpoint.model.length > 0 && (
+                <div className="flex flex-col gap-3 mb-6 border-t border-couleur1/10 pt-4">
+                    <label className="text-xs font-bold opacity-50 uppercase">Fields Configuration (URI vs Body)</label>
+                    {endpoint.model.map((m) => {
+                        const originalModel = availableModels.find(om => om.nom === m.nom);
+                        return (
+                            <div key={m.nom} className="bg-couleur3/30 p-4 rounded-lg border border-couleur1/10 shadow-inner">
+                                <h4 className="text-sm font-bold text-couleur1 mb-3 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-couleur1"></div>
+                                    {m.nom}
+                                </h4>
+                                <table className="w-full text-xs">
+                                    <thead>
+                                        <tr className="text-left opacity-60">
+                                            <th className="pb-2">Field Name</th>
+                                            <th className="pb-2 text-center">URI Param</th>
+                                            <th className="pb-2 text-center">Body Request</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {originalModel?.champs.map((f) => (
+                                            <tr key={f.nom} className="border-t border-couleur1/5 hover:bg-white/40 transition-colors">
+                                                <td className="py-2 text-couleur1 font-medium">{f.nom} <span className="text-[10px] opacity-40">[{f.type}]</span></td>
+                                                <td className="py-2 text-center">
+                                                    <input type="checkbox" checked={endpoint.params.includes(f.nom)} onChange={() => toggleUriParam(f.nom)} className="accent-couleur1 cursor-pointer w-4 h-4" />
+                                                </td>
+                                                <td className="py-2 text-center">
+                                                    <input type="checkbox" checked={m.champs.some(bc => bc.nom === f.nom)} onChange={() => toggleBodyField(m.nom, f)} className="accent-couleur1 cursor-pointer w-4 h-4" />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
 
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1 hover:bg-gray-50 transition-colors">Cancel</button>

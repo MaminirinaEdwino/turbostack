@@ -14,12 +14,15 @@ export default function VisualEditor({ content, onChange }) {
         if (!content) return;
 
         let extracted = [];
-        try {
-            // Tente de parser comme JSON (Méthode de stockage plus fiable pour le No-Code)
-            extracted = JSON.parse(content);
-            if (!Array.isArray(extracted)) throw new Error();
-        } catch (e) {
-            // Fallback : parsing HTML si ce n'est pas encore du JSON (compatibilité données existantes)
+        if (Array.isArray(content)) {
+            extracted = content;
+        } else {
+            try {
+                // Tente de parser comme JSON (pour la compatibilité)
+                extracted = JSON.parse(content);
+                if (!Array.isArray(extracted)) throw new Error();
+            } catch (e) {
+                // Fallback : parsing HTML si ce n'est pas encore un tableau/JSON
             const parser = new DOMParser();
             const doc = parser.parseFromString(content, "text/html");
             extracted = Array.from(doc.body.children).map((el) => ({
@@ -29,6 +32,7 @@ export default function VisualEditor({ content, onChange }) {
                 className: el.className,
                 styles: el.getAttribute("style") || ""
             }));
+            }
         }
 
         // Comparaison pour éviter de réinitialiser l'état pendant la saisie (perte de focus)
@@ -42,8 +46,8 @@ export default function VisualEditor({ content, onChange }) {
 
     // Synchronisation vers le parent
     const sync = (currentBlocks) => {
-        // On stocke les blocs sérialisés en string JSON
-        onChange(JSON.stringify(currentBlocks)); 
+        // On renvoie le tableau directement
+        onChange(currentBlocks); 
     };
 
     const updateBlock = (id, fields) => {

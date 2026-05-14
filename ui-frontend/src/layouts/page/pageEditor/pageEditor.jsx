@@ -42,13 +42,13 @@ export default function PageEditor({ projectName }) {
         const newPage = { 
             nom: "New Page", 
             uri: "/new-page", 
-            content: JSON.stringify([{
+            content: [{
                 id: Math.random().toString(36).substr(2, 9),
                 tag: "div",
                 content: "<h1>New Page</h1><p>Commencez à éditer...</p>",
                 className: "p-8",
                 styles: ""
-            }])
+            }]
         };
         updatedProject[typeKey].pages = [...(updatedProject[typeKey].pages || []), newPage];
         setProject(updatedProject);
@@ -121,7 +121,7 @@ export default function PageEditor({ projectName }) {
                                 />
                             </div>
                         </div>
-                        <VisualEditor key={selectedPageIndex} content={currentPage?.content} onChange={(html) => updatePageField("content", html)} />
+                        <VisualEditor key={selectedPageIndex} content={currentPage?.content} onChange={(blocks) => updatePageField("content", blocks)} />
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">

@@ -34,7 +34,7 @@ export default function ProjectList() {
     );
 
     return (
-        <div className="flex h-screen w-full font-san bg-couleur3">
+        <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
             <SideMenu />
             <main className="flex-1 p-8 overflow-y-auto">
                 {/* Header Section */}
@@ -50,7 +50,7 @@ export default function ProjectList() {
                             <input 
                                 type="text" 
                                 placeholder="Filter projects..." 
-                                className="pl-10 pr-4 py-2.5 border border-couleur1/20 rounded-xl bg-white outline-none focus:ring-2 ring-couleur1/20 text-couleur1 w-64 shadow-sm transition-all"
+                                className="pl-10 pr-4 py-2.5 border border-couleur1/20 dark:border-white/10 rounded-xl bg-white dark:bg-gray-900 outline-none focus:ring-2 ring-couleur1/20 text-couleur1 dark:text-gray-100 w-64 shadow-sm transition-all"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -70,7 +70,7 @@ export default function ProjectList() {
                         <div 
                             key={index} 
                             onClick={() => handleProjectSelection(name)}
-                            className="group bg-white border border-couleur1/10 rounded-2xl p-6 cursor-pointer hover:shadow-2xl hover:border-couleur1/40 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col relative overflow-hidden"
+                            className="group bg-white dark:bg-gray-900 border border-couleur1/10 dark:border-white/10 rounded-2xl p-6 cursor-pointer hover:shadow-2xl hover:border-couleur1/40 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col relative overflow-hidden"
                         >
                             {/* Background Decoration */}
                             <div className="absolute -right-4 -top-4 w-24 h-24 bg-couleur1/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>

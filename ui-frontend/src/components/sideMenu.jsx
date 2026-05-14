@@ -6,18 +6,21 @@ import {
     SidebarClose,
     SidebarOpen,
     ChevronDown,
-    ChevronRight
+    ChevronRight,
+    Moon,
+    Sun
 } from "lucide-react";
 import { useNavigate } from "../hooks/useNavigate";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { setToggleMenuSide } from "../appSlice";
+import { setToggleDarkMode, setToggleMenuSide } from "../appSlice";
 export default function SideMenu() {
     const navigateTo = useNavigate();
     const dispatch = useDispatch();
     const toggleMenu = useSelector((state) => state.app.toggleMenuSide);
     const actualWindow = useSelector((state) => state.app.actualWindow);
     const actualProject = useSelector((state) => state.app.actualProject);
+    const isDarkMode = useSelector((state) => state.app.darkMode);
     const [editorExpanded, setEditorExpanded] = useState(false);
 
     let menuItems = [
@@ -50,7 +53,7 @@ export default function SideMenu() {
         e.preventDefault()
         dispatch(setToggleMenuSide())
     }
-    return <aside className={`flex flex-col p-6 bg-couleur3 transition-all duration-300 ease-in-out border-r border-couleur1/10 ${toggleMenu ? "w-64" : "w-24"}`} >
+    return <aside className={`flex flex-col p-6 bg-couleur3 dark:bg-gray-900 transition-all duration-300 ease-in-out border-r border-couleur1/10 dark:border-white/10 ${toggleMenu ? "w-64" : "w-24"}`} >
         <div className="flex items-center gap-2 mb-10 overflow-hidden whitespace-nowrap" >
             <div className="w-8 h-8 rounded-full bg-red-500 shrink-0"></div>
             <span className={`text-xl font-bold text-couleur1 transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`} >TurboStack</span>
@@ -61,6 +64,17 @@ export default function SideMenu() {
                     {toggleMenu ? <SidebarClose size={20}></SidebarClose > : <SidebarOpen size={20}></SidebarOpen>}
                 </div>
             </button>
+
+            {/* Theme Toggle */}
+            <button onClick={() => dispatch(setToggleDarkMode())} className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all border-couleur7 text-couleur1 hover:bg-couleur1 hover:text-white w-full justify-start">
+                <div className="shrink-0">
+                    {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                </div>
+                <span className={`font-medium transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}>
+                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </span>
+            </button>
+
             {menuItems.map((item) => {
                 const isSubActive = item.subItems?.some(sub => actualWindow === sub.name);
                 // L'onglet est actif s'il correspond exactement au nom, ou si c'est 'Project' et qu'on est dans une vue de création/accueil projet

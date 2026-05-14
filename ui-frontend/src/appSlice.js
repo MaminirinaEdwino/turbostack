@@ -6,6 +6,7 @@ const appSlice = createSlice({
     actualWindow: 'Dashboard', // La fenêtre par défaut au démarrage de l'application
     actualProject: "",
     toggleMenuSide: false,
+    darkMode: false,
   },
   reducers: {
     setActualWindow: (state, action) => {
@@ -17,8 +18,11 @@ const appSlice = createSlice({
     setToggleMenuSide: (state) => {
       state.toggleMenuSide = !state.toggleMenuSide;
     },
+    setToggleDarkMode: (state) => {
+      state.darkMode = !state.darkMode
+    }
   },
 });
 
-export const { setActualWindow, setActualProject, setToggleMenuSide } = appSlice.actions;
+export const { setActualWindow, setActualProject, setToggleMenuSide, setToggleDarkMode } = appSlice.actions;
 export default appSlice.reducer;

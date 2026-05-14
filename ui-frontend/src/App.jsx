@@ -1,5 +1,5 @@
-
 import './App.css'
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux'
 import HomePage from './layouts/homepage/homePage';
 import ProjectList from './layouts/projects/projectList';
@@ -17,6 +17,15 @@ import ApiEditor from './layouts/projects/endPointEditor/apiEditor';
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
+  const isDarkMode = useSelector((state) => state.app.darkMode);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   const renderContent = () => {
     switch (actualWindow) {
@@ -39,7 +48,7 @@ function App() {
 
   return (
     <>
-      <main>
+      <main className="transition-colors duration-300">
         {renderContent()}
       </main>
     </>

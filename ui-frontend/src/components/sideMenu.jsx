@@ -52,10 +52,10 @@ export default function SideMenu() {
                         className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all overflow-hidden whitespace-nowrap 
                             ${isActive 
                                 ? "bg-couleur1 text-couleur3 border-couleur1 shadow-sm" 
-                                : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1"}`}
+                                : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1 hover:text-couleur3"}`}
                         onClick={() => navigateTo(item.name)}
                     >
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                             {item.icon}
                         </div>
                         <span className={`font-medium transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}>

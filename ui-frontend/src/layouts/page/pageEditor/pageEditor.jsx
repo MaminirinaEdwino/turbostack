@@ -1,182 +1,172 @@
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "../../../hooks/useNavigate";
+import React, { useState, useEffect } from "react";
 import { GoApp } from "../../../services/bridge";
-import {
-    Plus, Save, Layout, FileText, Puzzle, Trash2,
-    CheckCircle, Loader2, AlertCircle, Globe, X
-} from "lucide-react";
+import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Globe, Type } from "lucide-react";
+import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
+import { useNavigate } from "../../../hooks/useNavigate";
 
 export default function PageEditor({ projectName }) {
     const navigateTo = useNavigate();
-    const isDarkMode = useSelector((state) => state.app.darkMode);
     const [project, setProject] = useState(null);
+    const [selectedPageIndex, setSelectedPageIndex] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [toast, setToast] = useState(null);
+    const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
-        const loadProject = async () => {
-            setLoading(true);
-            try {
-                const res = await GoApp.fetchProjectByName(projectName);
-                if (res) setProject(res);
-            } catch (error) {
-                showToast("Error loading project", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         loadProject();
     }, [projectName]);
 
-    const showToast = (message, type = "success") => {
-        setToast({ message, type });
-        if (type !== "loading") {
-            setTimeout(() => setToast(null), 3000);
-        }
+    const loadProject = async () => {
+        setLoading(true);
+        const res = await GoApp.fetchProjectByName(projectName);
+        if (res) setProject(res);
+        setLoading(false);
     };
 
-    const handleSave = async () => {
-        showToast("Saving changes...", "loading");
-        try {
-            await GoApp.saveProject(projectName, JSON.stringify(project));
-            showToast("Project saved successfully!");
-        } catch (error) {
-            showToast("Error saving project", isDarkMode, error);
-        }
-    };
-
-    const updateSiteData = (key, value) => {
-        const updated = { ...project };
-        if (project.type === "static") updated.site_statique[key] = value;
-        else if (project.type === "webapp") updated.web_app[key] = value;
-        setProject(updated);
+    // Mise à jour générique d'un champ de la page sélectionnée
+    const updatePageField = (field, value) => {
+        const typeKey = project.type === "static" ? "site_statique" : "web_app";
+        setProject(prev => {
+            const newPages = [...prev[typeKey].pages];
+            newPages[selectedPageIndex] = { ...newPages[selectedPageIndex], [field]: value };
+            return {
+                ...prev,
+                [typeKey]: { ...prev[typeKey], pages: newPages }
+            };
+        });
     };
 
     const addPage = () => {
-        const siteData = project.type === "static" ? project.site_statique : project.web_app;
-        const pages = [...(siteData.pages || []), { nom: "New Page", uri: "/new-page" }];
-        updateSiteData("pages", pages);
+        const typeKey = project.type === "static" ? "site_statique" : "web_app";
+        const updatedProject = { ...project };
+        const newPage = { 
+            nom: "New Page", 
+            uri: "/new-page", 
+            content: JSON.stringify([{
+                id: Math.random().toString(36).substr(2, 9),
+                tag: "div",
+                content: "<h1>New Page</h1><p>Commencez à éditer...</p>",
+                className: "p-8",
+                styles: ""
+            }])
+        };
+        updatedProject[typeKey].pages = [...(updatedProject[typeKey].pages || []), newPage];
+        setProject(updatedProject);
     };
 
     const removePage = (index) => {
-        const siteData = project.type === "static" ? project.site_statique : project.web_app;
-        const pages = siteData.pages.filter((_, i) => i !== index);
-        updateSiteData("pages", pages);
+        if (!window.confirm("Voulez-vous vraiment supprimer cette page ?")) return;
+        const typeKey = project.type === "static" ? "site_statique" : "web_app";
+        const updatedProject = { ...project };
+        updatedProject[typeKey].pages = updatedProject[typeKey].pages.filter((_, i) => i !== index);
+        setProject(updatedProject);
     };
 
-    if (loading) return (
-        <div className="flex h-screen w-screen items-center justify-center bg-couleur3 dark:bg-gray-950">
-            <Loader2 className="animate-spin text-couleur1" size={48} />
-        </div>
-    );
+    const handleSave = async () => {
+        try {
+            await GoApp.saveProject(projectName, JSON.stringify(project));
+            // console.log("page", project)
+        } catch (e) { console.error(e); }
+    };
+
+    if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
     const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
+    const currentPage = selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null;
 
     return (
-        <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
-            {/* Header */}
-            <div className="p-4 flex items-center justify-between border-b border-couleur1/10 dark:border-white/5">
-                <h1 className="text-couleur1 dark:text-gray-100 text-2xl font-bold flex items-center gap-3">
-                    <button
-                        className="p-2 rounded-lg border border-couleur1 dark:border-white/20 bg-white dark:bg-gray-800 hover:bg-couleur3 dark:hover:bg-gray-700 transition-all"
-                        onClick={() => navigateTo("Dashboard")}
+        <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
+            {/* Header Commun */}
+            <div className="p-4 flex items-center justify-between border-b border-couleur1/10 bg-white/50 backdrop-blur-md sticky top-0 z-10">
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={() => editMode ? setEditMode(false) : navigateTo("Dashboard")}
+                        className="p-2 rounded-xl border hover:bg-white transition-all"
                     >
                         <FcPrevious size={20} />
                     </button>
-                    Page Editor : {projectName}
-                </h1>
-                <div className="flex gap-3">
-                    <button onClick={handleSave} className="flex items-center gap-2 bg-couleur1 text-white px-6 py-2 rounded-xl font-bold hover:shadow-lg transition-all">
-                        <Save size={18} /> Save Changes
-                    </button>
+                    <h1 className="text-xl font-bold text-couleur1">
+                        {editMode ? `Editing: ${currentPage?.nom}` : `Pages : ${projectName}`}
+                    </h1>
                 </div>
+                <button onClick={handleSave} className="bg-couleur1 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2">
+                    <Save size={18} /> Save Project
+                </button>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
-
-                {/* Pages Section */}
-                <section className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-couleur1 dark:text-gray-200 flex items-center gap-2">
-                            <FileText /> Project Pages
-                        </h2>
-                        <button onClick={addPage} className="p-2 bg-couleur1/10 text-couleur1 dark:text-gray-200 rounded-lg hover:bg-couleur1 hover:text-white transition-all">
-                            <Plus size={20} />
-                        </button>
-                    </div>
-
-                    <div className="grid gap-4">
-                        {siteData?.pages?.map((page, index) => (
-                            <div key={index} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm group">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex-1 space-y-3">
-                                        <div className="flex flex-col gap-1">
-                                            <label className="text-[10px] font-bold opacity-50 uppercase">Page Name</label>
-                                            <input
-                                                className="bg-transparent border-b border-transparent focus:border-couleur1 dark:text-gray-200 outline-none font-semibold text-lg w-full"
-                                                value={page.nom}
-                                                onChange={(e) => {
-                                                    const newPages = [...siteData.pages];
-                                                    newPages[index].nom = e.target.value;
-                                                    updateSiteData("pages", newPages);
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex flex-col gap-1">
-                                            <label className="text-[10px] font-bold opacity-50 uppercase">URI Path</label>
-                                            <div className="flex items-center gap-2 text-gray-500 font-mono text-sm">
-                                                <Globe size={14} />
-                                                <input
-                                                    className="bg-transparent border-b border-transparent focus:border-couleur1 dark:text-gray-400 outline-none w-full"
-                                                    value={page.uri}
-                                                    onChange={(e) => {
-                                                        const newPages = [...siteData.pages];
-                                                        newPages[index].uri = e.target.value;
-                                                        updateSiteData("pages", newPages);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => removePage(index)}
-                                        className="p-2 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
-                                    >
-                                        <Trash2 size={20} />
-                                    </button>
-                                </div>
+            {/* Vue Conditionnelle */}
+            <div className="flex-1 overflow-y-auto p-8">
+                {editMode ? (
+                    <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+                        {/* Barre de configuration de la page */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-gray-900 p-6 rounded-3xl border border-couleur1/10 shadow-sm">
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase flex items-center gap-1">
+                                    <Type size={10}/> Page Name
+                                </label>
+                                <input
+                                    className="bg-couleur3/30 dark:bg-gray-800 p-2.5 rounded-xl border-none outline-none focus:ring-2 ring-couleur1/20 font-bold text-couleur1 dark:text-white"
+                                    value={currentPage?.nom || ""}
+                                    onChange={(e) => updatePageField("nom", e.target.value)}
+                                />
                             </div>
-                        ))}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase flex items-center gap-1">
+                                    <Globe size={10}/> Path (URI)
+                                </label>
+                                <input
+                                    className="bg-couleur3/30 dark:bg-gray-800 p-2.5 rounded-xl border-none outline-none focus:ring-2 ring-couleur1/20 font-mono text-sm text-couleur1 dark:text-white"
+                                    value={currentPage?.uri || ""}
+                                    onChange={(e) => updatePageField("uri", e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <VisualEditor key={selectedPageIndex} content={currentPage?.content} onChange={(html) => updatePageField("content", html)} />
                     </div>
-                </section>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        {/* Liste des Pages */}
+                        <section className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-lg font-bold flex items-center gap-2 text-couleur1 dark:text-gray-200"><FileText size={18}/> Pages</h2>
+                                <button onClick={addPage} className="p-2 bg-couleur1 text-white rounded-xl hover:shadow-lg transition-all flex items-center gap-2 text-sm">
+                                    <Plus size={18} /> Add Page
+                                </button>
+                            </div>
+                            {siteData?.pages?.map((page, index) => (
+                                <div key={index} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-couleur1/10 dark:border-white/5 flex justify-between items-center group hover:border-couleur1 transition-all">
+                                    <div>
+                                        <p className="font-bold text-couleur1">{page.nom}</p>
+                                        <p className="text-xs opacity-50">{page.uri}</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => { setSelectedPageIndex(index); setEditMode(true); }}
+                                            className="p-2 bg-couleur1/5 text-couleur1 rounded-lg hover:bg-couleur1 hover:text-white transition-all"
+                                        >
+                                            <Edit3 size={18} />
+                                        </button>
+                                        <button 
+                                            onClick={() => removePage(index)}
+                                            className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </section>
 
-                {/* Components Section Placeholder (Future usage) */}
-                <section className="space-y-6">
-                    <h2 className="text-xl font-bold text-couleur1 dark:text-gray-200 flex items-center gap-2">
-                        <Puzzle /> UI Components
-                    </h2>
-                    <div className="border-2 border-dashed border-couleur1/20 dark:border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center">
-                        <Puzzle size={48} className="text-couleur1/20 mb-4" />
-                        <p className="text-couleur1/60 font-medium">Visual Component Editor</p>
-                        <p className="text-sm text-gray-500">Coming soon: Drag & Drop components to build your pages.</p>
+                        {/* UI Components Placeholder */}
+                        <section className="space-y-4">
+                            <h2 className="text-lg font-bold flex items-center gap-2"><Puzzle size={18}/> Components</h2>
+                            <div className="h-64 border-2 border-dashed border-couleur1/10 rounded-3xl flex items-center justify-center text-couleur1/30">
+                                Drag & Drop UI (Coming Soon)
+                            </div>
+                        </section>
                     </div>
-                </section>
+                )}
             </div>
-
-            {/* Toast Notification */}
-            {toast && (
-                <div className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${toast.type === "error" ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400" :
-                        toast.type === "loading" ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400" :
-                            "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
-                    }`}>
-                    {toast.type === "loading" ? <Loader2 size={18} className="animate-spin" /> :
-                        toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
-                    <span className="font-medium text-sm">{toast.message}</span>
-                </div>
-            )}
         </div>
     );
 }

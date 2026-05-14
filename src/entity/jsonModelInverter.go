@@ -52,9 +52,14 @@ func (mj *ModelJSON) ToModel() Model {
 }
 
 func (pj *PageJSON) ToModel() Page {
+	var pcontent []pageContent
+	for _, val := range pj.Contenu {
+		pcontent = append(pcontent, val.ToModel())
+	}
+	
 	return Page{
 		nom:     pj.Nom,
-		contenu: pj.Contenu,
+		contenu: pcontent,
 	}
 }
 
@@ -123,5 +128,15 @@ func (wj *WebAppJSON) ToModel() WebApp {
 		role:      wj.Role,
 		composant: composants,
 		bdd:       wj.BDD.ToModel(),
+	}
+}
+
+
+func (pc *PageContentJSON) ToModel() pageContent {
+	return pageContent{
+		id:        pc.Id,
+		tag:       pc.Tag,
+		content:   pc.Content,
+		className: pc.ClassName,
 	}
 }

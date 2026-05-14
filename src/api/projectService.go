@@ -39,7 +39,8 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 func (s *ProjectService) SaveProject(name, project string) string {
 	var pJson entity.ProjectJSON
 	json.Unmarshal([]byte(project), &pJson)
-
+	fmt.Println("save ",project)
+	fmt.Println("save pr ",pJson)
 	s.Manager.SaveProject(pJson)
 	return "Success"
 }

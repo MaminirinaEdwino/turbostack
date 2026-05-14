@@ -41,8 +41,8 @@ type ModelJSON struct {
 }
 
 type PageJSON struct {
-	Nom     string `json:"nom"`
-	Contenu []any  `json:"contenu"`
+	Nom     string   `json:"nom"`
+	Contenu []PageContentJSON `json:"content"`
 }
 
 type ProjectJSON struct {
@@ -72,3 +72,11 @@ type WebAppJSON struct {
 	Composant []ComposantJSON `json:"composant"`
 	BDD       BDDJSON         `json:"bdd"`
 }
+
+type PageContentJSON struct {
+	Id        string `json:"id"`
+	Tag       string `json:"tag"`
+	Content   string `json:"content"`
+	ClassName string `json:"class_name="`
+}
+

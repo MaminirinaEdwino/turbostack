@@ -65,7 +65,7 @@ export default function ApiEditor({ projectName }) {
             const updatedNodes = project.rest_api.endpoints.map((ep, index) => ({
                 id: `ep-${index}`,
                 type: "endpoint",
-                position: nodes[index]?.position || { x: index * 100, y: 50 },
+                position: nodes[index]?.position || { x: (index % 5) * 300, y: Math.floor(index / 5) * 200 },
                 data: {
                     ...ep,
                     onDelete: () => deleteEndpoint(index),

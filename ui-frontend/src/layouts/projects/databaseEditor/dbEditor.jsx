@@ -113,7 +113,7 @@ export default function DbEditor({ projectName }) {
     return <div className="flex w-screen h-screen flex-col bg-couleur3">
         <div className=" p-2 m-2 h-fit flex items-center justify-between">
             <div>
-                <h1 className="text-couleur1 text-3xl font-semibold"> <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" title="go back" onClick={() => navigateTo(projectName)}><FcPrevious size={20}></FcPrevious></button>DB Editor : {projectName} {nodes.length} </h1>
+                <h1 className="text-couleur1 text-3xl font-semibold"> <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" title="go back" onClick={() => navigateTo(projectName)}><FcPrevious size={20}></FcPrevious></button>DB Editor : {projectName} </h1>
             </div>
             <div className="flex ">
                 <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={handleNewModelModal}><Plus></Plus> Add Table</button>
@@ -121,10 +121,10 @@ export default function DbEditor({ projectName }) {
             </div>
         </div>
 
-        <div style={{ display: toggleModal }} className="fixed top-20 z-10">
+        <div className={`fixed top-20 z-10 transition-all duration-300 ease-out transform ${toggleModal === "block" ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4 pointer-events-none invisible"}`}>
             <NewModel setModelList={setProject} modelList={project} setToggle={setToggleModal}></NewModel>
         </div>
-        <div style={{ display: toggleEditModal }} className="fixed top-20 z-10">
+        <div className={`fixed top-20 z-10 transition-all duration-300 ease-out transform ${toggleEditModal === "block" ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4 pointer-events-none invisible"}`}>
             {selectedModelIndex !== null && <EditModel setModelList={setProject} modelList={project} setToggle={setToggleEditModal} index={selectedModelIndex}></EditModel>}
         </div>
         <div className="w-auto h-full bg-white m-5 rounded border border-couleur1">

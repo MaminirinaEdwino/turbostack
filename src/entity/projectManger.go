@@ -6,7 +6,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-
 )
 
 type ProjectManager struct {
@@ -39,7 +38,8 @@ func (mgr *ProjectManager) LoadProjects() error {
 	for _, val := range projectFiles {
 		var pJson ProjectJSON
 		var p Project
-		saveFile, err := os.ReadFile(val.Name())
+		filePath := fmt.Sprintf("turbo_projects/%s", val.Name()) 
+		saveFile, err := os.ReadFile(filePath)
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func (mgr *ProjectManager) SaveProjects() error {
 }
 
 func (mgr *ProjectManager) SaveProject(project ProjectJSON) error {
-	filepath := fmt.Sprintf("turbo_projects/%s.json", strings.Replace(project.Nom, " ", "", -1))
+	filepath := fmt.Sprintf("turbo_projects/%s.json", strings.ReplaceAll(project.Nom, " ", "", ))
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
 	if err != nil {
 		return err

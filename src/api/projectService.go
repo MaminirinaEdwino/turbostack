@@ -1,6 +1,11 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
 )
@@ -39,10 +44,12 @@ func (s *ProjectService) FetchProjects() []string {
 }
 
 func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
-	for _, val := range s.Manager.Projects {
-		if val.GetNom() == name {
-			return val.ToJSON()
-		}
+	var pJson entity.ProjectJSON
+	filePath := fmt.Sprintf("turbo_projects/%s.json", strings.ReplaceAll(name, " ", "", ))
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println(err)
 	}
-	return entity.ProjectJSON{}
+	json.Unmarshal(file, &pJson)
+	return pJson
 }

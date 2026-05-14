@@ -20,5 +20,8 @@ export const GoApp = {
     },
     savedb: async (name, project)=>{
         return await window.saveBdd(name, project)
-    } 
+    }, 
+    saveProject: async(name, project)=>{
+        return await window.saveProject(name, project)
+    }
 }

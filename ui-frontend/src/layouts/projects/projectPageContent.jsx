@@ -22,7 +22,12 @@ export default function ProjectPageView({ project }) {
 
         // Section API REST
         if (project.type === "api") {
-            stats.push({ title: "Endpoints", total: project.rest_api.endpoints?.length || 0, icon: <Settings size={24} /> });
+            stats.push({ 
+                title: "Endpoints", 
+                total: project.rest_api.endpoints?.length || 0, 
+                icon: <Settings size={24} />,
+                onClick: () => dispatch(setActualWindow('api_editor'))
+            });
             // stats.push({ 
             //     title: "API Models", 
             //     total: project.rest_api.bdd?.models?.length || 0, 

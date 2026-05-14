@@ -36,7 +36,10 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 	return "Success"
 }
 
-func (s *ProjectService) SaveProject(pJson entity.ProjectJSON) string {
+func (s *ProjectService) SaveProject(name, project string) string {
+	var pJson entity.ProjectJSON
+	json.Unmarshal([]byte(project), &pJson)
+
 	s.Manager.SaveProject(pJson)
 	return "Success"
 }

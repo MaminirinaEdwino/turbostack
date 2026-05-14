@@ -1,4 +1,4 @@
-import { Check, X, Plus, Trash2 } from "lucide-react";
+import { Check, X, Plus, Trash2, Database } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function EditEndpoint({ index, project, setProject, setToggle }) {
@@ -7,22 +7,22 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
         manual_fields: []
     });
     const [manualField, setManualField] = useState({ nom: "", type: "string" });
+    const [tableName, setTableName] = useState("");
 
-    const availableModels = project.bdd?.models || [];
+    const availableModels = project?.bdd?.models || [];
 
     // Initialize endpoint state with data from the selected endpoint
     useEffect(() => {
-        const setter = (endpoint)=>{
-            setEndpoint(endpoint)
-        }
-        if (project && project.rest_api?.endpoints && project.rest_api.endpoints[index]) {
+        if (project?.rest_api?.endpoints?.[index]) {
             const ep = project.rest_api.endpoints[index];
-            setter({
+            setEndpoint({
                 ...ep,
+                model: ep.model || [],
+                params: ep.params || [],
                 manual_fields: ep.manual_fields || []
             });
         }
-    }, [index, project]);
+    }, [index, project]); // On surveille l'index ET le projet pour garantir le chargement des données
 
     const handleUpdate = (e) => {
         e.preventDefault();
@@ -48,8 +48,8 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
                 newUri = newUri.replace(`/:${p}`, "").replace(`:${p}`, "");
             });
 
-            setEndpoint({ 
-                ...endpoint, 
+            setEndpoint({
+                ...endpoint,
                 model: endpoint.model.filter(m => m.nom !== model.nom),
                 params: endpoint.params.filter(p => !model.champs.some(c => c.nom === p)),
                 uri: newUri
@@ -72,6 +72,22 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
             params: prev.params.filter(p => p !== nom),
             model: prev.model.map(m => m.nom === "Manual" ? { ...m, champs: m.champs.filter(f => f.nom !== nom) } : m).filter(m => m.nom !== "Manual" || m.champs.length > 0)
         }));
+    };
+
+    const generateTableFromManual = () => {
+        if (!tableName || endpoint.manual_fields.length === 0) return;
+        if (availableModels.some(m => m.nom.toLowerCase() === tableName.toLowerCase())) {
+            alert("Une table avec ce nom existe déjà.");
+            return;
+        }
+
+        const newModel = {
+            nom: tableName,
+            champs: endpoint.manual_fields.map(f => ({ ...f, default_value: "" }))
+        };
+
+        setProject({ ...project, bdd: { ...project.bdd, models: [...availableModels, newModel] } });
+        setTableName("");
     };
 
     const toggleUriParam = (fieldName) => {
@@ -127,7 +143,7 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
     return (
         <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-[550px] max-h-[85vh] overflow-y-auto">
             <h3 className="font-bold text-2xl text-couleur1 mb-4">Edit Endpoint</h3>
-            
+
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold opacity-50 uppercase">Name</label>
@@ -157,11 +173,10 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
                             key={i}
                             type="button"
                             onClick={() => toggleModelSelection(m)}
-                            className={`px-3 py-1 rounded-full text-xs transition-colors border ${
-                                endpoint.model.some(sel => sel.nom === m.nom)
-                                ? "bg-couleur1 text-white border-couleur1"
-                                : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur3"
-                            }`}
+                            className={`px-3 py-1 rounded-full text-xs transition-colors border ${endpoint.model.some(sel => sel.nom === m.nom)
+                                    ? "bg-couleur1 text-white border-couleur1"
+                                    : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur3"
+                                }`}
                         >
                             {m.nom}
                         </button>
@@ -178,7 +193,7 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
                         <option value="int">Integer</option>
                         <option value="boolean">Boolean</option>
                     </select>
-                    <button type="button" onClick={addManualField} className="bg-couleur1 text-white p-2 rounded-lg"><Plus size={18}/></button>
+                    <button type="button" onClick={addManualField} className="bg-couleur1 text-white p-2 rounded-lg"><Plus size={18} /></button>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                     {endpoint.manual_fields.map((f, i) => (
@@ -191,12 +206,30 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
                         </div>
                     ))}
                 </div>
+
+                {endpoint.manual_fields.length > 0 && (
+                    <div className="mt-4 p-3 bg-couleur1/5 border border-dashed border-couleur1/30 rounded-lg">
+                        <label className="text-[10px] font-bold text-couleur1 uppercase mb-2 block">Générer une table BDD</label>
+                        <div className="flex gap-2">
+                            <input
+                                className="flex-1 border border-couleur1 p-2 rounded-lg text-sm bg-white"
+                                type="text"
+                                placeholder="Nom de la table (ex: Profil)"
+                                value={tableName}
+                                onChange={(e) => setTableName(e.target.value)}
+                            />
+                            <button type="button" onClick={generateTableFromManual} className="bg-couleur1 text-white px-3 py-1 rounded-lg text-xs flex items-center gap-2 hover:bg-opacity-90 transition-all">
+                                <Database size={14} /> Créer Table
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {(endpoint.model.length > 0 || endpoint.manual_fields.length > 0) && (
                 <div className="flex flex-col gap-3 mb-6 border-t border-couleur1/10 pt-4">
                     <label className="text-xs font-bold opacity-50 uppercase">Fields Configuration (URI vs Body)</label>
-                    
+
                     {/* Config pour les champs manuels */}
                     {endpoint.manual_fields.length > 0 && (
                         <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-200 shadow-inner mb-2">
@@ -269,7 +302,7 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1 hover:bg-gray-50 transition-colors">Cancel</button>
                 <button onClick={handleUpdate} className="px-5 py-2 rounded-lg bg-couleur1 text-white font-semibold flex items-center gap-2 hover:bg-opacity-90 transition-all">
-                    <Check size={18}/> Update Endpoint
+                    <Check size={18} /> Update Endpoint
                 </button>
             </div>
         </form>

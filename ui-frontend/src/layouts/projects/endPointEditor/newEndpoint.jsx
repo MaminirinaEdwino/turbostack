@@ -1,4 +1,4 @@
-import { Check, X, Plus, Trash2 } from "lucide-react";
+import { Check, X, Plus, Trash2, Database } from "lucide-react";
 import { useState } from "react";
 
 export default function NewEndpoint({ project, setProject, setToggle }) {
@@ -7,6 +7,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
         manual_fields: []
     });
     const [manualField, setManualField] = useState({ nom: "", type: "string" });
+    const [tableName, setTableName] = useState("");
 
     const availableModels = project.bdd?.models || [];
 
@@ -49,6 +50,22 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
             params: prev.params.filter(p => p !== nom),
             model: prev.model.map(m => m.nom === "Manual" ? { ...m, champs: m.champs.filter(f => f.nom !== nom) } : m).filter(m => m.nom !== "Manual" || m.champs.length > 0)
         }));
+    };
+
+    const generateTableFromManual = () => {
+        if (!tableName || endpoint.manual_fields.length === 0) return;
+        if (availableModels.some(m => m.nom.toLowerCase() === tableName.toLowerCase())) {
+            alert("Une table avec ce nom existe déjà.");
+            return;
+        }
+
+        const newModel = {
+            nom: tableName,
+            champs: endpoint.manual_fields.map(f => ({ ...f, default_value: "" }))
+        };
+
+        setProject({ ...project, bdd: { ...project.bdd, models: [...availableModels, newModel] } });
+        setTableName("");
     };
 
     const toggleUriParam = (fieldName) => {
@@ -160,6 +177,24 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                         </div>
                     ))}
                 </div>
+
+                {endpoint.manual_fields.length > 0 && (
+                    <div className="mt-4 p-3 bg-couleur1/5 border border-dashed border-couleur1/30 rounded-lg">
+                        <label className="text-[10px] font-bold text-couleur1 uppercase mb-2 block">Générer une table BDD</label>
+                        <div className="flex gap-2">
+                            <input 
+                                className="flex-1 border border-couleur1 p-2 rounded-lg text-sm bg-white" 
+                                type="text" 
+                                placeholder="Nom de la table (ex: Profil)" 
+                                value={tableName} 
+                                onChange={(e) => setTableName(e.target.value)} 
+                            />
+                            <button type="button" onClick={generateTableFromManual} className="bg-couleur1 text-white px-3 py-1 rounded-lg text-xs flex items-center gap-2 hover:bg-opacity-90 transition-all">
+                                <Database size={14}/> Créer Table
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {(endpoint.model.length > 0 || endpoint.manual_fields.length > 0) && (

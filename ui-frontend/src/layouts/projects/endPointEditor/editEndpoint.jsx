@@ -13,9 +13,17 @@ export default function EditEndpoint({ index, project, setProject, setToggle }) 
 
     // Initialize endpoint state with data from the selected endpoint
     useEffect(() => {
+        const setter = (ep)=>{
+            setEndpoint({
+                ...ep,
+                model: ep.model || [],
+                params: ep.params || [],
+                manual_fields: ep.manual_fields || []
+            });
+        }
         if (project?.rest_api?.endpoints?.[index]) {
             const ep = project.rest_api.endpoints[index];
-            setEndpoint({
+            setter({
                 ...ep,
                 model: ep.model || [],
                 params: ep.params || [],

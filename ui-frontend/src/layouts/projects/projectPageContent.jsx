@@ -1,4 +1,4 @@
-import BDDProjectInterface from "./components/bddPageInterface";
+// import BDDProjectInterface from "./components/bddPageInterface";
 import ProjectResume from "./components/projectResume";
 import { StatCard } from "../../components/statCard";
 import { Database, Settings, FileText, LucidePuzzle } from "lucide-react";
@@ -23,12 +23,12 @@ export default function ProjectPageView({ project }) {
         // Section API REST
         if (project.type === "api") {
             stats.push({ title: "Endpoints", total: project.rest_api.endpoints?.length || 0, icon: <Settings size={24} /> });
-            stats.push({ 
-                title: "API Models", 
-                total: project.rest_api.bdd?.models?.length || 0, 
-                icon: <Database size={24} />,
-                onClick: () => dispatch(setActualWindow('db_editor'))
-            });
+            // stats.push({ 
+            //     title: "API Models", 
+            //     total: project.rest_api.bdd?.models?.length || 0, 
+            //     icon: <Database size={24} />,
+            //     onClick: () => dispatch(setActualWindow('db_editor'))
+            // });
         }
 
         // Section Web App
@@ -49,7 +49,22 @@ export default function ProjectPageView({ project }) {
 
     return (
         <div className="m-2 flex flex-col gap-8">
-            <ProjectResume nom={project.nom} type={project.type} description={project.description}></ProjectResume>
+            <div className="flex flex-col gap-5">
+                <div className="lg:col-span-1">
+                    <ProjectResume nom={project.nom} type={project.type} />
+                </div>
+                <div className="lg:col-span-2 flex items-start gap-4 p-5 rounded-xl border shadow-sm border-couleur7 bg-couleur5 transition-all">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center border-2 border-couleur1 text-couleur1 shrink-0">
+                        <FileText size={20} />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-xs font-bold text-couleur1 opacity-50 uppercase tracking-wider mb-1">Description</span>
+                        <p className="text-couleur1 text-sm md:text-base leading-relaxed italic">
+                            {project.description || "No description provided for this project."}
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             {stats.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -59,7 +74,7 @@ export default function ProjectPageView({ project }) {
                 </div>
             )}
 
-            {project.type === "bdd" && <BDDProjectInterface project={project}></BDDProjectInterface>}
+            {/* {project.type === "bdd" && <BDDProjectInterface project={project}></BDDProjectInterface>} */}
         </div>
     );
 }

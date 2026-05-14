@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { useNavigateProject } from "../../../hooks/useNavigate"
+import { useNavigate } from "../../../hooks/useNavigate"
 import { GoApp } from "../../../services/bridge"
 import { addEdge, applyEdgeChanges, applyNodeChanges, Background, Controls, ReactFlow } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
@@ -14,7 +14,7 @@ const initialNodes = [];
 const nodeType = { "model": DbModel }
 const initialEdges = [];
 export default function DbEditor({ projectName }) {
-    const navigateTo = useNavigateProject()
+    const navigateTo = useNavigate()
     const [project, setProject] = useState(null)
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
@@ -113,7 +113,7 @@ export default function DbEditor({ projectName }) {
     return <div className="flex w-screen h-screen flex-col bg-couleur3">
         <div className=" p-2 m-2 h-fit flex items-center justify-between">
             <div>
-                <h1 className="text-couleur1 text-3xl font-semibold"> <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" title="go back" onClick={() => navigateTo(projectName)}><FcPrevious size={20}></FcPrevious></button>DB Editor : {projectName} </h1>
+                <h1 className="text-couleur1 text-3xl font-semibold"> <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" title="go back" onClick={() => navigateTo("Dashboard")}><FcPrevious size={20}></FcPrevious></button>DB Editor : {projectName} </h1>
             </div>
             <div className="flex ">
                 <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={handleNewModelModal}><Plus></Plus> Add Table</button>

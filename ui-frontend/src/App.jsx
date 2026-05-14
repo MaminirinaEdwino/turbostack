@@ -24,7 +24,7 @@ function App() {
       case 'Components': return <ComponentsList />;
       case 'Assets': return <Assetslist />;
       case 'Api': return <APIlist />;
-      case 'Static sites': return <Pageslist />;
+      case 'Static Site': return <Pageslist />;
       case 'Web App': return <Pageslist />;
       case 'Models': return <BDDModelList />;
       case 'Subscription': return <Subscription/>;

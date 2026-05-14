@@ -17,10 +17,11 @@ export default function SideMenu() {
     const menuItems = [
         { name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
         { name: 'Project', icon: <Folder size={18} /> },
-        { name: 'Components', icon: <LucidePuzzle size={18} /> },
-        { name: 'Assets', icon: <ImageIcon size={18} /> },
+        // { name: 'Components', icon: <LucidePuzzle size={18} /> },
+        // { name: 'Assets', icon: <ImageIcon size={18} /> },
         { name: 'Models', icon: <Database size={18} /> },
-        { name: 'Pages', icon: <FileText size={18} /> },
+        { name: 'Web App', icon: <FileText size={18} /> },
+        { name: 'Static Site', icon: <FileText size={18} /> },
         { name: 'Api', icon: <Settings size={18} /> },
         { name: 'Subscription', icon: <CreditCard size={18} /> },
     ];

@@ -23,6 +23,7 @@ const HomePage = () => {
                 try {
                     const res = await GoApp.fetchProjectByName(actualProject);
                     setProjectDetails(res);
+                    console.log("res",JSON.stringify(res))
                 } catch (err) {
                     console.error("Error loading project details:", err);
                 }

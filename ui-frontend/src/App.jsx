@@ -1,6 +1,5 @@
 
 import './App.css'
-import { GoApp } from './services/bridge'
 import { useSelector } from 'react-redux'
 import HomePage from './layouts/homepage/homePage';
 import ProjectList from './layouts/projects/projectList';
@@ -25,7 +24,8 @@ function App() {
       case 'Components': return <ComponentsList />;
       case 'Assets': return <Assetslist />;
       case 'Api': return <APIlist />;
-      case 'Pages': return <Pageslist />;
+      case 'Static sites': return <Pageslist />;
+      case 'Web App': return <Pageslist />;
       case 'Models': return <BDDModelList />;
       case 'Subscription': return <Subscription/>;
       case 'New Project': return <NewProject/>

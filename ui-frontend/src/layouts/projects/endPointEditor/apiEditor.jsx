@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { useNavigate } from "../../../hooks/useNavigate"
+import { useSelector } from "react-redux"
 import { GoApp } from "../../../services/bridge"
 import { applyNodeChanges, Background, Controls, ReactFlow } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
@@ -14,6 +15,7 @@ const nodeType = { "endpoint": EndpointNode }
 
 export default function ApiEditor({ projectName }) {
     const navigateTo = useNavigate()
+    const isDarkMode = useSelector((state) => state.app.darkMode);
     const [project, setProject] = useState(null)
     const [nodes, setNodes] = useState([]);
     const [toggleModal, setToggleModal] = useState("none");
@@ -104,24 +106,24 @@ export default function ApiEditor({ projectName }) {
     }
 
     return (
-        <div className="flex w-screen h-screen flex-col bg-couleur3">
+        <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
             <div className="p-2 m-2 h-fit flex items-center justify-between">
                 <div>
-                    <h1 className="text-couleur1 text-3xl font-semibold flex items-center gap-2">
-                        <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" onClick={() => navigateTo("Dashboard")}>
+                    <h1 className="text-couleur1 dark:text-gray-100 text-3xl font-semibold flex items-center gap-2">
+                        <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 dark:border-white/20 bg-couleur5 dark:bg-gray-800 text-couleur1 dark:text-gray-100" onClick={() => navigateTo("Dashboard")}>
                             <FcPrevious size={20} />
                         </button>
                         API Editor : {projectName}
                     </h1>
                 </div>
                 <div className="flex ">
-                    <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={reorganizeNodes}>
+                    <button className="flex gap-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded px-4 py-1 m-2 hover:bg-couleur1/10 dark:hover:bg-white/5 transition-all" onClick={reorganizeNodes}>
                         <LayoutGrid size={20} /> Reorganize
                     </button>
-                    <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={() => setToggleCrudModal("block")}>
+                    <button className="flex gap-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded px-4 py-1 m-2 hover:bg-couleur1/10 dark:hover:bg-white/5 transition-all" onClick={() => setToggleCrudModal("block")}>
                         <Layers size={20} /> Auto CRUD
                     </button>
-                    <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={() => setToggleModal("block")}>
+                    <button className="flex gap-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded px-4 py-1 m-2 hover:bg-couleur1/10 dark:hover:bg-white/5 transition-all" onClick={() => setToggleModal("block")}>
                         <Plus /> Add Endpoint
                     </button>
                     <button className="flex gap-2 text-white bg-couleur1 rounded px-4 py-1 m-2" onClick={saveApi}>
@@ -167,9 +169,9 @@ export default function ApiEditor({ projectName }) {
             {/* Toast Notification */}
             {toast && (
                 <div className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${
-                    toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
-                    toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
-                    "bg-green-50 border-green-200 text-green-700"
+                    toast.type === "error" ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400" :
+                    toast.type === "loading" ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400" :
+                    "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
                 }`}>
                     {toast.type === "loading" ? <Loader2 size={18} className="animate-spin" /> : 
                      toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
@@ -177,12 +179,13 @@ export default function ApiEditor({ projectName }) {
                 </div>
             )}
 
-            <div className="w-auto h-full bg-white m-5 rounded border border-couleur1">
+            <div className="w-auto h-full bg-white dark:bg-gray-900 m-5 rounded border border-couleur1 dark:border-white/10">
                 <ReactFlow
                     nodes={nodes}
                     onNodesChange={onNodesChange}
                     nodeTypes={nodeType}
                     fitView
+                    colorMode={isDarkMode ? 'dark' : 'light'}
                 >
                     <Controls />
                     <Background variant="dots" gap={12} size={1} />

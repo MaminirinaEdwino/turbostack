@@ -49,7 +49,7 @@ const HomePage = () => {
     return (
         <div className="flex h-screen w-full font-san bg-couleur3" >
             <SideMenu />
-            <main className="flex-1 p-8 overflow-y-auto">
+            <main className="flex-1 p-8 overflow-y-auto"> 
                 <div className="flex justify-between items-center mb-6">
                     <LayoutHeader layoutName={actualProject ? `Project Dashboard` : "Global Dashboard"}/>
                     {actualProject && (

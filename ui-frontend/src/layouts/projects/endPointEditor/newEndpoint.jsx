@@ -118,7 +118,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
     };
 
     return (
-        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-[550px] max-h-[85vh] overflow-y-auto">
+        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-137.5 max-h-[85vh] overflow-y-auto">
             <h3 className="font-bold text-2xl text-couleur1 mb-4">New Endpoint</h3>
             
             <div className="grid grid-cols-3 gap-4 mb-4">
@@ -152,7 +152,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
 
             <div className="flex flex-col gap-1 mb-6">
                 <label className="text-xs font-bold opacity-50 uppercase">Associated Models</label>
-                <div className="flex flex-wrap gap-2 mt-2 border border-dashed border-couleur1/30 p-3 rounded-lg min-h-[60px]">
+                <div className="flex flex-wrap gap-2 mt-2 border border-dashed border-couleur1/30 p-3 rounded-lg min-h-15">
                     {availableModels.map((m, i) => (
                         <button
                             key={i}

@@ -46,6 +46,16 @@ export default function DbEditor({ projectName }) {
     // const nodeExist = (id) => {
     //     return nodes.some((item) => item.id == "model-" + id)
     // }
+    const deleteModel = useCallback((name) => {
+        const nodeId = "model-" + name;
+        setProject(prev => ({
+            ...prev,
+            models: prev.models.filter(m => m.nom !== name)
+        }));
+        setEdges(prev => prev.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
+        setToggleEditModal("none");
+    }, []);
+
     useEffect(() => {
         const setter = (updatedNodes) => {
             setNodes(updatedNodes);
@@ -62,7 +72,8 @@ export default function DbEditor({ projectName }) {
                         position: existingNode ? existingNode.position : { x: index * 10, y: 50 },
                         data: {
                             "nom": model.nom,
-                            "champs": [...model.champs]
+                            "champs": [...model.champs],
+                            "onDelete": () => deleteModel(model.nom)
                         }
                     };
                 }
@@ -70,7 +81,7 @@ export default function DbEditor({ projectName }) {
             }).filter(Boolean);
             setter(updatedNodes)
         }
-    }, [project]);
+    }, [project, deleteModel]);
 
     const handleNewModelModal = () => {
         if (toggleModal == "none") {

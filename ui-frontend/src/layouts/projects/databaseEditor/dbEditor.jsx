@@ -56,6 +56,12 @@ export default function DbEditor({ projectName }) {
         setToggleEditModal("none");
     }, []);
 
+    const handleEditModel = useCallback((index) => {
+        setSelectedModelIndex(index);
+        setToggleEditModal("block");
+        setToggleModal("none"); // Ferme le modal de création si ouvert
+    }, []);
+
     useEffect(() => {
         const setter = (updatedNodes) => {
             setNodes(updatedNodes);
@@ -73,7 +79,8 @@ export default function DbEditor({ projectName }) {
                         data: {
                             "nom": model.nom,
                             "champs": [...model.champs],
-                            "onDelete": () => deleteModel(model.nom)
+                            "onDelete": () => deleteModel(model.nom),
+                            "onEdit": () => handleEditModel(index)
                         }
                     };
                 }

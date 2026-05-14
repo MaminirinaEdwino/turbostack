@@ -11,6 +11,13 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
 
     const availableModels = project.bdd?.models || [];
 
+    // Extraction dynamique des rôles depuis la table User
+    const userModel = availableModels.find(m => m.nom === "User");
+    const roleField = userModel?.champs.find(c => c.nom === "role");
+    const availableRoles = roleField?.default_value 
+        ? ["public", ...roleField.default_value.split(',').map(r => r.trim())] 
+        : ["public"];
+
     const handleSave = (e) => {
         e.preventDefault();
         const currentEndpoints = project.rest_api?.endpoints || [];
@@ -114,7 +121,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
         <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-[550px] max-h-[85vh] overflow-y-auto">
             <h3 className="font-bold text-2xl text-couleur1 mb-4">New Endpoint</h3>
             
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold opacity-50 uppercase">Name</label>
                     <input className="border border-couleur1 p-2 rounded-lg outline-none focus:ring-2 ring-couleur1/20" type="text" value={endpoint.nom} onChange={(e) => setEndpoint({ ...endpoint, nom: e.target.value })} placeholder="Get Users" />
@@ -126,6 +133,14 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                         <option value="POST">POST</option>
                         <option value="PUT">PUT</option>
                         <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-bold opacity-50 uppercase">Access Role</label>
+                    <select className="border border-couleur1 p-2 rounded-lg bg-white capitalize" value={endpoint.role} onChange={(e) => setEndpoint({ ...endpoint, role: e.target.value })}>
+                        {availableRoles.map(role => (
+                            <option key={role} value={role}>{role}</option>
+                        ))}
                     </select>
                 </div>
             </div>

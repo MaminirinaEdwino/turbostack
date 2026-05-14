@@ -1,5 +1,8 @@
 export default function DbModel({data}){
-    return <div className="border border-couleur1 rounded-lg overflow-hidden">
+   const handleOnclick = ()=>{
+      
+   }
+    return <div className="border border-couleur1 rounded-lg overflow-hidden" onClick={handleOnclick}>
          <div className="border-b border-couleur1 p-2 bg-couleur3">
             {data.nom}
          </div>

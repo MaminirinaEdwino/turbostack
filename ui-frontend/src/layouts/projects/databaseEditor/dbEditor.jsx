@@ -10,9 +10,7 @@ import { FcPrevious } from "react-icons/fc";
 import { Plus, Save } from "lucide-react";
 
 
-const initialNodes = [
-
-];
+const initialNodes = [];
 const nodeType = { "model": DbModel }
 const initialEdges = [];
 export default function DbEditor({ projectName }) {
@@ -44,7 +42,6 @@ export default function DbEditor({ projectName }) {
         }
     }, [projectName])
     const nodeExist = (id) => {
-        console.log(id)
         nodes.map((item) => {
             if (item.id == "model-" + id) {
                 return true
@@ -53,14 +50,12 @@ export default function DbEditor({ projectName }) {
         return false
     }
     useEffect(() => {
-        const reloadNode = () => {
+        const reloadNode = async () => {
+            let tmp = []
             for (let index = 0; index < project.models.length; index++) {
-
                 if (Object.keys(project.models[index]).length > 0) {
-                    
                     if (!nodeExist(project.models[index].nom)) {
-                        console.log(index, "reload")
-                        setNodes([...nodes, {
+                        tmp.push({
                             id: "model-" + project.models[index].nom,
                             type: "model",
                             position: { x: 0, y: 0 },
@@ -68,15 +63,17 @@ export default function DbEditor({ projectName }) {
                                 "nom": project.models[index].nom,
                                 "champs": [...project.models[index].champs]
                             }
-                        }])
+                        })
+                    }else{
+                        tmp.push(nodes[index])
                     }
                 }
             }
+            setNodes(tmp)
         }
         if (project != null && project.models != null) {
             reloadNode()
         }
-
     }, [project])
     const handleNewModelModal = () => {
         if (toggleModal == "none") {
@@ -86,14 +83,13 @@ export default function DbEditor({ projectName }) {
         }
     }
     const savedb = async () => {
-        const res = await GoApp.savedb(projectName, JSON.stringify(project))
-        console.log(res)
+        await GoApp.savedb(projectName, JSON.stringify(project))
     }
     return <div className="flex w-screen h-screen flex-col bg-couleur3">
         <div className=" p-2 m-2 h-fit flex items-center justify-between">
             <div>
-                <h1 className="text-couleur1 text-3xl font-semibold"> <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" title="go back" onClick={() => navigateTo(projectName)}><FcPrevious size={20}></FcPrevious></button>DB Editor : {projectName}</h1>
-            </div>
+                <h1 className="text-couleur1 text-3xl font-semibold"> <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" title="go back" onClick={() => navigateTo(projectName)}><FcPrevious size={20}></FcPrevious></button>DB Editor : {projectName} {nodes.length} </h1>
+            </div> 
             <div className="flex ">
                 <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={handleNewModelModal}><Plus></Plus> Add Table</button>
                 <button className="flex gap-2 text-white bg-couleur1  rounded px-4 py-1 m-2" onClick={savedb}><Save></Save>Save</button>

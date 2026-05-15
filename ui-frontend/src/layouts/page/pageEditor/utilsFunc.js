@@ -1,4 +1,4 @@
-const parseStyles = (styleString) => {
+export const parseStyles = (styleString) => {
     if (!styleString) return {};
     return styleString.split(';').reduce((acc, rule) => {
         const parts = rule.split(':');
@@ -10,7 +10,7 @@ const parseStyles = (styleString) => {
     }, {});
 };
 
-const stringifyStyles = (styleObj) => {
+export const stringifyStyles = (styleObj) => {
     return Object.entries(styleObj)
         // eslint-disable-next-line no-unused-vars
         .filter(([_, v]) => v && v !== "")
@@ -18,4 +18,3 @@ const stringifyStyles = (styleObj) => {
         .join('; ');
 };
 
-export default {parseStyles, stringifyStyles};

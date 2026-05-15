@@ -4,7 +4,11 @@ import {
     MousePointer2, Layers, GripVertical, Globe, PlusSquare
 } from "lucide-react";
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
-import { parseStyles, stringifyStyles } from './utilsFunc';
+import { parseStyles } from './utilsFunc';
+import { stringifyStyles } from './utilsFunc';
+import Block from "./components/block";
+import AddChild from "./components/addChild";
+import DeleteBlock from "./components/deleteBlock";
 
 
 export default function VisualEditor({ content, pageStyles = "", onPageStylesChange, onChange, availablePages = [] }) {
@@ -284,36 +288,11 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                     onClick={() => selectBlock(block.id)}
                 >
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <div className="cursor-grab active:cursor-grabbing text-couleur1/20 group-hover:text-couleur1/60 transition-colors" onClick={(e) => e.stopPropagation()}>
-                                <GripVertical size={14} />
-                            </div>
-                            <div className="p-1.5 bg-couleur1/10 rounded-lg text-couleur1">
-                                {getIconForTag(block.tag)}
-                            </div>
-                            <div>
-                                <span className="text-[10px] font-black text-couleur1 dark:text-gray-400 uppercase tracking-tighter">
-                                    {block.tag}
-                                </span>
-                                <p className="text-[11px] opacity-40 font-mono">#{index + 1}</p>
-                            </div>
-                        </div>
+
+                        <Block index={index} getIconForTag={getIconForTag} block={block} />
                         <div className="flex items-center gap-1">
-                            <div className="relative group/add">
-                                <button className="p-1.5 text-couleur1/40 hover:text-couleur1 hover:bg-couleur1/10 rounded-lg transition-all" onClick={(e) => e.stopPropagation()}>
-                                    <PlusSquare size={14} />
-                                </button>
-                                <div className="absolute right-0 bottom-full mb-2 hidden group-hover/add:flex flex-col bg-white dark:bg-gray-800 border border-couleur1/10 shadow-xl rounded-xl p-1 z-50 min-w-32 animate-in fade-in zoom-in-95 duration-200">
-                                    {BLOCK_TYPES.map(type => (
-                                        <button key={type.tag} onClick={(e) => { e.stopPropagation(); addChild(block.id, type); }} className="flex items-center gap-2 p-2 hover:bg-couleur1/5 rounded-lg text-[10px] font-bold text-couleur1 dark:text-gray-300">
-                                            {type.icon} {type.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <button onClick={(e) => { e.stopPropagation(); removeBlock(block.id); }} className="text-red-400 hover:text-red-600 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Trash2 size={14} />
-                            </button>
+                            <AddChild block={block} addChild={addChild}/>
+                            <DeleteBlock block={block} removeBlock={removeBlock}/>
                         </div>
                     </div>
                 </div>

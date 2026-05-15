@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { 
     Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText, Settings, 
     CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight
@@ -46,13 +46,9 @@ export default function ControllerEditor({ projectName }) {
 
     const addController = () => {
         const newController = {
-            id: Math.random().toString(36).substr(2, 9), // Conservé pour la clé React
-            name: "New Controller",
-            params: [],
-            page: pages[0] || null,
-            type: project?.type || "",
-            request_params: [],
-            endpointIndex: 0,
+            nom: "New Controller",
+            page_nom: pages[0]?.nom || "",
+            bindings: []
         };
         setProject(prev => ({
             ...prev,
@@ -75,7 +71,21 @@ export default function ControllerEditor({ projectName }) {
     if (loading) return <div className="flex h-screen items-center justify-center bg-couleur3"><Loader2 className="animate-spin text-couleur1" /></div>;
 
     const activeController = selectedIndex !== null ? controllers[selectedIndex] : null;
-    const activeEndpoint = activeController ? endpoints[activeController.endpointIndex] : null;
+
+    // Helper pour extraire tous les IDs d'éléments d'une page
+    const getIdsFromContent = (content) => {
+        let ids = [];
+        if (!content) return ids;
+        content.forEach(item => {
+            if (item.id) ids.push(item.id);
+            if (item.children) ids = [...ids, ...getIdsFromContent(item.children)];
+        });
+        return ids;
+    };
+
+    const availableIds = activeController 
+        ? getIdsFromContent(pages.find(p => p.nom === activeController.page_nom)?.content) 
+        : [];
 
     return (
         <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
@@ -105,20 +115,22 @@ export default function ControllerEditor({ projectName }) {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {controllers.map((ctrl, index) => (
-                                <div key={ctrl.id} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 shadow-sm hover:shadow-md transition-all">
+                                <div key={index} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 shadow-sm hover:shadow-md transition-all">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="p-3 bg-couleur1/10 text-couleur1 rounded-xl"><Cpu size={24} /></div>
                                         <div className="flex gap-2">
                                             <button onClick={() => { setSelectedIndex(index); setEditMode(true); }} className="p-2 hover:bg-couleur1/5 text-couleur1 rounded-lg"><Edit3 size={18} /></button>
-                                            <button className="p-2 hover:bg-red-50 text-red-500 rounded-lg"><Trash2 size={18} /></button>
+                                            <button onClick={() => setProject(prev => {
+                                                const newControllers = prev[typeKey].controllers.filter((_, i) => i !== index);
+                                                return { ...prev, [typeKey]: { ...prev[typeKey], controllers: newControllers } };
+                                            })} className="p-2 hover:bg-red-50 text-red-500 rounded-lg"><Trash2 size={18} /></button>
                                         </div>
                                     </div>
-                                    <h3 className="text-lg font-bold text-couleur1 mb-1">{ctrl.name}</h3>
+                                    <h3 className="text-lg font-bold text-couleur1 mb-1">{ctrl.nom}</h3>
                                     <div className="flex items-center gap-2 text-xs opacity-60">
-                                        <FileText size={12} /> {ctrl.page?.nom || "No Page"}
-                                        <ArrowRight size={12} />
-                                        <Settings size={12} /> {endpoints[ctrl.endpointIndex]?.nom || "No API"}
+                                        <FileText size={12} /> Page: {ctrl.page_nom || "Not set"}
                                     </div>
+                                    <div className="mt-2 text-[10px] font-bold uppercase opacity-40">{ctrl.bindings?.length || 0} Bindings Active</div>
                                 </div>
                             ))}
                         </div>
@@ -127,8 +139,8 @@ export default function ControllerEditor({ projectName }) {
                     <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-3xl border border-couleur1/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
                         <div className="p-6 border-b border-couleur1/10 bg-couleur1/5 flex justify-between items-center">
                             <input 
-                                value={activeController?.name} 
-                                onChange={(e) => updateController(selectedIndex, 'name', e.target.value)}
+                                value={activeController?.nom} 
+                                onChange={(e) => updateController(selectedIndex, 'nom', e.target.value)}
                                 className="bg-transparent text-xl font-bold text-couleur1 outline-none border-b border-transparent focus:border-couleur1"
                             />
                             <button onClick={() => setEditMode(false)} className="text-couleur1/50 hover:text-couleur1 uppercase text-xs font-black">Close</button>
@@ -140,72 +152,57 @@ export default function ControllerEditor({ projectName }) {
                                 <div className="space-y-3">
                                     <label className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2"><FileText size={14}/> Target Page</label>
                                     <select 
-                                        value={activeController?.page?.id}
-                                        onChange={(e) => updateController(selectedIndex, 'page', pages.find(p => p.id === e.target.value))}
+                                        value={activeController?.page_nom}
+                                        onChange={(e) => updateController(selectedIndex, 'page_nom', e.target.value)}
                                         className="w-full p-4 rounded-2xl border border-couleur1/10 bg-couleur3/30 outline-none focus:ring-2 ring-couleur1/20 transition-all"
                                     >
-                                        {pages.map(p => <option key={p.id} value={p.id}>{p.nom} ({p.uri})</option>)}
-                                    </select>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2"><Settings size={14}/> API Endpoint</label>
-                                    <select 
-                                        value={activeController?.endpointIndex}
-                                        onChange={(e) => {
-                                            const idx = parseInt(e.target.value);
-                                            updateController(selectedIndex, 'endpointIndex', idx);
-                                            updateController(selectedIndex, 'request_params', endpoints[idx]?.params || []);
-                                        }}
-                                        className="w-full p-4 rounded-2xl border border-couleur1/10 bg-couleur3/30 outline-none focus:ring-2 ring-couleur1/20 transition-all"
-                                    >
-                                        {endpoints.map((ep, i) => <option key={i} value={i}>{ep.method} {ep.uri} ({ep.nom})</option>)}
+                                        {pages.map(p => <option key={p.nom} value={p.nom}>{p.nom} ({p.uri})</option>)}
                                     </select>
                                 </div>
                             </div>
 
-                            {/* Step 2: Parameter Mapping */}
-                            {activeEndpoint && (
-                                <div className="pt-8 border-t border-couleur1/10">
-                                    <h3 className="text-sm font-black uppercase text-couleur1/40 mb-6 flex items-center gap-2">
-                                        <LinkIcon size={16} /> Data Mapping Configuration
+                            {/* Step 2: Bindings (DataBindingJSON) */}
+                            <div className="pt-8 border-t border-couleur1/10">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-sm font-black uppercase text-couleur1/40 flex items-center gap-2">
+                                        <LinkIcon size={16} /> Data Bindings
                                     </h3>
-                                    
-                                    <div className="space-y-4">
-                                        {/* URI Params Mapping */}
-                                        {activeEndpoint.params?.map(param => (
-                                            <MappingRow 
-                                                key={param} 
-                                                label={param} 
-                                                type="URL Parameter" 
-                                                value={activeController.params?.find(p => p.key === param)}
-                                                onChange={(val) => {
-                                                    const currentParams = activeController.params || [];
-                                                    const filtered = currentParams.filter(p => p.key !== param);
-                                                    const newParams = [...filtered, { key: param, ...val }];
-                                                    updateController(selectedIndex, 'params', newParams);
-                                                }}
-                                            />
-                                        ))}
-
-                                        {/* Body Fields Mapping (from associated models) */}
-                                        {activeEndpoint.model?.map(m => m.champs?.map(f => (
-                                            <MappingRow 
-                                                key={`${m.nom}-${f.nom}`} 
-                                                label={f.nom} 
-                                                type={`Body (${m.nom})`}
-                                                value={activeController.params?.find(p => p.key === `${m.nom}.${f.nom}`)}
-                                                onChange={(val) => {
-                                                    const key = `${m.nom}.${f.nom}`;
-                                                    const currentParams = activeController.params || [];
-                                                    const filtered = currentParams.filter(p => p.key !== key);
-                                                    const newParams = [...filtered, { key, ...val }];
-                                                    updateController(selectedIndex, 'params', newParams);
-                                                }}
-                                            />
-                                        )))}
-                                    </div>
+                                    <button 
+                                        onClick={() => {
+                                            const newBinding = { id_element: availableIds[0] || "", endpoint_nom: endpoints[0]?.nom || "", trigger: "onLoad", action: "fill_content", map_field: "" };
+                                            updateController(selectedIndex, 'bindings', [...(activeController.bindings || []), newBinding]);
+                                        }}
+                                        className="text-xs bg-couleur1 text-white px-3 py-1 rounded-lg flex items-center gap-1"
+                                    >
+                                        <Plus size={14} /> Add Binding
+                                    </button>
                                 </div>
-                            )}
+                                
+                                <div className="space-y-4">
+                                    {activeController.bindings?.map((binding, bIndex) => (
+                                        <BindingRow 
+                                            key={bIndex} 
+                                            binding={binding} 
+                                            availableIds={availableIds}
+                                            endpoints={endpoints}
+                                            onDelete={() => {
+                                                const newBindings = activeController.bindings.filter((_, i) => i !== bIndex);
+                                                updateController(selectedIndex, 'bindings', newBindings);
+                                            }}
+                                            onChange={(newVal) => {
+                                                const newBindings = [...activeController.bindings];
+                                                newBindings[bIndex] = newVal;
+                                                updateController(selectedIndex, 'bindings', newBindings);
+                                            }}
+                                        />
+                                    ))}
+                                    {(!activeController.bindings || activeController.bindings.length === 0) && (
+                                        <div className="text-center p-8 border-2 border-dashed border-couleur1/10 rounded-2xl text-couleur1/30 italic text-sm">
+                                            No bindings defined for this controller.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -227,39 +224,72 @@ export default function ControllerEditor({ projectName }) {
     );
 }
 
-function MappingRow({ label, type, value, onChange }) {
-    const [source, setSource] = useState(value?.type || 'static');
-    const [val, setVal] = useState(value?.value || '');
+function BindingRow({ binding, availableIds, endpoints, onChange, onDelete }) {
+    // Extraction automatique des suggestions basées sur l'endpoint sélectionné
+    const selectedEp = useMemo(() => 
+        endpoints.find(ep => ep.nom === binding.endpoint_nom), 
+    [endpoints, binding.endpoint_nom]);
 
-    const handleInternalChange = (s, v) => {
-        setSource(s);
-        setVal(v);
-        onChange({ type: s, value: v });
-    };
+    const fieldSuggestions = useMemo(() => {
+        if (!selectedEp) return [];
+        let fields = [];
+        // Champs issus des modèles associés (souvent la structure de réponse ou du body)
+        selectedEp.model?.forEach(m => m.champs?.forEach(f => fields.push(f.nom)));
+        // Paramètres de l'URI
+        selectedEp.params?.forEach(p => fields.push(p));
+        return [...new Set(fields)]; // Unicité
+    }, [selectedEp]);
 
     return (
-        <div className="flex items-center gap-4 bg-couleur3/10 p-4 rounded-2xl border border-couleur1/5 group hover:border-couleur1/20 transition-all">
-            <div className="w-1/3">
-                <p className="text-sm font-bold text-couleur1">{label}</p>
-                <p className="text-[10px] uppercase opacity-40 font-black">{type}</p>
+        <div className="bg-couleur3/10 p-4 rounded-2xl border border-couleur1/5 space-y-4">
+            <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase text-couleur1/40">Binding Configuration</span>
+                <button onClick={onDelete} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 size={14}/></button>
             </div>
-            <div className="flex-1 flex gap-2">
-                <select 
-                    value={source}
-                    onChange={(e) => handleInternalChange(e.target.value, val)}
-                    className="bg-white px-3 py-2 rounded-xl border border-couleur1/10 text-xs font-bold outline-none"
-                >
-                    <option value="static">Static Value</option>
-                    <option value="query">URL Query Param</option>
-                    <option value="state">Page State</option>
-                </select>
-                <input 
-                    type="text"
-                    placeholder={source === 'static' ? "Enter value..." : "Param name..."}
-                    value={val}
-                    onChange={(e) => handleInternalChange(source, e.target.value)}
-                    className="flex-1 bg-white px-4 py-2 rounded-xl border border-couleur1/10 text-sm outline-none focus:ring-2 ring-couleur1/20"
-                />
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase font-bold opacity-50">Element ID</label>
+                    <select value={binding.id_element} onChange={(e) => onChange({...binding, id_element: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
+                        {availableIds.map(id => <option key={id} value={id}>{id}</option>)}
+                    </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase font-bold opacity-50">Endpoint</label>
+                    <select value={binding.endpoint_nom} onChange={(e) => onChange({...binding, endpoint_nom: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
+                        {endpoints.map(ep => <option key={ep.nom} value={ep.nom}>{ep.nom}</option>)}
+                    </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase font-bold opacity-50">Trigger</label>
+                    <select value={binding.trigger} onChange={(e) => onChange({...binding, trigger: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
+                        <option value="onLoad">onLoad</option>
+                        <option value="onClick">onClick</option>
+                        <option value="onHover">onHover</option>
+                    </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label className="text-[9px] uppercase font-bold opacity-50">Action</label>
+                    <select value={binding.action} onChange={(e) => onChange({...binding, action: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
+                        <option value="fill_content">Fill Content</option>
+                        <option value="set_style">Set Style</option>
+                        <option value="redirect">Redirect</option>
+                    </select>
+                </div>
+                <div className="flex flex-col gap-1 col-span-2">
+                    <label className="text-[9px] uppercase font-bold opacity-50">Field Mapping (JSON Path)</label>
+                    <input 
+                        list={`fields-${binding.id_element}`}
+                        value={binding.map_field} 
+                        placeholder="ex: data.title" 
+                        onChange={(e) => onChange({...binding, map_field: e.target.value})} 
+                        className="p-2 text-xs rounded-lg border bg-white outline-none focus:ring-1 ring-couleur1"
+                    />
+                    <datalist id={`fields-${binding.id_element}`}>
+                        {fieldSuggestions.map(f => (
+                            <option key={f} value={f} />
+                        ))}
+                    </datalist>
+                </div>
             </div>
         </div>
     );

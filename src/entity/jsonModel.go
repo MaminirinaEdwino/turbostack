@@ -41,7 +41,7 @@ type ModelJSON struct {
 }
 
 type PageJSON struct {
-	Nom     string   `json:"nom"`
+	Nom     string            `json:"nom"`
 	Contenu []PageContentJSON `json:"content"`
 }
 
@@ -74,9 +74,11 @@ type WebAppJSON struct {
 }
 
 type PageContentJSON struct {
-	Id        string `json:"id"`
-	Tag       string `json:"tag"`
-	Content   string `json:"content"`
-	ClassName string `json:"class_name"`
+	Id        string            `json:"id"`
+	Tag       string            `json:"tag"`
+	Content   string            `json:"content"`
+	ClassName string            `json:"className"`
+	Href      string            `json:"href"`
+	Styles    string            `json:"styles"`
+	Children  []PageContentJSON `json:"children"`
 }
-

@@ -133,10 +133,18 @@ func (wj *WebAppJSON) ToModel() WebApp {
 
 
 func (pc *PageContentJSON) ToModel() pageContent {
+	var children []pageContent
+	for _, val := range pc.Children {
+		children = append(children, val.ToModel())
+	}
+
 	return pageContent{
 		id:        pc.Id,
 		tag:       pc.Tag,
 		content:   pc.Content,
 		className: pc.ClassName,
+		href:      pc.Href,
+		styles:    pc.Styles,
+		children:  children,
 	}
 }

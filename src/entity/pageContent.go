@@ -5,6 +5,9 @@ type pageContent struct {
 	tag       string
 	content   string
 	className string
+	href      string
+	styles    string
+	children  []pageContent
 }
 
 func (p *pageContent) GetId() string {
@@ -39,10 +42,43 @@ func (p *pageContent) SetClassName(className string) {
 	p.className = className
 }
 
+func (p *pageContent) GetHref() string {
+	return p.href
+}
+
+func (p *pageContent) SetHref(href string) {
+	p.href = href
+}
+
+func (p *pageContent) GetStyles() string {
+	return p.styles
+}
+
+func (p *pageContent) SetStyles(styles string) {
+	p.styles = styles
+}
+
+func (p *pageContent) GetChildren() []pageContent {
+	return p.children
+}
+
+func (p *pageContent) SetChildren(children []pageContent) {
+	p.children = children
+}
+
 func (p *pageContent) ToJSON() PageContentJSON {
+	var children []PageContentJSON
+	for _, child := range p.children {
+		children = append(children, child.ToJSON())
+	}
+
 	return PageContentJSON{
-		Id: p.id,
-		Tag: p.tag,
-		Content: p.content,
+		Id:        p.id,
+		Tag:       p.tag,
+		Content:   p.content,
+		ClassName: p.className,
+		Href:      p.href,
+		Styles:    p.styles,
+		Children:  children,
 	}
 }

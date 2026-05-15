@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
@@ -50,7 +49,7 @@ func (s *ProjectService) SaveProjectBDD(name string, bddJson string) string {
 	pJson := s.Manager.LoadProject(name)
 	json.Unmarshal([]byte(bddJson), &bdd)
 	pJson.BDD = bdd
-	pJson.Nom = strings.Replace(name, " ", "", -1)
+	pJson.Nom = name
 	s.Manager.SaveProject(pJson)
 	return "Success"
 }
@@ -66,7 +65,7 @@ func (s *ProjectService) FetchProjects() []string {
 
 func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
 	var pJson entity.ProjectJSON
-	filePath := fmt.Sprintf("turbo_projects/%s.json", strings.ReplaceAll(name, " ", ""))
+	filePath := fmt.Sprintf("turbo_projects/%s.json", name)
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)

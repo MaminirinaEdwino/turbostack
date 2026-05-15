@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"slices"
-	"strings"
 )
 
 type ProjectManager struct {
@@ -13,23 +12,6 @@ type ProjectManager struct {
 }
 
 func (mgr *ProjectManager) LoadProjects() error {
-
-	// var pJson []ProjectJSON
-	// var p Project
-	// if !service.FileExists("project.json") {
-	// 	saveFile, _ := os.Create("project.json")
-	// 	jsonData, _ := json.MarshalIndent(pJson, "", "    ")
-	// 	saveFile.Write(jsonData)
-	// }
-	// file, err := os.ReadFile("project.json")
-	// if err != nil {
-	// 	return err
-	// }
-	// json.Unmarshal(file, &pJson)
-	// for _, val := range pJson {
-	// 	p = val.ToModel()
-	// 	mgr.Projects = append(mgr.Projects, p)
-	// }
 
 	projectFiles, err := os.ReadDir("turbo_projects")
 	if err != nil {
@@ -84,7 +66,7 @@ func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 }
 
 func (mgr *ProjectManager) SaveProject(project ProjectJSON) error {
-	filename := strings.Replace(project.Nom, " ", "", -1)
+	filename := project.Nom
 	fmt.Println(project.Nom)
 	filepath := fmt.Sprintf("turbo_projects/%s.json",filename )
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)

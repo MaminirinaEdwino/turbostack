@@ -265,7 +265,9 @@ export default function PageEditor({ projectName }) {
                                 activeTab="blocks"
                                 activeViewport={viewport.name}
                                 allowedTabs={["blocks"]}
-                                onChange={(blocks) => updateActiveItemField("content", blocks)} />
+                                onChange={(blocks) => updateActiveItemField("content", blocks)} 
+                                showToast={showToast}
+                            />
                         </aside>
 
                         {/* Main content: Prévisualisation isolée (Iframe) */}
@@ -378,7 +380,9 @@ export default function PageEditor({ projectName }) {
                                 activeViewport={viewport.name}
                                 allowedTabs={editingType === 'page' ? ["global", "properties"] : ["properties"]}
                                 onChange={(blocks) => updateActiveItemField("content", blocks)}
-                                onPageStylesChange={(styles) => updateActiveItemField("styles", styles)} />
+                                onPageStylesChange={(styles) => updateActiveItemField("styles", styles)} 
+                                showToast={showToast}
+                            />
                         </aside>
                     </div>
                 ) : (

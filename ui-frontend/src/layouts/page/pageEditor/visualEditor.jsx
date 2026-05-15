@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
-    Type, Image as ImageIcon, Trash2, Settings2,
+    Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
     MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle
 } from "lucide-react";
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
@@ -27,11 +27,24 @@ export default function VisualEditor({
     activeTab,
     setActiveTab,
     activeViewport = "desktop",
-    allowedTabs = ["blocks", "global", "properties"]
+    allowedTabs = ["blocks", "global", "properties"],
+    showToast
 }) {
     const [blocks, setBlocks] = useState([]);
     const [draggedId, setDraggedId] = useState(null);
     const [selectedGlobalTag, setSelectedGlobalTag] = useState("body");
+    const [copiedStyle, setCopiedStyle] = useState(null);
+
+    const handleCopyStyle = (styles) => {
+        setCopiedStyle(styles);
+        if (showToast) showToast("Style copié avec succès !");
+    };
+
+    const handlePasteStyle = (id) => {
+        if (!copiedStyle) return;
+        updateBlock(id, { styles: copiedStyle });
+        if (showToast) showToast("Style appliqué !");
+    };
 
     const availableSelectors = useMemo(() => {
         const tags = new Set(["body"]);
@@ -380,9 +393,26 @@ export default function VisualEditor({
             {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
                 <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents}/>
             ) : activeTab === "global" && allowedTabs.includes("global") ? (
-                <GlobalTab availableSelectors={availableSelectors} activeViewport={activeViewport} setSelectedGlobalTag={setSelectedGlobalTag} handlePageStyleChange={handlePageStyleChange} pageStyles={pageStyles} selectedGlobalTag={selectedGlobalTag}/>
+                <GlobalTab 
+                    availableSelectors={availableSelectors} 
+                    activeViewport={activeViewport} 
+                    setSelectedGlobalTag={setSelectedGlobalTag} 
+                    handlePageStyleChange={handlePageStyleChange} 
+                    pageStyles={pageStyles} 
+                    selectedGlobalTag={selectedGlobalTag}
+                />
             ) : allowedTabs.includes("properties") ? (
-                <PropertiesTab availablePages={availablePages} activeViewport={activeViewport} currentActiveBlock={currentActiveBlock} getIconForTag={getIconForTag} handleStyleChange={handleStyleChange} updateBlock={updateBlock}/>
+                <PropertiesTab 
+                    availablePages={availablePages} 
+                    activeViewport={activeViewport} 
+                    currentActiveBlock={currentActiveBlock} 
+                    getIconForTag={getIconForTag} 
+                    handleStyleChange={handleStyleChange} 
+                    updateBlock={updateBlock}
+                    onCopyStyle={() => handleCopyStyle(currentActiveBlock?.styles)}
+                    onPasteStyle={() => handlePasteStyle(currentActiveBlock?.id)}
+                    hasCopiedStyle={!!copiedStyle}
+                />
             ) : null}
         </div >
     );

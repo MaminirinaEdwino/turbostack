@@ -1,8 +1,28 @@
-import { MousePointer2 } from "lucide-react";
+import { MousePointer2, Copy, ClipboardPaste } from "lucide-react";
 import { BLOCK_TYPES, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
 
-export default function PropertiesTab({currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages}) {
+export default function PropertiesTab({
+    currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
+    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle
+}) {
+    // Extraction intelligente des styles selon le viewport
+    const getStylesForViewport = () => {
+        if (!currentActiveBlock?.styles) return {};
+        try {
+            if (typeof currentActiveBlock.styles === 'string' && currentActiveBlock.styles.trim().startsWith('{')) {
+                const parsed = JSON.parse(currentActiveBlock.styles);
+                return parsed[activeViewport] || parsed.desktop || {};
+            }
+            // Fallback pour l'ancien format string
+            return parseStyles(currentActiveBlock.styles);
+        } catch (e) {
+            return {};
+        }
+    };
+
+    const currentStyles = getStylesForViewport();
+
     return <>
         <div className="flex flex-col gap-6 animate-in fade-in duration-300">
             {currentActiveBlock ? (
@@ -54,11 +74,20 @@ export default function PropertiesTab({currentActiveBlock, getIconForTag, update
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Visual Styling</label>
+                            <div className="flex items-center justify-between">
+                                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Visual Styling</label>
+                                <div className="flex gap-2">
+                                    <button onClick={onCopyStyle} className="p-1 text-couleur1/40 hover:text-couleur1 transition-all" title="Copier le style">
+                                        <Copy size={14} />
+                                    </button>
+                                    <button onClick={onPasteStyle} disabled={!hasCopiedStyle} className={`p-1 transition-all ${hasCopiedStyle ? 'text-couleur1/40 hover:text-couleur1' : 'opacity-10 cursor-not-allowed'}`} title="Coller le style">
+                                        <ClipboardPaste size={14} />
+                                    </button>
+                                </div>
+                            </div>
                             <div className="grid grid-cols-2 gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
                                 {STYLE_CONTROLS.filter(ctrl => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.prop)).map((ctrl) => {
-                                    const styles = parseStyles(currentActiveBlock.styles);
-                                    let currentValue = styles[ctrl.prop] || "";
+                                    let currentValue = currentStyles[ctrl.prop] || "";
 
                                     return (
                                         <div key={ctrl.prop} className="flex flex-col gap-1">

@@ -2,7 +2,9 @@ import { Globe } from "lucide-react";
 import { STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
 
-export default function GlobalTab({selectedGlobalTag, setSelectedGlobalTag, availableSelectors, pageStyles, handlePageStyleChange}) {
+export default function GlobalTab({
+    selectedGlobalTag, setSelectedGlobalTag, availableSelectors, pageStyles, handlePageStyleChange, activeViewport = "desktop"
+}) {
     return <>
         <div className="flex flex-col gap-6 animate-in fade-in duration-300">
             <div className="flex items-center gap-3 p-4 bg-couleur1/5 rounded-2xl border border-couleur1/10">
@@ -56,11 +58,13 @@ export default function GlobalTab({selectedGlobalTag, setSelectedGlobalTag, avai
                         try {
                             stylesObj = JSON.parse(pageStyles || "{}");
                         } catch (e) {
-                            console.log(e)
                             stylesObj = { body: pageStyles };
                         }
 
-                        const styles = parseStyles(stylesObj[selectedGlobalTag] || "");
+                        // Récupération selon le viewport actif dans le JSON global
+                        const vpStyles = stylesObj[activeViewport] || (activeViewport === 'desktop' ? stylesObj : {});
+                        const styles = parseStyles(vpStyles[selectedGlobalTag] || "");
+                        
                         let currentValue = styles[ctrl.prop] || "";
 
                         return (

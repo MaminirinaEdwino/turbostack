@@ -209,6 +209,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         try {
             allStyles = JSON.parse(pageStyles || "{}");
         } catch (e) {
+            console.log(e)
             allStyles = { body: pageStyles };
         }
 

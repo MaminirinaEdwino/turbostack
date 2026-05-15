@@ -76,18 +76,24 @@ export default function PageEditor({ projectName }) {
     const currentPage = selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null;
 
     // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     const previewHtml = useMemo(() => {
         if (!currentPage?.content || !Array.isArray(currentPage.content)) return "";
-        return currentPage?.content.map(b => {
-            const className = b.className || "";
-            const styles = b.styles || "";
-            const content = b.content || "";
-            const href = b.href || "#";
-            if (b.tag === 'img') return `<img src="${content}" class="${className}" style="${styles}" />`;
-            if (b.tag === 'button') return `<button class="${className}" style="${styles}">${content}</button>`;
-            if (b.tag === 'a') return `<a href="${href}" class="${className}" style="${styles}">${content}</a>`;
-            return `<${b.tag} class="${className}" style="${styles}">${content}</${b.tag}>`;
-        }).join('\n');
+        const renderBlocks = (blocks) => {
+            return blocks.map(b => {
+                const className = b.className || "";
+                const styles = b.styles || "";
+                const content = b.content || "";
+                const href = b.href || "#";
+                const htmlId = b.htmlId ? `id="${b.htmlId}"` : ""; // Ajout de l'attribut id si htmlId est défini
+                const childrenHtml = b.children ? renderBlocks(b.children) : "";
+                if (b.tag === 'img') return `<img src="${content}" class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId} />`;
+                if (b.tag === 'button') return `<button class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
+                if (b.tag === 'a') return `<a href="${href}" class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
+                return `<${b.tag} class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
+            }).join('\n');
+        };
+        return renderBlocks(currentPage.content);
     }, [currentPage?.content]);
 
     //mila modifiena am farany

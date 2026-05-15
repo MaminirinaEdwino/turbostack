@@ -3,7 +3,7 @@ import {
     Type, Image as ImageIcon, Trash2,
     Plus, Edit3, Settings2,
     MousePointer2, Heading1, Heading2, Pilcrow, Box, Square,
-    ChevronDown, Layers, GripVertical, Link, Globe
+    ChevronDown, Layers, GripVertical, Link, Globe, PlusSquare
 } from "lucide-react";
 
 const BLOCK_TYPES = [
@@ -48,7 +48,7 @@ const STYLE_CONTROLS = [
     { label: "Largeur", prop: "width", type: "number", placeholder: "100" },
     { label: "Hauteur", prop: "height", type: "number", placeholder: "auto" },
     { label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
-    { label: "Flex dir", prop: "flex-direction", type: "select", options: ["flex-col", "flex-row"] },
+    { label: "Flex dir", prop: "flex-direction", type: "select", options: ["vertical", "horizontal"] },
 ];
 
 const TAG_STYLE_GROUPS = {
@@ -66,12 +66,18 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
     const [blocks, setBlocks] = useState([]);
     const [activeBlock, setActiveBlock] = useState(null);
     const [activeTab, setActiveTab] = useState("blocks"); // "blocks" or "props"
-    const [draggedIndex, setDraggedIndex] = useState(null);
+    const [draggedId, setDraggedId] = useState(null);
     const [selectedGlobalTag, setSelectedGlobalTag] = useState("body");
 
     const usedTags = useMemo(() => {
         const tags = new Set(["body"]);
-        blocks.forEach(b => { if (TAG_STYLE_GROUPS[b.tag]) tags.add(b.tag); });
+        const getTags = (list) => {
+            list.forEach(b => {
+                if (TAG_STYLE_GROUPS[b.tag]) tags.add(b.tag);
+                if (b.children) getTags(b.children);
+            });
+        };
+        getTags(blocks);
         return Array.from(tags);
     }, [blocks]);
 
@@ -91,14 +97,20 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                 // Fallback : parsing HTML si ce n'est pas encore un tableau/JSON
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(content, "text/html");
-                extracted = Array.from(doc.body.children).map((el) => ({
-                    id: el.getAttribute("data-block-id") || Math.random().toString(36).substr(2, 9),
-                    tag: el.tagName.toLowerCase(),
-                    content: el.innerHTML,
-                    href: el.getAttribute("href") || "",
-                    className: el.className,
-                    styles: el.getAttribute("style") || ""
-                }));
+                const parseRecursive = (el) => {
+                    const clone = el.cloneNode(true);
+                    Array.from(clone.children).forEach(c => c.remove());
+                    return {
+                        id: el.getAttribute("data-block-id") || Math.random().toString(36).substr(2, 9),
+                        tag: el.tagName.toLowerCase(),
+                        content: clone.innerHTML.trim(),
+                        href: el.getAttribute("href") || "",
+                        className: el.className,
+                        styles: el.getAttribute("style") || "",
+                        children: Array.from(el.children).map(child => parseRecursive(child))
+                    };
+                };
+                extracted = Array.from(doc.body.children).map(parseRecursive);
                 console.log(e)
             }
         }
@@ -126,10 +138,10 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
     };
 
     // Gestion du Drag and Drop
-    const handleDragStart = (e, index) => {
-        setDraggedIndex(index);
+    const handleDragStart = (e, id) => {
+        setDraggedId(id);
         // Stocker l'index dans le dataTransfer pour une récupération fiable au drop
-        e.dataTransfer.setData("sourceIndex", index.toString());
+        e.dataTransfer.setData("sourceId", id);
         e.dataTransfer.effectAllowed = "move";
     };
 
@@ -138,23 +150,78 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         e.dataTransfer.dropEffect = "move";
     };
 
-    const handleDrop = (e, targetIndex) => {
+    const findBlock = (list, id) => {
+        for (const b of list) {
+            if (b.id === id) return b;
+            if (b.children) {
+                const found = findBlock(b.children, id);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+
+    const handleDrop = (e, targetId) => {
         e.preventDefault();
-        const sourceIndex = parseInt(e.dataTransfer.getData("sourceIndex"));
+        const sourceId = e.dataTransfer.getData("sourceId");
 
-        if (isNaN(sourceIndex) || sourceIndex === targetIndex) return;
+        if (!sourceId || sourceId === targetId) return;
 
-        const updatedBlocks = [...blocks];
-        const [movedBlock] = updatedBlocks.splice(sourceIndex, 1);
-        updatedBlocks.splice(targetIndex, 0, movedBlock);
+        const findAndRemove = (list) => {
+            let foundBlock = null;
+            const newList = list.filter(b => {
+                if (b.id === sourceId) {
+                    foundBlock = b;
+                    return false;
+                }
+                return true;
+            }).map(b => {
+                if (b.children && b.children.length > 0) {
+                    const [subList, subFound] = findAndRemove(b.children);
+                    if (subFound) foundBlock = subFound;
+                    return { ...b, children: subList };
+                }
+                return b;
+            });
+            return [newList, foundBlock];
+        };
 
-        setBlocks(updatedBlocks);
-        sync(updatedBlocks);
-        setDraggedIndex(null);
+        const [listWithoutSource, blockToMove] = findAndRemove(blocks);
+
+        // Empêcher de glisser un parent dans son propre enfant (ou si source non trouvée)
+        if (!blockToMove || !findBlock(listWithoutSource, targetId)) {
+            setDraggedId(null);
+            return;
+        }
+
+        const insertAtTarget = (list) => {
+            const index = list.findIndex(b => b.id === targetId);
+            if (index !== -1) {
+                const newList = [...list];
+                newList.splice(index, 0, blockToMove);
+                return newList;
+            }
+            return list.map(b => ({
+                ...b,
+                children: b.children ? insertAtTarget(b.children) : []
+            }));
+        };
+
+        const updated = insertAtTarget(listWithoutSource);
+        setBlocks(updated);
+        sync(updated);
+        setDraggedId(null);
     };
 
     const updateBlock = (id, fields) => {
-        const updated = blocks.map(b => b.id === id ? { ...b, ...fields } : b);
+        const updateTree = (list) => {
+            return list.map(b => {
+                if (b.id === id) return { ...b, ...fields };
+                if (b.children) return { ...b, children: updateTree(b.children) };
+                return b;
+            });
+        };
+        const updated = updateTree(blocks);
         setBlocks(updated);
         sync(updated);
     };
@@ -166,7 +233,13 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
     // };
 
     const removeBlock = (id) => {
-        const updated = blocks.filter(b => b.id !== id);
+        const removeFromTree = (list) => {
+            return list.filter(b => b.id !== id).map(b => {
+                if (b.children) return { ...b, children: removeFromTree(b.children) };
+                return b;
+            });
+        };
+        const updated = removeFromTree(blocks);
         setBlocks(updated);
         sync(updated);
         if (activeBlock === id) {
@@ -183,9 +256,36 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
             content: type.defaultContent,
             href: type.defaultHref || "",
             className: "",
-            styles: ""
+            styles: "",
+            children: []
         };
         const updated = [...blocks, newBlock];
+        setBlocks(updated);
+        sync(updated);
+        setActiveBlock(id);
+        setActiveTab("props");
+    };
+
+    const addChild = (parentId, type) => {
+        const id = Math.random().toString(36).substr(2, 9);
+        const newBlock = {
+            id,
+            tag: type.tag,
+            content: type.defaultContent,
+            href: type.defaultHref || "",
+            className: "",
+            styles: "",
+            htmlId: "", // Initialisation de la nouvelle propriété htmlId
+            children: []
+        };
+        const updateTree = (list) => {
+            return list.map(b => {
+                if (b.id === parentId) return { ...b, children: [...(b.children || []), newBlock] };
+                if (b.children) return { ...b, children: updateTree(b.children) };
+                return b;
+            });
+        };
+        const updated = updateTree(blocks);
         setBlocks(updated);
         sync(updated);
         setActiveBlock(id);
@@ -197,7 +297,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         return type ? type.icon : <Type size={14} />;
     };
 
-    const currentActiveBlock = blocks.find(b => b.id === activeBlock);
+    const currentActiveBlock = findBlock(blocks, activeBlock);
 
     const handleStyleChange = (prop, value) => {
         const styles = parseStyles(currentActiveBlock.styles);
@@ -219,6 +319,59 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         allStyles[selectedGlobalTag] = stringifyStyles(updatedTagStyles);
 
         onPageStylesChange(JSON.stringify(allStyles));
+    };
+
+    const renderBlocksList = (blocksList, level = 0) => {
+        return blocksList.map((block, index) => (
+            <React.Fragment key={block.id}>
+                <div
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, block.id)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, block.id)}
+                    onDragEnd={() => setDraggedId(null)}
+                    style={{ marginLeft: `${level * 16}px` }}
+                    className={`group p-3 rounded-2xl border transition-all cursor-pointer mb-2 ${draggedId === block.id ? "opacity-20 border-dashed border-couleur1 scale-95" : ""
+                        } ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-md ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
+                    onClick={() => selectBlock(block.id)}
+                >
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                            <div className="cursor-grab active:cursor-grabbing text-couleur1/20 group-hover:text-couleur1/60 transition-colors" onClick={(e) => e.stopPropagation()}>
+                                <GripVertical size={14} />
+                            </div>
+                            <div className="p-1.5 bg-couleur1/10 rounded-lg text-couleur1">
+                                {getIconForTag(block.tag)}
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-black text-couleur1 dark:text-gray-400 uppercase tracking-tighter">
+                                    {block.tag}
+                                </span>
+                                <p className="text-[11px] opacity-40 font-mono">#{index + 1}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                             <div className="relative group/add">
+                                <button className="p-1.5 text-couleur1/40 hover:text-couleur1 hover:bg-couleur1/10 rounded-lg transition-all" onClick={(e) => e.stopPropagation()}>
+                                    <PlusSquare size={14} />
+                                </button>
+                                <div className="absolute right-0 bottom-full mb-2 hidden group-hover/add:flex flex-col bg-white dark:bg-gray-800 border border-couleur1/10 shadow-xl rounded-xl p-1 z-50 min-w-32 animate-in fade-in zoom-in-95 duration-200">
+                                    {BLOCK_TYPES.map(type => (
+                                        <button key={type.tag} onClick={(e) => { e.stopPropagation(); addChild(block.id, type); }} className="flex items-center gap-2 p-2 hover:bg-couleur1/5 rounded-lg text-[10px] font-bold text-couleur1 dark:text-gray-300">
+                                            {type.icon} {type.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); removeBlock(block.id); }} className="text-red-400 hover:text-red-600 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
+            </React.Fragment>
+        ));
     };
 
     return (
@@ -269,43 +422,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
 
                     <div className="space-y-3 pt-6 border-t border-couleur1/10">
                         <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider px-2">Structure actuelle</label>
-                        {blocks.map((block, index) => (
-                            <div
-                                key={block.id}
-                                draggable
-                                onDragStart={(e) => handleDragStart(e, index)}
-                                onDragOver={handleDragOver}
-                                onDragEnter={handleDragOver}
-                                onDrop={(e) => handleDrop(e, index)}
-                                onDragEnd={() => setDraggedIndex(null)}
-                                className={`group p-3 rounded-2xl border transition-all cursor-pointer ${draggedIndex === index ? "opacity-20 border-dashed border-couleur1 scale-95" : ""
-                                    } ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-md ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
-                                onClick={() => selectBlock(block.id)}
-                            >
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center gap-3">
-                                        <div
-                                            className="cursor-grab active:cursor-grabbing text-couleur1/20 group-hover:text-couleur1/60 transition-colors"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            <GripVertical size={14} />
-                                        </div>
-                                        <div className="p-1.5 bg-couleur1/10 rounded-lg text-couleur1">
-                                            {getIconForTag(block.tag)}
-                                        </div>
-                                        <div>
-                                            <span className="text-[10px] font-black text-couleur1 dark:text-gray-400 uppercase tracking-tighter">
-                                                {block.tag}
-                                            </span>
-                                            <p className="text-[11px] opacity-40 font-mono">#{index + 1}</p>
-                                        </div>
-                                    </div>
-                                    <button onClick={(e) => { e.stopPropagation(); removeBlock(block.id); }} className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Trash2 size={14} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                        {renderBlocksList(blocks)}
                     </div>
                 </div>
             ) : activeTab === "global" ? (
@@ -441,6 +558,28 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                                             <option key={type.tag} value={type.tag}>{type.label}</option>
                                         ))}
                                     </select>
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">CSS Classes</label>
+                                    <input
+                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                        type="text"
+                                        placeholder="tailwind or custom classes..."
+                                        value={currentActiveBlock.className || ""}
+                                        onChange={(e) => updateBlock(currentActiveBlock.id, { className: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">HTML ID</label>
+                                    <input
+                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                        type="text"
+                                        placeholder="unique-id-for-element"
+                                        value={currentActiveBlock.htmlId || ""}
+                                        onChange={(e) => updateBlock(currentActiveBlock.id, { htmlId: e.target.value })}
+                                    />
                                 </div>
 
                                 <div className="flex flex-col gap-2">

@@ -142,11 +142,9 @@ func (wj *WebAppJSON) ToModel() WebApp {
 
 func (cj *ControllerJSON) ToModel() Controller {
 	return Controller{
-		Name:          cj.Name,
-		Params:        cj.Params,
-		Page:          cj.Page.ToModel(),
-		Type:          cj.Type,
-		RequestParams: cj.RequestParams,
+		Nom:          cj.Nom,
+		PageCible: cj.PageCible,
+		Bindings: cj.Bindings,
 	}
 }
 

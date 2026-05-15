@@ -35,6 +35,19 @@ type EndpointJSON struct {
 	Role   string      `json:"role"`
 }
 
+type ControllerJSON struct {
+    Nom         string            `json:"nom"`
+    PageCible   string            `json:"page_nom"`   // Nom de la PageJSON à laquelle il est lié
+    Bindings    []DataBindingJSON `json:"bindings"`   // Les liaisons précises
+}
+type DataBindingJSON struct {
+    IDElement   string `json:"id_element"`   // L'ID du bloc dans PageContentJSON (ex: "sep9h5o5a")
+    EndpointNom string `json:"endpoint_nom"` // Le nom de l'EndpointJSON à appeler
+    Trigger     string `json:"trigger"`      // "onLoad", "onClick", "onHover"
+    Action      string `json:"action"`       // "fill_content", "set_style", "redirect"
+    MapField    string `json:"map_field"`    // Champ du JSON API à mapper (ex: "data.title")
+}
+
 type ModelJSON struct {
 	Nom       string       `json:"nom"`
 	Attributs []ChampsJSON `json:"champs"`
@@ -84,10 +97,3 @@ type PageContentJSON struct {
 	Children  []PageContentJSON `json:"children"`
 }
 
-type ControllerJSON struct {
-	Name          string             `json:"name"`
-	Params        []ControllerParams `json:"params"`
-	Page          PageJSON           `json:"page"`
-	Type          string             `json:"type"`
-	RequestParams []string           `json:"request_params"`
-}

@@ -6,20 +6,24 @@ type ControllerParams struct {
 }
 
 type Controller struct {
-	Name          string             `json:"name"`
-	Params        []ControllerParams `json:"params"`
-	Page          Page               `json:"page"`
-	Type          string             `json:"type"`
-	RequestParams []string           `json:"request_params"`
+    Nom         string            `json:"nom"`
+    PageCible   string            `json:"page_nom"`   // Nom de la PageJSON à laquelle il est lié
+    Bindings    []DataBindingJSON `json:"bindings"`   // Les liaisons précises
 }
-
+func (w *WebAppJSON) GetBindingsForPage(pageNom string) []DataBindingJSON {
+    var activeBindings []DataBindingJSON
+    for _, ctrl := range w.Controllers {
+        if ctrl.PageCible == pageNom {
+            activeBindings = append(activeBindings, ctrl.Bindings...)
+        }
+    }
+    return activeBindings
+}
 func (c *Controller) ToJSON() ControllerJSON {
 	return ControllerJSON{
-		Name:          c.Name,
-		Params:        c.Params,
-		Page:          c.Page.ToJSON(),
-		Type:          c.Type,
-		RequestParams: c.RequestParams,
+		Nom: c.Nom,
+		PageCible: c.PageCible,
+		Bindings: c.Bindings,
 	}
 }
 

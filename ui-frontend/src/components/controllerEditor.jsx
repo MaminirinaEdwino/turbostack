@@ -46,11 +46,13 @@ export default function ControllerEditor({ projectName }) {
 
     const addController = () => {
         const newController = {
-            id: Math.random().toString(36).substr(2, 9),
-            nom: "New Controller",
-            pageId: pages[0]?.id || "",
+            id: Math.random().toString(36).substr(2, 9), // Conservé pour la clé React
+            name: "New Controller",
+            params: [],
+            page: pages[0] || null,
+            type: project?.type || "",
+            request_params: [],
             endpointIndex: 0,
-            mappings: {}
         };
         setProject(prev => ({
             ...prev,
@@ -111,9 +113,9 @@ export default function ControllerEditor({ projectName }) {
                                             <button className="p-2 hover:bg-red-50 text-red-500 rounded-lg"><Trash2 size={18} /></button>
                                         </div>
                                     </div>
-                                    <h3 className="text-lg font-bold text-couleur1 mb-1">{ctrl.nom}</h3>
+                                    <h3 className="text-lg font-bold text-couleur1 mb-1">{ctrl.name}</h3>
                                     <div className="flex items-center gap-2 text-xs opacity-60">
-                                        <FileText size={12} /> {pages.find(p => p.id === ctrl.pageId)?.nom || "No Page"}
+                                        <FileText size={12} /> {ctrl.page?.nom || "No Page"}
                                         <ArrowRight size={12} />
                                         <Settings size={12} /> {endpoints[ctrl.endpointIndex]?.nom || "No API"}
                                     </div>
@@ -125,8 +127,8 @@ export default function ControllerEditor({ projectName }) {
                     <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-3xl border border-couleur1/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
                         <div className="p-6 border-b border-couleur1/10 bg-couleur1/5 flex justify-between items-center">
                             <input 
-                                value={activeController?.nom} 
-                                onChange={(e) => updateController(selectedIndex, 'nom', e.target.value)}
+                                value={activeController?.name} 
+                                onChange={(e) => updateController(selectedIndex, 'name', e.target.value)}
                                 className="bg-transparent text-xl font-bold text-couleur1 outline-none border-b border-transparent focus:border-couleur1"
                             />
                             <button onClick={() => setEditMode(false)} className="text-couleur1/50 hover:text-couleur1 uppercase text-xs font-black">Close</button>
@@ -138,8 +140,8 @@ export default function ControllerEditor({ projectName }) {
                                 <div className="space-y-3">
                                     <label className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2"><FileText size={14}/> Target Page</label>
                                     <select 
-                                        value={activeController?.pageId}
-                                        onChange={(e) => updateController(selectedIndex, 'pageId', e.target.value)}
+                                        value={activeController?.page?.id}
+                                        onChange={(e) => updateController(selectedIndex, 'page', pages.find(p => p.id === e.target.value))}
                                         className="w-full p-4 rounded-2xl border border-couleur1/10 bg-couleur3/30 outline-none focus:ring-2 ring-couleur1/20 transition-all"
                                     >
                                         {pages.map(p => <option key={p.id} value={p.id}>{p.nom} ({p.uri})</option>)}
@@ -149,7 +151,11 @@ export default function ControllerEditor({ projectName }) {
                                     <label className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2"><Settings size={14}/> API Endpoint</label>
                                     <select 
                                         value={activeController?.endpointIndex}
-                                        onChange={(e) => updateController(selectedIndex, 'endpointIndex', parseInt(e.target.value))}
+                                        onChange={(e) => {
+                                            const idx = parseInt(e.target.value);
+                                            updateController(selectedIndex, 'endpointIndex', idx);
+                                            updateController(selectedIndex, 'request_params', endpoints[idx]?.params || []);
+                                        }}
                                         className="w-full p-4 rounded-2xl border border-couleur1/10 bg-couleur3/30 outline-none focus:ring-2 ring-couleur1/20 transition-all"
                                     >
                                         {endpoints.map((ep, i) => <option key={i} value={i}>{ep.method} {ep.uri} ({ep.nom})</option>)}
@@ -171,10 +177,12 @@ export default function ControllerEditor({ projectName }) {
                                                 key={param} 
                                                 label={param} 
                                                 type="URL Parameter" 
-                                                value={activeController.mappings[param]}
+                                                value={activeController.params?.find(p => p.key === param)}
                                                 onChange={(val) => {
-                                                    const newMappings = { ...activeController.mappings, [param]: val };
-                                                    updateController(selectedIndex, 'mappings', newMappings);
+                                                    const currentParams = activeController.params || [];
+                                                    const filtered = currentParams.filter(p => p.key !== param);
+                                                    const newParams = [...filtered, { key: param, ...val }];
+                                                    updateController(selectedIndex, 'params', newParams);
                                                 }}
                                             />
                                         ))}
@@ -185,10 +193,13 @@ export default function ControllerEditor({ projectName }) {
                                                 key={`${m.nom}-${f.nom}`} 
                                                 label={f.nom} 
                                                 type={`Body (${m.nom})`}
-                                                value={activeController.mappings[`${m.nom}.${f.nom}`]}
+                                                value={activeController.params?.find(p => p.key === `${m.nom}.${f.nom}`)}
                                                 onChange={(val) => {
-                                                    const newMappings = { ...activeController.mappings, [`${m.nom}.${f.nom}`]: val };
-                                                    updateController(selectedIndex, 'mappings', newMappings);
+                                                    const key = `${m.nom}.${f.nom}`;
+                                                    const currentParams = activeController.params || [];
+                                                    const filtered = currentParams.filter(p => p.key !== key);
+                                                    const newParams = [...filtered, { key, ...val }];
+                                                    updateController(selectedIndex, 'params', newParams);
                                                 }}
                                             />
                                         )))}

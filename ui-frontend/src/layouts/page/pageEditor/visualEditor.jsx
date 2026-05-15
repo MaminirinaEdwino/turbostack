@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
     Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
     MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle, Database, Link2, Plus, Unlink, Cpu, ArrowRight
@@ -131,16 +131,73 @@ export default function VisualEditor({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [content]);
 
-    // Synchronisation vers le parent
-    const sync = (currentBlocks) => {
-        // On renvoie le tableau directement
-        if (onChange) onChange(currentBlocks);
-    };
+    // Injection des contrôleurs dans l'arborescence des blocs pour la sauvegarde
+    const syncBlocksWithControllers = useCallback((currentBlocks) => {
+        const process = (list) => {
+            return list.map(block => {
+                if (block.isController) return block;
+
+                // 1. Nettoyer les anciens blocs de contrôleurs pour éviter les doublons
+                let children = (block.children || []).filter(c => !c.isController);
+
+                // 2. Récupérer les bindings pour ce bloc via la map
+                const blockBindings = bindingsMap[block.id];
+                if (blockBindings && blockBindings.length > 0) {
+                    const groupedByEndpoint = blockBindings.reduce((acc, binding) => {
+                        if (!acc[binding.endpoint_nom]) {
+                            acc[binding.endpoint_nom] = {
+                                endpoint_nom: binding.endpoint_nom,
+                                ctrlName: binding.ctrlName,
+                                map_fields: []
+                            };
+                        }
+                        acc[binding.endpoint_nom].map_fields.push(binding.map_field);
+                        return acc;
+                    }, {});
+
+                    // 3. Injecter les nouveaux blocs de type "logic"
+                    Object.values(groupedByEndpoint).forEach(group => {
+                        children.unshift({
+                            id: `logic-${block.id}-${group.endpoint_nom}`,
+                            tag: "logic",
+                            isController: true,
+                            content: group.endpoint_nom,
+                            map_fields: group.map_fields,
+                            ctrlName: group.ctrlName,
+                            children: []
+                        });
+                    });
+                }
+
+                return { ...block, children: process(children) };
+            });
+        };
+        return process(currentBlocks);
+    }, [bindingsMap]);
+
+    // Synchronisation vers le parent avec injection de la logique
+    const sync = useCallback((currentBlocks) => {
+        const blocksWithLogic = syncBlocksWithControllers(currentBlocks);
+        if (onChange) onChange(blocksWithLogic);
+    }, [onChange, syncBlocksWithControllers]);
 
     const selectBlock = (id) => {
+        const block = findBlock(blocks, id);
+        if (block?.isController) return; // Empêcher la sélection des blocs de logique
         if (setActiveBlock) setActiveBlock(id);
         if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
     };
+
+    // Effet pour synchroniser la structure quand les bindings changent (onglet Data)
+    useEffect(() => {
+        if (blocks.length > 0) {
+            const updated = syncBlocksWithControllers(blocks);
+            if (JSON.stringify(updated) !== JSON.stringify(blocks)) {
+                setBlocks(updated);
+                sync(updated);
+            }
+        }
+    }, [bindingsMap, syncBlocksWithControllers]);
 
     // Gestion du Drag and Drop
     const handleDragStart = (e, id) => {
@@ -402,8 +459,25 @@ export default function VisualEditor({
     };
 
     const renderBlocksList = (blocksList, level = 0) => {
-        return blocksList.map((block, index) => (
-            <React.Fragment key={block.id}>
+        return blocksList.map((block, index) => {
+            // Rendu spécial pour les nœuds de contrôleurs
+            if (block.isController) {
+                return (
+                    <div
+                        key={block.id}
+                        style={{ marginLeft: `${level * 16}px` }}
+                        className="flex items-center gap-2 p-1.5 px-3 mb-2 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold group/ctrl hover:bg-indigo-100/50 dark:hover:bg-indigo-900/40 transition-colors"
+                        title={`Controller: ${block.ctrlName}, Endpoint: ${block.endpoint_nom}, Fields: ${block.map_fields?.join(', ')}`}
+                    >
+                        <Database size={10} className="opacity-70 shrink-0" />
+                        <span className="uppercase tracking-tighter truncate">{block.content}</span>
+                        <span className="opacity-40 font-medium">({block.map_fields?.join(', ')})</span>
+                    </div>
+                );
+            }
+
+            return (
+                <React.Fragment key={block.id}>
                 <div
                     draggable
                     onDragStart={(e) => handleDragStart(e, block.id)}
@@ -425,40 +499,9 @@ export default function VisualEditor({
                     </div>
                 </div>
 
-                {/* Affichage des contrôleurs liés comme "enfants" visuels, regroupés par endpoint */}
-                {(() => {
-                    const blockBindings = bindingsMap[block.id];
-                    if (!blockBindings || blockBindings.length === 0) return null;
-
-                    const groupedByEndpoint = blockBindings.reduce((acc, binding) => {
-                        if (!acc[binding.endpoint_nom]) {
-                            acc[binding.endpoint_nom] = {
-                                endpoint_nom: binding.endpoint_nom,
-                                ctrlName: binding.ctrlName, // Assuming ctrlName is consistent per endpoint for a block
-                                map_fields: []
-                            };
-                        }
-                        acc[binding.endpoint_nom].map_fields.push(binding.map_field);
-                        return acc;
-                    }, {});
-
-                    return Object.values(groupedByEndpoint).map((group, groupIdx) => (
-                        <div
-                            key={`grouped-binding-${block.id}-${groupIdx}`}
-                            style={{ marginLeft: `${(level + 1) * 16}px` }}
-                            className="flex items-center gap-2 p-1.5 px-3 mb-2 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold group/ctrl hover:bg-indigo-100/50 dark:hover:bg-indigo-900/40 transition-colors"
-                            title={`Controller: ${group.ctrlName}, Endpoint: ${group.endpoint_nom}, Fields: ${group.map_fields.join(', ')}`}
-                        >
-                            <Database size={10} className="opacity-70 shrink-0" />
-                            <span className="uppercase tracking-tighter truncate">{group.endpoint_nom}</span>
-                            <span className="opacity-40 font-medium">({group.map_fields.join(', ')})</span>
-                        </div>
-                    ));
-                })()}
-
                 {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
             </React.Fragment>
-        ));
+        );});
     };
 
     return (

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { 
     Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText, Settings, 
     CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight, Wand2,
-    Zap, Activity, Database, Link2
+    Zap, Activity, Database, Link2, ChevronDown, ChevronRight
 } from "lucide-react";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../hooks/useNavigate";
@@ -15,6 +15,7 @@ export default function ControllerEditor({ projectName }) {
     const [editMode, setEditMode] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [toast, setToast] = useState(null);
+    const [collapsedEndpoints, setCollapsedEndpoints] = useState({});
 
     // 1. TOUS LES HOOKS EN PREMIER (Ordre immuable)
     
@@ -70,6 +71,13 @@ export default function ControllerEditor({ projectName }) {
     const availableIds = activeController 
         ? getIdsFromContent(pages.find(p => p.nom === activeController.page_nom)?.content) 
         : [];
+
+    const toggleGroup = (endpointNom) => {
+        setCollapsedEndpoints(prev => ({
+            ...prev,
+            [endpointNom]: !prev[endpointNom]
+        }));
+    };
 
     const toggleBinding = (endpointNom, fieldNom, isChecked) => {
         updateController(selectedIndex, 'bindings', (prev = []) => {
@@ -177,12 +185,12 @@ export default function ControllerEditor({ projectName }) {
                                 <div className="space-y-3">
                                     <label className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2"><FileText size={14}/> Target Page</label>
                                     <select 
-                                        value={activeController?.page_nom || ""}
+                                        value={activeController?.page_nom || ""} // Assurez-vous que la valeur est une chaîne vide si null
                                         onChange={(e) => updateController(selectedIndex, 'page_nom', e.target.value)}
-                                        className="w-full p-4 rounded-2xl border border-couleur1/10 bg-couleur3/30 outline-none"
+                                        className="w-full p-3 rounded-xl border border-couleur1/10 bg-couleur3/30 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
                                     >
                                         <option value="">Select a page...</option>
-                                        {pages.map(p => <option key={p.nom} value={p.nom}>{p.nom}</option>)}
+                                        {pages.map(p => <option key={p.nom} value={p.nom}>{p.nom} ({p.uri})</option>)}
                                     </select>
                                 </div>
                             </div>
@@ -198,12 +206,19 @@ export default function ControllerEditor({ projectName }) {
                                 <div className="space-y-12">
                                     {endpoints.map((ep) => (
                                         <div key={ep.nom} className="space-y-4">
-                                            <div className="flex items-center gap-3 pb-2 border-b border-couleur1/5">
+                                            <div 
+                                                className="flex items-center gap-3 pb-2 border-b border-couleur1/5 cursor-pointer select-none group"
+                                                onClick={() => toggleGroup(ep.nom)}
+                                            >
+                                                <div className="text-couleur1/40 group-hover:text-couleur1 transition-colors">
+                                                    {collapsedEndpoints[ep.nom] ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                                                </div>
                                                 <Database size={14} className="text-couleur1/40" />
                                                 <span className="text-xs font-black uppercase text-couleur1 tracking-wider">{ep.nom}</span>
                                                 <span className="text-[9px] bg-couleur1/5 px-2 py-0.5 rounded text-couleur1/40">{ep.method} {ep.uri}</span>
                                             </div>
-                                            <div className="grid grid-cols-1 gap-3">
+                                            {!collapsedEndpoints[ep.nom] && (
+                                                <div className="grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
                                                 {(() => {
                                                     const fields = [];
                                                     ep.model?.forEach(m => m.champs?.forEach(f => fields.push(f.nom)));
@@ -232,6 +247,7 @@ export default function ControllerEditor({ projectName }) {
                                                     });
                                                 })()}
                                             </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

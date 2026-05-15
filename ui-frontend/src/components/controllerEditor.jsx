@@ -34,6 +34,7 @@ export default function ControllerEditor({ projectName }) {
     const typeKey = project?.type === "static" ? "site_statique" : "web_app";
     const controllers = siteData?.controllers || [];
     const pages = siteData?.pages || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const endpoints = project?.rest_api?.endpoints || [];
     
     const activeController = selectedIndex !== null ? controllers[selectedIndex] : null;
@@ -124,6 +125,7 @@ export default function ControllerEditor({ projectName }) {
             await GoApp.saveProject(projectName, JSON.stringify(project));
             showToast("Controllers saved!");
         } catch (e) {
+            console.error(e)
             showToast("Error saving", "error");
         }
     };
@@ -221,7 +223,7 @@ export default function ControllerEditor({ projectName }) {
                                             <select 
                                                 value={bulkEndpointNom}
                                                 onChange={(e) => setBulkEndpointNom(e.target.value)}
-                                                className="text-[10px] font-black uppercase outline-none bg-transparent max-w-[140px] text-couleur1/60"
+                                                className="text-[10px] font-black uppercase outline-none bg-transparent max-w-35 text-couleur1/60"
                                             >
                                                 {endpoints.map(ep => <option key={ep.nom} value={ep.nom}>{ep.nom}</option>)}
                                             </select>
@@ -295,7 +297,7 @@ export default function ControllerEditor({ projectName }) {
     );
 }
 
-function BindingRow({ binding, availableIds, endpoints, onChange, onDelete }) {
+function BindingRow({ binding, endpoints, onChange, onDelete }) {
     const selectedEp = useMemo(() => 
         endpoints.find(ep => ep.nom === binding.endpoint_nom), 
     [endpoints, binding.endpoint_nom]);
@@ -309,7 +311,7 @@ function BindingRow({ binding, availableIds, endpoints, onChange, onDelete }) {
     }, [selectedEp]);
 
     return (
-        <div className="group bg-white dark:bg-gray-800/40 p-6 rounded-[2rem] border border-couleur1/5 hover:border-couleur1/20 transition-all">
+        <div className="group bg-white dark:bg-gray-800/40 p-6 rounded-4xl border border-couleur1/5 hover:border-couleur1/20 transition-all">
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-couleur1/10 flex items-center justify-center text-couleur1"><Link2 size={16}/></div>

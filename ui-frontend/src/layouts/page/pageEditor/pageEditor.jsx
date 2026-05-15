@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
-import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, PanelLeftOpen, CheckCircle, AlertCircle, PanelRightOpen } from "lucide-react";
+import { 
+    Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, 
+    PanelLeftOpen, CheckCircle, AlertCircle, PanelRightOpen, Smartphone, Tablet, Monitor 
+} from "lucide-react";
 import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../../../hooks/useNavigate";
@@ -13,6 +16,11 @@ export default function PageEditor({ projectName }) {
     const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
     const [editMode, setEditMode] = useState(false);
+    const [viewport, setViewport] = useState({ 
+        width: "100%", 
+        height: "100%", 
+        name: "desktop" 
+    });
     const [zoomLevel, setZoomLevel] = useState(1); // New state for zoom
     const [toast, setToast] = useState(null);
 
@@ -208,6 +216,25 @@ export default function PageEditor({ projectName }) {
                                     <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-400/40"></div>
                                 </div>
                                 <div className="flex items-center gap-4">
+                                    {/* Sélecteurs de Viewport */}
+                                    <div className="flex items-center bg-white/50 dark:bg-gray-800 rounded-lg p-1 shadow-inner border border-couleur1/5">
+                                        <button
+                                            onClick={() => setViewport({ width: "375px", height: "667px", name: "mobile" })}
+                                            className={`p-1.5 rounded-md transition-all ${viewport.name === "mobile" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
+                                            title="Mobile (375x667)"
+                                        ><Smartphone size={14} /></button>
+                                        <button
+                                            onClick={() => setViewport({ width: "768px", height: "1024px", name: "tablet" })}
+                                            className={`p-1.5 rounded-md transition-all ${viewport.name === "tablet" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
+                                            title="Tablette (768x1024)"
+                                        ><Tablet size={14} /></button>
+                                        <button
+                                            onClick={() => setViewport({ width: "100%", height: "100%", name: "desktop" })}
+                                            className={`p-1.5 rounded-md transition-all ${viewport.name === "desktop" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
+                                            title="Bureau (Plein écran)"
+                                        ><Monitor size={14} /></button>
+                                    </div>
+
                                     <span className="text-[10px] font-bold text-couleur1/40 uppercase tracking-widest">Live Canvas Preview</span>
                                     {/* Zoom Controls */}
                                     <div className="flex items-center gap-2">
@@ -227,10 +254,12 @@ export default function PageEditor({ projectName }) {
 
                                 <div className="w-12"></div>
                             </div>
-                            <iframe
-                                title="Page Preview"
-                                className="w-full h-full bg-white"
-                                srcDoc={`
+                            <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30 p-8 custom-scrollbar">
+                                <iframe
+                                    title="Page Preview"
+                                    style={{ width: viewport.width, height: viewport.height }}
+                                    className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1/10 rounded-sm"
+                                    srcDoc={`
                                     <!DOCTYPE html>
                                     <html lang="en">
                                         <head>
@@ -252,7 +281,8 @@ export default function PageEditor({ projectName }) {
                                         <body>${previewHtml}</body>
                                     </html>
                                 `}
-                            />
+                                />
+                            </div>
                         </div>
 
                         {/* Right Sidebar: Properties & Global */}

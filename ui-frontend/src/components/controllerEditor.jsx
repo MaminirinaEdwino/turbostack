@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { 
     Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText, Settings, 
-    CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight
+    CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight, Wand2
 } from "lucide-react";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../hooks/useNavigate";
@@ -14,6 +14,7 @@ export default function ControllerEditor({ projectName }) {
     const [editMode, setEditMode] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [toast, setToast] = useState(null);
+    const [bulkEndpointNom, setBulkEndpointNom] = useState("");
 
     useEffect(() => {
         const loadProject = async () => {
@@ -30,6 +31,13 @@ export default function ControllerEditor({ projectName }) {
     const controllers = siteData?.controllers || [];
     const pages = siteData?.pages || [];
     const endpoints = project?.rest_api?.endpoints || [];
+
+    // Initialise la sélection de l'endpoint pour la génération en masse
+    useEffect(() => {
+        if (endpoints.length > 0 && !bulkEndpointNom) {
+            setBulkEndpointNom(endpoints[0].nom);
+        }
+    }, [endpoints, bulkEndpointNom]);
 
     const showToast = (message, type = "success") => {
         setToast({ message, type });
@@ -54,6 +62,40 @@ export default function ControllerEditor({ projectName }) {
             ...prev,
             [typeKey]: { ...prev[typeKey], controllers: [...(prev[typeKey].controllers || []), newController] }
         }));
+    };
+
+    const generateBindingsFromEndpoint = (endpointNom) => {
+        if (!endpointNom) return;
+        const ep = endpoints.find(e => e.nom === endpointNom);
+        if (!ep) return;
+
+        const fields = [];
+        // Extraction de tous les champs possibles de l'endpoint
+        ep.model?.forEach(m => m.champs?.forEach(f => fields.push(f.nom)));
+        ep.params?.forEach(p => fields.push(p));
+
+        if (fields.length === 0) {
+            showToast("No fields found in this endpoint", "error");
+            return;
+        }
+
+        const newBindings = fields.map(f => {
+            // Tentative de matching intelligent avec les IDs de la page
+            const bestMatch = availableIds.find(id => 
+                id.toLowerCase().includes(f.toLowerCase()) || 
+                f.toLowerCase().includes(id.toLowerCase())
+            );
+            return {
+                id_element: bestMatch || (availableIds[0] || ""),
+                endpoint_nom: ep.nom,
+                trigger: "onLoad",
+                action: "fill_content",
+                map_field: f
+            };
+        });
+
+        updateController(selectedIndex, 'bindings', [...(activeController.bindings || []), ...newBindings]);
+        showToast(`${newBindings.length} bindings generated!`);
     };
 
     const handleSave = async () => {
@@ -167,15 +209,33 @@ export default function ControllerEditor({ projectName }) {
                                     <h3 className="text-sm font-black uppercase text-couleur1/40 flex items-center gap-2">
                                         <LinkIcon size={16} /> Data Bindings
                                     </h3>
-                                    <button 
-                                        onClick={() => {
-                                            const newBinding = { id_element: availableIds[0] || "", endpoint_nom: endpoints[0]?.nom || "", trigger: "onLoad", action: "fill_content", map_field: "" };
-                                            updateController(selectedIndex, 'bindings', [...(activeController.bindings || []), newBinding]);
-                                        }}
-                                        className="text-xs bg-couleur1 text-white px-3 py-1 rounded-lg flex items-center gap-1"
-                                    >
-                                        <Plus size={14} /> Add Binding
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1 bg-white dark:bg-gray-800 border border-couleur1/20 rounded-xl px-2 py-1">
+                                            <select 
+                                                value={bulkEndpointNom}
+                                                onChange={(e) => setBulkEndpointNom(e.target.value)}
+                                                className="text-[10px] font-bold uppercase outline-none bg-transparent max-w-[120px]"
+                                            >
+                                                {endpoints.map(ep => <option key={ep.nom} value={ep.nom}>{ep.nom}</option>)}
+                                            </select>
+                                            <button 
+                                                onClick={() => generateBindingsFromEndpoint(bulkEndpointNom)}
+                                                className="p-1 text-couleur1 hover:scale-110 transition-all border-l border-couleur1/10 pl-2"
+                                                title="Generate mappings for all fields in this endpoint"
+                                            >
+                                                <Wand2 size={14} />
+                                            </button>
+                                        </div>
+                                        <button 
+                                            onClick={() => {
+                                                const newBinding = { id_element: availableIds[0] || "", endpoint_nom: endpoints[0]?.nom || "", trigger: "onLoad", action: "fill_content", map_field: "" };
+                                                updateController(selectedIndex, 'bindings', [...(activeController.bindings || []), newBinding]);
+                                            }}
+                                            className="text-xs bg-couleur1 text-white px-3 py-1 rounded-lg flex items-center gap-1"
+                                        >
+                                            <Plus size={14} /> Add Binding
+                                        </button>
+                                    </div>
                                 </div>
                                 
                                 <div className="space-y-4">
@@ -240,6 +300,15 @@ function BindingRow({ binding, availableIds, endpoints, onChange, onDelete }) {
         return [...new Set(fields)]; // Unicité
     }, [selectedEp]);
 
+    const handleAutoMap = () => {
+        if (!fieldSuggestions.length) return;
+        const bestMatch = fieldSuggestions.find(f => 
+            binding.id_element.toLowerCase().includes(f.toLowerCase()) || 
+            f.toLowerCase().includes(binding.id_element.toLowerCase())
+        );
+        onChange({ ...binding, map_field: bestMatch || fieldSuggestions[0] });
+    };
+
     return (
         <div className="bg-couleur3/10 p-4 rounded-2xl border border-couleur1/5 space-y-4">
             <div className="flex items-center justify-between">
@@ -277,13 +346,22 @@ function BindingRow({ binding, availableIds, endpoints, onChange, onDelete }) {
                 </div>
                 <div className="flex flex-col gap-1 col-span-2">
                     <label className="text-[9px] uppercase font-bold opacity-50">Field Mapping (JSON Path)</label>
-                    <input 
-                        list={`fields-${binding.id_element}`}
-                        value={binding.map_field} 
-                        placeholder="ex: data.title" 
-                        onChange={(e) => onChange({...binding, map_field: e.target.value})} 
-                        className="p-2 text-xs rounded-lg border bg-white outline-none focus:ring-1 ring-couleur1"
-                    />
+                    <div className="relative flex items-center">
+                        <input 
+                            list={`fields-${binding.id_element}`}
+                            value={binding.map_field} 
+                            placeholder="ex: data.title" 
+                            onChange={(e) => onChange({...binding, map_field: e.target.value})} 
+                            className="w-full p-2 pr-10 text-xs rounded-lg border bg-white outline-none focus:ring-1 ring-couleur1"
+                        />
+                        <button 
+                            onClick={handleAutoMap}
+                            className="absolute right-2 p-1 text-couleur1/40 hover:text-couleur1 transition-colors"
+                            title="Suggest field"
+                        >
+                            <Wand2 size={14} />
+                        </button>
+                    </div>
                     <datalist id={`fields-${binding.id_element}`}>
                         {fieldSuggestions.map(f => (
                             <option key={f} value={f} />

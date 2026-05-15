@@ -219,7 +219,7 @@ export default function PageEditor({ projectName }) {
                         </div>
 
                         {/* Right Sidebar: Properties & Global */}
-                        <aside className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}>
+                        <aside className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? 'translate-x-0' : 'translate-x-full'} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}>
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xs font-black uppercase text-couleur1/40">Configuration</h2>
                                 <button onClick={() => setIsRightSidebarOpen(false)} className="p-2 rounded-full hover:bg-couleur1/10 text-couleur1 dark:text-gray-300">

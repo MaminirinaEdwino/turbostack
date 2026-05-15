@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     Type, Image as ImageIcon, Trash2,
     Plus, Edit3, Settings2,
     MousePointer2, Heading1, Heading2, Pilcrow, Box, Square,
-    ChevronDown, Layers, GripVertical, Link
+    ChevronDown, Layers, GripVertical, Link, Globe
 } from "lucide-react";
 
 const BLOCK_TYPES = [
@@ -16,12 +16,63 @@ const BLOCK_TYPES = [
     { label: "Bouton", tag: "button", icon: <Square size={14} />, defaultContent: "Cliquez ici" },
 ];
 
-export default function VisualEditor({ content, onChange, availablePages = [] }) {
+const parseStyles = (styleString) => {
+    if (!styleString) return {};
+    return styleString.split(';').reduce((acc, rule) => {
+        const parts = rule.split(':');
+        if (parts.length < 2) return acc;
+        const prop = parts[0].trim();
+        const value = parts.slice(1).join(':').trim();
+        if (prop && value) acc[prop] = value;
+        return acc;
+    }, {});
+};
+
+const stringifyStyles = (styleObj) => {
+    return Object.entries(styleObj)
+        // eslint-disable-next-line no-unused-vars
+        .filter(([_, v]) => v && v !== "")
+        .map(([k, v]) => `${k}: ${v}`)
+        .join('; ');
+};
+
+const STYLE_CONTROLS = [
+    { label: "Texte", prop: "color", type: "color" },
+    { label: "Taille", prop: "font-size", type: "text", placeholder: "e.g. 16px" },
+    { label: "Align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"] },
+    { label: "Gras", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"] },
+    { label: "Fond", prop: "background-color", type: "color" },
+    { label: "Padding", prop: "padding", type: "text", placeholder: "e.g. 10px 20px" },
+    { label: "Marge", prop: "margin", type: "text", placeholder: "e.g. 0 auto" },
+    { label: "Arrondi", prop: "border-radius", type: "text", placeholder: "e.g. 8px" },
+    { label: "Largeur", prop: "width", type: "text", placeholder: "100%" },
+    { label: "Hauteur", prop: "height", type: "text", placeholder: "auto" },
+    { label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
+];
+
+const TAG_STYLE_GROUPS = {
+    h1: ["color", "font-size", "text-align", "font-weight", "margin"],
+    h2: ["color", "font-size", "text-align", "font-weight", "margin"],
+    p: ["color", "font-size", "text-align", "margin"],
+    a: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius"],
+    button: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius", "margin"],
+    div: ["background-color", "padding", "margin", "border-radius", "width", "height", "display"],
+    img: ["width", "height", "border-radius", "margin", "display"],
+    page: ["color", "font-size", "background-color", "padding", "margin"]
+};
+
+export default function VisualEditor({ content, pageStyles = "", onPageStylesChange, onChange, availablePages = [] }) {
     const [blocks, setBlocks] = useState([]);
     const [activeBlock, setActiveBlock] = useState(null);
     const [activeTab, setActiveTab] = useState("blocks"); // "blocks" or "props"
     const [draggedIndex, setDraggedIndex] = useState(null);
-    const [showAddMenu, setShowAddMenu] = useState(false);
+    const [selectedGlobalTag, setSelectedGlobalTag] = useState("body");
+
+    const usedTags = useMemo(() => {
+        const tags = new Set(["body"]);
+        blocks.forEach(b => { if (TAG_STYLE_GROUPS[b.tag]) tags.add(b.tag); });
+        return Array.from(tags);
+    }, [blocks]);
 
     // Initialisation unique des blocs à partir du HTML reçu pour éviter les boucles infinies
     useEffect(() => {
@@ -59,6 +110,7 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
         if (blocks.length === 0 || currentSerialized !== incomingSerialized) {
             setBlocks(extracted);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [content]);
 
     // Synchronisation vers le parent
@@ -135,7 +187,6 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
         const updated = [...blocks, newBlock];
         setBlocks(updated);
         sync(updated);
-        setShowAddMenu(false);
         setActiveBlock(id);
         setActiveTab("props");
     };
@@ -146,6 +197,27 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
     };
 
     const currentActiveBlock = blocks.find(b => b.id === activeBlock);
+
+    const handleStyleChange = (prop, value) => {
+        const styles = parseStyles(currentActiveBlock.styles);
+        const updated = { ...styles, [prop]: value };
+        updateBlock(currentActiveBlock.id, { styles: stringifyStyles(updated) });
+    };
+
+    const handlePageStyleChange = (prop, value) => {
+        let allStyles = {};
+        try {
+            allStyles = JSON.parse(pageStyles || "{}");
+        } catch (e) {
+            allStyles = { body: pageStyles };
+        }
+
+        const currentTagStyles = parseStyles(allStyles[selectedGlobalTag] || "");
+        const updatedTagStyles = { ...currentTagStyles, [prop]: value };
+        allStyles[selectedGlobalTag] = stringifyStyles(updatedTagStyles);
+
+        onPageStylesChange(JSON.stringify(allStyles));
+    };
 
     return (
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full"> {/* Removed max-w-4xl mx-auto */}
@@ -158,6 +230,12 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                     <Layers size={14} /> Structure
                 </button>
                 <button
+                    onClick={() => setActiveTab("global")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'global' ? 'bg-couleur1 text-white shadow-md' : 'text-couleur1/60 hover:text-couleur1'}`}
+                >
+                    <Globe size={14} /> Global
+                </button>
+                <button
                     onClick={() => setActiveTab("props")}
                     className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'props' ? 'bg-couleur1 text-white shadow-md' : 'text-couleur1/60 hover:text-couleur1'}`}
                 >
@@ -167,35 +245,28 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
 
             {activeTab === "blocks" ? (
                 <div className="space-y-6">
-                    <div className="flex items-center justify-between px-2">
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowAddMenu(!showAddMenu)}
-                                className="flex items-center gap-2 bg-couleur1 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase hover:shadow-lg transition-all"
-                            >
-                                <Plus size={12} /> New Section <ChevronDown size={12} />
-                            </button>
-
-                            {showAddMenu && (
-                                <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-couleur1/10 shadow-2xl rounded-2xl p-2 z-50 grid grid-cols-1 gap-1 animate-in zoom-in-95 duration-200">
-                                    {BLOCK_TYPES.map((type) => (
-                                        <button
-                                            key={type.tag}
-                                            onClick={() => addBlock(type)}
-                                            className="flex items-center gap-3 w-full p-2.5 hover:bg-couleur3 dark:hover:bg-gray-800 rounded-xl text-xs font-bold text-couleur1 dark:text-gray-300 transition-colors"
-                                        >
-                                            <div className="w-8 h-8 rounded-lg bg-couleur1/10 flex items-center justify-center text-couleur1">
-                                                {type.icon}
-                                            </div>
-                                            {type.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
+                    <div className="flex flex-col gap-3 px-2">
+                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Bibliothèque d'éléments</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {BLOCK_TYPES.map((type) => (
+                                <button
+                                    key={type.tag}
+                                    onClick={() => addBlock(type)}
+                                    className="flex flex-col items-center justify-center gap-2 p-3 bg-white dark:bg-gray-900 border border-couleur1/10 rounded-2xl hover:border-couleur1 hover:shadow-sm transition-all group"
+                                >
+                                    <div className="w-8 h-8 rounded-lg bg-couleur1/10 flex items-center justify-center text-couleur1 group-hover:bg-couleur1 group-hover:text-white transition-colors">
+                                        {type.icon}
+                                    </div>
+                                    <span className="text-[10px] font-bold text-couleur1 dark:text-gray-300 text-center">
+                                        {type.label}
+                                    </span>
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 pt-6 border-t border-couleur1/10">
+                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider px-2">Structure actuelle</label>
                         {blocks.map((block, index) => (
                             <div
                                 key={block.id}
@@ -235,6 +306,107 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                         ))}
                     </div>
                 </div>
+            ) : activeTab === "global" ? (
+                <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+                    <div className="flex items-center gap-3 p-4 bg-couleur1/5 rounded-2xl border border-couleur1/10">
+                        <div className="p-3 bg-couleur1 text-white rounded-xl shadow-sm">
+                            <Globe size={18} />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase text-couleur1 opacity-40">Page Settings</p>
+                            <p className="text-sm font-bold text-couleur1 dark:text-gray-200">Global Page Style</p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Élément cible</label>
+                        <select
+                            className="bg-white dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
+                            value={selectedGlobalTag}
+                            onChange={(e) => setSelectedGlobalTag(e.target.value)}
+                        >
+                            {usedTags.map(tag => (
+                                <option key={tag} value={tag}>{tag === 'body' ? 'Toute la page (Body)' : `Tous les <${tag.toUpperCase()}>`}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Visual Styling</label>
+                        <div className="grid grid-cols-2 gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
+                            {STYLE_CONTROLS.filter(ctrl => (TAG_STYLE_GROUPS[selectedGlobalTag === "body" ? "page" : selectedGlobalTag] || []).includes(ctrl.prop)).map((ctrl) => {
+                                let stylesObj = {};
+                                try {
+                                    stylesObj = JSON.parse(pageStyles || "{}");
+                                } catch (e) {
+                                    console.log(e)
+                                    stylesObj = { body: pageStyles };
+                                }
+                                
+                                const styles = parseStyles(stylesObj[selectedGlobalTag] || "");
+                                let currentValue = styles[ctrl.prop] || "";
+
+                                return (
+                                    <div key={ctrl.prop} className="flex flex-col gap-1">
+                                        <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
+                                        {ctrl.prop === "margin" || ctrl.prop === "padding" ? (
+                                            <div className="flex gap-1">
+                                                <input
+                                                    type="number"
+                                                    className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                    placeholder="e.g. 10"
+                                                    value={parseFloat(currentValue) || ""}
+                                                    onChange={(e) => {
+                                                        const numValue = e.target.value;
+                                                        const unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
+                                                        handlePageStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${unit}`);
+                                                    }}
+                                                />
+                                                <select
+                                                    className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                    value={currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px"}
+                                                    onChange={(e) => {
+                                                        const newUnit = e.target.value;
+                                                        const numValue = parseFloat(currentValue) || 0;
+                                                        handlePageStyleChange(ctrl.prop, `${numValue}${newUnit}`);
+                                                    }}
+                                                >
+                                                    <option value="px">px</option>
+                                                    <option value="em">em</option>
+                                                    <option value="%">%</option>
+                                                    <option value="rem">rem</option>
+                                                    <option value="auto">auto</option>
+                                                </select>
+                                            </div>
+                                        ) : ctrl.type === "select" ? (
+                                            <select
+                                                className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                value={currentValue}
+                                                onChange={(e) => handlePageStyleChange(ctrl.prop, e.target.value)}
+                                            >
+                                                <option value="">--</option>
+                                                {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                            </select>
+                                        ) : (
+                                            <input
+                                                type={ctrl.type}
+                                                className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'} rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all`}
+                                                placeholder={ctrl.placeholder}
+                                                value={currentValue}
+                                                onChange={(e) => handlePageStyleChange(ctrl.prop, e.target.value)}
+                                            />)
+                                        }
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-200/50">
+                        <p className="text-[10px] text-amber-800 dark:text-amber-200 leading-tight">
+                            <strong>Astuce:</strong> Les styles appliqués ici impacteront tous les éléments de type <strong>{selectedGlobalTag.toUpperCase()}</strong> de la page.
+                        </p>
+                    </div>
+                </div>
             ) : (
                 <div className="flex flex-col gap-6 animate-in fade-in duration-300">
                     {currentActiveBlock ? (
@@ -264,75 +436,124 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                                 </div>
 
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">CSS Classes</label>
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Visual Styling</label>
+                                    <div className="grid grid-cols-2 gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
+                                        {STYLE_CONTROLS.filter(ctrl => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.prop)).map((ctrl) => {
+                                            const styles = parseStyles(currentActiveBlock.styles);
+                                            let currentValue = styles[ctrl.prop] || "";
+
+                                            return (
+                                                <div key={ctrl.prop} className="flex flex-col gap-1">
+                                                    <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
+                                                    {ctrl.prop === "margin" || ctrl.prop === "padding" ? (
+                                                        <div className="flex gap-1">
+                                                            {/* Input numérique pour la valeur */}
+                                                            <input
+                                                                type="number"
+                                                                className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                placeholder="e.g. 10"
+                                                                value={parseFloat(currentValue) || ""}
+                                                                onChange={(e) => {
+                                                                    const numValue = e.target.value;
+                                                                    const unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
+                                                                    handleStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${unit}`);
+                                                                }}
+                                                            />
+                                                            {/* Sélecteur d'unité */}
+                                                            <select
+                                                                className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                value={currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px"}
+                                                                onChange={(e) => {
+                                                                    const newUnit = e.target.value;
+                                                                    const numValue = parseFloat(currentValue) || 0;
+                                                                    handleStyleChange(ctrl.prop, `${numValue}${newUnit}`);
+                                                                }}
+                                                            >
+                                                                <option value="px">px</option>
+                                                                <option value="em">em</option>
+                                                                <option value="%">%</option>
+                                                                <option value="rem">rem</option>
+                                                                <option value="auto">auto</option>
+                                                            </select>
+                                                        </div>
+                                                    ) : ctrl.type === "select" ? (
+                                                        <select
+                                                            className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                            value={currentValue}
+                                                            onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
+                                                        >
+                                                            <option value="">--</option>
+                                                            {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                        </select>
+                                                    ) : (
+                                                        <input
+                                                            type={ctrl.type}
+                                                            className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'} rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all`}
+                                                            placeholder={ctrl.placeholder}
+                                                            // For color inputs, ensure value is always a string, even if empty
+                                                            value={currentValue}
+                                                            onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
+                                                        />)
+                                                    }
+                                                </div>
+                                            )
+                                        })
+                                        }
+                                    </div>
+                                    
+
+                                </div>
+                            </div>
+
+                            {currentActiveBlock.tag === 'a' && (
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Destination du lien</label>
+                                    <select
+                                        className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
+                                        value={availablePages.some(p => p.uri === currentActiveBlock.href) ? currentActiveBlock.href : "custom"}
+                                        onChange={(e) => {
+                                            if (e.target.value !== "custom") {
+                                                updateBlock(currentActiveBlock.id, { href: e.target.value });
+                                            }
+                                        }}
+                                    >
+                                        <option value="custom">-- Lien personnalisé --</option>
+                                        {availablePages.map(page => (
+                                            <option key={page.uri} value={page.uri}>Page: {page.nom} ({page.uri})</option>
+                                        ))}
+                                    </select>
                                     <input
                                         className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
                                         type="text"
-                                        placeholder="tailwind or custom classes..."
-                                        value={currentActiveBlock.className || ""}
-                                        onChange={(e) => updateBlock(currentActiveBlock.id, { className: e.target.value })}
+                                        placeholder="URL externe ou chemin..."
+                                        value={currentActiveBlock.href || ""}
+                                        onChange={(e) => updateBlock(currentActiveBlock.id, { href: e.target.value })}
                                     />
                                 </div>
+                            )}
 
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Inline Style (Classic CSS)</label>
-                                    <textarea
-                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-mono focus:ring-2 ring-couleur1/20 transition-all"
-                                        placeholder="color: red; margin: 10px;"
-                                        rows={3}
-                                        value={currentActiveBlock.styles || ""}
-                                        onChange={(e) => updateBlock(currentActiveBlock.id, { styles: e.target.value })}
-                                    />
-                                </div>
-
-                                {currentActiveBlock.tag === 'a' && (
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Destination du lien</label>
-                                        <select
-                                            className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
-                                            value={availablePages.some(p => p.uri === currentActiveBlock.href) ? currentActiveBlock.href : "custom"}
-                                            onChange={(e) => {
-                                                if (e.target.value !== "custom") {
-                                                    updateBlock(currentActiveBlock.id, { href: e.target.value });
-                                                }
-                                            }}
-                                        >
-                                            <option value="custom">-- Lien personnalisé --</option>
-                                            {availablePages.map(page => (
-                                                <option key={page.uri} value={page.uri}>Page: {page.nom} ({page.uri})</option>
-                                            ))}
-                                        </select>
-                                        <input
-                                            className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
-                                            type="text"
-                                            placeholder="URL externe ou chemin..."
-                                            value={currentActiveBlock.href || ""}
-                                            onChange={(e) => updateBlock(currentActiveBlock.id, { href: e.target.value })}
-                                        />
-                                    </div>
-                                )}
-
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Content Content</label>
-                                    <textarea
-                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-37.5 focus:ring-2 ring-couleur1/20 transition-all"
-                                        value={currentActiveBlock.content}
-                                        onChange={(e) => updateBlock(currentActiveBlock.id, { content: e.target.value })}
-                                        placeholder="Type your content here..."
-                                    />
-                                </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Content Content</label>
+                                <textarea
+                                    className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-37.5 focus:ring-2 ring-couleur1/20 transition-all"
+                                    value={currentActiveBlock.content}
+                                    onChange={(e) => updateBlock(currentActiveBlock.id, { content: e.target.value })}
+                                    placeholder="Type your content here..."
+                                />
                             </div>
                         </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-20 opacity-30 text-couleur1 text-center">
-                            <MousePointer2 size={48} className="mb-4" />
-                            <p className="text-sm font-bold uppercase tracking-widest leading-relaxed">
-                                Select a block in the<br />Structure tab to edit
-                            </p>
-                        </div>
+                        
+            ) : (
+            <div className="flex flex-col items-center justify-center py-20 opacity-30 text-couleur1 text-center">
+                <MousePointer2 size={48} className="mb-4" />
+                <p className="text-sm font-bold uppercase tracking-widest leading-relaxed">
+                    Select a block in the<br />Structure tab to edit
+                </p>
+            </div>
                     )}
-                </div>
-            )}
         </div>
+    )
+}
+        </div >
     );
 }

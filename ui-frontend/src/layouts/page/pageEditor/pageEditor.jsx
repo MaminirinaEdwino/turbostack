@@ -90,6 +90,21 @@ export default function PageEditor({ projectName }) {
         }).join('\n');
     }, [currentPage?.content]);
 
+    //mila modifiena am farany
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
+    const globalCss = useMemo(() => {
+        if (!currentPage?.styles) return "";
+        try {
+            const stylesObj = JSON.parse(currentPage.styles);
+            return Object.entries(stylesObj)
+                .map(([tag, style]) => `${tag} { ${style} }`)
+                .join("\n");
+        } catch (e) {
+            console.log(e)
+            return `body { ${currentPage.styles} }`;
+        }
+    }, [currentPage?.styles]);
+
     const handleSave = async () => {
         showToast("Saving project...", "loading");
         try {
@@ -161,6 +176,7 @@ export default function PageEditor({ projectName }) {
                                             <style>
                                                 body { margin: 0; padding: 0; min-height: 100vh; font-family: sans-serif; }
                                                 img { max-width: 100%; height: auto; }
+                                                ${globalCss}
                                             </style>
                                         </head>
                                         <body>${previewHtml}</body>
@@ -191,8 +207,10 @@ export default function PageEditor({ projectName }) {
                             <VisualEditor
                                 key={selectedPageIndex}
                                 content={currentPage?.content}
+                                pageStyles={currentPage?.styles || ""}
                                 availablePages={siteData?.pages || []}
-                                onChange={(blocks) => updatePageField("content", blocks)} />
+                                onChange={(blocks) => updatePageField("content", blocks)}
+                                onPageStylesChange={(styles) => updatePageField("styles", styles)} />
                         </div>
                     </div>
                 ) : (

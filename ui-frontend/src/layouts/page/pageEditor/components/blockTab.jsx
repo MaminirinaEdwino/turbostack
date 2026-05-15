@@ -1,30 +1,59 @@
-import { BLOCK_TYPES } from "../defaultVar";
+import React from 'react';
+import { BLOCK_TYPES } from '../defaultVar';
+import { Puzzle } from 'lucide-react';
 
-export default function BlockTab({addBlock, renderBlocksList, blocks}) {
-    return <div className="space-y-6">
-        <div className="flex flex-col gap-3 px-2">
-            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Element List</label>
-            <div className="grid grid-cols-2 gap-2">
-                {BLOCK_TYPES.map((type) => (
-                    <button
-                        key={type.tag}
-                        onClick={() => addBlock(type)}
-                        className="flex flex-col items-center justify-center gap-2 p-3 bg-white dark:bg-gray-900 border border-couleur1/10 rounded-2xl hover:border-couleur1 hover:shadow-sm transition-all group"
-                    >
-                        <div className="w-8 h-8 rounded-lg bg-couleur1/10 flex items-center justify-center text-couleur1 group-hover:bg-couleur1 group-hover:text-white transition-colors">
+export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents }) {
+    return (
+        <div className="flex flex-col gap-6">
+            {/* Types de Blocs Standard */}
+            <div className="flex flex-col gap-3">
+                <h3 className="text-xs font-black uppercase text-couleur1/40">Blocs Standard</h3>
+                <div className="grid grid-cols-2 gap-3">
+                    {BLOCK_TYPES.map((type, index) => (
+                        <button
+                            key={index}
+                            onClick={() => addBlock(type)}
+                            className="flex items-center gap-2 p-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1"
+                        >
                             {type.icon}
-                        </div>
-                        <span className="text-[10px] font-bold text-couleur1 dark:text-gray-300 text-center">
-                            {type.label}
-                        </span>
-                    </button>
-                ))}
+                            <span className="text-sm font-medium">{type.label}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Composants Disponibles */}
+            {availableComponents && availableComponents.length > 0 && (
+                <div className="flex flex-col gap-3 mt-6">
+                    <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2">
+                        <Puzzle size={14} /> Composants
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                        {availableComponents.map((comp, index) => (
+                            <button
+                                key={index}
+                                onClick={() => addBlock(comp, true)}
+                                className="flex items-center gap-2 p-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1"
+                            >
+                                <Puzzle size={14} /> {/* Icône Puzzle pour les composants */}
+                                <span className="text-sm font-medium">{comp.nom}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Structure de la Page */}
+            <div className="flex flex-col gap-3 mt-6">
+                <h3 className="text-xs font-black uppercase text-couleur1/40">Structure de la Page</h3>
+                <div className="bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 rounded-xl p-3">
+                    {blocks.length === 0 ? (
+                        <p className="text-couleur1/50 text-sm italic">Aucun bloc pour le moment. Ajoutez-en !</p>
+                    ) : (
+                        renderBlocksList(blocks)
+                    )}
+                </div>
             </div>
         </div>
-
-        <div className="space-y-3 pt-6 border-t border-couleur1/10">
-            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider px-2">Structure actuelle</label>
-            {renderBlocksList(blocks)}
-        </div>
-    </div>
+    );
 }

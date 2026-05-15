@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
     Type, Image as ImageIcon, Trash2, Settings2,
-    MousePointer2, Layers, GripVertical, Globe, PlusSquare
+    MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle
 } from "lucide-react";
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
 import { parseStyles } from './utilsFunc';
@@ -21,6 +21,7 @@ export default function VisualEditor({
     onPageStylesChange, 
     onChange, 
     availablePages = [],
+    availableComponents = [],
     activeBlock,
     setActiveBlock,
     activeTab,
@@ -216,17 +217,31 @@ export default function VisualEditor({
         }
     };
 
-    const addBlock = (type) => {
+    const addBlock = (type, isComponent = false) => {
         const id = Math.random().toString(36).substr(2, 9);
-        const newBlock = {
-            id,
-            tag: type.tag,
-            content: type.defaultContent,
-            href: type.defaultHref || "",
-            className: "",
-            styles: "",
-            children: []
-        };
+        let newBlock;
+
+        if (isComponent) {
+            newBlock = {
+                id,
+                tag: "div",
+                content: "",
+                className: `component-${type.nom?.toLowerCase().replace(/\s+/g, '-')}`,
+                styles: "",
+                children: type.content ? JSON.parse(JSON.stringify(type.content)) : []
+            };
+        } else {
+            newBlock = {
+                id,
+                tag: type.tag,
+                content: type.defaultContent,
+                href: type.defaultHref || "",
+                className: "",
+                styles: "",
+                children: []
+            };
+        }
+
         const updated = [...blocks, newBlock];
         setBlocks(updated);
         sync(updated);
@@ -234,18 +249,33 @@ export default function VisualEditor({
         if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
     };
 
-    const addChild = (parentId, type) => {
+    const addChild = (parentId, type, isComponent = false) => {
         const id = Math.random().toString(36).substr(2, 9);
-        const newBlock = {
-            id,
-            tag: type.tag,
-            content: type.defaultContent,
-            href: type.defaultHref || "",
-            className: "",
-            styles: "",
-            htmlId: "", // Initialisation de la nouvelle propriété htmlId
-            children: []
-        };
+        let newBlock;
+
+        if (isComponent) {
+            newBlock = {
+                id,
+                tag: "div",
+                content: "",
+                className: `component-${type.nom?.toLowerCase().replace(/\s+/g, '-')}`,
+                styles: "",
+                htmlId: "",
+                children: type.content ? JSON.parse(JSON.stringify(type.content)) : []
+            };
+        } else {
+            newBlock = {
+                id,
+                tag: type.tag,
+                content: type.defaultContent,
+                href: type.defaultHref || "",
+                className: "",
+                styles: "",
+                htmlId: "", 
+                children: []
+            };
+        }
+
         const updateTree = (list) => {
             return list.map(b => {
                 if (b.id === parentId) return { ...b, children: [...(b.children || []), newBlock] };
@@ -328,7 +358,7 @@ export default function VisualEditor({
             )}
 
             {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
-                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock}/>
+                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents}/>
             ) : activeTab === "global" && allowedTabs.includes("global") ? (
                 <GlobalTab availableSelectors={availableSelectors} setSelectedGlobalTag={setSelectedGlobalTag} handlePageStyleChange={handlePageStyleChange} pageStyles={pageStyles} selectedGlobalTag={selectedGlobalTag}/>
             ) : allowedTabs.includes("properties") ? (

@@ -12,6 +12,8 @@ export default function PageEditor({ projectName }) {
     const navigateTo = useNavigate();
     const [project, setProject] = useState(null);
     const [selectedPageIndex, setSelectedPageIndex] = useState(null);
+    const [selectedComponentIndex, setSelectedComponentIndex] = useState(null);
+    const [editingType, setEditingType] = useState('page'); // 'page' ou 'component'
     const [loading, setLoading] = useState(true);
     const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
@@ -59,15 +61,18 @@ export default function PageEditor({ projectName }) {
 
 
 
-    // Mise à jour générique d'un champ de la page sélectionnée
-    const updatePageField = (field, value) => {
+    // Mise à jour générique d'un champ de l'élément actif (page ou composant)
+    const updateActiveItemField = (field, value) => {
         const typeKey = project.type === "static" ? "site_statique" : "web_app";
+        const itemsKey = editingType === 'page' ? 'pages' : (project.type === "static" ? "composants" : "composant");
+        const index = editingType === 'page' ? selectedPageIndex : selectedComponentIndex;
+
         setProject(prev => {
-            const newPages = [...prev[typeKey].pages];
-            newPages[selectedPageIndex] = { ...newPages[selectedPageIndex], [field]: value };
+            const newItems = [...prev[typeKey][itemsKey]];
+            newItems[index] = { ...newItems[index], [field]: value };
             return {
                 ...prev,
-                [typeKey]: { ...prev[typeKey], pages: newPages }
+                [typeKey]: { ...prev[typeKey], [itemsKey]: newItems }
             };
         });
     };
@@ -98,13 +103,37 @@ export default function PageEditor({ projectName }) {
         setProject(updatedProject);
     };
 
+    const addComponent = () => {
+        const typeKey = project.type === "static" ? "site_statique" : "web_app";
+        const compKey = project.type === "static" ? "composants" : "composant";
+        const updatedProject = { ...project };
+        const newComponent = {
+            nom: "New Component",
+            content: []
+        };
+        updatedProject[typeKey][compKey] = [...(updatedProject[typeKey][compKey] || []), newComponent];
+        setProject(updatedProject);
+    };
+
+    const removeComponent = (index) => {
+        if (!window.confirm("Voulez-vous vraiment supprimer ce composant ?")) return;
+        const typeKey = project.type === "static" ? "site_statique" : "web_app";
+        const compKey = project.type === "static" ? "composants" : "composant";
+        const updatedProject = { ...project };
+        updatedProject[typeKey][compKey] = updatedProject[typeKey][compKey].filter((_, i) => i !== index);
+        setProject(updatedProject);
+    };
+
     const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
-    const currentPage = selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null;
+    const compKey = project?.type === "static" ? "composants" : "composant";
+
+    const activeItem = editingType === 'page' 
+        ? (selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null)
+        : (selectedComponentIndex !== null ? siteData?.[compKey]?.[selectedComponentIndex] : null);
 
     // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
-    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     const previewHtml = useMemo(() => {
-        if (!currentPage?.content || !Array.isArray(currentPage.content)) return "";
+        if (!activeItem?.content || !Array.isArray(activeItem.content)) return ""; // Utilise activeItem
         const renderBlocks = (blocks) => {
             return blocks.map(b => {
                 const className = b.className || "";
@@ -112,30 +141,61 @@ export default function PageEditor({ projectName }) {
                 const content = b.content || "";
                 const href = b.href || "#";
                 const htmlId = b.htmlId ? `id="${b.htmlId}"` : ""; // Ajout de l'attribut id si htmlId est défini
+                const isJsonStyle = typeof styles === "string" && styles.trim().startsWith("{");
+                const inlineStyleAttr = isJsonStyle ? "" : `style="${styles}"`;
                 const childrenHtml = b.children ? renderBlocks(b.children) : "";
-                if (b.tag === 'img') return `<img src="${content}" class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId} />`;
-                if (b.tag === 'button') return `<button class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
-                if (b.tag === 'a') return `<a href="${href}" class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
-                return `<${b.tag} class="${className}" style="${styles}" data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
+                if (b.tag === 'img') return `<img src="${content}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} />`;
+                if (b.tag === 'button') return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
+                if (b.tag === 'a') return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
+                return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
             }).join('\n');
         };
-        return renderBlocks(currentPage.content);
-    }, [currentPage?.content]);
+        return renderBlocks(activeItem.content);
+    }, [activeItem?.content]);
+
+    // Génère le CSS spécifique aux blocs pour chaque viewport
+    const blocksCss = useMemo(() => {
+        if (!activeItem?.content) return "";
+        let css = "";
+        const process = (blocks) => {
+            blocks.forEach(b => {
+                if (b.styles && typeof b.styles === 'string' && b.styles.trim().startsWith("{")) {
+                    try {
+                        const obj = JSON.parse(b.styles);
+                        const format = (s) => Object.entries(s || {}).map(([p, v]) => `${p}: ${v};`).join(" ");
+                        if (obj.desktop) css += `[data-block-id="${b.id}"] { ${format(obj.desktop)} }\n`;
+                        if (obj.tablet) css += `@media (max-width: 1024px) { [data-block-id="${b.id}"] { ${format(obj.tablet)} } }\n`;
+                        if (obj.mobile) css += `@media (max-width: 768px) { [data-block-id="${b.id}"] { ${format(obj.mobile)} } }\n`;
+                    } catch(e) {
+                        console.error(e)
+                    }
+                }
+                if (b.children) process(b.children);
+            });
+        };
+        process(activeItem.content);
+        return css;
+    }, [activeItem?.content]);
 
     //mila modifiena am farany
     // eslint-disable-next-line react-hooks/preserve-manual-memoization
     const globalCss = useMemo(() => {
-        if (!currentPage?.styles) return "";
+        if (!activeItem?.styles) return ""; // Utilise activeItem
         try {
-            const stylesObj = JSON.parse(currentPage.styles);
-            return Object.entries(stylesObj)
-                .map(([tag, style]) => `${tag} { ${style} }`)
-                .join("\n");
+            const stylesObj = JSON.parse(activeItem.styles);
+            const format = (s) => Object.entries(s || {}).map(([tag, style]) => `${tag} { ${style} }`).join("\n");
+            if (stylesObj.desktop || stylesObj.tablet || stylesObj.mobile) {
+                let css = format(stylesObj.desktop);
+                if (stylesObj.tablet) css += `\n@media (max-width: 1024px) {\n${format(stylesObj.tablet)}\n}`;
+                if (stylesObj.mobile) css += `\n@media (max-width: 768px) {\n${format(stylesObj.mobile)}\n}`;
+                return css;
+            }
+            return format(stylesObj);
         } catch (e) {
             console.log(e)
-            return `body { ${currentPage.styles} }`;
+            return `body { ${activeItem.styles} }`; // Utilise activeItem
         }
-    }, [currentPage?.styles]);
+    }, [activeItem?.styles]);
 
     const handleSave = async () => {
         showToast("Saving project...", "loading");
@@ -165,7 +225,16 @@ export default function PageEditor({ projectName }) {
                         </div>
                     </button>
                     <h1 className="text-xl font-bold text-couleur1">
-                        {editMode ? `Editing: ${currentPage?.nom}` : `Pages : ${projectName}`}
+                        {editMode ? (
+                            <div className="flex items-center gap-2">
+                                <span className="opacity-50 text-xs uppercase">Edit {editingType}:</span>
+                                <input 
+                                    value={activeItem?.nom} 
+                                    onChange={(e) => updateActiveItemField('nom', e.target.value)}
+                                    className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1"
+                                />
+                            </div>
+                        ) : `Project : ${projectName}`}
                     </h1>
                 </div>
                 <button onClick={handleSave} className="bg-couleur1 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2">
@@ -186,14 +255,15 @@ export default function PageEditor({ projectName }) {
                                 </button>
                             </div>
                             <VisualEditor
-                                key={`left-${selectedPageIndex}`}
-                                content={currentPage?.content}
+                                key={`left-${editingType}-${editingType === 'page' ? selectedPageIndex : selectedComponentIndex}`}
+                                content={activeItem?.content}
                                 availablePages={siteData?.pages || []}
+                                availableComponents={siteData?.[compKey] || []}
                                 activeBlock={activeBlock}
                                 setActiveBlock={setActiveBlock}
                                 activeTab="blocks"
                                 allowedTabs={["blocks"]}
-                                onChange={(blocks) => updatePageField("content", blocks)} />
+                                onChange={(blocks) => updateActiveItemField("content", blocks)} />
                         </aside>
 
                         {/* Main content: Prévisualisation isolée (Iframe) */}
@@ -257,7 +327,12 @@ export default function PageEditor({ projectName }) {
                             <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar">
                                 <iframe
                                     title="Page Preview"
-                                    style={{ width: viewport.width, height: viewport.height, scale: zoomLevel }}
+                                    style={{ 
+                                        width: viewport.width, 
+                                        height: viewport.height, 
+                                        transform: `scale(${zoomLevel})`, // Correction ici
+                                        transformOrigin: 'top center' // Correction ici
+                                    }}
                                     className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1/10 rounded-sm"
                                     srcDoc={`
                                     <!DOCTYPE html>
@@ -270,10 +345,7 @@ export default function PageEditor({ projectName }) {
                                                 body { margin: 0; padding: 0; min-height: 100vh; font-family: sans-serif; }
                                                 img { max-width: 100%; height: auto; }
                                                 ${globalCss}
-                                                body {
-                                                    transform: scale(${zoomLevel});
-                                                    transform-origin: 0 0;
-                                                }
+                                                ${blocksCss}
                                             </style>
                                         </head>
                                         <body>${previewHtml}</body>
@@ -292,17 +364,18 @@ export default function PageEditor({ projectName }) {
                                 </button>
                             </div>
                             <VisualEditor
-                                key={`right-${selectedPageIndex}`}
-                                content={currentPage?.content}
-                                pageStyles={currentPage?.styles || ""}
+                                key={`right-${editingType}-${editingType === 'page' ? selectedPageIndex : selectedComponentIndex}`}
+                                content={activeItem?.content}
+                                pageStyles={activeItem?.styles || ""}
                                 availablePages={siteData?.pages || []}
+                                availableComponents={siteData?.[compKey] || []}
                                 activeBlock={activeBlock}
                                 setActiveBlock={setActiveBlock}
                                 activeTab={rightActiveTab}
                                 setActiveTab={setRightActiveTab}
-                                allowedTabs={["global", "properties"]}
-                                onChange={(blocks) => updatePageField("content", blocks)}
-                                onPageStylesChange={(styles) => updatePageField("styles", styles)} />
+                                allowedTabs={editingType === 'page' ? ["global", "properties"] : ["properties"]}
+                                onChange={(blocks) => updateActiveItemField("content", blocks)}
+                                onPageStylesChange={(styles) => updateActiveItemField("styles", styles)} />
                         </aside>
                     </div>
                 ) : (
@@ -323,7 +396,7 @@ export default function PageEditor({ projectName }) {
                                     </div>
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => { setSelectedPageIndex(index); setEditMode(true); }}
+                                            onClick={() => { setSelectedPageIndex(index); setEditingType('page'); setEditMode(true); }}
                                             className="p-2 bg-couleur1/5 text-couleur1 rounded-lg hover:bg-couleur1 hover:text-white transition-all"
                                         >
                                             <Edit3 size={18} />
@@ -339,11 +412,40 @@ export default function PageEditor({ projectName }) {
                             ))}
                         </section>
 
-                        {/* UI Components Placeholder */}
                         <section className="space-y-4">
-                            <h2 className="text-lg font-bold flex items-center gap-2"><Puzzle size={18} /> Components</h2>
-                            <div className="h-64 border-2 border-dashed border-couleur1/10 rounded-3xl flex items-center justify-center text-couleur1/30">
-                                Drag & Drop UI (Coming Soon)
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-lg font-bold text-couleur1 dark:text-gray-200 flex items-center gap-2"><Puzzle size={18} /> Components</h2>
+                                <button onClick={addComponent} className="p-2 bg-couleur1 text-white rounded-xl hover:shadow-lg transition-all flex items-center gap-2 text-sm">
+                                    <Plus size={18} /> Add Component
+                                </button>
+                            </div>
+                            <div className="space-y-3">
+                                {siteData?.[compKey]?.map((comp, index) => (
+                                    <div key={index} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-couleur1/10 dark:border-white/5 flex justify-between items-center group hover:border-couleur1 transition-all">
+                                        <div>
+                                            <p className="font-bold text-couleur1">{comp.nom}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => { setSelectedComponentIndex(index); setEditingType('component'); setEditMode(true); }}
+                                                className="p-2 bg-couleur1/5 text-couleur1 rounded-lg hover:bg-couleur1 hover:text-white transition-all"
+                                            >
+                                                <Edit3 size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => removeComponent(index)}
+                                                className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                                {(!siteData?.[compKey] || siteData[compKey].length === 0) && (
+                                    <div className="h-32 border-2 border-dashed border-couleur1/10 rounded-3xl flex items-center justify-center text-couleur1/30 italic text-sm">
+                                        No components created yet.
+                                    </div>
+                                )}
                             </div>
                         </section>
                     </div>

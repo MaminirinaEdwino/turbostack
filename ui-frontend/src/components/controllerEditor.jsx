@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { 
     Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText, Settings, 
     CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight, Wand2,
@@ -34,7 +34,7 @@ export default function ControllerEditor({ projectName }) {
     const typeKey = project?.type === "static" ? "site_statique" : "web_app";
     const controllers = siteData?.controllers || [];
     const pages = siteData?.pages || [];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     const endpoints = project?.rest_api?.endpoints || [];
     
     const activeController = selectedIndex !== null ? controllers[selectedIndex] : null;
@@ -263,7 +263,7 @@ export default function ControllerEditor({ projectName }) {
                                                         ep.params?.forEach(p => fields.push(p));
                                                         const uniqueFields = [...new Set(fields)];
                                                         
-                                                        return uniqueFields.map(fieldNom => {
+                                                        return uniqueFields.map((fieldNom) => {
                                                             const binding = activeController.bindings?.find(b => b.endpoint_nom === ep.nom && b.map_field === fieldNom);
                                                             return (
                                                                 <FieldToggleRow 
@@ -311,7 +311,7 @@ export default function ControllerEditor({ projectName }) {
     );
 }
 
-function FieldToggleRow({ fieldNom, isActive, onToggle, binding, onChange }) {
+function FieldToggleRow({ fieldNom, isActive, onToggle, binding }) {
     return (
         <div className={`flex items-center justify-between p-2.5 px-4 rounded-xl border transition-all ${isActive ? 'bg-white shadow-sm border-couleur1/20' : 'bg-transparent border-transparent opacity-60 hover:opacity-100'}`}>
             {/* Checkbox et Nom du champ */}

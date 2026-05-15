@@ -263,6 +263,28 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                                     </select>
                                 </div>
 
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">CSS Classes</label>
+                                    <input
+                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                        type="text"
+                                        placeholder="tailwind or custom classes..."
+                                        value={currentActiveBlock.className || ""}
+                                        onChange={(e) => updateBlock(currentActiveBlock.id, { className: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Inline Style (Classic CSS)</label>
+                                    <textarea
+                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-mono focus:ring-2 ring-couleur1/20 transition-all"
+                                        placeholder="color: red; margin: 10px;"
+                                        rows={3}
+                                        value={currentActiveBlock.styles || ""}
+                                        onChange={(e) => updateBlock(currentActiveBlock.id, { styles: e.target.value })}
+                                    />
+                                </div>
+
                                 {currentActiveBlock.tag === 'a' && (
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Destination du lien</label>

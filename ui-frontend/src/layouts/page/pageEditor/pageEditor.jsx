@@ -78,7 +78,7 @@ export default function PageEditor({ projectName }) {
     // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
     const previewHtml = useMemo(() => {
         if (!currentPage?.content || !Array.isArray(currentPage.content)) return "";
-        return currentPage.content.map(b => {
+        return currentPage?.content.map(b => {
             const className = b.className || "";
             const styles = b.styles || "";
             const content = b.content || "";
@@ -88,7 +88,7 @@ export default function PageEditor({ projectName }) {
             if (b.tag === 'a') return `<a href="${href}" class="${className}" style="${styles}">${content}</a>`;
             return `<${b.tag} class="${className}" style="${styles}">${content}</${b.tag}>`;
         }).join('\n');
-    }, [currentPage.content]);
+    }, [currentPage?.content]);
 
     const handleSave = async () => {
         showToast("Saving project...", "loading");

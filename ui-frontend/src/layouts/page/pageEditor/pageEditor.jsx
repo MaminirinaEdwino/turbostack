@@ -13,6 +13,7 @@ export default function PageEditor({ projectName }) {
     const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
     const [editMode, setEditMode] = useState(false);
+    const [zoomLevel, setZoomLevel] = useState(1); // New state for zoom
     const [toast, setToast] = useState(null);
 
     const [activeBlock, setActiveBlock] = useState(null);
@@ -23,6 +24,19 @@ export default function PageEditor({ projectName }) {
         if (type !== "loading") {
             setTimeout(() => setToast(null), 3000);
         }
+    };
+
+    // New zoom handlers
+    const handleZoomIn = () => {
+        setZoomLevel(prev => Math.min(prev + 0.1, 2)); // Max zoom 200%
+    };
+
+    const handleZoomOut = () => {
+        setZoomLevel(prev => Math.max(prev - 0.1, 0.5)); // Min zoom 50%
+    };
+
+    const handleResetZoom = () => {
+        setZoomLevel(1); // Reset to 100%
     };
 
     useEffect(() => {
@@ -193,7 +207,24 @@ export default function PageEditor({ projectName }) {
                                     <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-400/40"></div>
                                     <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-400/40"></div>
                                 </div>
-                                <span className="text-[10px] font-bold text-couleur1/40 uppercase tracking-widest">Live Canvas Preview</span>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-[10px] font-bold text-couleur1/40 uppercase tracking-widest">Live Canvas Preview</span>
+                                    {/* Zoom Controls */}
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={handleZoomOut} className="p-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs">
+                                            -
+                                        </button>
+                                        <span className="text-sm font-medium text-couleur1 dark:text-gray-300">{Math.round(zoomLevel * 100)}%</span>
+                                        <button onClick={handleZoomIn} className="p-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs">
+                                            +
+                                        </button>
+                                        <button onClick={handleResetZoom} className="ml-2 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+
+
                                 <div className="w-12"></div>
                             </div>
                             <iframe
@@ -210,6 +241,12 @@ export default function PageEditor({ projectName }) {
                                                 body { margin: 0; padding: 0; min-height: 100vh; font-family: sans-serif; }
                                                 img { max-width: 100%; height: auto; }
                                                 ${globalCss}
+                                                body {
+                                                    transform: scale(${zoomLevel});
+                                                    transform-origin: 0 0;
+                                                    width: ${100 / zoomLevel}%;
+                                                    height: ${100 / zoomLevel}%;
+                                                }
                                             </style>
                                         </head>
                                         <body>${previewHtml}</body>

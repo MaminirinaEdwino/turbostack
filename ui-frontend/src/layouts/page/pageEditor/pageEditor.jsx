@@ -178,7 +178,6 @@ export default function PageEditor({ projectName }) {
     }, [activeItem?.content]);
 
     //mila modifiena am farany
-    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     const globalCss = useMemo(() => {
         if (!activeItem?.styles) return ""; // Utilise activeItem
         try {

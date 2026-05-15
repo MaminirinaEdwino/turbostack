@@ -17,6 +17,7 @@ export default function PropertiesTab({
             // Fallback pour l'ancien format string
             return parseStyles(currentActiveBlock.styles);
         } catch (e) {
+            console.log(e)
             return {};
         }
     };

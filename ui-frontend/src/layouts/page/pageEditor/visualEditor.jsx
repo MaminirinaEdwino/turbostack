@@ -321,6 +321,7 @@ export default function VisualEditor({
                 stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
             }
         } catch (e) {
+            console.log(e)
             stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
         }
 
@@ -339,6 +340,7 @@ export default function VisualEditor({
                 allStyles.desktop[selectedGlobalTag] = pageStyles;
             }
         } catch (e) {
+            console.log(e)
             allStyles.desktop[selectedGlobalTag] = pageStyles;
         }
 

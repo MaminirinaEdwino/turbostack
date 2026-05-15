@@ -58,6 +58,7 @@ export default function GlobalTab({
                         try {
                             stylesObj = JSON.parse(pageStyles || "{}");
                         } catch (e) {
+                            console.log(e)
                             stylesObj = { body: pageStyles };
                         }
 

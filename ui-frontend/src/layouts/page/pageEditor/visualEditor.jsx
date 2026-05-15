@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { 
-    Type, Image as ImageIcon, Trash2, 
+import {
+    Type, Image as ImageIcon, Trash2,
     Plus, Edit3, Settings2,
-    MousePointer2, Heading1, Heading2, Pilcrow, Box, Square, 
+    MousePointer2, Heading1, Heading2, Pilcrow, Box, Square,
     ChevronDown, Layers, GripVertical, Link
 } from "lucide-react";
 
@@ -37,16 +37,17 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                 if (!Array.isArray(extracted)) throw new Error();
             } catch (e) {
                 // Fallback : parsing HTML si ce n'est pas encore un tableau/JSON
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(content, "text/html");
-            extracted = Array.from(doc.body.children).map((el) => ({
-                id: el.getAttribute("data-block-id") || Math.random().toString(36).substr(2, 9),
-                tag: el.tagName.toLowerCase(),
-                content: el.innerHTML,
-                href: el.getAttribute("href") || "",
-                className: el.className,
-                styles: el.getAttribute("style") || ""
-            }));
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(content, "text/html");
+                extracted = Array.from(doc.body.children).map((el) => ({
+                    id: el.getAttribute("data-block-id") || Math.random().toString(36).substr(2, 9),
+                    tag: el.tagName.toLowerCase(),
+                    content: el.innerHTML,
+                    href: el.getAttribute("href") || "",
+                    className: el.className,
+                    styles: el.getAttribute("style") || ""
+                }));
+                console.log(e)
             }
         }
 
@@ -63,7 +64,7 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
     // Synchronisation vers le parent
     const sync = (currentBlocks) => {
         // On renvoie le tableau directement
-        onChange(currentBlocks); 
+        onChange(currentBlocks);
     };
 
     const selectBlock = (id) => {
@@ -87,7 +88,7 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
     const handleDrop = (e, targetIndex) => {
         e.preventDefault();
         const sourceIndex = parseInt(e.dataTransfer.getData("sourceIndex"));
-        
+
         if (isNaN(sourceIndex) || sourceIndex === targetIndex) return;
 
         const updatedBlocks = [...blocks];
@@ -128,7 +129,7 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
             tag: type.tag,
             content: type.defaultContent,
             href: type.defaultHref || "",
-            className: "", 
+            className: "",
             styles: ""
         };
         const updated = [...blocks, newBlock];
@@ -150,13 +151,13 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full"> {/* Removed max-w-4xl mx-auto */}
             {/* Tabs Header */}
             <div className="flex bg-white/50 dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
-                <button 
+                <button
                     onClick={() => setActiveTab("blocks")}
                     className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'blocks' ? 'bg-couleur1 text-white shadow-md' : 'text-couleur1/60 hover:text-couleur1'}`}
                 >
                     <Layers size={14} /> Structure
                 </button>
-                <button 
+                <button
                     onClick={() => setActiveTab("props")}
                     className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'props' ? 'bg-couleur1 text-white shadow-md' : 'text-couleur1/60 hover:text-couleur1'}`}
                 >
@@ -168,13 +169,13 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <div className="relative">
-                            <button 
-                                onClick={() => setShowAddMenu(!showAddMenu)} 
+                            <button
+                                onClick={() => setShowAddMenu(!showAddMenu)}
                                 className="flex items-center gap-2 bg-couleur1 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase hover:shadow-lg transition-all"
                             >
                                 <Plus size={12} /> New Section <ChevronDown size={12} />
                             </button>
-                            
+
                             {showAddMenu && (
                                 <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-couleur1/10 shadow-2xl rounded-2xl p-2 z-50 grid grid-cols-1 gap-1 animate-in zoom-in-95 duration-200">
                                     {BLOCK_TYPES.map((type) => (
@@ -196,7 +197,7 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
 
                     <div className="space-y-3">
                         {blocks.map((block, index) => (
-                            <div 
+                            <div
                                 key={block.id}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, index)}
@@ -204,14 +205,13 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                                 onDragEnter={handleDragOver}
                                 onDrop={(e) => handleDrop(e, index)}
                                 onDragEnd={() => setDraggedIndex(null)}
-                                className={`group p-3 rounded-2xl border transition-all cursor-pointer ${
-                                    draggedIndex === index ? "opacity-20 border-dashed border-couleur1 scale-95" : ""
-                                } ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-md ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
+                                className={`group p-3 rounded-2xl border transition-all cursor-pointer ${draggedIndex === index ? "opacity-20 border-dashed border-couleur1 scale-95" : ""
+                                    } ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-md ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
                                 onClick={() => selectBlock(block.id)}
                             >
                                 <div className="flex justify-between items-center">
                                     <div className="flex items-center gap-3">
-                                        <div 
+                                        <div
                                             className="cursor-grab active:cursor-grabbing text-couleur1/20 group-hover:text-couleur1/60 transition-colors"
                                             onClick={(e) => e.stopPropagation()}
                                         >
@@ -293,7 +293,7 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                                 <div className="flex flex-col gap-2">
                                     <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Content Content</label>
                                     <textarea
-                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-[150px] focus:ring-2 ring-couleur1/20 transition-all"
+                                        className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-37.5 focus:ring-2 ring-couleur1/20 transition-all"
                                         value={currentActiveBlock.content}
                                         onChange={(e) => updateBlock(currentActiveBlock.id, { content: e.target.value })}
                                         placeholder="Type your content here..."
@@ -305,7 +305,7 @@ export default function VisualEditor({ content, onChange, availablePages = [] })
                         <div className="flex flex-col items-center justify-center py-20 opacity-30 text-couleur1 text-center">
                             <MousePointer2 size={48} className="mb-4" />
                             <p className="text-sm font-bold uppercase tracking-widest leading-relaxed">
-                                Select a block in the<br/>Structure tab to edit
+                                Select a block in the<br />Structure tab to edit
                             </p>
                         </div>
                     )}

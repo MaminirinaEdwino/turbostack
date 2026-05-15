@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
-import { 
-    Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, 
-    PanelLeftOpen, CheckCircle, AlertCircle, PanelRightOpen, Smartphone, Tablet, Monitor 
+import {
+    Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X,
+    PanelLeftOpen, CheckCircle, AlertCircle, PanelRightOpen, Smartphone, Tablet, Monitor
 } from "lucide-react";
 import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
@@ -18,17 +18,21 @@ export default function PageEditor({ projectName }) {
     const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
     const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
     const [editMode, setEditMode] = useState(false);
-    const [viewport, setViewport] = useState({ 
-        width: "100%", 
-        height: "100%", 
-        name: "desktop" 
+    const [viewport, setViewport] = useState({
+        width: "100%",
+        height: "100%",
+        name: "desktop"
     });
     const [zoomLevel, setZoomLevel] = useState(1); // New state for zoom
     const [toast, setToast] = useState(null);
 
     const [activeBlock, setActiveBlock] = useState(null);
     const [rightActiveTab, setRightActiveTab] = useState("properties");
-
+    const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
+    const typeKey = project?.type === "static" ? "site_statique" : "web_app";
+    const activeItem = editingType === 'page'
+        ? (selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null)
+        : (selectedComponentIndex !== null ? siteData?.[compKey]?.[selectedComponentIndex] : null);
     const showToast = (message, type = "success") => {
         setToast({ message, type });
         if (type !== "loading") {
@@ -59,19 +63,35 @@ export default function PageEditor({ projectName }) {
         loadProject();
     }, [projectName]);
 
+    // Create bindingsMap similar to VisualEditor.jsx for use in previewHtml
+    const bindingsMap = useMemo(() => {
+        const map = {};
+        const controllers = siteData?.controllers || [];
+        controllers
+            .filter(ctrl => ctrl.page_nom === activeItem?.nom)
+            .forEach(ctrl => {
+                (ctrl.bindings || []).forEach(binding => {
+                    if (binding.id_element) {
+                        if (!map[binding.id_element]) map[binding.id_element] = [];
+                        map[binding.id_element].push({ ...binding, ctrlName: ctrl.nom });
+                    }
+                });
+            });
+        return map;
+    }, [siteData?.controllers, activeItem?.nom]);
 
     // Mise à jour générique d'un champ de l'élément actif (page ou composant)
     const updateActiveItemField = (field, value) => {
         setProject(prev => {
             if (!prev) return prev;
             const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-            
+
             // Détection robuste de la clé des composants
             const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
             const itemsKey = editingType === 'page' ? 'pages' : actualCompKey;
-            
+
             const index = editingType === 'page' ? selectedPageIndex : selectedComponentIndex;
-            
+
             if (index === null || !prev[typeKey] || !prev[typeKey][itemsKey] || !prev[typeKey][itemsKey][index]) {
                 console.warn("Update failed: invalid index or path", { itemsKey, index });
                 return prev;
@@ -79,7 +99,7 @@ export default function PageEditor({ projectName }) {
 
             const newItems = JSON.parse(JSON.stringify(prev[typeKey][itemsKey]));
             newItems[index] = { ...newItems[index], [field]: value };
-            
+
             const updatedTypeData = { ...prev[typeKey], [itemsKey]: newItems };
             return { ...prev, [typeKey]: updatedTypeData };
         });
@@ -120,11 +140,11 @@ export default function PageEditor({ projectName }) {
             const typeKey = prev.type === "static" ? "site_statique" : "web_app";
             // On utilise la clé déjà existante ou on en crée une par défaut selon le type
             const actualCompKey = prev[typeKey]?.composants ? "composants" : (prev[typeKey]?.composant ? "composant" : (prev.type === "static" ? "composants" : "composant"));
-            
-            const newComponent = { 
-                id: Math.random().toString(36).substr(2, 9), 
-                nom: "New Component", 
-                content: [] 
+
+            const newComponent = {
+                id: Math.random().toString(36).substr(2, 9),
+                nom: "New Component",
+                content: []
             };
             const updatedComponents = [...(prev[typeKey][actualCompKey] || []), newComponent];
             return { ...prev, [typeKey]: { ...prev[typeKey], [actualCompKey]: updatedComponents } };
@@ -142,15 +162,19 @@ export default function PageEditor({ projectName }) {
         });
     };
 
-    const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
-    const typeKey = project?.type === "static" ? "site_statique" : "web_app";
-    
+
+
     // Détection de la clé de composant pour l'affichage (priorité au pluriel comme dans pagelist.jsx)
     const compKey = siteData?.composants ? "composants" : "composant";
 
-    const activeItem = editingType === 'page' 
-        ? (selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null)
-        : (selectedComponentIndex !== null ? siteData?.[compKey]?.[selectedComponentIndex] : null);
+
+
+    // Helper to generate controller indicator HTML
+    const getControllerIndicatorHtml = (blockId) => {
+        const bindings = bindingsMap[blockId];
+        if (!bindings || bindings.length === 0) return '';
+        return `<span class="controller-bound-indicator" title="Bound to: ${bindings.map(b => `${b.ctrlName} (${b.endpoint_nom} -> ${b.map_field})`).join(', ')}">CTRL</span>`;
+    };
 
     // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
     const previewHtml = useMemo(() => {
@@ -165,14 +189,17 @@ export default function PageEditor({ projectName }) {
                 const isJsonStyle = typeof styles === "string" && styles.trim().startsWith("{");
                 const inlineStyleAttr = isJsonStyle ? "" : `style="${styles}"`;
                 const childrenHtml = b.children ? renderBlocks(b.children) : "";
-                if (b.tag === 'img') return `<img src="${content}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} />`;
-                if (b.tag === 'button') return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
-                if (b.tag === 'a') return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
-                return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
+
+                const indicator = getControllerIndicatorHtml(b.id);
+
+                if (b.tag === 'img') return `<img src="${content}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} />${indicator}`; // Indicator next to img
+                if (b.tag === 'button') return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${indicator}${content}${childrenHtml}</button>`;
+                if (b.tag === 'a') return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${indicator}${content}${childrenHtml}</a>`;
+                return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${indicator}${content}${childrenHtml}</${b.tag}>`;
             }).join('\n');
         };
         return renderBlocks(activeItem.content);
-    }, [activeItem?.content]);
+    }, [activeItem?.content, bindingsMap]); // Add bindingsMap to dependencies
 
     // Génère le CSS spécifique aux blocs pour chaque viewport
     const blocksCss = useMemo(() => {
@@ -187,7 +214,7 @@ export default function PageEditor({ projectName }) {
                         if (obj.desktop) css += `[data-block-id="${b.id}"] { ${format(obj.desktop)} }\n`;
                         if (obj.tablet) css += `@media (max-width: 1024px) { [data-block-id="${b.id}"] { ${format(obj.tablet)} } }\n`;
                         if (obj.mobile) css += `@media (max-width: 768px) { [data-block-id="${b.id}"] { ${format(obj.mobile)} } }\n`;
-                    } catch(e) {
+                    } catch (e) {
                         console.error(e)
                     }
                 }
@@ -249,8 +276,8 @@ export default function PageEditor({ projectName }) {
                         {editMode ? (
                             <div className="flex items-center gap-2">
                                 <span className="opacity-50 text-xs uppercase">Edit {editingType}:</span>
-                                <input 
-                                    value={activeItem?.nom} 
+                                <input
+                                    value={activeItem?.nom}
                                     onChange={(e) => updateActiveItemField('nom', e.target.value)}
                                     className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1"
                                 />
@@ -285,7 +312,7 @@ export default function PageEditor({ projectName }) {
                                 activeTab="blocks"
                                 activeViewport={viewport.name}
                                 allowedTabs={["blocks"]}
-                                onChange={(blocks) => updateActiveItemField("content", blocks)} 
+                                onChange={(blocks) => updateActiveItemField("content", blocks)}
                                 showToast={showToast}
                             />
                         </aside>
@@ -302,7 +329,7 @@ export default function PageEditor({ projectName }) {
                                     <PanelLeftOpen size={20} />
                                 </button>
                             )}
-                            
+
                             <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between">
                                 <div className="flex gap-1.5">
                                     <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
@@ -351,9 +378,9 @@ export default function PageEditor({ projectName }) {
                             <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar">
                                 <iframe
                                     title="Page Preview"
-                                    style={{ 
-                                        width: viewport.width, 
-                                        height: viewport.height, 
+                                    style={{
+                                        width: viewport.width,
+                                        height: viewport.height,
                                         transform: `scale(${zoomLevel})`, // Correction ici
                                         transformOrigin: 'top center' // Correction ici
                                     }}
@@ -365,6 +392,21 @@ export default function PageEditor({ projectName }) {
                                             <meta charset="UTF-8">
                                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                                             
+                                            <!-- Base styles for controller indicator -->
+                                            <style>
+                                                .controller-bound-indicator {
+                                                    display: inline-block;
+                                                    background-color: #4F46E5; /* Indigo-600 */
+                                                    color: white;
+                                                    font-size: 0.6rem;
+                                                    font-weight: bold;
+                                                    padding: 2px 4px;
+                                                    border-radius: 4px;
+                                                    margin-right: 4px;
+                                                    line-height: 1;
+                                                    vertical-align: middle;
+                                                }
+                                            </style>
                                             <style>
                                                 body { margin: 0; padding: 0; min-height: 100vh; font-family: sans-serif; }
                                                 img { max-width: 100%; height: auto; }
@@ -403,7 +445,7 @@ export default function PageEditor({ projectName }) {
                                 currentPageName={activeItem?.nom}
                                 onUpdateControllers={(newCtrls) => setProject(prev => ({ ...prev, [typeKey]: { ...prev[typeKey], controllers: newCtrls } }))}
                                 onChange={(blocks) => updateActiveItemField("content", blocks)}
-                                onPageStylesChange={(styles) => updateActiveItemField("styles", styles)} 
+                                onPageStylesChange={(styles) => updateActiveItemField("styles", styles)}
                                 showToast={showToast}
                             />
                         </aside>
@@ -485,8 +527,8 @@ export default function PageEditor({ projectName }) {
             {/* Toast Notification */}
             {toast && (
                 <div className={`fixed bottom-10 right-10 z-100 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
-                        toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
-                            "bg-green-50 border-green-200 text-green-700"
+                    toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
+                        "bg-green-50 border-green-200 text-green-700"
                     }`}>
                     {toast.type === "loading" ? <Loader2 size={18} className="animate-spin" /> :
                         toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
     Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
-    MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle, Database, Link2, Plus, Unlink
+    MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle, Database, Link2, Plus, Unlink, Cpu, ArrowRight
 } from "lucide-react";
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
 import { parseStyles } from './utilsFunc';
@@ -69,6 +69,22 @@ export default function VisualEditor({
             ids: Array.from(ids)
         };
     }, [blocks]);
+
+    // Mapper les bindings par ID d'élément pour un affichage rapide dans la structure
+    const bindingsMap = useMemo(() => {
+        const map = {};
+        availableControllers
+            .filter(ctrl => ctrl.page_nom === currentPageName)
+            .forEach(ctrl => {
+                (ctrl.bindings || []).forEach(binding => {
+                    if (binding.id_element) {
+                        if (!map[binding.id_element]) map[binding.id_element] = [];
+                        map[binding.id_element].push({ ...binding, ctrlName: ctrl.nom });
+                    }
+                });
+            });
+        return map;
+    }, [availableControllers, currentPageName]);
 
     // Initialisation unique des blocs à partir du HTML reçu pour éviter les boucles infinies
     useEffect(() => {
@@ -408,6 +424,24 @@ export default function VisualEditor({
                         </div>
                     </div>
                 </div>
+
+                {/* Affichage des contrôleurs liés comme "enfants" visuels */}
+                {bindingsMap[block.id]?.map((binding, bIdx) => (
+                    <div
+                        key={`binding-${block.id}-${bIdx}`}
+                        style={{ marginLeft: `${(level + 1) * 16}px` }}
+                        className="flex items-center gap-2 p-1.5 px-3 mb-2 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold group/ctrl hover:bg-indigo-100/50 dark:hover:bg-indigo-900/40 transition-colors"
+                        title={`Mapped field: ${binding.map_field} from endpoint ${binding.endpoint_nom}`}
+                    >
+                        <Cpu size={10} className="opacity-70 shrink-0" />
+                        <span className="uppercase tracking-tighter truncate max-w-[80px]">{binding.ctrlName}</span>
+                        <span className="opacity-30">/</span>
+                        <span className="opacity-60 text-[9px] font-medium truncate max-w-[60px]">{binding.endpoint_nom}</span>
+                        <ArrowRight size={10} className="opacity-30 shrink-0" />
+                        <span className="font-bold truncate max-w-[100px] text-indigo-700 dark:text-indigo-300">{binding.map_field}</span>
+                    </div>
+                ))}
+
                 {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
             </React.Fragment>
         ));

@@ -59,7 +59,8 @@ const TAG_STYLE_GROUPS = {
     button: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius", "margin"],
     div: ["background-color", "padding", "margin", "border-radius", "width", "height", "display", "flex-direction"],
     img: ["width", "height", "border-radius", "margin", "display"],
-    page: ["color", "font-size", "background-color", "padding", "margin"]
+    page: ["color", "font-size", "background-color", "padding", "margin"],
+    generic: ["color", "font-size", "text-align", "font-weight", "background-color", "padding", "margin", "border-radius", "width", "height", "display"]
 };
 
 export default function VisualEditor({ content, pageStyles = "", onPageStylesChange, onChange, availablePages = [] }) {
@@ -69,16 +70,25 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
     const [draggedId, setDraggedId] = useState(null);
     const [selectedGlobalTag, setSelectedGlobalTag] = useState("body");
 
-    const usedTags = useMemo(() => {
+    const availableSelectors = useMemo(() => {
         const tags = new Set(["body"]);
-        const getTags = (list) => {
+        const classes = new Set();
+        const ids = new Set();
+
+        const collect = (list) => {
             list.forEach(b => {
                 if (TAG_STYLE_GROUPS[b.tag]) tags.add(b.tag);
-                if (b.children) getTags(b.children);
+                if (b.className) b.className.split(/\s+/).filter(Boolean).forEach(cls => classes.add(`.${cls}`));
+                if (b.htmlId) ids.add(`#${b.htmlId}`);
+                if (b.children) collect(b.children);
             });
         };
-        getTags(blocks);
-        return Array.from(tags);
+        collect(blocks);
+        return {
+            tags: Array.from(tags),
+            classes: Array.from(classes),
+            ids: Array.from(ids)
+        };
     }, [blocks]);
 
     // Initialisation unique des blocs à partir du HTML reçu pour éviter les boucles infinies
@@ -444,16 +454,36 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                             value={selectedGlobalTag}
                             onChange={(e) => setSelectedGlobalTag(e.target.value)}
                         >
-                            {usedTags.map(tag => (
-                                <option key={tag} value={tag}>{tag === 'body' ? 'Toute la page (Body)' : `Tous les <${tag.toUpperCase()}>`}</option>
-                            ))}
+                            <optgroup label="Balises">
+                                {availableSelectors.tags.map(tag => (
+                                    <option key={tag} value={tag}>{tag === 'body' ? 'Toute la page (Body)' : `<${tag.toUpperCase()}>`}</option>
+                                ))}
+                            </optgroup>
+                            {availableSelectors.classes.length > 0 && (
+                                <optgroup label="Classes CSS">
+                                    {availableSelectors.classes.map(cls => (
+                                        <option key={cls} value={cls}>{cls}</option>
+                                    ))}
+                                </optgroup>
+                            )}
+                            {availableSelectors.ids.length > 0 && (
+                                <optgroup label="IDs HTML">
+                                    {availableSelectors.ids.map(id => (
+                                        <option key={id} value={id}>{id}</option>
+                                    ))}
+                                </optgroup>
+                            )}
                         </select>
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Visual Styling</label>
                         <div className="grid grid-cols-2 gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
-                            {STYLE_CONTROLS.filter(ctrl => (TAG_STYLE_GROUPS[selectedGlobalTag === "body" ? "page" : selectedGlobalTag] || []).includes(ctrl.prop)).map((ctrl) => {
+                            {STYLE_CONTROLS.filter(ctrl => {
+                                const isCustomSelector = selectedGlobalTag.startsWith('.') || selectedGlobalTag.startsWith('#');
+                                const groupKey = isCustomSelector ? "generic" : (selectedGlobalTag === "body" ? "page" : selectedGlobalTag);
+                                return (TAG_STYLE_GROUPS[groupKey] || []).includes(ctrl.prop);
+                            }).map((ctrl) => {
                                 let stylesObj = {};
                                 try {
                                     stylesObj = JSON.parse(pageStyles || "{}");
@@ -528,7 +558,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                     </div>
                     <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-200/50">
                         <p className="text-[10px] text-amber-800 dark:text-amber-200 leading-tight">
-                            <strong>Astuce:</strong> Les styles appliqués ici impacteront tous les éléments de type <strong>{selectedGlobalTag.toUpperCase()}</strong> de la page.
+                            <strong>Astuce:</strong> Les styles appliqués ici impacteront tous les éléments correspondant au sélecteur <strong>{selectedGlobalTag}</strong>.
                         </p>
                     </div>
                 </div>

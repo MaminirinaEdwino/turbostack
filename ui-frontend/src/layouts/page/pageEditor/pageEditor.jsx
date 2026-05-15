@@ -60,72 +60,92 @@ export default function PageEditor({ projectName }) {
     }, [projectName]);
 
 
-
     // Mise à jour générique d'un champ de l'élément actif (page ou composant)
     const updateActiveItemField = (field, value) => {
-        const typeKey = project.type === "static" ? "site_statique" : "web_app";
-        const itemsKey = editingType === 'page' ? 'pages' : (project.type === "static" ? "composants" : "composant");
-        const index = editingType === 'page' ? selectedPageIndex : selectedComponentIndex;
-
         setProject(prev => {
-            const newItems = [...prev[typeKey][itemsKey]];
+            if (!prev) return prev;
+            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+            
+            // Détection robuste de la clé des composants
+            const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
+            const itemsKey = editingType === 'page' ? 'pages' : actualCompKey;
+            
+            const index = editingType === 'page' ? selectedPageIndex : selectedComponentIndex;
+            
+            if (index === null || !prev[typeKey] || !prev[typeKey][itemsKey] || !prev[typeKey][itemsKey][index]) {
+                console.warn("Update failed: invalid index or path", { itemsKey, index });
+                return prev;
+            }
+
+            const newItems = JSON.parse(JSON.stringify(prev[typeKey][itemsKey]));
             newItems[index] = { ...newItems[index], [field]: value };
-            return {
-                ...prev,
-                [typeKey]: { ...prev[typeKey], [itemsKey]: newItems }
-            };
+            
+            const updatedTypeData = { ...prev[typeKey], [itemsKey]: newItems };
+            return { ...prev, [typeKey]: updatedTypeData };
         });
     };
 
     const addPage = () => {
-        const typeKey = project.type === "static" ? "site_statique" : "web_app";
-        const updatedProject = { ...project };
-        const newPage = {
-            nom: "New Page",
-            uri: "/new-page",
-            content: [{
+        setProject(prev => {
+            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+            const newPage = {
                 id: Math.random().toString(36).substr(2, 9),
-                tag: "div",
-                content: "<h1>New Page</h1><p>Commencez à éditer...</p>",
-                className: "p-8",
-                styles: ""
-            }]
-        };
-        updatedProject[typeKey].pages = [...(updatedProject[typeKey].pages || []), newPage];
-        setProject(updatedProject);
+                nom: "New Page",
+                uri: "/new-page",
+                content: [{
+                    id: Math.random().toString(36).substr(2, 9),
+                    tag: "div",
+                    content: "<h1>New Page</h1><p>Commencez à éditer...</p>",
+                    className: "p-8",
+                    styles: ""
+                }]
+            };
+            const updatedPages = [...(prev[typeKey].pages || []), newPage];
+            return { ...prev, [typeKey]: { ...prev[typeKey], pages: updatedPages } };
+        });
     };
 
     const removePage = (index) => {
         if (!window.confirm("Voulez-vous vraiment supprimer cette page ?")) return;
-        const typeKey = project.type === "static" ? "site_statique" : "web_app";
-        const updatedProject = { ...project };
-        updatedProject[typeKey].pages = updatedProject[typeKey].pages.filter((_, i) => i !== index);
-        setProject(updatedProject);
+        setProject(prev => {
+            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+            const updatedPages = prev[typeKey].pages.filter((_, i) => i !== index);
+            return { ...prev, [typeKey]: { ...prev[typeKey], pages: updatedPages } };
+        });
     };
 
     const addComponent = () => {
-        const typeKey = project.type === "static" ? "site_statique" : "web_app";
-        const compKey = project.type === "static" ? "composants" : "composant";
-        const updatedProject = { ...project };
-        const newComponent = {
-            nom: "New Component",
-            content: []
-        };
-        updatedProject[typeKey][compKey] = [...(updatedProject[typeKey][compKey] || []), newComponent];
-        setProject(updatedProject);
+        setProject(prev => {
+            if (!prev) return prev;
+            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+            // On utilise la clé déjà existante ou on en crée une par défaut selon le type
+            const actualCompKey = prev[typeKey]?.composants ? "composants" : (prev[typeKey]?.composant ? "composant" : (prev.type === "static" ? "composants" : "composant"));
+            
+            const newComponent = { 
+                id: Math.random().toString(36).substr(2, 9), 
+                nom: "New Component", 
+                content: [] 
+            };
+            const updatedComponents = [...(prev[typeKey][actualCompKey] || []), newComponent];
+            return { ...prev, [typeKey]: { ...prev[typeKey], [actualCompKey]: updatedComponents } };
+        });
     };
 
     const removeComponent = (index) => {
         if (!window.confirm("Voulez-vous vraiment supprimer ce composant ?")) return;
-        const typeKey = project.type === "static" ? "site_statique" : "web_app";
-        const compKey = project.type === "static" ? "composants" : "composant";
-        const updatedProject = { ...project };
-        updatedProject[typeKey][compKey] = updatedProject[typeKey][compKey].filter((_, i) => i !== index);
-        setProject(updatedProject);
+        setProject(prev => {
+            if (!prev) return prev;
+            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+            const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
+            const updatedComponents = prev[typeKey][actualCompKey].filter((_, i) => i !== index);
+            return { ...prev, [typeKey]: { ...prev[typeKey], [actualCompKey]: updatedComponents } };
+        });
     };
 
     const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
-    const compKey = project?.type === "static" ? "composants" : "composant";
+    
+    // Détection de la clé de composant pour l'affichage (priorité au pluriel comme dans pagelist.jsx)
+    const compKey = siteData?.composants ? "composants" : "composant";
 
     const activeItem = editingType === 'page' 
         ? (selectedPageIndex !== null ? siteData?.pages[selectedPageIndex] : null)
@@ -395,7 +415,7 @@ export default function PageEditor({ projectName }) {
                                 </button>
                             </div>
                             {siteData?.pages?.map((page, index) => (
-                                <div key={index} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-couleur1/10 dark:border-white/5 flex justify-between items-center group hover:border-couleur1 transition-all">
+                                <div key={page.id || index} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-couleur1/10 dark:border-white/5 flex justify-between items-center group hover:border-couleur1 transition-all">
                                     <div>
                                         <p className="font-bold text-couleur1">{page.nom}</p>
                                         <p className="text-xs opacity-50">{page.uri}</p>
@@ -427,7 +447,7 @@ export default function PageEditor({ projectName }) {
                             </div>
                             <div className="space-y-3">
                                 {siteData?.[compKey]?.map((comp, index) => (
-                                    <div key={index} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-couleur1/10 dark:border-white/5 flex justify-between items-center group hover:border-couleur1 transition-all">
+                                    <div key={comp.id || index} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-couleur1/10 dark:border-white/5 flex justify-between items-center group hover:border-couleur1 transition-all">
                                         <div>
                                             <p className="font-bold text-couleur1">{comp.nom}</p>
                                         </div>

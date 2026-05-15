@@ -22,7 +22,7 @@ type ChampsJSON struct {
 
 type ComposantJSON struct {
 	Nom     string            `json:"nom"`
-	Contenu []PageContentJSON `json:"contenu"`
+	Contenu []PageContentJSON `json:"content"`
 	Params  []any             `json:"params"`
 }
 

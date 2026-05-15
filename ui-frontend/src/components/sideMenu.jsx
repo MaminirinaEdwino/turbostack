@@ -10,7 +10,8 @@ import {
     Moon,
     Sun,
     Layout,
-    Globe
+    Globe,
+    Cpu
 } from "lucide-react";
 import { useNavigate } from "../hooks/useNavigate";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,7 +47,8 @@ export default function SideMenu() {
             subItems: [
                 { name: 'db_editor', icon: <Database size={18} />, label: 'DB Editor' },
                 { name: 'api_editor', icon: <Settings size={18} />, label: 'API Editor' },
-                { name: 'page_editor', icon: <LayoutDashboard size={18} />, label: 'Page Editor' }
+                { name: 'page_editor', icon: <LayoutDashboard size={18} />, label: 'Page Editor' },
+                { name: 'controller_editor', icon: <Cpu size={18} />, label: 'Controller Editor' }
             ]
         }
         );

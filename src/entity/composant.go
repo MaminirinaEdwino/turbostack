@@ -2,14 +2,18 @@ package entity
 
 type Composant struct {
 	nom     string
-	contenu []any
+	contenu []pageContent
 	params  []any
 }
 
 func (c *Composant) ToJSON() ComposantJSON  {
+	var composant []PageContentJSON
+	for _, val := range c.contenu{
+		composant = append(composant, val.ToJSON())
+	}
 	return ComposantJSON{
 		Nom: c.nom,
-		Contenu: c.contenu,
+		Contenu: composant,
 		Params: c.params,
 	}
 }
@@ -31,7 +35,7 @@ func (composant *Composant) SetNom(nom string) *Composant {
 	return composant
 }
 
-func (composant *Composant) SetContenu(contenu []any) *Composant {
+func (composant *Composant) SetContenu(contenu []pageContent) *Composant {
 	composant.contenu = contenu
 	return composant
 }

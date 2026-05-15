@@ -21,9 +21,9 @@ type ChampsJSON struct {
 }
 
 type ComposantJSON struct {
-	Nom     string `json:"nom"`
-	Contenu []any  `json:"contenu"`
-	Params  []any  `json:"params"`
+	Nom     string            `json:"nom"`
+	Contenu []PageContentJSON `json:"contenu"`
+	Params  []any             `json:"params"`
 }
 
 type EndpointJSON struct {

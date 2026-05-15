@@ -18,9 +18,13 @@ func (cj *ChampsJSON) ToModel() Champs {
 }
 
 func (cj *ComposantJSON) ToModel() Composant {
+	var composant []pageContent
+	for _, val :=range cj.Contenu{
+		composant = append(composant, val.ToModel())
+	}
 	return Composant{
 		nom:     cj.Nom,
-		contenu: cj.Contenu,
+		contenu: composant,
 		params:  cj.Params,
 	}
 }

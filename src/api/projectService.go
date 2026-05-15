@@ -50,7 +50,7 @@ func (s *ProjectService) SaveProjectBDD(name string, bddJson string) string {
 	pJson := s.Manager.LoadProject(name)
 	json.Unmarshal([]byte(bddJson), &bdd)
 	pJson.BDD = bdd
-	pJson.Nom = strings.ReplaceAll(name, " ", "")
+	pJson.Nom = strings.Replace(name, " ", "", -1)
 	s.Manager.SaveProject(pJson)
 	return "Success"
 }

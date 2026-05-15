@@ -19,7 +19,7 @@ func (cj *ChampsJSON) ToModel() Champs {
 
 func (cj *ComposantJSON) ToModel() Composant {
 	var composant []pageContent
-	for _, val :=range cj.Contenu{
+	for _, val := range cj.Contenu {
 		composant = append(composant, val.ToModel())
 	}
 	return Composant{
@@ -60,7 +60,7 @@ func (pj *PageJSON) ToModel() Page {
 	for _, val := range pj.Contenu {
 		pcontent = append(pcontent, val.ToModel())
 	}
-	
+
 	return Page{
 		nom:     pj.Nom,
 		contenu: pcontent,
@@ -121,19 +121,34 @@ func (sj *SiteStatiqueJSON) ToModel() SiteStatique {
 func (wj *WebAppJSON) ToModel() WebApp {
 	var pages []Page
 	var composants []Composant
+	var controllers []Controller
 	for _, val := range wj.Pages {
 		pages = append(pages, val.ToModel())
 	}
 	for _, val := range wj.Composant {
 		composants = append(composants, val.ToModel())
 	}
+	for _, val := range wj.Controllers {
+		controllers = append(controllers, val.ToModel())
+	}
 	return WebApp{
-		pages:     pages,
-		role:      wj.Role,
-		composant: composants,
+		pages:       pages,
+		role:        wj.Role,
+		composant:   composants,
+		controllers: controllers,
+		bdd:         wj.BDD.ToModel(),
 	}
 }
 
+func (cj *ControllerJSON) ToModel() Controller {
+	return Controller{
+		Name:          cj.Name,
+		Params:        cj.Params,
+		Page:          cj.Page.ToModel(),
+		Type:          cj.Type,
+		RequestParams: cj.RequestParams,
+	}
+}
 
 func (pc *PageContentJSON) ToModel() pageContent {
 	var children []pageContent

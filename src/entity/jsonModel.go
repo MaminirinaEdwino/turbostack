@@ -67,10 +67,11 @@ type SiteStatiqueJSON struct {
 }
 
 type WebAppJSON struct {
-	Pages     []PageJSON      `json:"pages"`
-	Role      []string        `json:"role"`
-	Composant []ComposantJSON `json:"composant"`
-	BDD       BDDJSON         `json:"bdd"`
+	Pages       []PageJSON       `json:"pages"`
+	Role        []string         `json:"role"`
+	Composant   []ComposantJSON  `json:"composant"`
+	BDD         BDDJSON          `json:"bdd"`
+	Controllers []ControllerJSON `json:"controllers"`
 }
 
 type PageContentJSON struct {
@@ -81,4 +82,12 @@ type PageContentJSON struct {
 	Href      string            `json:"href"`
 	Styles    string            `json:"styles"`
 	Children  []PageContentJSON `json:"children"`
+}
+
+type ControllerJSON struct {
+	Name          string             `json:"name"`
+	Params        []ControllerParams `json:"params"`
+	Page          PageJSON           `json:"page"`
+	Type          string             `json:"type"`
+	RequestParams []string           `json:"request_params"`
 }

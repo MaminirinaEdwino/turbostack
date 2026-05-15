@@ -15,7 +15,6 @@ export default function ControllerEditor({ projectName }) {
     const [editMode, setEditMode] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [toast, setToast] = useState(null);
-    const [bulkEndpointNom, setBulkEndpointNom] = useState("");
 
     // 1. TOUS LES HOOKS EN PREMIER (Ordre immuable)
     
@@ -39,27 +38,6 @@ export default function ControllerEditor({ projectName }) {
     
     const activeController = selectedIndex !== null ? controllers[selectedIndex] : null;
     const activeBindings = activeController?.bindings;
-
-    // CORRECTION : useMemo placé avant tout "return" conditionnel
-    const groupedBindings = useMemo(() => {
-        const groups = {};
-        if (!activeBindings) return groups;
-
-        activeBindings.forEach((binding, index) => {
-            const epNom = binding.endpoint_nom || "Unlinked";
-            if (!groups[epNom]) {
-                groups[epNom] = [];
-            }
-            groups[epNom].push({ ...binding, originalIndex: index });
-        });
-        return groups;
-    }, [activeBindings]);
-
-    useEffect(() => {
-        if (endpoints.length > 0 && !bulkEndpointNom) {
-            setBulkEndpointNom(endpoints[0].nom);
-        }
-    }, [endpoints, bulkEndpointNom]);
 
     // 2. FONCTIONS DE LOGIQUE
 
@@ -93,30 +71,26 @@ export default function ControllerEditor({ projectName }) {
         ? getIdsFromContent(pages.find(p => p.nom === activeController.page_nom)?.content) 
         : [];
 
-    const generateBindingsFromEndpoint = (endpointNom) => {
-        if (!endpointNom || selectedIndex === null) return;
-        const ep = endpoints.find(e => e.nom === endpointNom);
-        if (!ep) return;
+    const toggleBinding = (endpointNom, fieldNom, isChecked) => {
+        updateController(selectedIndex, 'bindings', (prev = []) => {
+            if (isChecked) {
+                // Trouver le meilleur ID d'élément correspondant au nom du champ
+                const bestMatchId = availableIds.find(id => 
+                    id.toLowerCase().includes(fieldNom.toLowerCase()) || 
+                    fieldNom.toLowerCase().includes(id.toLowerCase())
+                ) || (availableIds[0] || "root");
 
-        const fields = [];
-        ep.model?.forEach(m => m.champs?.forEach(f => fields.push(f.nom)));
-        ep.params?.forEach(p => fields.push(p));
-
-        if (fields.length === 0) {
-            showToast("No fields found in this endpoint", "error");
-            return;
-        }
-
-        const newBindings = fields.map(f => ({
-            id_element: availableIds.find(id => id.toLowerCase().includes(f.toLowerCase())) || (availableIds[0] || ""),
-            endpoint_nom: ep.nom,
-            trigger: "onLoad",
-            action: "fill_content",
-            map_field: f
-        }));
-
-        updateController(selectedIndex, 'bindings', (prev) => [...(prev || []), ...newBindings]);
-        showToast(`${newBindings.length} bindings generated!`);
+                return [...prev, {
+                    id_element: bestMatchId,
+                    endpoint_nom: endpointNom,
+                    trigger: "onLoad",
+                    action: "fill_content",
+                    map_field: fieldNom
+                }];
+            } else {
+                return prev.filter(b => !(b.endpoint_nom === endpointNom && b.map_field === fieldNom));
+            }
+        });
     };
 
     const handleSave = async () => {
@@ -218,61 +192,46 @@ export default function ControllerEditor({ projectName }) {
                                     <h3 className="text-sm font-black uppercase text-couleur1/40 flex items-center gap-2">
                                         <LinkIcon size={16} /> Data Bindings
                                     </h3>
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex items-center gap-1 bg-white dark:bg-gray-800 border border-couleur1/10 rounded-xl px-3 py-1.5 shadow-sm">
-                                            <select 
-                                                value={bulkEndpointNom}
-                                                onChange={(e) => setBulkEndpointNom(e.target.value)}
-                                                className="text-[10px] font-black uppercase outline-none bg-transparent max-w-35 text-couleur1/60"
-                                            >
-                                                {endpoints.map(ep => <option key={ep.nom} value={ep.nom}>{ep.nom}</option>)}
-                                            </select>
-                                            <button 
-                                                onClick={() => generateBindingsFromEndpoint(bulkEndpointNom)}
-                                                className="p-1 text-couleur1 hover:scale-110 transition-all border-l border-couleur1/10 pl-3 ml-1"
-                                            >
-                                                <Wand2 size={14} />
-                                            </button>
-                                        </div>
-                                        <button 
-                                            onClick={() => {
-                                                const newBinding = { id_element: availableIds[0] || "", endpoint_nom: endpoints[0]?.nom || "", trigger: "onLoad", action: "fill_content", map_field: "" };
-                                                updateController(selectedIndex, 'bindings', (prev) => [...(prev || []), newBinding]);
-                                            }}
-                                            className="text-xs bg-couleur1 text-white px-4 py-2 rounded-xl flex items-center gap-1.5"
-                                        >
-                                            <Plus size={14} /> Add Binding
-                                        </button>
-                                    </div>
+                                    <span className="text-[10px] font-bold text-couleur1/30 italic">Select fields to bind to UI</span>
                                 </div>
                                 
-                                <div className="space-y-10">
-                                    {Object.entries(groupedBindings).map(([endpointNom, bindingsGroup]) => (
-                                        <div key={endpointNom} className="space-y-4 border-l-2 border-couleur1/10 pl-6">
-                                            <div className="flex items-center gap-2 mb-4">
+                                <div className="space-y-12">
+                                    {endpoints.map((ep) => (
+                                        <div key={ep.nom} className="space-y-4">
+                                            <div className="flex items-center gap-3 pb-2 border-b border-couleur1/5">
                                                 <Database size={14} className="text-couleur1/40" />
-                                                <span className="text-[10px] font-black uppercase text-couleur1/40 tracking-[0.2em]">Endpoint: {endpointNom}</span>
+                                                <span className="text-xs font-black uppercase text-couleur1 tracking-wider">{ep.nom}</span>
+                                                <span className="text-[9px] bg-couleur1/5 px-2 py-0.5 rounded text-couleur1/40">{ep.method} {ep.uri}</span>
                                             </div>
-                                            {bindingsGroup.map((binding) => (
-                                                <BindingRow 
-                                                    key={binding.originalIndex} 
-                                                    binding={binding} 
-                                                    availableIds={availableIds}
-                                                    endpoints={endpoints}
-                                                    onDelete={() => {
-                                                        updateController(selectedIndex, 'bindings', (prev) => 
-                                                            prev.filter((_, i) => i !== binding.originalIndex)
+                                            <div className="grid grid-cols-1 gap-3">
+                                                {(() => {
+                                                    const fields = [];
+                                                    ep.model?.forEach(m => m.champs?.forEach(f => fields.push(f.nom)));
+                                                    ep.params?.forEach(p => fields.push(p));
+                                                    const uniqueFields = [...new Set(fields)];
+                                                    
+                                                    return uniqueFields.map(fieldNom => {
+                                                        const binding = activeController.bindings?.find(b => b.endpoint_nom === ep.nom && b.map_field === fieldNom);
+                                                        return (
+                                                            <FieldToggleRow 
+                                                                key={fieldNom}
+                                                                fieldNom={fieldNom}
+                                                                isActive={!!binding}
+                                                                binding={binding}
+                                                                onToggle={(checked) => toggleBinding(ep.nom, fieldNom, checked)}
+                                                                onChange={(newVal) => {
+                                                                    updateController(selectedIndex, 'bindings', (prev) => {
+                                                                        const idx = prev.findIndex(b => b.endpoint_nom === ep.nom && b.map_field === fieldNom);
+                                                                        const next = [...prev];
+                                                                        next[idx] = newVal;
+                                                                        return next;
+                                                                    });
+                                                                }}
+                                                            />
                                                         );
-                                                    }}
-                                                    onChange={(newVal) => {
-                                                        updateController(selectedIndex, 'bindings', (prev) => {
-                                                            const next = [...prev];
-                                                            next[binding.originalIndex] = newVal;
-                                                            return next;
-                                                        });
-                                                    }}
-                                                />
-                                            ))}
+                                                    });
+                                                })()}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -297,77 +256,49 @@ export default function ControllerEditor({ projectName }) {
     );
 }
 
-function BindingRow({ binding, endpoints, onChange, onDelete }) {
-    const selectedEp = useMemo(() => 
-        endpoints.find(ep => ep.nom === binding.endpoint_nom), 
-    [endpoints, binding.endpoint_nom]);
-
-    const fieldSuggestions = useMemo(() => {
-        if (!selectedEp) return [];
-        let fields = [];
-        selectedEp.model?.forEach(m => m.champs?.forEach(f => fields.push(f.nom)));
-        selectedEp.params?.forEach(p => fields.push(p));
-        return [...new Set(fields)];
-    }, [selectedEp]);
-
+function FieldToggleRow({ fieldNom, isActive, binding, onToggle, onChange }) {
     return (
-        <div className="group bg-white dark:bg-gray-800/40 p-6 rounded-4xl border border-couleur1/5 hover:border-couleur1/20 transition-all">
-            <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-couleur1/10 flex items-center justify-center text-couleur1"><Link2 size={16}/></div>
-                    <span className="text-[10px] font-black uppercase text-couleur1/40">Logic Node</span>
-                </div>
-                <button onClick={onDelete} className="p-2 text-red-400 hover:text-red-500 transition-all"><Trash2 size={16}/></button>
+        <div className={`flex items-center gap-4 p-2 px-4 rounded-xl border transition-all ${isActive ? 'bg-white shadow-sm border-couleur1/20' : 'bg-transparent border-transparent opacity-60 hover:opacity-100'}`}>
+            {/* Checkbox et Nom du champ */}
+            <div className="flex items-center gap-3 min-w-[180px]">
+                <input 
+                    type="checkbox" 
+                    checked={isActive} 
+                    onChange={(e) => onToggle(e.target.checked)}
+                    className="w-3.5 h-3.5 accent-couleur1 cursor-pointer"
+                />
+                <span className={`text-xs font-bold truncate ${isActive ? 'text-couleur1' : 'text-couleur1/60'}`}>{fieldNom}</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="space-y-2">
-                    <label className="text-[9px] uppercase font-black text-couleur1/30">Trigger</label>
-                    <select 
-                        value={binding.trigger} 
-                        onChange={(e) => onChange({...binding, trigger: e.target.value})} 
-                        className="w-full p-3 text-xs rounded-xl border border-couleur1/10 bg-couleur3/20 outline-none"
-                    >
-                        <option value="onLoad">onLoad</option>
-                        <option value="onClick">onClick</option>
-                        <option value="onHover">onHover</option>
-                    </select>
+            
+            {/* Contrôles compacts (Trigger & Action) alignés sur la même ligne */}
+            {isActive && binding && (
+                <div className="flex flex-1 items-center gap-4 animate-in fade-in slide-in-from-left-1 duration-200">
+                    <div className="flex items-center gap-2 flex-1">
+                        <label className="text-[9px] font-black uppercase text-couleur1/30">Trigger</label>
+                        <select 
+                            value={binding.trigger} 
+                            onChange={(e) => onChange({...binding, trigger: e.target.value})} 
+                            className="flex-1 p-1 text-[10px] font-medium rounded-md border border-couleur1/10 bg-couleur3/5 outline-none focus:ring-1 ring-couleur1/20 transition-all"
+                        >
+                            <option value="onLoad">onLoad</option>
+                            <option value="onClick">onClick</option>
+                            <option value="onHover">onHover</option>
+                        </select>
+                    </div>
+                    <div className="flex items-center gap-2 flex-1">
+                        <label className="text-[9px] font-black uppercase text-couleur1/30">Action</label>
+                        <select 
+                            value={binding.action} 
+                            onChange={(e) => onChange({...binding, action: e.target.value})} 
+                            className="flex-1 p-1 text-[10px] font-medium rounded-md border border-couleur1/10 bg-couleur3/5 outline-none focus:ring-1 ring-couleur1/20 transition-all"
+                        >
+                            <option value="fill_content">Fill Content</option>
+                            <option value="set_style">Set Style</option>
+                            <option value="redirect">Redirect</option>
+                        </select>
+                    </div>
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[9px] uppercase font-black text-couleur1/30">Action</label>
-                    <select 
-                        value={binding.action} 
-                        onChange={(e) => onChange({...binding, action: e.target.value})} 
-                        className="w-full p-3 text-xs rounded-xl border border-couleur1/10 bg-couleur3/20 outline-none"
-                    >
-                        <option value="fill_content">Fill Content</option>
-                        <option value="set_style">Set Style</option>
-                        <option value="redirect">Redirect</option>
-                    </select>
-                </div>
-                {/* <div className="space-y-2 col-span-full">
-                    <label className="text-[9px] uppercase font-black text-couleur1/30">Target Element (ID)</label>
-                    <select 
-                        value={binding.id_element} 
-                        onChange={(e) => onChange({...binding, id_element: e.target.value})} 
-                        className="w-full p-3 text-xs rounded-xl border border-couleur1/10 bg-couleur3/20 outline-none"
-                    >
-                        {availableIds.map(id => <option key={id} value={id}>{id}</option>)}
-                    </select>
-                </div> */}
-                <div className="space-y-2">
-                    <label className="text-[9px] uppercase font-black text-couleur1/30">Field Mapping (JSON Path)</label>
-                    <input 
-                        list={`fields-${binding.id_element}`}
-                        value={binding.map_field} 
-                        placeholder="ex: data.title" 
-                        onChange={(e) => onChange({...binding, map_field: e.target.value})} 
-                        className="w-full p-4 text-sm font-mono rounded-xl border border-couleur1/10 bg-white dark:bg-gray-900 outline-none"
-                    />
-                    <datalist id={`fields-${binding.id_element}`}>
-                        {fieldSuggestions.map(f => <option key={f} value={f} />)}
-                    </datalist>
-                </div>
-            </div>
+            )}
         </div>
     );
 }

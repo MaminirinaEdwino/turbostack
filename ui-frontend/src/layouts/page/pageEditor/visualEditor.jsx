@@ -1,67 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
-    Type, Image as ImageIcon, Trash2,
-    Plus, Edit3, Settings2,
-    MousePointer2, Heading1, Heading2, Pilcrow, Box, Square,
-    ChevronDown, Layers, GripVertical, Link, Globe, PlusSquare
+    Type, Image as ImageIcon, Trash2, Settings2,
+    MousePointer2, Layers, GripVertical, Globe, PlusSquare
 } from "lucide-react";
-
-const BLOCK_TYPES = [
-    { label: "Section", tag: "div", icon: <Box size={14} />, defaultContent: "Conteneur vide" },
-    { label: "Titre 1", tag: "h1", icon: <Heading1 size={14} />, defaultContent: "Titre principal" },
-    { label: "Titre 2", tag: "h2", icon: <Heading2 size={14} />, defaultContent: "Sous-titre" },
-    { label: "Paragraphe", tag: "p", icon: <Pilcrow size={14} />, defaultContent: "Votre texte ici..." },
-    { label: "Lien", tag: "a", icon: <Link size={14} />, defaultContent: "Cliquez ici", defaultHref: "/" },
-    { label: "Image", tag: "img", icon: <ImageIcon size={14} />, defaultContent: "https://via.placeholder.com/800x400" },
-    { label: "Bouton", tag: "button", icon: <Square size={14} />, defaultContent: "Cliquez ici" },
-];
-
-const parseStyles = (styleString) => {
-    if (!styleString) return {};
-    return styleString.split(';').reduce((acc, rule) => {
-        const parts = rule.split(':');
-        if (parts.length < 2) return acc;
-        const prop = parts[0].trim();
-        const value = parts.slice(1).join(':').trim();
-        if (prop && value) acc[prop] = value;
-        return acc;
-    }, {});
-};
-
-const stringifyStyles = (styleObj) => {
-    return Object.entries(styleObj)
-        // eslint-disable-next-line no-unused-vars
-        .filter(([_, v]) => v && v !== "")
-        .map(([k, v]) => `${k}: ${v}`)
-        .join('; ');
-};
-
-const STYLE_CONTROLS = [
-    { label: "Texte", prop: "color", type: "color" },
-    { label: "Taille", prop: "font-size", type: "number", placeholder: "e.g. 16" },
-    { label: "Align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"] },
-    { label: "Gras", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"] },
-    { label: "Fond", prop: "background-color", type: "color" },
-    { label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10" },
-    { label: "Marge", prop: "margin", type: "number", placeholder: "e.g. 0" },
-    { label: "Arrondi", prop: "border-radius", type: "number", placeholder: "e.g. 8" },
-    { label: "Largeur", prop: "width", type: "number", placeholder: "100" },
-    { label: "Hauteur", prop: "height", type: "number", placeholder: "auto" },
-    { label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
-    { label: "Flex dir", prop: "flex-direction", type: "select", options: ["vertical", "horizontal"] },
-];
-
-const TAG_STYLE_GROUPS = {
-    h1: ["color", "font-size", "text-align", "font-weight", "margin"],
-    h2: ["color", "font-size", "text-align", "font-weight", "margin"],
-    p: ["color", "font-size", "text-align", "margin"],
-    a: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius"],
-    button: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius", "margin"],
-    div: ["background-color", "padding", "margin", "border-radius", "width", "height", "display", "flex-direction"],
-    img: ["width", "height", "border-radius", "margin", "display"],
-    page: ["color", "font-size", "background-color", "padding", "margin"],
-    generic: ["color", "font-size", "text-align", "font-weight", "background-color", "padding", "margin", "border-radius", "width", "height", "display"]
-};
+import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
+import { parseStyles, stringifyStyles } from './utilsFunc';
 
 export default function VisualEditor({ content, pageStyles = "", onPageStylesChange, onChange, availablePages = [] }) {
     const [blocks, setBlocks] = useState([]);
@@ -133,7 +76,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         if (blocks.length === 0 || currentSerialized !== incomingSerialized) {
             setBlocks(extracted);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [content]);
 
     // Synchronisation vers le parent
@@ -235,12 +178,6 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         setBlocks(updated);
         sync(updated);
     };
-
-    // const removeBlock = (id) => {
-    //     const updated = blocks.filter(b => b.id !== id);
-    //     setBlocks(updated);
-    //     sync(updated);
-    // };
 
     const removeBlock = (id) => {
         const removeFromTree = (list) => {
@@ -361,7 +298,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                             </div>
                         </div>
                         <div className="flex items-center gap-1">
-                             <div className="relative group/add">
+                            <div className="relative group/add">
                                 <button className="p-1.5 text-couleur1/40 hover:text-couleur1 hover:bg-couleur1/10 rounded-lg transition-all" onClick={(e) => e.stopPropagation()}>
                                     <PlusSquare size={14} />
                                 </button>
@@ -491,7 +428,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                                     console.log(e)
                                     stylesObj = { body: pageStyles };
                                 }
-                                
+
                                 const styles = parseStyles(stylesObj[selectedGlobalTag] || "");
                                 let currentValue = styles[ctrl.prop] || "";
 
@@ -683,7 +620,7 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                                         })
                                         }
                                     </div>
-                                    
+
 
                                 </div>
                             </div>
@@ -725,18 +662,18 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                                 />
                             </div>
                         </div>
-                        
-            ) : (
-            <div className="flex flex-col items-center justify-center py-20 opacity-30 text-couleur1 text-center">
-                <MousePointer2 size={48} className="mb-4" />
-                <p className="text-sm font-bold uppercase tracking-widest leading-relaxed">
-                    Select a block in the<br />Structure tab to edit
-                </p>
-            </div>
+
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-20 opacity-30 text-couleur1 text-center">
+                            <MousePointer2 size={48} className="mb-4" />
+                            <p className="text-sm font-bold uppercase tracking-widest leading-relaxed">
+                                Select a block in the<br />Structure tab to edit
+                            </p>
+                        </div>
                     )}
-        </div>
-    )
-}
+                </div>
+            )
+            }
         </div >
     );
 }

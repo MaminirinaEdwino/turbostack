@@ -9,6 +9,7 @@ import { stringifyStyles } from './utilsFunc';
 import Block from "./components/block";
 import AddChild from "./components/addChild";
 import DeleteBlock from "./components/deleteBlock";
+import ChangeTabBtn from "./components/changeTabBtn";
 
 
 export default function VisualEditor({ content, pageStyles = "", onPageStylesChange, onChange, availablePages = [] }) {
@@ -302,27 +303,11 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
     };
 
     return (
-        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full"> {/* Removed max-w-4xl mx-auto */}
-            {/* Tabs Header */}
+        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full"> 
             <div className="flex bg-white/50 dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
-                <button
-                    onClick={() => setActiveTab("blocks")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'blocks' ? 'bg-couleur1 text-white shadow-md' : 'text-couleur1/60 hover:text-couleur1'}`}
-                >
-                    <Layers size={14} /> Structure
-                </button>
-                <button
-                    onClick={() => setActiveTab("global")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'global' ? 'bg-couleur1 text-white shadow-md' : 'text-couleur1/60 hover:text-couleur1'}`}
-                >
-                    <Globe size={14} /> Global
-                </button>
-                <button
-                    onClick={() => setActiveTab("props")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'props' ? 'bg-couleur1 text-white shadow-md' : 'text-couleur1/60 hover:text-couleur1'}`}
-                >
-                    <Settings2 size={14} /> Properties
-                </button>
+                <ChangeTabBtn icon={<Layers size={14} /> } value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'}/>
+                <ChangeTabBtn icon={<Globe size={14} /> } value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"}/>
+                <ChangeTabBtn icon={<Settings2 size={14} /> } value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"}/>
             </div>
 
             {activeTab === "blocks" ? (

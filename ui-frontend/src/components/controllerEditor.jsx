@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { 
     Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText, Settings, 
-    CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight, Wand2
+    CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight, Wand2,
+    Zap, Activity, Database, Link2
 } from "lucide-react";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../hooks/useNavigate";
@@ -210,17 +211,17 @@ export default function ControllerEditor({ projectName }) {
                                         <LinkIcon size={16} /> Data Bindings
                                     </h3>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex items-center gap-1 bg-white dark:bg-gray-800 border border-couleur1/20 rounded-xl px-2 py-1">
+                                        <div className="flex items-center gap-1 bg-white dark:bg-gray-800 border border-couleur1/10 rounded-xl px-3 py-1.5 shadow-sm">
                                             <select 
                                                 value={bulkEndpointNom}
                                                 onChange={(e) => setBulkEndpointNom(e.target.value)}
-                                                className="text-[10px] font-bold uppercase outline-none bg-transparent max-w-[120px]"
+                                                className="text-[10px] font-black uppercase outline-none bg-transparent max-w-[140px] text-couleur1/60"
                                             >
                                                 {endpoints.map(ep => <option key={ep.nom} value={ep.nom}>{ep.nom}</option>)}
                                             </select>
                                             <button 
                                                 onClick={() => generateBindingsFromEndpoint(bulkEndpointNom)}
-                                                className="p-1 text-couleur1 hover:scale-110 transition-all border-l border-couleur1/10 pl-2"
+                                                className="p-1 text-couleur1 hover:scale-110 transition-all border-l border-couleur1/10 pl-3 ml-1"
                                                 title="Generate mappings for all fields in this endpoint"
                                             >
                                                 <Wand2 size={14} />
@@ -231,7 +232,7 @@ export default function ControllerEditor({ projectName }) {
                                                 const newBinding = { id_element: availableIds[0] || "", endpoint_nom: endpoints[0]?.nom || "", trigger: "onLoad", action: "fill_content", map_field: "" };
                                                 updateController(selectedIndex, 'bindings', [...(activeController.bindings || []), newBinding]);
                                             }}
-                                            className="text-xs bg-couleur1 text-white px-3 py-1 rounded-lg flex items-center gap-1"
+                                            className="text-xs bg-couleur1 text-white px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-lg shadow-couleur1/20 hover:scale-105 transition-all"
                                         >
                                             <Plus size={14} /> Add Binding
                                         </button>
@@ -300,68 +301,66 @@ function BindingRow({ binding, availableIds, endpoints, onChange, onDelete }) {
         return [...new Set(fields)]; // Unicité
     }, [selectedEp]);
 
-    const handleAutoMap = () => {
-        if (!fieldSuggestions.length) return;
-        const bestMatch = fieldSuggestions.find(f => 
-            binding.id_element.toLowerCase().includes(f.toLowerCase()) || 
-            f.toLowerCase().includes(binding.id_element.toLowerCase())
-        );
-        onChange({ ...binding, map_field: bestMatch || fieldSuggestions[0] });
-    };
-
     return (
-        <div className="bg-couleur3/10 p-4 rounded-2xl border border-couleur1/5 space-y-4">
-            <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase text-couleur1/40">Binding Configuration</span>
-                <button onClick={onDelete} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 size={14}/></button>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="flex flex-col gap-1">
-                    <label className="text-[9px] uppercase font-bold opacity-50">Element ID</label>
-                    <select value={binding.id_element} onChange={(e) => onChange({...binding, id_element: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
-                        {availableIds.map(id => <option key={id} value={id}>{id}</option>)}
-                    </select>
+        <div className="group bg-white dark:bg-gray-800/40 p-6 rounded-[2rem] border border-couleur1/5 hover:border-couleur1/20 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-couleur1/10 flex items-center justify-center text-couleur1">
+                        <Link2 size={16}/>
+                    </div>
+                    <span className="text-[10px] font-black uppercase text-couleur1/40 tracking-widest">Logic Node</span>
                 </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-[9px] uppercase font-bold opacity-50">Endpoint</label>
-                    <select value={binding.endpoint_nom} onChange={(e) => onChange({...binding, endpoint_nom: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
+                <button 
+                    onClick={onDelete} 
+                    className="opacity-0 group-hover:opacity-100 p-2 text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                >
+                    <Trash2 size={16}/>
+                </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="space-y-2">
+                    <label className="text-[9px] uppercase font-black text-couleur1/30 flex items-center gap-1.5"><Database size={10}/> Endpoint</label>
+                    <select 
+                        value={binding.endpoint_nom} 
+                        onChange={(e) => onChange({...binding, endpoint_nom: e.target.value})} 
+                        className="w-full p-3 text-xs rounded-xl border border-couleur1/10 bg-couleur3/20 focus:ring-2 ring-couleur1/20 outline-none transition-all appearance-none"
+                    >
                         {endpoints.map(ep => <option key={ep.nom} value={ep.nom}>{ep.nom}</option>)}
                     </select>
                 </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-[9px] uppercase font-bold opacity-50">Trigger</label>
-                    <select value={binding.trigger} onChange={(e) => onChange({...binding, trigger: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
+                <div className="space-y-2">
+                    <label className="text-[9px] uppercase font-black text-couleur1/30 flex items-center gap-1.5"><Zap size={10}/> Trigger</label>
+                    <select 
+                        value={binding.trigger} 
+                        onChange={(e) => onChange({...binding, trigger: e.target.value})} 
+                        className="w-full p-3 text-xs rounded-xl border border-couleur1/10 bg-couleur3/20 focus:ring-2 ring-couleur1/20 outline-none transition-all appearance-none"
+                    >
                         <option value="onLoad">onLoad</option>
                         <option value="onClick">onClick</option>
                         <option value="onHover">onHover</option>
                     </select>
                 </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-[9px] uppercase font-bold opacity-50">Action</label>
-                    <select value={binding.action} onChange={(e) => onChange({...binding, action: e.target.value})} className="p-2 text-xs rounded-lg border bg-white">
+                <div className="space-y-2">
+                    <label className="text-[9px] uppercase font-black text-couleur1/30 flex items-center gap-1.5"><Activity size={10}/> Action</label>
+                    <select 
+                        value={binding.action} 
+                        onChange={(e) => onChange({...binding, action: e.target.value})} 
+                        className="w-full p-3 text-xs rounded-xl border border-couleur1/10 bg-couleur3/20 focus:ring-2 ring-couleur1/20 outline-none transition-all appearance-none"
+                    >
                         <option value="fill_content">Fill Content</option>
                         <option value="set_style">Set Style</option>
                         <option value="redirect">Redirect</option>
                     </select>
                 </div>
-                <div className="flex flex-col gap-1 col-span-2">
-                    <label className="text-[9px] uppercase font-bold opacity-50">Field Mapping (JSON Path)</label>
-                    <div className="relative flex items-center">
-                        <input 
-                            list={`fields-${binding.id_element}`}
-                            value={binding.map_field} 
-                            placeholder="ex: data.title" 
-                            onChange={(e) => onChange({...binding, map_field: e.target.value})} 
-                            className="w-full p-2 pr-10 text-xs rounded-lg border bg-white outline-none focus:ring-1 ring-couleur1"
-                        />
-                        <button 
-                            onClick={handleAutoMap}
-                            className="absolute right-2 p-1 text-couleur1/40 hover:text-couleur1 transition-colors"
-                            title="Suggest field"
-                        >
-                            <Wand2 size={14} />
-                        </button>
-                    </div>
+                <div className="space-y-2 col-span-full">
+                    <label className="text-[9px] uppercase font-black text-couleur1/30 flex items-center gap-1.5"><LinkIcon size={10}/> Field Mapping (JSON Path)</label>
+                    <input 
+                        list={`fields-${binding.id_element}`}
+                        value={binding.map_field} 
+                        placeholder="ex: data.title" 
+                        onChange={(e) => onChange({...binding, map_field: e.target.value})} 
+                        className="w-full p-4 text-sm font-mono rounded-xl border border-couleur1/10 bg-white dark:bg-gray-900 focus:ring-2 ring-couleur1/20 outline-none transition-all shadow-inner"
+                    />
                     <datalist id={`fields-${binding.id_element}`}>
                         {fieldSuggestions.map(f => (
                             <option key={f} value={f} />

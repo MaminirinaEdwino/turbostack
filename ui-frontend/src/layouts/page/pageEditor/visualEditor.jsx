@@ -26,6 +26,7 @@ export default function VisualEditor({
     setActiveBlock,
     activeTab,
     setActiveTab,
+    activeViewport = "desktop",
     allowedTabs = ["blocks", "global", "properties"]
 }) {
     const [blocks, setBlocks] = useState([]);
@@ -298,23 +299,42 @@ export default function VisualEditor({
     const currentActiveBlock = findBlock(blocks, activeBlock);
 
     const handleStyleChange = (prop, value) => {
-        const styles = parseStyles(currentActiveBlock.styles);
-        const updated = { ...styles, [prop]: value };
-        updateBlock(currentActiveBlock.id, { styles: stringifyStyles(updated) });
+        if (!currentActiveBlock) return;
+        let stylesObj = { desktop: {}, tablet: {}, mobile: {} };
+        try {
+            if (currentActiveBlock.styles && currentActiveBlock.styles.trim().startsWith('{')) {
+                stylesObj = { ...stylesObj, ...JSON.parse(currentActiveBlock.styles) };
+            } else {
+                stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
+            }
+        } catch (e) {
+            stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
+        }
+
+        const vp = activeViewport || "desktop";
+        stylesObj[vp] = { ...(stylesObj[vp] || {}), [prop]: value };
+        updateBlock(currentActiveBlock.id, { styles: JSON.stringify(stylesObj) });
     };
 
     const handlePageStyleChange = (prop, value) => {
-        let allStyles = {};
+        let allStyles = { desktop: {}, tablet: {}, mobile: {} };
         try {
-            allStyles = JSON.parse(pageStyles || "{}");
+            if (pageStyles && pageStyles.trim().startsWith('{')) {
+                allStyles = { ...allStyles, ...JSON.parse(pageStyles) };
+            } else {
+                // Migration ancien format
+                allStyles.desktop[selectedGlobalTag] = pageStyles;
+            }
         } catch (e) {
-            console.log(e)
-            allStyles = { body: pageStyles };
+            allStyles.desktop[selectedGlobalTag] = pageStyles;
         }
 
-        const currentTagStyles = parseStyles(allStyles[selectedGlobalTag] || "");
+        const vp = activeViewport || "desktop";
+        if (!allStyles[vp]) allStyles[vp] = {};
+        
+        const currentTagStyles = parseStyles(allStyles[vp][selectedGlobalTag] || "");
         const updatedTagStyles = { ...currentTagStyles, [prop]: value };
-        allStyles[selectedGlobalTag] = stringifyStyles(updatedTagStyles);
+        allStyles[vp][selectedGlobalTag] = stringifyStyles(updatedTagStyles);
 
         onPageStylesChange(JSON.stringify(allStyles));
     };
@@ -360,9 +380,9 @@ export default function VisualEditor({
             {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
                 <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents}/>
             ) : activeTab === "global" && allowedTabs.includes("global") ? (
-                <GlobalTab availableSelectors={availableSelectors} setSelectedGlobalTag={setSelectedGlobalTag} handlePageStyleChange={handlePageStyleChange} pageStyles={pageStyles} selectedGlobalTag={selectedGlobalTag}/>
+                <GlobalTab availableSelectors={availableSelectors} activeViewport={activeViewport} setSelectedGlobalTag={setSelectedGlobalTag} handlePageStyleChange={handlePageStyleChange} pageStyles={pageStyles} selectedGlobalTag={selectedGlobalTag}/>
             ) : allowedTabs.includes("properties") ? (
-                <PropertiesTab availablePages={availablePages} currentActiveBlock={currentActiveBlock} getIconForTag={getIconForTag} handleStyleChange={handleStyleChange} updateBlock={updateBlock}/>
+                <PropertiesTab availablePages={availablePages} activeViewport={activeViewport} currentActiveBlock={currentActiveBlock} getIconForTag={getIconForTag} handleStyleChange={handleStyleChange} updateBlock={updateBlock}/>
             ) : null}
         </div >
     );

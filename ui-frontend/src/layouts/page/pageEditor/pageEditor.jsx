@@ -202,6 +202,7 @@ export default function PageEditor({ projectName }) {
         try {
             await GoApp.saveProject(projectName, JSON.stringify(project));
             showToast("Project saved successfully!");
+            console.log(project)
         } catch (e) {
             console.error(e);
             showToast("Error saving project", "error");
@@ -262,6 +263,7 @@ export default function PageEditor({ projectName }) {
                                 activeBlock={activeBlock}
                                 setActiveBlock={setActiveBlock}
                                 activeTab="blocks"
+                                activeViewport={viewport.name}
                                 allowedTabs={["blocks"]}
                                 onChange={(blocks) => updateActiveItemField("content", blocks)} />
                         </aside>
@@ -373,6 +375,7 @@ export default function PageEditor({ projectName }) {
                                 setActiveBlock={setActiveBlock}
                                 activeTab={rightActiveTab}
                                 setActiveTab={setRightActiveTab}
+                                activeViewport={viewport.name}
                                 allowedTabs={editingType === 'page' ? ["global", "properties"] : ["properties"]}
                                 onChange={(blocks) => updateActiveItemField("content", blocks)}
                                 onPageStylesChange={(styles) => updateActiveItemField("styles", styles)} />

@@ -199,7 +199,7 @@ export default function PageEditor({ projectName }) {
             }).join('\n');
         };
         return renderBlocks(activeItem.content);
-    }, [activeItem?.content, bindingsMap]); // Add bindingsMap to dependencies
+    }, [activeItem.content, getControllerIndicatorHtml]); // Add bindingsMap to dependencies
 
     // Génère le CSS spécifique aux blocs pour chaque viewport
     const blocksCss = useMemo(() => {

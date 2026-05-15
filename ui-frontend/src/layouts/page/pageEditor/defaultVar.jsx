@@ -1,3 +1,5 @@
+import { Box, Heading1, Heading2, ImageIcon, Link, Pilcrow, Square } from "lucide-react";
+
 export const STYLE_CONTROLS = [
     { label: "Texte", prop: "color", type: "color" },
     { label: "Taille", prop: "font-size", type: "number", placeholder: "e.g. 16" },
@@ -23,7 +25,7 @@ export const BLOCK_TYPES = [
     { label: "Bouton", tag: "button", icon: <Square size={14} />, defaultContent: "Cliquez ici" },
 ];
 
-const TAG_STYLE_GROUPS = {
+export const TAG_STYLE_GROUPS = {
     h1: ["color", "font-size", "text-align", "font-weight", "margin"],
     h2: ["color", "font-size", "text-align", "font-weight", "margin"],
     p: ["color", "font-size", "text-align", "margin"],

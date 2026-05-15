@@ -6,6 +6,7 @@ import {
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
 import { parseStyles, stringifyStyles } from './utilsFunc';
 
+
 export default function VisualEditor({ content, pageStyles = "", onPageStylesChange, onChange, availablePages = [] }) {
     const [blocks, setBlocks] = useState([]);
     const [activeBlock, setActiveBlock] = useState(null);

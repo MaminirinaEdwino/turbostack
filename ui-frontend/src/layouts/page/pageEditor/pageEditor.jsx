@@ -254,10 +254,10 @@ export default function PageEditor({ projectName }) {
 
                                 <div className="w-12"></div>
                             </div>
-                            <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30 p-8 custom-scrollbar">
+                            <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar">
                                 <iframe
                                     title="Page Preview"
-                                    style={{ width: viewport.width, height: viewport.height }}
+                                    style={{ width: viewport.width, height: viewport.height, scale: zoomLevel }}
                                     className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1/10 rounded-sm"
                                     srcDoc={`
                                     <!DOCTYPE html>
@@ -273,8 +273,6 @@ export default function PageEditor({ projectName }) {
                                                 body {
                                                     transform: scale(${zoomLevel});
                                                     transform-origin: 0 0;
-                                                    width: ${100 / zoomLevel}%;
-                                                    height: ${100 / zoomLevel}%;
                                                 }
                                             </style>
                                         </head>

@@ -38,16 +38,17 @@ const stringifyStyles = (styleObj) => {
 
 const STYLE_CONTROLS = [
     { label: "Texte", prop: "color", type: "color" },
-    { label: "Taille", prop: "font-size", type: "text", placeholder: "e.g. 16px" },
+    { label: "Taille", prop: "font-size", type: "number", placeholder: "e.g. 16" },
     { label: "Align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"] },
     { label: "Gras", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"] },
     { label: "Fond", prop: "background-color", type: "color" },
-    { label: "Padding", prop: "padding", type: "text", placeholder: "e.g. 10px 20px" },
-    { label: "Marge", prop: "margin", type: "text", placeholder: "e.g. 0 auto" },
-    { label: "Arrondi", prop: "border-radius", type: "text", placeholder: "e.g. 8px" },
-    { label: "Largeur", prop: "width", type: "text", placeholder: "100%" },
-    { label: "Hauteur", prop: "height", type: "text", placeholder: "auto" },
+    { label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10" },
+    { label: "Marge", prop: "margin", type: "number", placeholder: "e.g. 0" },
+    { label: "Arrondi", prop: "border-radius", type: "number", placeholder: "e.g. 8" },
+    { label: "Largeur", prop: "width", type: "number", placeholder: "100" },
+    { label: "Hauteur", prop: "height", type: "number", placeholder: "auto" },
     { label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
+    { label: "Flex dir", prop: "flex-direction", type: "select", options: ["flex-col", "flex-row"] },
 ];
 
 const TAG_STYLE_GROUPS = {
@@ -56,7 +57,7 @@ const TAG_STYLE_GROUPS = {
     p: ["color", "font-size", "text-align", "margin"],
     a: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius"],
     button: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius", "margin"],
-    div: ["background-color", "padding", "margin", "border-radius", "width", "height", "display"],
+    div: ["background-color", "padding", "margin", "border-radius", "width", "height", "display", "flex-direction"],
     img: ["width", "height", "border-radius", "margin", "display"],
     page: ["color", "font-size", "background-color", "padding", "margin"]
 };
@@ -350,33 +351,39 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                                 return (
                                     <div key={ctrl.prop} className="flex flex-col gap-1">
                                         <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
-                                        {ctrl.prop === "margin" || ctrl.prop === "padding" ? (
+                                        {ctrl.type === "number" ? (
                                             <div className="flex gap-1">
                                                 <input
                                                     type="number"
                                                     className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
                                                     placeholder="e.g. 10"
-                                                    value={parseFloat(currentValue) || ""}
+                                                    value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
+                                                    disabled={currentValue === "auto"}
                                                     onChange={(e) => {
                                                         const numValue = e.target.value;
-                                                        const unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
+                                                        let unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
+                                                        if (unit === "auto") unit = "px";
                                                         handlePageStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${unit}`);
                                                     }}
                                                 />
                                                 <select
                                                     className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
-                                                    value={currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px"}
+                                                    value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
                                                     onChange={(e) => {
                                                         const newUnit = e.target.value;
-                                                        const numValue = parseFloat(currentValue) || 0;
-                                                        handlePageStyleChange(ctrl.prop, `${numValue}${newUnit}`);
+                                                        if (newUnit === "auto") {
+                                                            handlePageStyleChange(ctrl.prop, "auto");
+                                                        } else {
+                                                            const numValue = parseFloat(currentValue) || 0;
+                                                            handlePageStyleChange(ctrl.prop, `${numValue}${newUnit}`);
+                                                        }
                                                     }}
                                                 >
                                                     <option value="px">px</option>
                                                     <option value="em">em</option>
                                                     <option value="%">%</option>
                                                     <option value="rem">rem</option>
-                                                    <option value="auto">auto</option>
+                                                    {["margin", "width", "height"].includes(ctrl.prop) && <option value="auto">auto</option>}
                                                 </select>
                                             </div>
                                         ) : ctrl.type === "select" ? (
@@ -446,35 +453,41 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
                                             return (
                                                 <div key={ctrl.prop} className="flex flex-col gap-1">
                                                     <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
-                                                    {ctrl.prop === "margin" || ctrl.prop === "padding" ? (
+                                                    {ctrl.type === "number" ? (
                                                         <div className="flex gap-1">
                                                             {/* Input numérique pour la valeur */}
                                                             <input
                                                                 type="number"
                                                                 className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
                                                                 placeholder="e.g. 10"
-                                                                value={parseFloat(currentValue) || ""}
+                                                                value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
+                                                                disabled={currentValue === "auto"}
                                                                 onChange={(e) => {
                                                                     const numValue = e.target.value;
-                                                                    const unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
+                                                                    let unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
+                                                                    if (unit === "auto") unit = "px";
                                                                     handleStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${unit}`);
                                                                 }}
                                                             />
                                                             {/* Sélecteur d'unité */}
                                                             <select
                                                                 className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
-                                                                value={currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px"}
+                                                                value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
                                                                 onChange={(e) => {
                                                                     const newUnit = e.target.value;
-                                                                    const numValue = parseFloat(currentValue) || 0;
-                                                                    handleStyleChange(ctrl.prop, `${numValue}${newUnit}`);
+                                                                    if (newUnit === "auto") {
+                                                                        handleStyleChange(ctrl.prop, "auto");
+                                                                    } else {
+                                                                        const numValue = parseFloat(currentValue) || 0;
+                                                                        handleStyleChange(ctrl.prop, `${numValue}${newUnit}`);
+                                                                    }
                                                                 }}
                                                             >
                                                                 <option value="px">px</option>
                                                                 <option value="em">em</option>
                                                                 <option value="%">%</option>
                                                                 <option value="rem">rem</option>
-                                                                <option value="auto">auto</option>
+                                                                {["margin", "width", "height"].includes(ctrl.prop) && <option value="auto">auto</option>}
                                                             </select>
                                                         </div>
                                                     ) : ctrl.type === "select" ? (

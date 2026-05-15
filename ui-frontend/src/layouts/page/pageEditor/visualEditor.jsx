@@ -15,10 +15,19 @@ import GlobalTab from "./components/globalTab";
 import PropertiesTab from "./components/propertieTab";
 
 
-export default function VisualEditor({ content, pageStyles = "", onPageStylesChange, onChange, availablePages = [] }) {
+export default function VisualEditor({ 
+    content, 
+    pageStyles = "", 
+    onPageStylesChange, 
+    onChange, 
+    availablePages = [],
+    activeBlock,
+    setActiveBlock,
+    activeTab,
+    setActiveTab,
+    allowedTabs = ["blocks", "global", "properties"]
+}) {
     const [blocks, setBlocks] = useState([]);
-    const [activeBlock, setActiveBlock] = useState(null);
-    const [activeTab, setActiveTab] = useState("blocks"); // "blocks" or "props"
     const [draggedId, setDraggedId] = useState(null);
     const [selectedGlobalTag, setSelectedGlobalTag] = useState("body");
 
@@ -91,12 +100,12 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
     // Synchronisation vers le parent
     const sync = (currentBlocks) => {
         // On renvoie le tableau directement
-        onChange(currentBlocks);
+        if (onChange) onChange(currentBlocks);
     };
 
     const selectBlock = (id) => {
-        setActiveBlock(id);
-        setActiveTab("props");
+        if (setActiveBlock) setActiveBlock(id);
+        if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
     };
 
     // Gestion du Drag and Drop
@@ -199,8 +208,11 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         setBlocks(updated);
         sync(updated);
         if (activeBlock === id) {
-            setActiveBlock(null);
-            setActiveTab("blocks");
+            if (setActiveBlock) setActiveBlock(null);
+            if (setActiveTab) {
+                if (allowedTabs.includes("blocks")) setActiveTab("blocks");
+                else if (allowedTabs.includes("global")) setActiveTab("global");
+            }
         }
     };
 
@@ -218,8 +230,8 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         const updated = [...blocks, newBlock];
         setBlocks(updated);
         sync(updated);
-        setActiveBlock(id);
-        setActiveTab("props");
+        if (setActiveBlock) setActiveBlock(id);
+        if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
     };
 
     const addChild = (parentId, type) => {
@@ -244,8 +256,8 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
         const updated = updateTree(blocks);
         setBlocks(updated);
         sync(updated);
-        setActiveBlock(id);
-        setActiveTab("props");
+        if (setActiveBlock) setActiveBlock(id);
+        if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
     };
 
     const getIconForTag = (tag) => {
@@ -307,20 +319,21 @@ export default function VisualEditor({ content, pageStyles = "", onPageStylesCha
 
     return (
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full"> 
-            <div className="flex bg-white/50 dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
-                <ChangeTabBtn icon={<Layers size={14} /> } value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'}/>
-                <ChangeTabBtn icon={<Globe size={14} /> } value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"}/>
-                <ChangeTabBtn icon={<Settings2 size={14} /> } value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"}/>
-            </div>
+            {allowedTabs.length > 1 && (
+                <div className="flex bg-white/50 dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
+                    {allowedTabs.includes("blocks") && <ChangeTabBtn icon={<Layers size={14} /> } value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'}/>}
+                    {allowedTabs.includes("global") && <ChangeTabBtn icon={<Globe size={14} /> } value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"}/>}
+                    {allowedTabs.includes("properties") && <ChangeTabBtn icon={<Settings2 size={14} /> } value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"}/>}
+                </div>
+            )}
 
-            {activeTab === "blocks" ? (
+            {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
                 <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock}/>
-            ) : activeTab === "global" ? (
+            ) : activeTab === "global" && allowedTabs.includes("global") ? (
                 <GlobalTab availableSelectors={availableSelectors} setSelectedGlobalTag={setSelectedGlobalTag} handlePageStyleChange={handlePageStyleChange} pageStyles={pageStyles} selectedGlobalTag={selectedGlobalTag}/>
-            ) : (
+            ) : allowedTabs.includes("properties") ? (
                 <PropertiesTab availablePages={availablePages} currentActiveBlock={currentActiveBlock} getIconForTag={getIconForTag} handleStyleChange={handleStyleChange} updateBlock={updateBlock}/>
-            )
-            }
+            ) : null}
         </div >
     );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
-import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, PanelLeftOpen, CheckCircle, AlertCircle } from "lucide-react";
+import { Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X, PanelLeftOpen, CheckCircle, AlertCircle, PanelRightOpen } from "lucide-react";
 import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../../../hooks/useNavigate";
@@ -10,9 +10,13 @@ export default function PageEditor({ projectName }) {
     const [project, setProject] = useState(null);
     const [selectedPageIndex, setSelectedPageIndex] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // New state for sidebar visibility
+    const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
+    const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [toast, setToast] = useState(null);
+
+    const [activeBlock, setActiveBlock] = useState(null);
+    const [rightActiveTab, setRightActiveTab] = useState("properties");
 
     const showToast = (message, type = "success") => {
         setToast({ message, type });
@@ -150,16 +154,39 @@ export default function PageEditor({ projectName }) {
             {/* Vue Conditionnelle */}
             <div className="flex-1 overflow-y-auto p-8">
                 {editMode ? (
-                    <div className="flex h-full min-h-150"> {/* Changed to flex container */}
+                    <div className="flex h-full min-h-150 relative">
+                        {/* Left Sidebar: Structure & Blocks */}
+                        <aside className={`fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out ${isLeftSidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-80 bg-couleur3 dark:bg-gray-950 border-r border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xs font-black uppercase text-couleur1/40">Structure</h2>
+                                <button onClick={() => setIsLeftSidebarOpen(false)} className="p-2 rounded-full hover:bg-couleur1/10 text-couleur1 dark:text-gray-300">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <VisualEditor
+                                key={`left-${selectedPageIndex}`}
+                                content={currentPage?.content}
+                                availablePages={siteData?.pages || []}
+                                activeBlock={activeBlock}
+                                setActiveBlock={setActiveBlock}
+                                activeTab="blocks"
+                                allowedTabs={["blocks"]}
+                                onChange={(blocks) => updatePageField("content", blocks)} />
+                        </aside>
+
                         {/* Main content: Prévisualisation isolée (Iframe) */}
-                        <div className={`flex-1 flex flex-col bg-white dark:bg-gray-900 rounded-[2.5rem] border border-couleur1/10 shadow-2xl overflow-hidden h-[calc(100vh-140px)] animate-in slide-in-from-left-4 duration-500 ${isSidebarOpen ? 'mr-96' : ''}`}>
-                            {/* Button to open sidebar (if closed) */}
-                            {!isSidebarOpen && (
-                                <button onClick={() => setIsSidebarOpen(true)} className="absolute  right-4 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform">
-                                    <PanelLeftOpen size={24} />
+                        <div className={`flex-1 flex flex-col bg-white dark:bg-gray-900 rounded-[2.5rem] border border-couleur1/10 shadow-2xl overflow-hidden h-[calc(100vh-140px)] transition-all duration-300 ${isLeftSidebarOpen ? 'ml-80' : ''} ${isRightSidebarOpen ? 'mr-96' : ''}`}>
+                            {!isLeftSidebarOpen && (
+                                <button onClick={() => setIsLeftSidebarOpen(true)} className="absolute -top-8 -left-8 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform">
+                                    <PanelRightOpen size={20} />
                                 </button>
                             )}
-
+                            {!isRightSidebarOpen && (
+                                <button onClick={() => setIsRightSidebarOpen(true)} className="absolute right-4 top-24 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform">
+                                    <PanelLeftOpen size={20} />
+                                </button>
+                            )}
+                            
                             <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between">
                                 <div className="flex gap-1.5">
                                     <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
@@ -191,33 +218,27 @@ export default function PageEditor({ projectName }) {
                             />
                         </div>
 
-                        {/* Sidebar: Édition des blocs (collapsible) */}
-                        <div className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}>
-                            <div className="flex justify-end mb-4">
-                                <button onClick={() => setIsSidebarOpen(false)} className="p-2 rounded-full hover:bg-couleur1/10 text-couleur1 dark:text-gray-300">
-                                    <X size={20} />
+                        {/* Right Sidebar: Properties & Global */}
+                        <aside className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? 'translate-x-0' : '-translate-x-full'} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xs font-black uppercase text-couleur1/40">Configuration</h2>
+                                <button onClick={() => setIsRightSidebarOpen(false)} className="p-2 rounded-full hover:bg-couleur1/10 text-couleur1 dark:text-gray-300">
+                                    <X size={18} />
                                 </button>
                             </div>
-                            <div className="grid grid-cols-1 gap-4 bg-white dark:bg-gray-900 p-6 rounded-3xl border border-couleur1/10 shadow-sm">
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase flex items-center gap-1">
-                                        <Type size={10} /> Page Name
-                                    </label>
-                                    <input
-                                        className="bg-couleur3/30 dark:bg-gray-800 p-2.5 rounded-xl border-none outline-none focus:ring-2 ring-couleur1/20 font-bold text-couleur1 dark:text-white"
-                                        value={currentPage?.nom || ""}
-                                        onChange={(e) => updatePageField("nom", e.target.value)}
-                                    />
-                                </div>
-                            </div>
                             <VisualEditor
-                                key={selectedPageIndex}
+                                key={`right-${selectedPageIndex}`}
                                 content={currentPage?.content}
                                 pageStyles={currentPage?.styles || ""}
                                 availablePages={siteData?.pages || []}
+                                activeBlock={activeBlock}
+                                setActiveBlock={setActiveBlock}
+                                activeTab={rightActiveTab}
+                                setActiveTab={setRightActiveTab}
+                                allowedTabs={["global", "properties"]}
                                 onChange={(blocks) => updatePageField("content", blocks)}
                                 onPageStylesChange={(styles) => updatePageField("styles", styles)} />
-                        </div>
+                        </aside>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">

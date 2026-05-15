@@ -8,7 +8,9 @@ import {
     ChevronDown,
     ChevronRight,
     Moon,
-    Sun
+    Sun,
+    Layout,
+    Globe
 } from "lucide-react";
 import { useNavigate } from "../hooks/useNavigate";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,8 +31,8 @@ export default function SideMenu() {
         // { name: 'Components', icon: <LucidePuzzle size={18} /> },
         // { name: 'Assets', icon: <ImageIcon size={18} /> },
         { name: 'Models', icon: <Database size={18} /> },
-        { name: 'Web App', icon: <FileText size={18} /> },
-        { name: 'Static Site', icon: <FileText size={18} /> },
+        { name: 'Web App', icon: <Layout size={18} /> },
+        { name: 'Static Site', icon: <Globe size={18} /> },
         { name: 'Api', icon: <Settings size={18} /> },
         { name: 'Subscription', icon: <CreditCard size={18} /> },
     ];

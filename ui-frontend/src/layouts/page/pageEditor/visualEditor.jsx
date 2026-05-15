@@ -425,22 +425,36 @@ export default function VisualEditor({
                     </div>
                 </div>
 
-                {/* Affichage des contrôleurs liés comme "enfants" visuels */}
-                {bindingsMap[block.id]?.map((binding, bIdx) => (
-                    <div
-                        key={`binding-${block.id}-${bIdx}`}
-                        style={{ marginLeft: `${(level + 1) * 16}px` }}
-                        className="flex items-center gap-2 p-1.5 px-3 mb-2 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold group/ctrl hover:bg-indigo-100/50 dark:hover:bg-indigo-900/40 transition-colors"
-                        title={`Mapped field: ${binding.map_field} from endpoint ${binding.endpoint_nom}`}
-                    >
-                        <Cpu size={10} className="opacity-70 shrink-0" />
-                        <span className="uppercase tracking-tighter truncate max-w-20">{binding.ctrlName}</span>
-                        <span className="opacity-30">/</span>
-                        <span className="opacity-60 text-[9px] font-medium truncate max-w-15">{binding.endpoint_nom}</span>
-                        <ArrowRight size={10} className="opacity-30 shrink-0" />
-                        <span className="font-bold truncate max-w-25 text-indigo-700 dark:text-indigo-300">{binding.map_field}</span>
-                    </div>
-                ))}
+                {/* Affichage des contrôleurs liés comme "enfants" visuels, regroupés par endpoint */}
+                {(() => {
+                    const blockBindings = bindingsMap[block.id];
+                    if (!blockBindings || blockBindings.length === 0) return null;
+
+                    const groupedByEndpoint = blockBindings.reduce((acc, binding) => {
+                        if (!acc[binding.endpoint_nom]) {
+                            acc[binding.endpoint_nom] = {
+                                endpoint_nom: binding.endpoint_nom,
+                                ctrlName: binding.ctrlName, // Assuming ctrlName is consistent per endpoint for a block
+                                map_fields: []
+                            };
+                        }
+                        acc[binding.endpoint_nom].map_fields.push(binding.map_field);
+                        return acc;
+                    }, {});
+
+                    return Object.values(groupedByEndpoint).map((group, groupIdx) => (
+                        <div
+                            key={`grouped-binding-${block.id}-${groupIdx}`}
+                            style={{ marginLeft: `${(level + 1) * 16}px` }}
+                            className="flex items-center gap-2 p-1.5 px-3 mb-2 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-200/50 dark:border-indigo-800/50 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold group/ctrl hover:bg-indigo-100/50 dark:hover:bg-indigo-900/40 transition-colors"
+                            title={`Controller: ${group.ctrlName}, Endpoint: ${group.endpoint_nom}, Fields: ${group.map_fields.join(', ')}`}
+                        >
+                            <Database size={10} className="opacity-70 shrink-0" />
+                            <span className="uppercase tracking-tighter truncate">{group.endpoint_nom}</span>
+                            <span className="opacity-40 font-medium">({group.map_fields.join(', ')})</span>
+                        </div>
+                    ));
+                })()}
 
                 {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
             </React.Fragment>

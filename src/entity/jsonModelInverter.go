@@ -131,7 +131,6 @@ func (wj *WebAppJSON) ToModel() WebApp {
 		pages:     pages,
 		role:      wj.Role,
 		composant: composants,
-		bdd:       wj.BDD.ToModel(),
 	}
 }
 

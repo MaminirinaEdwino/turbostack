@@ -106,6 +106,46 @@ export default function ControllerEditor({ projectName }) {
         });
     };
 
+    const generateComponentFromEndpoint = (endpointNom) => {
+        const bindings = activeBindings?.filter(b => b.endpoint_nom === endpointNom) || [];
+        if (bindings.length === 0) {
+            showToast("Aucun champ mappé pour cet endpoint", "error");
+            return;
+        }
+
+        const children = bindings.map(b => ({
+            id: Math.random().toString(36).substr(2, 9),
+            tag: "div",
+            content: `<span class="font-semibold text-couleur1">${b.map_field}:</span> <span class="text-gray-600">{${b.map_field}}</span>`,
+            className: "p-2 border-b border-couleur1/5 last:border-0",
+            styles: "",
+            children: []
+        }));
+
+        const newComponent = {
+            id: Math.random().toString(36).substr(2, 9),
+            nom: `Comp_${endpointNom}`,
+            content: [{
+                id: Math.random().toString(36).substr(2, 9),
+                tag: "div",
+                className: "p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-couleur1/10",
+                content: `<h4 class="font-bold mb-3 text-couleur1 border-b border-couleur1/10 pb-2">${endpointNom} Template</h4>`,
+                styles: "",
+                children: children
+            }],
+            params: []
+        };
+
+        setProject(prev => {
+            const k = prev.type === "static" ? "site_statique" : "web_app";
+            const compKey = prev[k].composants ? "composants" : "composant";
+            const currentComps = prev[k][compKey] || [];
+            return { ...prev, [k]: { ...prev[k], [compKey]: [...currentComps, newComponent] } };
+        });
+
+        showToast(`Composant 'Comp_${endpointNom}' créé avec succès !`);
+    };
+
     const handleSave = async () => {
         showToast("Saving controllers...", "loading");
         try {
@@ -145,7 +185,18 @@ export default function ControllerEditor({ projectName }) {
                                     <span className="text-[10px] font-bold text-couleur1/30 italic">Select fields to bind to UI</span>
                                 </div>
 
-                                <EndPointRender activeBindings={activeBindings} activeController={activeController} collapsedEndpoints={collapsedEndpoints} endpoints={endpoints} selectedIndex={selectedIndex} toggleBinding={toggleBinding} toggleGroup={toggleGroup} updateController={updateController} updateGroupConfig={updateGroupConfig}></EndPointRender>
+                                <EndPointRender 
+                                    activeBindings={activeBindings} 
+                                    activeController={activeController} 
+                                    collapsedEndpoints={collapsedEndpoints} 
+                                    endpoints={endpoints} 
+                                    selectedIndex={selectedIndex} 
+                                    toggleBinding={toggleBinding} 
+                                    toggleGroup={toggleGroup} 
+                                    updateController={updateController} 
+                                    updateGroupConfig={updateGroupConfig}
+                                    generateComponent={generateComponentFromEndpoint}
+                                />
                             </div>
                         </div>
                     </div>
@@ -158,4 +209,3 @@ export default function ControllerEditor({ projectName }) {
         </div>
     );
 }
-

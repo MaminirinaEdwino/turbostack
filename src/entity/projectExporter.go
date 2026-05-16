@@ -251,6 +251,9 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	// Exportation des controllers basés sur les endpoints
 	mgr.controllerAPIExporter(api.GetEndpoints(), projectName)
 
+	// Exportation des routes groupées par modèles
+	mgr.routesAPIExporter(api.GetEndpoints(), projectName)
+
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 
@@ -392,6 +395,49 @@ func (mgr *ProjectManager) controllerAPIExporter(endpoints []Endpoint, projectNa
 		file.WriteString(sb.String())
 		file.Close()
 	}
+}
+
+// routesAPIExporter génère le fichier de configuration des routes groupées par modèles
+func (mgr *ProjectManager) routesAPIExporter(endpoints []Endpoint, projectName string) {
+	filePath := fmt.Sprintf("%s/%s/api/src/routes/routes.go", config.PROJECT_DIR, projectName)
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating routes file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	sb.WriteString("package routes\n\n")
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"net/http\"\n")
+	sb.WriteString("\t\"src/controllers\"\n")
+	sb.WriteString(")\n\n")
+
+	// Groupement des endpoints par nom de modèle
+	groups := make(map[string][]Endpoint)
+	for _, ep := range endpoints {
+		mName := "General"
+		if len(ep.GetModel()) > 0 {
+			mName = ep.GetModel()[0].GetNom()
+		}
+		groups[mName] = append(groups[mName], ep)
+	}
+
+	for groupName, eps := range groups {
+		cleanGroupName := strings.ReplaceAll(groupName, " ", "_")
+		groupFuncName := strings.ToUpper(cleanGroupName[:1]) + cleanGroupName[1:]
+		fmt.Fprintf(&sb, "func RegisterRoutes%s(mux *http.ServeMux) {\n", groupFuncName)
+		for _, ep := range eps {
+			method := ep.GetMethod()
+			uri := ep.GetUri()
+			eName := ep.GetNom()
+			funcName := strings.ToUpper(eName[:1]) + strings.ReplaceAll(eName[1:], " ", "_")
+			fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, uri, funcName)
+		}
+		sb.WriteString("}\n\n")
+	}
+	file.WriteString(sb.String())
 }
 
 func (mgr *ProjectManager) ExporterStaticSite(Project Project) {

@@ -143,7 +143,6 @@ export default function PageEditor({ projectName }) {
     };
 
     const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
-    const typeKey = project?.type === "static" ? "site_statique" : "web_app";
     
     // Détection de la clé de composant pour l'affichage (priorité au pluriel comme dans pagelist.jsx)
     const compKey = siteData?.composants ? "composants" : "composant";
@@ -398,10 +397,7 @@ export default function PageEditor({ projectName }) {
                                 activeTab={rightActiveTab}
                                 setActiveTab={setRightActiveTab}
                                 activeViewport={viewport.name}
-                                allowedTabs={editingType === 'page' ? ["global", "properties", "data"] : ["properties"]}
-                                availableControllers={siteData?.controllers || []}
-                                currentPageName={activeItem?.nom}
-                                onUpdateControllers={(newCtrls) => setProject(prev => ({ ...prev, [typeKey]: { ...prev[typeKey], controllers: newCtrls } }))}
+                                allowedTabs={editingType === 'page' ? ["global", "properties"] : ["properties"]}
                                 onChange={(blocks) => updateActiveItemField("content", blocks)}
                                 onPageStylesChange={(styles) => updateActiveItemField("styles", styles)} 
                                 showToast={showToast}

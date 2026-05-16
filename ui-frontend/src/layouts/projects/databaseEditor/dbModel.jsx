@@ -5,7 +5,7 @@ export default function DbModel({data}){
    const handleOnclick = ()=>{
       
    }
-    return <div className="border border-couleur1 rounded-lg overflow-hidden relative bg-white min-w-[200px]" onClick={handleOnclick}>
+    return <div className="border border-couleur1 rounded-lg overflow-hidden relative bg-white min-w-50" onClick={handleOnclick}>
          {/* Points de connexion pour les relations */}
          <Handle type="target" position={Position.Left} className="bg-couleur1! w-2! h-2! border border-white" />
          <Handle type="source" position={Position.Right} className="bg-couleur1! w-2! h-2! border border-white" />

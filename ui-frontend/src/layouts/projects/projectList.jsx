@@ -26,7 +26,7 @@ export default function ProjectList() {
 
     const handleProjectSelection = (projectName) => {
         dispatch(setActualProject(projectName));
-        dispatch(setActualWindow('Project Home Page'));
+        dispatch(setActualWindow('Dashboard'));
     };
 
     const filteredProjects = projectList.filter(name => 

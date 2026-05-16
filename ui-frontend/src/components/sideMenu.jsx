@@ -11,7 +11,9 @@ import {
     Sun,
     Layout,
     Globe,
-    Cpu
+    Cpu,
+    SendHorizonal,
+    SendToBack
 } from "lucide-react";
 import { useNavigate } from "../hooks/useNavigate";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,6 +42,7 @@ export default function SideMenu() {
         { name: 'Web App', icon: <Layout size={18} /> },
         { name: 'Static Site', icon: <Globe size={18} /> },
         { name: 'Api', icon: <Settings size={18} /> },
+        { name: 'Export', icon: <SendToBack size={18} /> },
     ]
     // Ajout des liens directs vers les éditeurs si un projet est actif
     if (actualProject) {

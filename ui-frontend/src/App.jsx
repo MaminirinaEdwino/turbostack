@@ -51,7 +51,7 @@ function App() {
       case 'Models': return <BDDModelList />;
       case 'Subscription': return <Subscription/>;
       case 'New Project': return <NewProject/>
-      case 'Project Home Page': return <ProjectHomePage projectName={actualProject}></ProjectHomePage>
+      case 'Export': return <ProjectHomePage projectName={actualProject}></ProjectHomePage>
       case 'db_editor': return <DbEditor projectName={actualProject}></DbEditor>
       case 'api_editor': return <ApiEditor projectName={actualProject}></ApiEditor>
       case 'page_editor': return <PageEditor projectName={actualProject}></PageEditor>

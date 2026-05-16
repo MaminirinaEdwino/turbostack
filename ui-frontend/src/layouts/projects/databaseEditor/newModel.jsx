@@ -8,21 +8,31 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
     const [newField, setNewField] = useState({
         nom: "",
         type: "",
-        default_value: ""
+        default_value: "",
+        constraint: []
     })
 
     const [editingIndex, setEditingIndex] = useState(-1);
-    const [editField, setEditField] = useState({ nom: "", type: "", default_value: "" })
+    const [editField, setEditField] = useState({ nom: "", type: "", default_value: "", constraint: [] })
 
-    const handleNewField = () => {
+    const handleNewField = (e) => {
+        if (e) e.preventDefault();
         setFields(fields => [...fields, newField])
         setAddfield(false)
-        setNewField({ nom: "", type: "", default_value: "" })
+        setNewField({ nom: "", type: "", default_value: "", constraint: [] })
     }
+
+    const toggleConstraint = (field, setter, constraint) => {
+        const current = Array.isArray(field.constraint) ? field.constraint : (field.constraint ? [field.constraint] : []);
+        const next = current.includes(constraint)
+            ? current.filter(c => c !== constraint)
+            : [...current, constraint];
+        setter({ ...field, constraint: next });
+    };
 
     const startEditing = (idx, field) => {
         setEditingIndex(idx);
-        setEditField({ ...field });
+        setEditField({ ...field, constraint: Array.isArray(field.constraint) ? field.constraint : (field.constraint ? [field.constraint] : []) });
     };
 
     const saveEdit = (e) => {
@@ -58,7 +68,8 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
         setNewField({
             nom: "",
             type: "",
-            default_value: ""
+            default_value: "",
+            constraint: []
         })
         setToggle("none")
     }
@@ -83,6 +94,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                             <th>Name</th>
                             <th>Type</th>
                             <th>Default Value</th>
+                            <th>Constraint</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -101,6 +113,24 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                         </select>
                                     </td>
                                     <td><input className="w-full p-2 border-b border-couleur1 outline-0 bg-white " type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} /></td>
+                                    <td>
+                                        <div className="flex flex-wrap gap-1 min-w-[120px]">
+                                            {["primary key", "unique", "not null", ...(editField.type === "int" ? ["autoincrement"] : [])].map(c => (
+                                                <button
+                                                    key={c}
+                                                    type="button"
+                                                    onClick={() => toggleConstraint(editField, setEditField, c)}
+                                                    className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${
+                                                        (Array.isArray(editField.constraint) ? editField.constraint : []).includes(c)
+                                                            ? "bg-couleur1 text-white border-couleur1"
+                                                            : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
+                                                    }`}
+                                                >
+                                                    {c}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </td>
                                     <td className="flex gap-2 py-2">
                                         <button onClick={saveEdit} className="p-1.5 bg-green-500 text-white rounded shadow-sm hover:bg-green-600 transition-colors"><Check size={16} /></button>
                                         <button onClick={(e) => { e.preventDefault(); setEditingIndex(-1); }} className="p-1.5 bg-gray-400 text-white rounded shadow-sm hover:bg-gray-500 transition-colors"><X size={16} /></button>
@@ -111,6 +141,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                     <td className="py-2">{item.nom}</td>
                                     <td className="py-2 text-xs font-mono opacity-70 uppercase">{item.type}</td>
                                     <td className="py-2">{item.default_value || "-"}</td>
+                                    <td className="py-2 text-xs italic opacity-60">{Array.isArray(item.constraint) ? item.constraint.join(", ") : (item.constraint || "-")}</td>
                                     <td className="flex gap-2 py-2">
                                         <button 
                                             className="p-1.5 bg-amber-400 text-white rounded shadow-sm hover:bg-amber-500 transition-colors" 
@@ -141,7 +172,25 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                             </td>
                             <td><input className="m-2 p-2 border-b border-couleur1 outline-0 " type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
                             <td>
-                                <button onClick={handleNewField} className="bg-couleur1 text-white font-semibold p-2 rounded"><Check></Check></button>
+                                <div className="flex flex-wrap gap-1 min-w-[120px]">
+                                    {["primary key", "unique", "not null", ...(newField.type === "int" ? ["autoincrement"] : [])].map(c => (
+                                        <button
+                                            key={c}
+                                            type="button"
+                                            onClick={() => toggleConstraint(newField, setNewField, c)}
+                                            className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${
+                                                (Array.isArray(newField.constraint) ? newField.constraint : []).includes(c)
+                                                    ? "bg-couleur1 text-white border-couleur1"
+                                                    : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
+                                            }`}
+                                        >
+                                            {c}
+                                        </button>
+                                    ))}
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" onClick={handleNewField} className="bg-couleur1 text-white font-semibold p-2 rounded"><Check></Check></button>
                             </td>
                         </tr>}
                     </tbody>
@@ -153,5 +202,4 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
             </div>
         </div>
     </form>)
-
 }

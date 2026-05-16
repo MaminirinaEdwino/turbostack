@@ -13,7 +13,21 @@ export default function DbModel({data}){
             </div>
          </div>
          <div>
-            {data.champs.map((item, index)=><div key={index} className="p-2 border-t border-couleur1/10 last:border-b-0">{item.nom} : {item.type} {item.default_value}</div>)}
+            {data.champs.map((item, index)=>(
+                <div key={index} className="p-2 border-t border-couleur1/10 last:border-b-0 flex justify-between text-xs">
+                    <span className="font-medium text-gray-700">{item.nom} : <span className="opacity-50 uppercase">{item.type}</span></span>
+                    <div className="flex gap-1 text-[10px]">
+                        {item.default_value && <span className="bg-gray-100 px-1 rounded text-gray-400" title="Default value">{item.default_value}</span>}
+                        {item.constraint && (
+                            <div className="flex gap-1">
+                                {(Array.isArray(item.constraint) ? item.constraint : [item.constraint]).map((c, i) => (
+                                    <span key={i} className="bg-blue-50 text-blue-500 px-1 rounded font-bold" title="Constraint">{c}</span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ))}
          </div>
     </div>
 }

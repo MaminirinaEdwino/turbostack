@@ -228,6 +228,44 @@ export default function PageEditor({ projectName }) {
         }
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Sauvegarde
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                handleSave();
+            }
+            // Retour à la liste
+            if (e.key === 'Escape' && editMode) {
+                setEditMode(false);
+            }
+            // Zoom
+            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '=')) {
+                e.preventDefault();
+                handleZoomIn();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === '-') {
+                e.preventDefault();
+                handleZoomOut();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+                e.preventDefault();
+                handleResetZoom();
+            }
+            // Barres latérales
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                setIsLeftSidebarOpen(prev => !prev);
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'w') {
+                e.preventDefault();
+                setIsRightSidebarOpen(prev => !prev);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [editMode, project, zoomLevel]);
+
     if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
     return (

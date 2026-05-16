@@ -157,6 +157,21 @@ export default function ControllerEditor({ projectName }) {
         }
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                handleSave();
+            }
+            if (e.key === 'Escape' && editMode) {
+                setEditMode(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [editMode, project]);
+
     if (loading) return <div className="flex h-screen items-center justify-center bg-couleur3"><Loader2 className="animate-spin text-couleur1" /></div>;
 
     return (

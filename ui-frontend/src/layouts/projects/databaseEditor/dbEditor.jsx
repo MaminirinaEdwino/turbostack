@@ -136,6 +136,33 @@ export default function DbEditor({ projectName }) {
         );
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Sauvegarde (Ctrl+S)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                savedb();
+            }
+            // Retour ou fermeture de modale (Escape)
+            if (e.key === 'Escape') {
+                if (toggleModal !== "none" || toggleEditModal !== "none" || toggleUserModal !== "none") {
+                    setToggleModal("none");
+                    setToggleEditModal("none");
+                    setToggleUserModal("none");
+                } else {
+                    navigateTo("Dashboard");
+                }
+            }
+            // Réorganisation (Ctrl+Shift+L)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+                e.preventDefault();
+                reorganizeNodes();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [project, toggleModal, toggleEditModal, toggleUserModal, savedb, reorganizeNodes, navigateTo]);
+
     return <div className="flex w-screen h-screen flex-col bg-couleur3">
         <div className=" p-2 m-2 h-fit flex items-center justify-between">
             <div>

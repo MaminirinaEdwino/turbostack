@@ -105,6 +105,33 @@ export default function ApiEditor({ projectName }) {
         }
     }
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Sauvegarde (Ctrl+S)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                saveApi();
+            }
+            // Retour ou fermeture de modale (Escape)
+            if (e.key === 'Escape') {
+                if (toggleModal !== "none" || toggleEditModal !== "none" || toggleCrudModal !== "none") {
+                    setToggleModal("none");
+                    setToggleEditModal("none");
+                    setToggleCrudModal("none");
+                } else {
+                    navigateTo("Dashboard");
+                }
+            }
+            // Réorganisation (Ctrl+Shift+L)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+                e.preventDefault();
+                reorganizeNodes();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [project, toggleModal, toggleEditModal, toggleCrudModal, saveApi, reorganizeNodes, navigateTo]);
+
     return (
         <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
             <div className="p-2 m-2 h-fit flex items-center justify-between">

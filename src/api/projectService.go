@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
 )
@@ -85,7 +86,7 @@ func (s *ProjectService) FetchProjects() []string {
 
 func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
 	var pJson entity.ProjectJSON
-	filePath := fmt.Sprintf("turbo_projects/%s.json", name)
+	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR,name)
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)

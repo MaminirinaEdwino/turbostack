@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"slices"
+
+	"github.com/MaminirinaEdwino/turbostack/src/config"
 )
 
 type ProjectManager struct {
@@ -13,14 +15,14 @@ type ProjectManager struct {
 
 func (mgr *ProjectManager) LoadProjects() error {
 
-	projectFiles, err := os.ReadDir("turbo_projects")
+	projectFiles, err := os.ReadDir(config.PROJECT_DIR)
 	if err != nil {
 		return err
 	}
 	for _, val := range projectFiles {
 		var pJson ProjectJSON
 		var p Project
-		filePath := fmt.Sprintf("turbo_projects/%s", val.Name()) 
+		filePath := fmt.Sprintf("%s/%s", config.PROJECT_DIR, val.Name())
 		saveFile, err := os.ReadFile(filePath)
 		if err != nil {
 			return err
@@ -56,7 +58,7 @@ func (mgr *ProjectManager) SaveProjects() error {
 
 func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 	var pJson ProjectJSON
-	filePath := fmt.Sprintf("turbo_projects/%s.json", name)
+	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, name)
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)
@@ -68,7 +70,7 @@ func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 func (mgr *ProjectManager) SaveProject(project ProjectJSON) error {
 	filename := project.Nom
 	fmt.Println(project.Nom)
-	filepath := fmt.Sprintf("turbo_projects/%s.json",filename )
+	filepath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, filename)
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
 	if err != nil {
 		return err

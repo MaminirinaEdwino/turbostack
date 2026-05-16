@@ -19,6 +19,26 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("fetchByProjectName", ps.FetchProjectByName)
 	w.Bind("saveProject", ps.SaveProject)
 	w.Bind("saveBdd", ps.SaveProjectBDD)
+	w.Bind("exportProject", ps.ExportProject)
+}
+
+func (s *ProjectService) ExportProject(name, typeProject string) string {
+	var pJson entity.ProjectJSON
+	fmt.Println(typeProject)
+
+	pJson = s.FetchProjectByName(name)
+	fmt.Println(pJson)
+	switch typeProject {
+	case "api":
+		s.Manager.ExporterAPI(pJson.ToModel())
+	case "models":
+		s.Manager.ExporterDB(pJson.ToModel())
+	case "frontend":
+		s.Manager.ExporterStaticSite(pJson.ToModel())
+	case "full":
+		s.Manager.ExporterWebApp(pJson.ToModel())
+	}
+	return "Success"
 }
 
 func (s *ProjectService) CreateProject(name, description, projectType string) string {
@@ -38,8 +58,8 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 func (s *ProjectService) SaveProject(name, project string) string {
 	var pJson entity.ProjectJSON
 	json.Unmarshal([]byte(project), &pJson)
-	fmt.Println("save ",project)
-	fmt.Println("save pr ",pJson)
+	fmt.Println("save ", project)
+	fmt.Println("save pr ", pJson)
 	s.Manager.SaveProject(pJson)
 	return "Success"
 }

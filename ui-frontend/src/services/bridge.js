@@ -23,5 +23,8 @@ export const GoApp = {
     }, 
     saveProject: async(name, project)=>{
         return await window.saveProject(name, project)
+    },
+    exportProject: async(name, type)=>{
+        return await window.exportProject(name, type)
     }
 }

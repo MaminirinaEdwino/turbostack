@@ -255,6 +255,12 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	// Exportation de la configuration de la base de données
 	mgr.configAPIExporter(projectName)
 
+	// Exportation des middlewares (CORS)
+	mgr.middlewareAPIExporter(projectName)
+
+	// Exportation du fichier main.go
+	mgr.mainAPIExporter(api.GetEndpoints(), projectName)
+
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 
@@ -438,6 +444,92 @@ func (mgr *ProjectManager) configAPIExporter(projectName string) {
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
 	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
 	sb.WriteString("\tfmt.Println(\"Successfully connected to database\")\n")
+	sb.WriteString("}\n")
+
+	file.WriteString(sb.String())
+}
+
+// middlewareAPIExporter génère un middleware CORS permissif dans src/middlewares/cors.go
+func (mgr *ProjectManager) middlewareAPIExporter(projectName string) {
+	filePath := fmt.Sprintf("%s/%s/api/src/middlewares/cors.go", config.PROJECT_DIR, projectName)
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating middleware file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	sb.WriteString("package middlewares\n\n")
+	sb.WriteString("import \"net/http\"\n\n")
+	sb.WriteString("// CorsMiddleware gère les autorisations Cross-Origin (CORS) pour autoriser toutes les sources\n")
+	sb.WriteString("func CorsMiddleware(next http.Handler) http.Handler {\n")
+	sb.WriteString("\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n")
+	sb.WriteString("\t\tw.Header().Set(\"Access-Control-Allow-Origin\", \"*\")\n")
+	sb.WriteString("\t\tw.Header().Set(\"Access-Control-Allow-Methods\", \"GET, POST, PUT, DELETE, OPTIONS\")\n")
+	sb.WriteString("\t\tw.Header().Set(\"Access-Control-Allow-Headers\", \"Content-Type, Authorization\")\n\n")
+	sb.WriteString("\t\tif r.Method == \"OPTIONS\" {\n")
+	sb.WriteString("\t\t\tw.WriteHeader(http.StatusOK)\n")
+	sb.WriteString("\t\t\treturn\n")
+	sb.WriteString("\t\t}\n\n")
+	sb.WriteString("\t\tnext.ServeHTTP(w, r)\n")
+	sb.WriteString("\t})\n")
+	sb.WriteString("}\n")
+
+	file.WriteString(sb.String())
+}
+
+// mainAPIExporter génère le point d'entrée principal de l'API (main.go)
+func (mgr *ProjectManager) mainAPIExporter(endpoints []Endpoint, projectName string) {
+	filePath := fmt.Sprintf("%s/%s/api/main.go", config.PROJECT_DIR, projectName)
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating main file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	sb.WriteString("package main\n\n")
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"fmt\"\n")
+	sb.WriteString("\t\"log\"\n")
+	sb.WriteString("\t\"net/http\"\n")
+	sb.WriteString("\t\"src/config\"\n")
+	sb.WriteString("\t\"src/routes\"\n")
+	sb.WriteString("\t\"src/middlewares\"\n")
+	sb.WriteString(")\n\n")
+
+	sb.WriteString("func main() {\n")
+	sb.WriteString("\t// 1. Initialisation de la base de données\n")
+	sb.WriteString("\tconfig.InitDB()\n\n")
+	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
+	sb.WriteString("\tmux := http.NewServeMux()\n\n")
+
+	// Récupération des groupes de routes (logique identique à routesAPIExporter)
+	groups := make(map[string]bool)
+	for _, ep := range endpoints {
+		mName := "General"
+		if len(ep.GetModel()) > 0 {
+			mName = ep.GetModel()[0].GetNom()
+		}
+		groups[mName] = true
+	}
+
+	sb.WriteString("\t// 3. Enregistrement des routes par modèle\n")
+	for groupName := range groups {
+		cleanGroupName := strings.ReplaceAll(groupName, " ", "_")
+		groupFuncName := strings.ToUpper(cleanGroupName[:1]) + cleanGroupName[1:]
+		fmt.Fprintf(&sb, "\troutes.RegisterRoutes%s(mux)\n", groupFuncName)
+	}
+
+	sb.WriteString("\n\t// 4. Application du middleware CORS\n")
+	sb.WriteString("\thandler := middlewares.CorsMiddleware(mux)\n\n")
+
+	sb.WriteString("\t// 5. Lancement du serveur\n")
+	sb.WriteString("\tport := \":8080\"\n")
+	sb.WriteString("\tfmt.Printf(\"🚀 TurboStack API running on http://localhost%s\\n\", port)\n")
+	sb.WriteString("\tlog.Fatal(http.ListenAndServe(port, handler))\n")
 	sb.WriteString("}\n")
 
 	file.WriteString(sb.String())

@@ -106,15 +106,26 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                         <input type="text" onInput={(e) => setEditField({ ...editField, nom: e.target.value })} value={editField.nom} className="w-full p-2 border-b border-couleur1 outline-0 bg-white" />
                                     </td>
                                     <td>
-                                        <select className="w-full p-3 rounded-xl border border-couleur1/10 bg-couleur3/30 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all" name="type" onInput={(e) => { setEditField({ ...editField, type: e.target.value }) }} value={editField.type}>
-                                            <option value="">Choose a type</option>
-                                            <option value="int">INT</option>
-                                            <option value="string">VARCHAR</option>
-                                        </select>
+                                        <div className="flex flex-wrap gap-1 min-w-25">
+                                            {[
+                                                { val: "int", label: "INT" },
+                                                { val: "string", label: "VARCHAR" },
+                                                { val: "text", label: "TEXT" }
+                                            ].map(t => (
+                                                <button
+                                                    key={t.val}
+                                                    type="button"
+                                                    onClick={() => setEditField({ ...editField, type: t.val })}
+                                                    className={`px-2 py-1 rounded text-[10px] border font-bold transition-all ${editField.type === t.val ? "bg-couleur1 text-white border-couleur1" : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"}`}
+                                                >
+                                                    {t.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </td>
-                                    <td><input className="w-full p-2 border-b border-couleur1 outline-0 bg-white " type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} /></td>
+                                    <td><input list="default-value-list" className="w-full p-2 border-b border-couleur1 outline-0 bg-white " type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} /></td>
                                     <td>
-                                        <div className="flex flex-wrap gap-1 min-w-[120px]">
+                                        <div className="flex flex-wrap gap-1 min-w-30">
                                             {["primary key", "unique", "not null", ...(editField.type === "int" ? ["autoincrement"] : [])].map(c => (
                                                 <button
                                                     key={c}
@@ -164,15 +175,26 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                 <input type="text" placeholder="Field Name" onInput={(e) => setNewField({ ...newField, nom: e.target.value })} value={newField.nom} className="m-2 p-2 border-b border-couleur1 outline-0 "/>
                             </td>
                             <td>
-                                <select className="bg-couleur3 m-2 p-2 border-b border-couleur1 outline-0 " name="type" id="fieldType" onInput={(e) => { setNewField({ ...newField, type: e.target.value }) }}>
-                                    <option value="">Choose a type</option>
-                                    <option value="int">INT</option>
-                                    <option value="string">VARCHAR</option>
-                                </select>
+                                <div className="flex flex-wrap gap-1 min-w-25">
+                                    {[
+                                        { val: "int", label: "INT" },
+                                        { val: "string", label: "VARCHAR" },
+                                        { val: "text", label: "TEXT" }
+                                    ].map(t => (
+                                        <button
+                                            key={t.val}
+                                            type="button"
+                                            onClick={() => setNewField({ ...newField, type: t.val })}
+                                            className={`px-2 py-1 rounded text-[10px] border font-bold transition-all ${newField.type === t.val ? "bg-couleur1 text-white border-couleur1" : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"}`}
+                                        >
+                                            {t.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </td>
-                            <td><input className="m-2 p-2 border-b border-couleur1 outline-0 " type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
+                            <td><input list="default-value-list" className="m-2 p-2 border-b border-couleur1 outline-0 " type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
                             <td>
-                                <div className="flex flex-wrap gap-1 min-w-[120px]">
+                                <div className="flex flex-wrap gap-1 min-w-30">
                                     {["primary key", "unique", "not null", ...(newField.type === "int" ? ["autoincrement"] : [])].map(c => (
                                         <button
                                             key={c}
@@ -201,5 +223,14 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                 <button className="px-6 py-2 bg-couleur3 rounded text-couleur1 border border-couleur1" onClick={handleCancel}>Cancel</button>
             </div>
         </div>
+        <datalist id="default-value-list">
+            <option value="autoincrement" />
+            <option value="current_timestamp" />
+            <option value="null" />
+            <option value="0" />
+            <option value="true" />
+            <option value="false" />
+            <option value="''" />
+        </datalist>
     </form>)
 }

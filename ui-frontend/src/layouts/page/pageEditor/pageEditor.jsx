@@ -169,16 +169,35 @@ export default function PageEditor({ projectName }) {
 
 
 
+    // Helper to generate controller indicator HTML
+    const getControllerIndicatorHtml = useCallback((blockId) => {
+        const bindings = bindingsMap[blockId];
+        if (!bindings || bindings.length === 0) return '';
+
+        const groupedByEndpoint = bindings.reduce((acc, binding) => {
+            if (!acc[binding.endpoint_nom]) {
+                acc[binding.endpoint_nom] = {
+                    endpoint_nom: binding.endpoint_nom,
+                    ctrlName: binding.ctrlName,
+                    map_fields: []
+                };
+            }
+            acc[binding.endpoint_nom].map_fields.push(binding.map_field);
+            return acc;
+        }, {});
+
+        return Object.values(groupedByEndpoint).map(group => 
+            `<span class="controller-bound-indicator" title="Controller: ${group.ctrlName}, Endpoint: ${group.endpoint_nom}, Fields: ${group.map_fields.join(', ')}">
+                ${group.endpoint_nom} (${group.map_fields.join(', ')})
+            </span>`
+        ).join('');
+    }, [bindingsMap]);
+
     // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
     const previewHtml = useMemo(() => {
         if (!activeItem?.content || !Array.isArray(activeItem.content)) return ""; // Utilise activeItem
         const renderBlocks = (blocks) => {
             return blocks.map(b => {
-                if (b.isController) {
-                    return `<span class="controller-bound-indicator" title="Controller: ${b.ctrlName}, Fields: ${b.map_fields?.join(', ')}">
-                        ${b.content} (${b.map_fields?.join(', ')})
-                    </span>`;
-                }
                 const className = b.className || "";
                 const styles = b.styles || "";
                 const content = b.content || "";
@@ -188,14 +207,16 @@ export default function PageEditor({ projectName }) {
                 const inlineStyleAttr = isJsonStyle ? "" : `style="${styles}"`;
                 const childrenHtml = b.children ? renderBlocks(b.children) : "";
 
-                if (b.tag === 'img') return `<img src="${content}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} />`;
-                if (b.tag === 'button') return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
-                if (b.tag === 'a') return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
-                return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
+                const indicator = getControllerIndicatorHtml(b.id);
+
+                if (b.tag === 'img') return `<img src="${content}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} />${indicator}`; // Indicator next to img
+                if (b.tag === 'button') return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${indicator}${content}${childrenHtml}</button>`;
+                if (b.tag === 'a') return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${indicator}${content}${childrenHtml}</a>`;
+                return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${indicator}${content}${childrenHtml}</${b.tag}>`;
             }).join('\n');
         };
         return renderBlocks(activeItem.content);
-    }, [activeItem?.content]);
+    }, [activeItem?.content, getControllerIndicatorHtml]); // Add bindingsMap to dependencies
 
     // Génère le CSS spécifique aux blocs pour chaque viewport
     const blocksCss = useMemo(() => {

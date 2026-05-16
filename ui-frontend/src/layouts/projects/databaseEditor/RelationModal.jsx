@@ -26,7 +26,7 @@ export default function RelationModal({ models, onSelectRelation, onClose }) {
     const targetModel = models.find(m => m.nom === selectedModelName);
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-96">
                 <h3 className="text-xl font-bold text-couleur1 mb-4">Sélectionner la cible de la relation</h3>
 

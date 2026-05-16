@@ -26,11 +26,14 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
     }
     
     const handleSelectRelation = (relationString) => {
-        if (fieldToEditRelation) {
-            const current = Array.isArray(fieldToEditRelation.constraint) ? fieldToEditRelation.constraint : [];
+        if (fieldToEditRelation === "edit") {
+            const current = Array.isArray(editField.constraint) ? editField.constraint : [];
             const next = [...current.filter(c => !c.startsWith('relation:')), relationString];
-            if (fieldToEditRelation === newField) setNewField({ ...newField, constraint: next });
-            else if (fieldToEditRelation === editField) setEditField({ ...editField, constraint: next });
+            setEditField({ ...editField, constraint: next });
+        } else if (fieldToEditRelation === "new") {
+            const current = Array.isArray(newField.constraint) ? newField.constraint : [];
+            const next = [...current.filter(c => !c.startsWith('relation:')), relationString];
+            setNewField({ ...newField, constraint: next });
         }
         setShowRelationModal(false);
         setFieldToEditRelation(null);
@@ -39,8 +42,14 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
     const toggleConstraint = (field, setter, constraint) => {
         const current = Array.isArray(field.constraint) ? field.constraint : (field.constraint ? [field.constraint] : []);
         if (constraint === "relation") {
-            setFieldToEditRelation(field);
-            setShowRelationModal(true);
+            const existingRel = current.find(c => typeof c === 'string' && c.startsWith('relation:'));
+            if (existingRel) {
+                const next = current.filter(c => c !== existingRel);
+                setter({ ...field, constraint: next });
+            } else {
+                setFieldToEditRelation(setter === setEditField ? "edit" : "new");
+                setShowRelationModal(true);
+            }
             return;
         }
 
@@ -164,8 +173,8 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                                             ? "bg-couleur1 text-white border-couleur1"
                                                             : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
                                                     }`}
-                                                > 
-                                                    {isRel ? `🔗 ${displayValue.split(':')[1]}` : c}
+                                                >
+                                                    {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
                                                 </button>
                                                 );
                                             })}
@@ -243,7 +252,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                                     : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
                                             }`}
                                         >
-                                            {isRel ? `🔗 ${displayValue.split(':')[1]}` : c}
+                                            {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
                                         </button>
                                         );
                                     })}

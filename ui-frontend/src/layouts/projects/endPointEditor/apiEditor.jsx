@@ -9,7 +9,7 @@ import NewEndpoint from "./newEndpoint";
 import EditEndpoint from "./editEndpoint";
 import GenerateCrud from "./generateCrud";
 import { FcPrevious } from "react-icons/fc";
-import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid, Layers } from "lucide-react";
+import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid, Layers, MoreVertical } from "lucide-react";
 
 const nodeType = { "endpoint": EndpointNode }
 
@@ -23,6 +23,7 @@ export default function ApiEditor({ projectName }) {
     const [toggleCrudModal, setToggleCrudModal] = useState("none");
     const [selectedEndpointIndex, setSelectedEndpointIndex] = useState(null);
     const [toast, setToast] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const onNodesChange = useCallback(
         (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
@@ -143,19 +144,46 @@ export default function ApiEditor({ projectName }) {
                         API Editor : {projectName}
                     </h1>
                 </div>
-                <div className="flex ">
-                    <button className="flex gap-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded px-4 py-1 m-2 hover:bg-couleur1/10 dark:hover:bg-white/5 transition-all" onClick={reorganizeNodes}>
-                        <LayoutGrid size={20} /> Reorganize
+                <div className="flex items-center gap-2 relative">
+                    <button className="flex gap-2 text-white bg-couleur1 rounded px-6 py-2 font-bold hover:bg-opacity-90 transition-all shadow-sm items-center" onClick={saveApi}>
+                        <Save size={18} /> Save API
                     </button>
-                    <button className="flex gap-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded px-4 py-1 m-2 hover:bg-couleur1/10 dark:hover:bg-white/5 transition-all" onClick={() => setToggleCrudModal("block")}>
-                        <Layers size={20} /> Auto CRUD
-                    </button>
-                    <button className="flex gap-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded px-4 py-1 m-2 hover:bg-couleur1/10 dark:hover:bg-white/5 transition-all" onClick={() => setToggleModal("block")}>
-                        <Plus /> Add Endpoint
-                    </button>
-                    <button className="flex gap-2 text-white bg-couleur1 rounded px-4 py-1 m-2" onClick={saveApi}>
-                        <Save /> Save API
-                    </button>
+
+                    <div className="relative">
+                        <button 
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="p-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded-lg hover:bg-couleur1/5 transition-all"
+                        >
+                            <MoreVertical size={20} />
+                        </button>
+
+                        {isMenuOpen && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)}></div>
+                                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-couleur1/10 dark:border-white/10 z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <button 
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 transition-all"
+                                        onClick={() => { reorganizeNodes(); setIsMenuOpen(false); }}
+                                    >
+                                        <LayoutGrid size={18} className="text-couleur1" /> Reorganize Layout
+                                    </button>
+                                    <button 
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 transition-all"
+                                        onClick={() => { setToggleCrudModal("block"); setIsMenuOpen(false); }}
+                                    >
+                                        <Layers size={18} className="text-couleur1" /> Auto CRUD
+                                    </button>
+                                    <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-2"></div>
+                                    <button 
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-couleur1 hover:bg-couleur1/10 transition-all"
+                                        onClick={() => { setToggleModal("block"); setIsMenuOpen(false); }}
+                                    >
+                                        <Plus size={18} /> Add Endpoint
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 

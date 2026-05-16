@@ -8,7 +8,7 @@ import NewModel from "./newModel";
 import EditModel from "./editModel";
 import GenerateUserTable from "./generateUserTable";
 import { FcPrevious } from "react-icons/fc";
-import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid, User } from "lucide-react";
+import { Plus, Save, CheckCircle, Loader2, AlertCircle, LayoutGrid, User, MoreVertical } from "lucide-react";
 
 
 const initialNodes = [];
@@ -24,6 +24,7 @@ export default function DbEditor({ projectName }) {
     const [toggleUserModal, setToggleUserModal] = useState("none");
     const [selectedModelIndex, setSelectedModelIndex] = useState(null);
     const [toast, setToast] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const onNodesChange = useCallback(
         (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
         [],
@@ -168,11 +169,46 @@ export default function DbEditor({ projectName }) {
             <div>
                 <h1 className="text-couleur1 text-3xl font-semibold"> <button className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5" title="go back" onClick={() => navigateTo("Dashboard")}><FcPrevious size={20}></FcPrevious></button>DB Editor : {projectName} </h1>
             </div>
-            <div className="flex ">
-                <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={reorganizeNodes}><LayoutGrid size={20} /> Reorganize</button>
-                <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={() => setToggleUserModal("block")}><User size={20} /> Gen User Table</button>
-                <button className="flex gap-2 text-couleur1 border border-couleur1 rounded px-4 py-1 m-2" onClick={handleNewModelModal}><Plus></Plus> Add Table</button>
-                <button className="flex gap-2 text-white bg-couleur1  rounded px-4 py-1 m-2" onClick={savedb}><Save></Save>Save</button>
+            <div className="flex items-center gap-2 relative">
+                <button className="flex gap-2 text-white bg-couleur1 rounded px-6 py-2 font-bold hover:bg-opacity-90 transition-all shadow-sm items-center" onClick={savedb}>
+                    <Save size={18} /> Save
+                </button>
+                
+                <div className="relative">
+                    <button 
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="p-2 text-couleur1 border border-couleur1/20 rounded-lg hover:bg-couleur1/5 transition-all"
+                    >
+                        <MoreVertical size={20} />
+                    </button>
+
+                    {isMenuOpen && (
+                        <>
+                            <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)}></div>
+                            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-couleur1/10 z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <button 
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 transition-all"
+                                    onClick={() => { reorganizeNodes(); setIsMenuOpen(false); }}
+                                >
+                                    <LayoutGrid size={18} className="text-couleur1" /> Reorganize Layout
+                                </button>
+                                <button 
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 transition-all"
+                                    onClick={() => { setToggleUserModal("block"); setIsMenuOpen(false); }}
+                                >
+                                    <User size={18} className="text-couleur1" /> Generate User Table
+                                </button>
+                                <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-2"></div>
+                                <button 
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-couleur1 hover:bg-couleur1/10 transition-all"
+                                    onClick={() => { handleNewModelModal(); setIsMenuOpen(false); }}
+                                >
+                                    <Plus size={18} /> Add New Table
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
         </div>
 

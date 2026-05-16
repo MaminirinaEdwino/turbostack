@@ -17,6 +17,7 @@ import { useNavigate } from "../hooks/useNavigate";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { setToggleDarkMode, setToggleMenuSide } from "../appSlice";
+import logo from "../assets/logotransparent.png";
 export default function SideMenu() {
     const navigateTo = useNavigate();
     const dispatch = useDispatch();
@@ -31,13 +32,15 @@ export default function SideMenu() {
         { name: 'Project', icon: <Folder size={18} /> },
         // { name: 'Components', icon: <LucidePuzzle size={18} /> },
         // { name: 'Assets', icon: <ImageIcon size={18} /> },
+        
+        { name: 'Subscription', icon: <CreditCard size={18} /> },
+    ];
+    let projectMenu = [
         { name: 'Models', icon: <Database size={18} /> },
         { name: 'Web App', icon: <Layout size={18} /> },
         { name: 'Static Site', icon: <Globe size={18} /> },
         { name: 'Api', icon: <Settings size={18} /> },
-        { name: 'Subscription', icon: <CreditCard size={18} /> },
-    ];
-
+    ]
     // Ajout des liens directs vers les éditeurs si un projet est actif
     if (actualProject) {
         menuItems.splice(2, 0, {
@@ -52,6 +55,7 @@ export default function SideMenu() {
             ]
         }
         );
+        menuItems.push(...projectMenu)
     }
     
     const handleToggleMenu = (e)=>{
@@ -60,7 +64,7 @@ export default function SideMenu() {
     }
     return <aside className={`flex flex-col p-6 bg-couleur3 dark:bg-gray-900 transition-all duration-300 ease-in-out border-r border-couleur1/10 dark:border-white/10 ${toggleMenu ? "w-64" : "w-24"} `} >
         <div className="flex items-center gap-2 mb-10 overflow-hidden whitespace-nowrap" >
-            <div className="w-8 h-8 rounded-full bg-red-500 shrink-0"></div>
+            <div className="w-8 h-8  shrink-0"> <img src={logo} alt="TurboStack" /> </div>
             <span className={`text-xl font-bold text-couleur1 transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`} >TurboStack</span>
         </div>
         <nav className="sidemenu flex-1 space-y-2 overflow-y-scroll">

@@ -229,8 +229,7 @@ func (mgr *ProjectManager) setupFileArch(name string) {
 		"src/controllers",
 		"src/middlewares",
 		"src/routes",
-		"src/models/gorm",
-		"src/models/pg",
+		"src/models",
 	}
 	for _, val := range dirList {
 		config.CheckCreateDir(projectPath + val)
@@ -258,15 +257,17 @@ func (mgr *ProjectManager) gormAPIModelExporter(models []Model, projectName stri
 			continue
 		}
 
-		filePath := fmt.Sprintf("%s/%s/api/src/models/gorm/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
-		file, err := os.Create(filePath)
+		filePath := fmt.Sprintf("%s/%s/api/src/models/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
+		file, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
 		if err != nil {
 			fmt.Printf("Erreur lors de la création du fichier GORM %s : %v\n", filePath, err)
 			continue
 		}
 
 		var sb strings.Builder
-		sb.WriteString("package gorm\n\n")
+		if val,err :=config.CheckEmptyFile(filePath); val && err == nil {
+			sb.WriteString("package models\n\n")
+		}
 		structName := strings.ToUpper(mName[:1]) + mName[1:]
 		fmt.Fprintf(&sb, "type %s struct {\n", structName)
 
@@ -290,15 +291,17 @@ func (mgr *ProjectManager) pgAPIModelExporter(models []Model, projectName string
 			continue
 		}
 
-		filePath := fmt.Sprintf("%s/%s/api/src/models/pg/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
-		file, err := os.Create(filePath)
+		filePath := fmt.Sprintf("%s/%s/api/src/models/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
+		file, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
 		if err != nil {
 			fmt.Printf("Erreur lors de la création du fichier PG %s : %v\n", filePath, err)
 			continue
 		}
 
 		var sb strings.Builder
-		sb.WriteString("package pg\n\n")
+		if val,err :=config.CheckEmptyFile(filePath); val && err == nil {
+			sb.WriteString("package models\n\n")
+		}
 		structName := strings.ToUpper(mName[:1]) + mName[1:]
 		fmt.Fprintf(&sb, "type %s struct {\n", structName)
 

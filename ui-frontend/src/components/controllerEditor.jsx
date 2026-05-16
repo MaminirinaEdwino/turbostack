@@ -9,6 +9,8 @@ import { GoApp } from "../services/bridge";
 import ControllerEditorHeader from "./controllerEditor/controllerEditorHeader";
 import NewController from "./controllerEditor/newController";
 import ControllerList from "./controllerEditor/controllerList";
+import FieldToggleRow from "./controllerEditor/fieldToggleRow";
+import Toast from "./controllerEditor/toast";
 
 export default function ControllerEditor({ projectName }) {
     const navigateTo = useNavigate();
@@ -247,33 +249,9 @@ export default function ControllerEditor({ projectName }) {
             </div>
 
             {toast && (
-                <div className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl border ${
-                    toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
-                    toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
-                    "bg-green-50 border-green-200 text-green-700"
-                }`}>
-                    {toast.type === "loading" ? <Loader2 size={18} className="animate-spin" /> : 
-                     toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
-                    <span className="font-medium text-sm">{toast.message}</span>
-                </div>
+                <Toast toast={toast}></Toast>
             )}
         </div>
     );
 }
 
-function FieldToggleRow({ fieldNom, isActive, onToggle }) {
-    return (
-        <div className={`flex items-center justify-between p-2.5 px-4 rounded-xl border transition-all ${isActive ? 'bg-white shadow-sm border-couleur1/20' : 'bg-transparent border-transparent opacity-60 hover:opacity-100'}`}>
-            {/* Checkbox et Nom du champ */}
-            <div className="flex items-center gap-3">
-                <input 
-                    type="checkbox" 
-                    checked={isActive} 
-                    onChange={(e) => onToggle(e.target.checked)}
-                    className="w-3.5 h-3.5 accent-couleur1 cursor-pointer"
-                />
-                <span className={`text-xs font-bold ${isActive ? 'text-couleur1' : 'text-couleur1/60'}`}>{fieldNom}</span>
-            </div>
-        </div>
-    );
-}

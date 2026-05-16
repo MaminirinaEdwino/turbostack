@@ -13,14 +13,7 @@ type GoApiMaker struct{}
 
 func (mgr *GoApiMaker) setupFileArch(name string) {
 	projectPath := fmt.Sprintf("%s/api/", name)
-	dirList := []string{
-		"src/config",
-		"src/controllers",
-		"src/middlewares",
-		"src/routes",
-		"src/models",
-	}
-	for _, val := range dirList {
+	for _, val := range goapimaker.DirList {
 		config.CheckCreateDir(projectPath + val)
 	}
 }
@@ -95,6 +88,7 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 	}
 	file.WriteString(sb.String())
 }
+
 func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName string) {
 	for _, ep := range endpoints {
 		eName := ep.GetNom()
@@ -110,14 +104,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 		}
 
 		var sb strings.Builder
-		sb.WriteString("package controllers\n\n")
-		sb.WriteString("import (\n")
-		sb.WriteString("\t\"encoding/json\"\n")
-		sb.WriteString("\t\"net/http\"\n")
-		sb.WriteString("\t\"src/models\"\n")
-		sb.WriteString("\t\"src/config\"\n")
-		sb.WriteString("\t_ \"github.com/lib/pq\"\n")
-		sb.WriteString(")\n\n")
+		goapimaker.ControllerImportWriter(sb, projectName)
 
 		funcName := strings.ToUpper(eName[:1]) + eName[1:]
 
@@ -161,32 +148,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 }
 
 func (mgr *GoApiMaker) middlewareAPIExporter(projectName string) {
-	filePath := fmt.Sprintf("%s/%s/api/src/middlewares/cors.go", config.PROJECT_DIR, projectName)
-	file, err := os.Create(filePath)
-	if err != nil {
-		fmt.Printf("Error creating middleware file %s : %v\n", filePath, err)
-		return
-	}
-	defer file.Close()
-
-	var sb strings.Builder
-	sb.WriteString("package middlewares\n\n")
-	sb.WriteString("import \"net/http\"\n\n")
-	sb.WriteString("// CorsMiddleware gère les autorisations Cross-Origin (CORS) pour autoriser toutes les sources\n")
-	sb.WriteString("func CorsMiddleware(next http.Handler) http.Handler {\n")
-	sb.WriteString("\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n")
-	sb.WriteString("\t\tw.Header().Set(\"Access-Control-Allow-Origin\", \"*\")\n")
-	sb.WriteString("\t\tw.Header().Set(\"Access-Control-Allow-Methods\", \"GET, POST, PUT, DELETE, OPTIONS\")\n")
-	sb.WriteString("\t\tw.Header().Set(\"Access-Control-Allow-Headers\", \"Content-Type, Authorization\")\n\n")
-	sb.WriteString("\t\tif r.Method == \"OPTIONS\" {\n")
-	sb.WriteString("\t\t\tw.WriteHeader(http.StatusOK)\n")
-	sb.WriteString("\t\t\treturn\n")
-	sb.WriteString("\t\t}\n\n")
-	sb.WriteString("\t\tnext.ServeHTTP(w, r)\n")
-	sb.WriteString("\t})\n")
-	sb.WriteString("}\n")
-
-	file.WriteString(sb.String())
+	goapimaker.MiddlewareWriter(projectName)
 }
 
 func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string) {
@@ -204,9 +166,9 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 	sb.WriteString("\t\"fmt\"\n")
 	sb.WriteString("\t\"log\"\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"src/config\"\n")
-	sb.WriteString("\t\"src/routes\"\n")
-	sb.WriteString("\t\"src/middlewares\"\n")
+	sb.WriteString("\t\""+projectName+"/src/config\"\n")
+	sb.WriteString("\t\""+projectName+"/src/routes\"\n")
+	sb.WriteString("\t\""+projectName+"/src/middlewares\"\n")
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("func main() {\n")

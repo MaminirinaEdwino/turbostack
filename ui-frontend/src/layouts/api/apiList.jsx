@@ -26,7 +26,7 @@ export default function APIlist() {
             try {
                 setLoading(true);
                 const res = await GoApp.fetchProjectByName(projectName);
-                console.log(res)
+                // console.log(res)
                 if (res) {
                     setProject(res);
                     setError(null);

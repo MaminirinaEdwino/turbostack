@@ -1,21 +1,16 @@
 import { useState, useEffect } from "react";
 import {
-    Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText,
-    CheckCircle, AlertCircle, Link as LinkIcon, Database, ChevronDown, ChevronRight
+    Loader2,Link as LinkIcon, 
 } from "lucide-react";
-import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../hooks/useNavigate";
 import { GoApp } from "../services/bridge";
 import ControllerEditorHeader from "./controllerEditor/controllerEditorHeader";
 import NewController from "./controllerEditor/newController";
 import ControllerList from "./controllerEditor/controllerList";
-import FieldToggleRow from "./controllerEditor/fieldToggleRow";
 import Toast from "./controllerEditor/toast";
-import NonCollapsedController from "./controllerEditor/nonCollapsedController";
-import EndPointLocalConfig from "./controllerEditor/endPointLocalConfig";
-import EndPointDetails from "./controllerEditor/endPointDetails";
 import EndPointRender from "./controllerEditor/endPointRender";
 import ControllerPageSelect from "./controllerEditor/controllerPageSelect";
+import EditHeader from "./controllerEditor/editHeader";
 
 export default function ControllerEditor({ projectName }) {
     const navigateTo = useNavigate();
@@ -137,14 +132,7 @@ export default function ControllerEditor({ projectName }) {
                     </div>
                 ) : (
                     <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-3xl border border-couleur1/10 shadow-2xl overflow-hidden">
-                        <div className="p-6 border-b border-couleur1/10 bg-couleur1/5 flex justify-between items-center">
-                            <input
-                                value={activeController?.nom || ""}
-                                onChange={(e) => updateController(selectedIndex, 'nom', e.target.value)}
-                                className="bg-transparent text-xl font-bold text-couleur1 outline-none border-b border-transparent focus:border-couleur1"
-                            />
-                            <button onClick={() => setEditMode(false)} className="text-couleur1/50 hover:text-couleur1 uppercase text-xs font-black">Close</button>
-                        </div>
+                        <EditHeader activeController={activeController} selectedIndex={selectedIndex} setEditMode={setEditMode} updateController={updateController} ></EditHeader>
 
                         <div className="p-8 space-y-8">
                             <ControllerPageSelect activeController={activeController} pages={pages} selectedIndex={selectedIndex} updateController={updateController}></ControllerPageSelect>

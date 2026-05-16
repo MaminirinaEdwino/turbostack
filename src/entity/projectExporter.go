@@ -229,8 +229,7 @@ func (mgr *ProjectManager) setupFileArch(name string) {
 		"src/controllers",
 		"src/middlewares",
 		"src/routes",
-		"src/models/gorm",
-		"src/models/pg",
+		"src/models",
 	}
 	for _, val := range dirList {
 		config.CheckCreateDir(projectPath + val)
@@ -244,9 +243,8 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	models := bdd.GetModels()
 	api := Project.GetRestApi()
 
-	// Exportation des modèles pour les deux ORM/Librairies
-	mgr.gormAPIModelExporter(models, projectName)
-	mgr.pgAPIModelExporter(models, projectName)
+	// Exportation des modèles simplifiés (Structs Go)
+	mgr.modelAPIExporter(models, projectName)
 
 	// Exportation des controllers basés sur les endpoints
 	mgr.controllerAPIExporter(api.GetEndpoints(), projectName)
@@ -257,64 +255,30 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 
-// gormAPIModelExporter exporte les modèles avec les tags GORM dans src/models/gorm
-func (mgr *ProjectManager) gormAPIModelExporter(models []Model, projectName string) {
+// modelAPIExporter exporte les modèles en tant que structs Go simples dans src/models
+func (mgr *ProjectManager) modelAPIExporter(models []Model, projectName string) {
 	for _, model := range models {
 		mName := model.GetNom()
 		if mName == "" {
 			continue
 		}
 		n := strings.ReplaceAll(mName, " ", "_")
-		fmt.Println(n)
-		filePath := fmt.Sprintf("%s/%s/api/src/models/gorm/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(n))
+		filePath := fmt.Sprintf("%s/%s/api/src/models/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(n))
 		file, err := os.Create(filePath)
 		if err != nil {
-			fmt.Printf("Error creating GORM model file %s : %v\n", filePath, err)
+			fmt.Printf("Error creating model file %s : %v\n", filePath, err)
 			continue
 		}
 
 		var sb strings.Builder
-		sb.WriteString("package gorm\n\n")
+		sb.WriteString("package models\n\n")
 		structName := strings.ToUpper(mName[:1]) + mName[1:]
 		fmt.Fprintf(&sb, "type %s struct {\n", structName)
 
 		for _, field := range model.GetAttributs() {
 			fieldName := strings.ToUpper(field.GetNom()[:1]) + field.GetNom()[1:]
 			goType := mgr.mapToGoType(field.GetType())
-			gormTag := mgr.generateGormTags(field)
-			fmt.Fprintf(&sb, "\t%s %s %s\n", fieldName, goType, gormTag)
-		}
-		sb.WriteString("}\n")
-		file.WriteString(sb.String())
-		file.Close()
-	}
-}
-
-// pgAPIModelExporter exporte les modèles avec les tags pour go-pg dans src/models/pg
-func (mgr *ProjectManager) pgAPIModelExporter(models []Model, projectName string) {
-	for _, model := range models {
-		mName := model.GetNom()
-		if mName == "" {
-			continue
-		}
-
-		filePath := fmt.Sprintf("%s/%s/api/src/models/pg/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
-		file, err := os.Create(filePath)
-		if err != nil {
-			fmt.Printf("Error creating PG model file %s : %v\n", filePath, err)
-			continue
-		}
-
-		var sb strings.Builder
-		sb.WriteString("package pg\n\n")
-		structName := strings.ToUpper(mName[:1]) + mName[1:]
-		fmt.Fprintf(&sb, "type %s struct {\n", structName)
-
-		for _, field := range model.GetAttributs() {
-			fieldName := strings.ToUpper(field.GetNom()[:1]) + field.GetNom()[1:]
-			goType := mgr.mapToGoType(field.GetType())
-			pgTag := mgr.generatePgTags(field)
-			fmt.Fprintf(&sb, "\t%s %s %s\n", fieldName, goType, pgTag)
+			fmt.Fprintf(&sb, "\t%s %s `json:\"%s\"`\n", fieldName, goType, strings.ToLower(field.GetNom()))
 		}
 		sb.WriteString("}\n")
 		file.WriteString(sb.String())
@@ -353,39 +317,41 @@ func (mgr *ProjectManager) controllerAPIExporter(endpoints []Endpoint, projectNa
 		sb.WriteString("import (\n")
 		sb.WriteString("\t\"encoding/json\"\n")
 		sb.WriteString("\t\"net/http\"\n")
-		sb.WriteString("\t\"src/models/gorm\"\n")
-		sb.WriteString("\t\"src/models/pg\"\n")
+		sb.WriteString("\t\"src/models\"\n")
 		sb.WriteString("\t\"src/config\"\n")
+		sb.WriteString("\t_ \"github.com/lib/pq\"\n")
 		sb.WriteString(")\n\n")
 
 		funcName := strings.ToUpper(eName[:1]) + eName[1:]
 
 		// Identification du modèle associé
-		var modelName string
+		var activeModel Model
 		if len(ep.GetModel()) > 0 {
-			modelName = ep.GetModel()[0].GetNom()
+			activeModel = ep.GetModel()[0]
 		}
+		modelName := activeModel.GetNom()
 
 		fmt.Fprintf(&sb, "// %s handles the %s request for %s\n", funcName, ep.GetMethod(), ep.GetUri())
 		fmt.Fprintf(&sb, "func %s(w http.ResponseWriter, r *http.Request) {\n", strings.ReplaceAll(funcName, " ", "_"))
 
 		if modelName != "" {
 			structName := strings.ToUpper(modelName[:1]) + modelName[1:]
-			varName := strings.ToLower(modelName) + "s"
+			tableName := strings.ToLower(modelName)
 
-			// Exemple GORM
-			sb.WriteString("\t// GORM Implementation\n")
-			fmt.Fprintf(&sb, "\tvar %sGorm []gorm.%s\n", varName, structName)
-			fmt.Fprintf(&sb, "\tconfig.DB.Find(&%sGorm)\n\n", varName)
+			var columns []string
+			var scanTargets []string
+			for _, attr := range activeModel.GetAttributs() {
+				columns = append(columns, strings.ToLower(attr.GetNom()))
+				scanTargets = append(scanTargets, "&item."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
+			}
 
-			// Exemple PG (commenté par défaut pour éviter les erreurs de compilation)
-			sb.WriteString("\t// PG Implementation (Example)\n")
-			sb.WriteString("\t/*\n")
-			fmt.Fprintf(&sb, "\tvar %sPg []pg.%s\n", varName, structName)
-			fmt.Fprintf(&sb, "\tconfig.PG.Model(&%sPg).Select()\n", varName)
-			sb.WriteString("\t*/\n\n")
-
-			fmt.Fprintf(&sb, "\tjson.NewEncoder(w).Encode(%sGorm)\n", varName)
+			fmt.Fprintf(&sb, "\trows, err := config.DB.Query(\"SELECT %s FROM %s\")\n", strings.Join(columns, ", "), tableName)
+			sb.WriteString("\tif err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t\treturn\n\t}\n\tdefer rows.Close()\n\n")
+			fmt.Fprintf(&sb, "\tvar results []models.%s\n", structName)
+			fmt.Fprintf(&sb, "\tfor rows.Next() {\n\t\tvar item models.%s\n", structName)
+			fmt.Fprintf(&sb, "\t\tif err := rows.Scan(%s); err != nil {\n\t\t\tcontinue\n\t\t}\n", strings.Join(scanTargets, ", "))
+			sb.WriteString("\t\tresults = append(results, item)\n\t}\n")
+			sb.WriteString("\tjson.NewEncoder(w).Encode(results)\n")
 		} else {
 			fmt.Fprintf(&sb, "\tjson.NewEncoder(w).Encode(map[string]string{\"message\": \"%s endpoint reached\"})\n", eName)
 		}
@@ -477,31 +443,6 @@ func (mgr *ProjectManager) generateGormTags(field Champs) string {
 
 	if len(tags) > 0 {
 		return fmt.Sprintf("`gorm:\"%s\"`", strings.Join(tags, ";"))
-	}
-	return ""
-}
-
-// generatePgTags transforme les contraintes en chaîne de tags pour la lib go-pg
-func (mgr *ProjectManager) generatePgTags(field Champs) string {
-	var tags []string
-	for _, c := range field.GetConstraint() {
-		cStr := strings.ToLower(fmt.Sprintf("%v", c))
-		switch cStr {
-		case "primary key":
-			tags = append(tags, "pk")
-		case "unique":
-			tags = append(tags, "unique")
-		case "not null":
-			tags = append(tags, "notnull")
-		}
-	}
-
-	if field.GetDefaultValue() != nil && field.GetDefaultValue() != "" {
-		tags = append(tags, fmt.Sprintf("default:%v", field.GetDefaultValue()))
-	}
-
-	if len(tags) > 0 {
-		return fmt.Sprintf("`pg:\",%s\"`", strings.Join(tags, ","))
 	}
 	return ""
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
 import {
     Save, FileText, Puzzle, Plus, Edit3, Trash2, Loader2, Type, X,
@@ -170,28 +170,11 @@ export default function PageEditor({ projectName }) {
 
 
     // Helper to generate controller indicator HTML
-    const getControllerIndicatorHtml = useCallback((blockId) => {
+    const getControllerIndicatorHtml = (blockId) => {
         const bindings = bindingsMap[blockId];
         if (!bindings || bindings.length === 0) return '';
-
-        const groupedByEndpoint = bindings.reduce((acc, binding) => {
-            if (!acc[binding.endpoint_nom]) {
-                acc[binding.endpoint_nom] = {
-                    endpoint_nom: binding.endpoint_nom,
-                    ctrlName: binding.ctrlName,
-                    map_fields: []
-                };
-            }
-            acc[binding.endpoint_nom].map_fields.push(binding.map_field);
-            return acc;
-        }, {});
-
-        return Object.values(groupedByEndpoint).map(group => 
-            `<span class="controller-bound-indicator" title="Controller: ${group.ctrlName}, Endpoint: ${group.endpoint_nom}, Fields: ${group.map_fields.join(', ')}">
-                ${group.endpoint_nom} (${group.map_fields.join(', ')})
-            </span>`
-        ).join('');
-    }, [bindingsMap]);
+        return `<span class="controller-bound-indicator" title="Bound to: ${bindings.map(b => `${b.ctrlName} (${b.endpoint_nom} -> ${b.map_field})`).join(', ')}">CTRL</span>`;
+    };
 
     // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
     const previewHtml = useMemo(() => {
@@ -216,7 +199,7 @@ export default function PageEditor({ projectName }) {
             }).join('\n');
         };
         return renderBlocks(activeItem.content);
-    }, [activeItem?.content, getControllerIndicatorHtml]); // Add bindingsMap to dependencies
+    }, [activeItem.content, getControllerIndicatorHtml]); // Add bindingsMap to dependencies
 
     // Génère le CSS spécifique aux blocs pour chaque viewport
     const blocksCss = useMemo(() => {
@@ -329,8 +312,6 @@ export default function PageEditor({ projectName }) {
                                 activeTab="blocks"
                                 activeViewport={viewport.name}
                                 allowedTabs={["blocks"]}
-                                availableControllers={siteData?.controllers || []}
-                                currentPageName={activeItem?.nom}
                                 onChange={(blocks) => updateActiveItemField("content", blocks)}
                                 showToast={showToast}
                             />
@@ -414,19 +395,16 @@ export default function PageEditor({ projectName }) {
                                             <!-- Base styles for controller indicator -->
                                             <style>
                                                 .controller-bound-indicator {
-                                                    display: inline-flex;
-                                                    align-items: center;
+                                                    display: inline-block;
                                                     background-color: #4F46E5; /* Indigo-600 */
                                                     color: white;
-                                                    font-size: 0.55rem;
-                                                    font-weight: 900;
-                                                    padding: 1px 4px;
-                                                    border-radius: 3px;
-                                                    margin: 2px;
-                                                    line-height: 1.2;
+                                                    font-size: 0.6rem;
+                                                    font-weight: bold;
+                                                    padding: 2px 4px;
+                                                    border-radius: 4px;
+                                                    margin-right: 4px;
+                                                    line-height: 1;
                                                     vertical-align: middle;
-                                                    text-transform: uppercase;
-                                                    border: 1px solid rgba(255,255,255,0.2);
                                                 }
                                             </style>
                                             <style>

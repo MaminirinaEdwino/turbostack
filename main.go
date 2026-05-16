@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/MaminirinaEdwino/turbostack/src/api"
+	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
 )
@@ -28,7 +30,9 @@ func main() {
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})
 	mgr.Add(&api.ProjectService{Manager: projectMgr})
-
+	if !config.CheckIfExist(config.PROJECT_DIR) {
+		os.Mkdir(config.PROJECT_DIR, 0644)
+	}
 	mgr.RegisterAll(w)
 	w.SetTitle("Turbo Stack")
 	w.SetSize(800, 600, webview.HintNone)

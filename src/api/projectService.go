@@ -26,17 +26,21 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 func (s *ProjectService) ExportProject(name, typeProject string) string {
 	var pJson entity.ProjectJSON
 	fmt.Println(typeProject)
-
+	config.CheckCreateDir(name)
 	pJson = s.FetchProjectByName(name)
-	fmt.Println(pJson)
+	// fmt.Println(pJson)
 	switch typeProject {
 	case "api":
+		config.CheckCreateDir(fmt.Sprintf("%s/api", name))
 		s.Manager.ExporterAPI(pJson.ToModel())
 	case "models":
+		config.CheckCreateDir(fmt.Sprintf("%s/models", name))
 		s.Manager.ExporterDB(pJson.ToModel())
 	case "frontend":
+		config.CheckCreateDir(fmt.Sprintf("%s/frontend", name))
 		s.Manager.ExporterStaticSite(pJson.ToModel())
 	case "full":
+		config.CheckCreateDir(fmt.Sprintf("%s/webapp", name))
 		s.Manager.ExporterWebApp(pJson.ToModel())
 	}
 	return "Success"

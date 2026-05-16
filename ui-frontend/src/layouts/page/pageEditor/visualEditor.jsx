@@ -323,17 +323,17 @@ export default function VisualEditor({
         if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
     };
 
-    // const handleBindToBlock = (ctrlIndex, bindingIndex) => {
-    //     if (!activeBlock || !onUpdateControllers) return;
-    //     const newCtrls = JSON.parse(JSON.stringify(availableControllers));
-    //     const ctrl = newCtrls[ctrlIndex];
-    //     if (!ctrl.bindings) ctrl.bindings = [];
+    const handleBindToBlock = (ctrlIndex, bindingIndex) => {
+        if (!activeBlock || !onUpdateControllers) return;
+        const newCtrls = JSON.parse(JSON.stringify(availableControllers));
+        const ctrl = newCtrls[ctrlIndex];
+        if (!ctrl.bindings) ctrl.bindings = [];
 
-    //     ctrl.bindings[bindingIndex].id_element = activeBlock;
+        ctrl.bindings[bindingIndex].id_element = activeBlock;
 
-    //     onUpdateControllers(newCtrls);
-    //     if (showToast) showToast(`Bound to block: ${activeBlock}`);
-    // };
+        onUpdateControllers(newCtrls);
+        if (showToast) showToast(`Bound to block: ${activeBlock}`);
+    };
 
     const handleLinkController = (ctrlIndex) => {
         if (!onUpdateControllers) return;
@@ -434,11 +434,11 @@ export default function VisualEditor({
                         title={`Mapped field: ${binding.map_field} from endpoint ${binding.endpoint_nom}`}
                     >
                         <Cpu size={10} className="opacity-70 shrink-0" />
-                        <span className="uppercase tracking-tighter truncate max-w-20">{binding.ctrlName}</span>
+                        <span className="uppercase tracking-tighter truncate max-w-[80px]">{binding.ctrlName}</span>
                         <span className="opacity-30">/</span>
-                        <span className="opacity-60 text-[9px] font-medium truncate max-w-15">{binding.endpoint_nom}</span>
+                        <span className="opacity-60 text-[9px] font-medium truncate max-w-[60px]">{binding.endpoint_nom}</span>
                         <ArrowRight size={10} className="opacity-30 shrink-0" />
-                        <span className="font-bold truncate max-w-25 text-indigo-700 dark:text-indigo-300">{binding.map_field}</span>
+                        <span className="font-bold truncate max-w-[100px] text-indigo-700 dark:text-indigo-300">{binding.map_field}</span>
                     </div>
                 ))}
 

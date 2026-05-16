@@ -106,7 +106,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                         <input type="text" onInput={(e) => setEditField({ ...editField, nom: e.target.value })} value={editField.nom} className="w-full p-2 border-b border-couleur1 outline-0 bg-white" />
                                     </td>
                                     <td>
-                                        <select className="bg-couleur3 w-full p-2 border-b border-couleur1 outline-0 " name="type" onInput={(e) => { setEditField({ ...editField, type: e.target.value }) }} value={editField.type}>
+                                        <select className="w-full p-3 rounded-xl border border-couleur1/10 bg-couleur3/30 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all" name="type" onInput={(e) => { setEditField({ ...editField, type: e.target.value }) }} value={editField.type}>
                                             <option value="">Choose a type</option>
                                             <option value="int">INT</option>
                                             <option value="string">VARCHAR</option>

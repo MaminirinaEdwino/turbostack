@@ -117,16 +117,16 @@ export default function EditModel({ modelList, setModelList, setToggle, index })
                             editingIndex === idx ? (
                                 <tr key={idx} className="p-1 border-b border-couleur1/10">
                                     <td>
-                                        <input type="text" onInput={(e) => setEditField({ ...editField, nom: e.target.value })} value={editField.nom} className="w-full p-2 border-b border-couleur1 outline-0 bg-white" />
+                                        <input type="text" onInput={(e) => setEditField({ ...editField, nom: e.target.value })} value={editField.nom} className="w-full p-2 outline-0 bg-white" />
                                     </td>
                                     <td>
-                                        <select className="bg-couleur3 w-full p-2 border-b border-couleur1 outline-0 " name="type" onInput={(e) => { setEditField({ ...editField, type: e.target.value }) }} value={editField.type}>
+                                        <select className="w-full outline-none text-sm font-semibold pl-2  dark:text-white appearance-none cursor-pointer transition-all" name="type" onInput={(e) => { setEditField({ ...editField, type: e.target.value }) }} value={editField.type}>
                                             <option value="">Choose a type</option>
                                             <option value="int">INT</option>
                                             <option value="string">VARCHAR</option>
                                         </select>
                                     </td>
-                                    <td><input className="w-full p-2 border-b border-couleur1 outline-0 bg-white" type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} /></td>
+                                    <td><input className="w-full p-2 outline-0 bg-white" type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} /></td>
                                     <td>
                                         <div className="flex flex-wrap gap-1 min-w-[120px]">
                                             {["primary key", "unique", "not null", ...(editField.type === "int" ? ["autoincrement"] : [])].map(c => (

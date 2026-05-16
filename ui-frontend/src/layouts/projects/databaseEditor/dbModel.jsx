@@ -1,10 +1,15 @@
 import { Edit, Trash2 } from "lucide-react";
+import { Handle, Position } from "@xyflow/react";
 
 export default function DbModel({data}){
    const handleOnclick = ()=>{
       
    }
-    return <div className="border border-couleur1 rounded-lg overflow-hidden" onClick={handleOnclick}>
+    return <div className="border border-couleur1 rounded-lg overflow-hidden relative bg-white min-w-[200px]" onClick={handleOnclick}>
+         {/* Points de connexion pour les relations */}
+         <Handle type="target" position={Position.Left} className="bg-couleur1! w-2! h-2! border border-white" />
+         <Handle type="source" position={Position.Right} className="bg-couleur1! w-2! h-2! border border-white" />
+
          <div className="border-b border-couleur1 p-2 bg-couleur3 flex justify-between items-center">
             <span className="font-medium">{data.nom}</span>
             <div className="flex gap-2">

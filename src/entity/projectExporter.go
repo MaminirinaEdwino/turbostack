@@ -13,12 +13,12 @@ import (
 
 
 func (mgr *ProjectManager) ExporterDB(Project Project) {
+	sqlgenerator := Sqlgenerator{}
 	db := Project.GetBDD()
 	models := db.GetModels()
 	projectName := Project.GetNom()
-	mgr.gormModelExporter(models, projectName)
-	mgr.postgresSQLExporter(models, projectName)
-	mgr.postgresCRUDExporter(models, projectName)
+	sqlgenerator.PostgresSQLExporter(models, projectName)
+	sqlgenerator.PostgresCRUDExporter(models, projectName)
 	fmt.Printf("Exportation des modèles terminée pour le projet : %s\n", projectName)
 }
 

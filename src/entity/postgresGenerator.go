@@ -1,4 +1,4 @@
-package sqlgenerator
+package entity
 
 import (
 	"fmt"
@@ -6,12 +6,11 @@ import (
 	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
-	"github.com/MaminirinaEdwino/turbostack/src/entity"
 )
 
 type Sqlgenerator struct {}
 
-func (mgr *Sqlgenerator) postgresCRUDExporter(models []entity.Model, projectName string) {
+func (mgr *Sqlgenerator) PostgresCRUDExporter(models []Model, projectName string) {
 	filePath := fmt.Sprintf("%s/%s/models/crud_queries.sql", config.PROJECT_DIR, projectName)
 	file, err := os.Create(filePath)
 	if err != nil {
@@ -89,7 +88,7 @@ func (mgr *Sqlgenerator) postgresCRUDExporter(models []entity.Model, projectName
 	file.WriteString(sb.String())
 }
 
-func (mgr *Sqlgenerator) PostgresSQLExporter(models []entity.Model, projectName string) {
+func (mgr *Sqlgenerator) PostgresSQLExporter(models []Model, projectName string) {
 	filePath := fmt.Sprintf("%s/%s/models/init_db.sql", config.PROJECT_DIR, projectName)
 	file, err := os.Create(filePath)
 	if err != nil {

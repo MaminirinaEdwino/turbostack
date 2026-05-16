@@ -60,7 +60,7 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 	sb.WriteString("package routes\n\n")
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"src/controllers\"\n")
+	sb.WriteString("\t\"" + projectName + "src/controllers\"\n")
 	sb.WriteString(")\n\n")
 
 	// Groupement des endpoints par nom de modèle
@@ -91,6 +91,7 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 
 func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName string) {
 	for _, ep := range endpoints {
+		fmt.Println(ep)
 		eName := ep.GetNom()
 		if eName == "" {
 			continue
@@ -128,8 +129,29 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 				columns = append(columns, strings.ToLower(attr.GetNom()))
 				scanTargets = append(scanTargets, "&item."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
 			}
+			switch ep.method {
+			case "DELETE":
+				fmt.Fprint(&sb, goapimaker.Delete(tableName, ep.params[0]))
+			case "PUT":
+				var attrs []string
+				for i, val := range ep.model[0].attributs{
+					attrs = append(attrs, fmt.Sprintf("%s = $%d", val.nom, i+1))
+				}
+				fmt.Fprint(&sb, goapimaker.Update(tableName, attrs, ep.params[0]))
+			case "GET":
+				if len(ep.params)>0 {
+					fmt.Fprint(&sb, goapimaker.SelectBy(tableName, ep.params[0]))
+				}else{
+					fmt.Fprint(&sb, goapimaker.Select(tableName))
+				}
+			case "POST":
+				var attrs []string
+				for _, val := range ep.model[0].attributs{
+					attrs = append(attrs, fmt.Sprintf("%s", val.nom))
+				}
+				fmt.Fprint(&sb, goapimaker.Insert(tableName, attrs))
+			}
 
-			fmt.Fprintf(&sb, "\trows, err := config.DB.Query(\"SELECT %s FROM %s\")\n", strings.Join(columns, ", "), tableName)
 			sb.WriteString("\tif err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t\treturn\n\t}\n\tdefer rows.Close()\n\n")
 			fmt.Fprintf(&sb, "\tvar results []models.%s\n", structName)
 			fmt.Fprintf(&sb, "\tfor rows.Next() {\n\t\tvar item models.%s\n", structName)
@@ -166,9 +188,9 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 	sb.WriteString("\t\"fmt\"\n")
 	sb.WriteString("\t\"log\"\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\""+projectName+"/src/config\"\n")
-	sb.WriteString("\t\""+projectName+"/src/routes\"\n")
-	sb.WriteString("\t\""+projectName+"/src/middlewares\"\n")
+	sb.WriteString("\t\"" + projectName + "/src/config\"\n")
+	sb.WriteString("\t\"" + projectName + "/src/routes\"\n")
+	sb.WriteString("\t\"" + projectName + "/src/middlewares\"\n")
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("func main() {\n")

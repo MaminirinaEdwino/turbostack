@@ -24,6 +24,14 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
 
     const toggleConstraint = (field, setter, constraint) => {
         const current = Array.isArray(field.constraint) ? field.constraint : (field.constraint ? [field.constraint] : []);
+        
+        if (constraint === "relation") {
+            const target = prompt("Enter target model and field (e.g. User.id):");
+            if (!target) return;
+            setter({ ...field, constraint: [...current, `relation:${target}`] });
+            return;
+        }
+
         const next = current.includes(constraint)
             ? current.filter(c => c !== constraint)
             : [...current, constraint];
@@ -120,20 +128,33 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                     <td><input list="default-value-list" className="w-full p-2 border-b border-couleur1 outline-0 bg-white " type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} /></td>
                                     <td>
                                         <div className="flex flex-wrap gap-1 min-w-30">
-                                            {["primary key", "unique", "not null", ...(editField.type === "int" ? ["autoincrement"] : [])].map(c => (
+                                            {["primary key", "unique", "not null", "relation", ...(editField.type === "int" ? ["autoincrement"] : [])].map(c => {
+                                                const isRel = c === "relation";
+                                                const isActive = isRel 
+                                                    ? editField.constraint?.some(cons => typeof cons === 'string' && cons.startsWith('relation:'))
+                                                    : editField.constraint?.includes(c);
+                                                return (
                                                 <button
                                                     key={c}
                                                     type="button"
-                                                    onClick={() => toggleConstraint(editField, setEditField, c)}
+                                                    onClick={() => {
+                                                        if (isRel && isActive) {
+                                                            const next = editField.constraint.filter(cons => typeof cons !== 'string' || !cons.startsWith('relation:'));
+                                                            setEditField({ ...editField, constraint: next });
+                                                        } else {
+                                                            toggleConstraint(editField, setEditField, c);
+                                                        }
+                                                    }}
                                                     className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${
-                                                        (Array.isArray(editField.constraint) ? editField.constraint : []).includes(c)
+                                                        isActive
                                                             ? "bg-couleur1 text-white border-couleur1"
                                                             : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
                                                     }`}
                                                 >
-                                                    {c}
+                                                    {isRel ? "relation" : c}
                                                 </button>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </td>
                                     <td className="flex gap-2 py-2">
@@ -183,20 +204,33 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                             <td><input list="default-value-list" className="m-2 p-2 border-b border-couleur1 outline-0 " type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
                             <td>
                                 <div className="flex flex-wrap gap-1 min-w-30">
-                                    {["primary key", "unique", "not null", ...(newField.type === "int" ? ["autoincrement"] : [])].map(c => (
+                                    {["primary key", "unique", "not null", "relation", ...(newField.type === "int" ? ["autoincrement"] : [])].map(c => {
+                                        const isRel = c === "relation";
+                                        const isActive = isRel 
+                                            ? newField.constraint?.some(cons => typeof cons === 'string' && cons.startsWith('relation:'))
+                                            : newField.constraint?.includes(c);
+                                        return (
                                         <button
                                             key={c}
                                             type="button"
-                                            onClick={() => toggleConstraint(newField, setNewField, c)}
+                                            onClick={() => {
+                                                if (isRel && isActive) {
+                                                    const next = newField.constraint.filter(cons => typeof cons !== 'string' || !cons.startsWith('relation:'));
+                                                    setNewField({ ...newField, constraint: next });
+                                                } else {
+                                                    toggleConstraint(newField, setNewField, c);
+                                                }
+                                            }}
                                             className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${
-                                                (Array.isArray(newField.constraint) ? newField.constraint : []).includes(c)
+                                                isActive
                                                     ? "bg-couleur1 text-white border-couleur1"
                                                     : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
                                             }`}
                                         >
-                                            {c}
+                                            {isRel ? "relation" : c}
                                         </button>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </td>
                             <td>

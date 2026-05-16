@@ -20,9 +20,12 @@ export default function DbModel({data}){
                         {item.default_value && <span className="bg-gray-100 px-1 rounded text-gray-400" title="Default value">{item.default_value}</span>}
                         {item.constraint && (
                             <div className="flex gap-1">
-                                {(Array.isArray(item.constraint) ? item.constraint : [item.constraint]).map((c, i) => (
-                                    <span key={i} className="bg-blue-50 text-blue-500 px-1 rounded font-bold" title="Constraint">{c}</span>
-                                ))}
+                                {(Array.isArray(item.constraint) ? item.constraint : [item.constraint]).map((c, i) => {
+                                    const isRel = typeof c === 'string' && c.startsWith('relation:');
+                                    return (
+                                        <span key={i} className="bg-blue-50 text-blue-500 px-1 rounded font-bold" title="Constraint">{isRel ? `🔗 ${c.split(':')[1]}` : c}</span>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>

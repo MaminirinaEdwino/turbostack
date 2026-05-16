@@ -70,6 +70,9 @@ export default function DbEditor({ projectName }) {
         const setter = (updatedNodes) => {
             setNodes(updatedNodes);
         }
+        const edgeSetter = (newEdges)=>{
+            setEdges(newEdges)
+        }
         if (project != null && project.models != null) {
             const updatedNodes = project.models.map((model, index) => {
                 if (model && Object.keys(model).length > 0) {
@@ -91,6 +94,33 @@ export default function DbEditor({ projectName }) {
                 return null;
             }).filter(Boolean);
             setter(updatedNodes)
+
+            // Generate edges based on relations
+            const newEdges = [];
+            project.models.forEach(model => {
+                const sourceId = "model-" + model.nom;
+                (model.champs || []).forEach(field => {
+                    const constraints = Array.isArray(field.constraint) ? field.constraint : [];
+                    constraints.forEach(c => {
+                        if (typeof c === 'string' && c.startsWith('relation:')) {
+                            const targetTable = c.split(':')[1].split('.')[0];
+                            const targetId = "model-" + targetTable;
+
+                            if (project.models.some(m => m.nom === targetTable)) {
+                                newEdges.push({
+                                    id: `edge-${sourceId}-${targetId}-${field.nom}`,
+                                    source: sourceId,
+                                    target: targetId,
+                                    label: field.nom,
+                                    animated: true,
+                                    style: { stroke: '#4f46e5', strokeWidth: 2 },
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+            edgeSetter(newEdges);
         }
     }, [project, deleteModel]);
 
@@ -118,6 +148,7 @@ export default function DbEditor({ projectName }) {
         }
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const savedb = async () => {
         showToast("Sauvegarde en cours...", "loading");
         try {
@@ -128,6 +159,7 @@ export default function DbEditor({ projectName }) {
         }
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const reorganizeNodes = () => {
         setNodes((prevNodes) =>
             prevNodes.map((node, index) => ({

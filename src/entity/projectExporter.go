@@ -78,7 +78,7 @@ func (mgr *ProjectManager) postgresSQLExporter(models []Model, projectName strin
 		for i, field := range model.GetAttributs() {
 			fName := strings.ToLower(field.GetNom())
 			fType := strings.ToLower(field.GetType())
-			
+
 			// Détection de l'autoincrement pour le type SERIAL
 			isSerial := false
 			constraints := field.GetConstraint()
@@ -222,9 +222,110 @@ func (mgr *ProjectManager) ExporterDB(Project Project) {
 	fmt.Printf("Exportation des modèles terminée pour le projet : %s\n", projectName)
 }
 
-func (mgr *ProjectManager) ExporterAPI(Project Project) {
-	fmt.Println("Rest APi")
+func (mgr *ProjectManager) setupFileArch(name string) {
+	projectPath := fmt.Sprintf("%s/api/", name)
+	dirList := []string{
+		"src/config",
+		"src/controllers",
+		"src/middlewares",
+		"src/routes",
+		"src/models/gorm",
+		"src/models/pg",
+	}
+	for _, val := range dirList {
+		config.CheckCreateDir(projectPath + val)
+	}
 }
+
+func (mgr *ProjectManager) ExporterAPI(Project Project) {
+	projectName := Project.GetNom()
+	bdd := Project.GetBDD()
+	mgr.setupFileArch(projectName)
+	models := bdd.GetModels()
+
+	// Exportation des modèles pour les deux ORM/Librairies
+	mgr.gormAPIModelExporter(models, projectName)
+	mgr.pgAPIModelExporter(models, projectName)
+
+	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
+}
+
+// gormAPIModelExporter exporte les modèles avec les tags GORM dans src/models/gorm
+func (mgr *ProjectManager) gormAPIModelExporter(models []Model, projectName string) {
+	for _, model := range models {
+		mName := model.GetNom()
+		if mName == "" {
+			continue
+		}
+
+		filePath := fmt.Sprintf("%s/%s/api/src/models/gorm/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
+		file, err := os.Create(filePath)
+		if err != nil {
+			fmt.Printf("Erreur lors de la création du fichier GORM %s : %v\n", filePath, err)
+			continue
+		}
+
+		var sb strings.Builder
+		sb.WriteString("package gorm\n\n")
+		structName := strings.ToUpper(mName[:1]) + mName[1:]
+		fmt.Fprintf(&sb, "type %s struct {\n", structName)
+
+		for _, field := range model.GetAttributs() {
+			fieldName := strings.ToUpper(field.GetNom()[:1]) + field.GetNom()[1:]
+			goType := mgr.mapToGoType(field.GetType())
+			gormTag := mgr.generateGormTags(field)
+			fmt.Fprintf(&sb, "\t%s %s %s\n", fieldName, goType, gormTag)
+		}
+		sb.WriteString("}\n")
+		file.WriteString(sb.String())
+		file.Close()
+	}
+}
+
+// pgAPIModelExporter exporte les modèles avec les tags pour go-pg dans src/models/pg
+func (mgr *ProjectManager) pgAPIModelExporter(models []Model, projectName string) {
+	for _, model := range models {
+		mName := model.GetNom()
+		if mName == "" {
+			continue
+		}
+
+		filePath := fmt.Sprintf("%s/%s/api/src/models/pg/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
+		file, err := os.Create(filePath)
+		if err != nil {
+			fmt.Printf("Erreur lors de la création du fichier PG %s : %v\n", filePath, err)
+			continue
+		}
+
+		var sb strings.Builder
+		sb.WriteString("package pg\n\n")
+		structName := strings.ToUpper(mName[:1]) + mName[1:]
+		fmt.Fprintf(&sb, "type %s struct {\n", structName)
+
+		for _, field := range model.GetAttributs() {
+			fieldName := strings.ToUpper(field.GetNom()[:1]) + field.GetNom()[1:]
+			goType := mgr.mapToGoType(field.GetType())
+			pgTag := mgr.generatePgTags(field)
+			fmt.Fprintf(&sb, "\t%s %s %s\n", fieldName, goType, pgTag)
+		}
+		sb.WriteString("}\n")
+		file.WriteString(sb.String())
+		file.Close()
+	}
+}
+
+// mapToGoType convertit les types UI en types Go
+func (mgr *ProjectManager) mapToGoType(uiType string) string {
+	switch strings.ToLower(uiType) {
+	case "int":
+		return "int"
+	case "string", "text":
+		return "string"
+	default:
+		return "string"
+	}
+}
+
 func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 	fmt.Println("static site")
 }
@@ -262,6 +363,31 @@ func (mgr *ProjectManager) generateGormTags(field Champs) string {
 
 	if len(tags) > 0 {
 		return fmt.Sprintf("`gorm:\"%s\"`", strings.Join(tags, ";"))
+	}
+	return ""
+}
+
+// generatePgTags transforme les contraintes en chaîne de tags pour la lib go-pg
+func (mgr *ProjectManager) generatePgTags(field Champs) string {
+	var tags []string
+	for _, c := range field.GetConstraint() {
+		cStr := strings.ToLower(fmt.Sprintf("%v", c))
+		switch cStr {
+		case "primary key":
+			tags = append(tags, "pk")
+		case "unique":
+			tags = append(tags, "unique")
+		case "not null":
+			tags = append(tags, "notnull")
+		}
+	}
+
+	if field.GetDefaultValue() != nil && field.GetDefaultValue() != "" {
+		tags = append(tags, fmt.Sprintf("default:%v", field.GetDefaultValue()))
+	}
+
+	if len(tags) > 0 {
+		return fmt.Sprintf("`pg:\",%s\"`", strings.Join(tags, ","))
 	}
 	return ""
 }

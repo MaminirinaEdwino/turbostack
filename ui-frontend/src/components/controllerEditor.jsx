@@ -13,6 +13,9 @@ import FieldToggleRow from "./controllerEditor/fieldToggleRow";
 import Toast from "./controllerEditor/toast";
 import NonCollapsedController from "./controllerEditor/nonCollapsedController";
 import EndPointLocalConfig from "./controllerEditor/endPointLocalConfig";
+import EndPointDetails from "./controllerEditor/endPointDetails";
+import EndPointRender from "./controllerEditor/endPointRender";
+import ControllerPageSelect from "./controllerEditor/controllerPageSelect";
 
 export default function ControllerEditor({ projectName }) {
     const navigateTo = useNavigate();
@@ -144,19 +147,7 @@ export default function ControllerEditor({ projectName }) {
                         </div>
 
                         <div className="p-8 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2"><FileText size={14} /> Target Page</label>
-                                    <select
-                                        value={activeController?.page_nom || ""} // Assurez-vous que la valeur est une chaîne vide si null
-                                        onChange={(e) => updateController(selectedIndex, 'page_nom', e.target.value)}
-                                        className="w-full p-3 rounded-xl border border-couleur1/10 bg-couleur3/30 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
-                                    >
-                                        <option value="">Select a page...</option>
-                                        {pages.map(p => <option key={p.nom} value={p.nom}>{p.nom} ({p.uri})</option>)}
-                                    </select>
-                                </div>
-                            </div>
+                            <ControllerPageSelect activeController={activeController} pages={pages} selectedIndex={selectedIndex} updateController={updateController}></ControllerPageSelect>
 
                             <div className="pt-8 border-t border-couleur1/10">
                                 <div className="flex justify-between items-center mb-6">
@@ -166,37 +157,7 @@ export default function ControllerEditor({ projectName }) {
                                     <span className="text-[10px] font-bold text-couleur1/30 italic">Select fields to bind to UI</span>
                                 </div>
 
-                                <div className="space-y-12">
-                                    {endpoints.map((ep) => {
-                                        const bindingsInGroup = activeBindings?.filter(b => b.endpoint_nom === ep.nom) || [];
-                                        const groupTrigger = bindingsInGroup[0]?.trigger || "onLoad";
-                                        const groupAction = bindingsInGroup[0]?.action || "fill_content";
-
-                                        return (
-                                            <div key={ep.nom} className="space-y-4">
-                                                <div
-                                                    className="flex items-center justify-between pb-2 border-b border-couleur1/5 cursor-pointer select-none group"
-                                                    onClick={() => toggleGroup(ep.nom)}
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="text-couleur1/40 group-hover:text-couleur1 transition-colors">
-                                                            {collapsedEndpoints[ep.nom] ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
-                                                        </div>
-                                                        <Database size={14} className="text-couleur1/40" />
-                                                        <span className="text-xs font-black uppercase text-couleur1 tracking-wider">{ep.nom}</span>
-                                                        <span className="text-[9px] bg-couleur1/5 px-2 py-0.5 rounded text-couleur1/40">{ep.method} {ep.uri}</span>
-                                                    </div>
-
-                                                    {/* Configuration locale au groupe d'endpoint */}
-                                                    <EndPointLocalConfig ep={ep} groupAction={groupAction} groupTrigger={groupTrigger} updateGroupConfig={updateGroupConfig} ></EndPointLocalConfig>
-                                                </div>
-                                                {!collapsedEndpoints[ep.nom] && (
-                                                    <NonCollapsedController activeController={activeController} ep={ep} selectedIndex={selectedIndex} toggleBinding={toggleBinding} updateController={updateController}></NonCollapsedController>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                                <EndPointRender activeBindings={activeBindings} activeController={activeController} collapsedEndpoints={collapsedEndpoints} endpoints={endpoints} selectedIndex={selectedIndex} toggleBinding={toggleBinding} toggleGroup={toggleGroup} updateController={updateController} updateGroupConfig={updateGroupConfig}></EndPointRender>
                             </div>
                         </div>
                     </div>

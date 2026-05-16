@@ -22,7 +22,7 @@ func (composant *Composant) GetNom() string {
 	return composant.nom
 }
 
-func (composant *Composant) GetContenu() any {
+func (composant *Composant) GetContenu() []pageContent {
 	return composant.contenu
 }
 

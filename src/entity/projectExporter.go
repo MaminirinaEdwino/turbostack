@@ -625,8 +625,160 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 	fmt.Printf("Exportation du site statique terminée : %s\n", projectName)
 }
 
+func (mgr *ProjectManager) setupWebAppArch(name string) {
+	projectPath := fmt.Sprintf("%s/web-app/", name)
+	dirList := []string{
+		"src/components",
+		"src/pages",
+		"src/services",
+		"public",
+	}
+	for _, val := range dirList {
+		config.CheckCreateDir(projectPath + val)
+	}
+}
+
+func (mgr *ProjectManager) renderBlocksToJSX(blocks []any) string {
+	var sb strings.Builder
+	for _, b := range blocks {
+		block, ok := b.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		tag := fmt.Sprintf("%v", block["tag"])
+		content := fmt.Sprintf("%v", block["content"])
+		className := fmt.Sprintf("%v", block["className"])
+
+		if tag == "img" {
+			sb.WriteString(fmt.Sprintf("<img src=\"%s\" className=\"%s\" alt=\"\" />", content, className))
+			continue
+		}
+
+		sb.WriteString(fmt.Sprintf("<%s className=\"%s\">", tag, className))
+		sb.WriteString(content)
+
+		if children, exists := block["children"].([]any); exists && len(children) > 0 {
+			sb.WriteString(mgr.renderBlocksToJSX(children))
+		}
+
+		sb.WriteString(fmt.Sprintf("</%s>", tag))
+	}
+	return sb.String()
+}
+
 func (mgr *ProjectManager) ExporterWebApp(Project Project) {
-	fmt.Println("web app")
+	projectName := Project.GetNom()
+	webApp := Project.GetWebApp()
+	mgr.setupWebAppArch(projectName)
+
+	// 1. Génération du package.json
+	pkgPath := fmt.Sprintf("%s/web-app/package.json", projectName)
+	pkgFile, _ := os.Create(pkgPath)
+	pkgFile.WriteString(fmt.Sprintf(`{
+  "name": "%s-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "lucide-react": "^0.344.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.0"
+  }
+}`, strings.ToLower(projectName)))
+	pkgFile.Close()
+
+	// 2. Génération du Service API
+	svcPath := fmt.Sprintf("%s/web-app/src/services/api.js",  projectName)
+	svcFile, _ := os.Create(svcPath)
+	svcFile.WriteString(`const API_URL = "http://localhost:8080";
+
+export const apiRequest = async (endpoint, method = "GET", data = null) => {
+    const options = {
+        method,
+        headers: { "Content-Type": "application/json" }
+    };
+    if (data) options.body = JSON.stringify(data);
+    const res = await fetch(${API_URL}${endpoint}, options);
+    return res.json();
+};`) 
+	svcFile.Close()
+
+	// 3. Génération des Composants
+	for _, comp := range webApp.GetComposant() {
+		compName := strings.ReplaceAll(comp.GetNom(), " ", "")
+		filePath := fmt.Sprintf("%s/web-app/src/components/%s.jsx", projectName, compName)
+		file, _ := os.Create(filePath)
+		
+		var sb strings.Builder
+		fmt.Fprintf(&sb, "export default function %s() {\n\treturn (\n\t\t<>\n", compName)
+		
+		content := comp.GetContenu()
+		anyBlocks := make([]any, len(content))
+		for i, v := range content { anyBlocks[i] = v }
+		sb.WriteString(mgr.renderBlocksToJSX(anyBlocks))
+		
+		sb.WriteString("\n\t\t</>\n\t);\n}")
+		file.WriteString(sb.String())
+		file.Close()
+	}
+
+	// 4. Génération des Pages
+	for _, page := range webApp.GetPages() {
+		pageName := strings.ReplaceAll(page.GetNom(), " ", "")
+		filePath := fmt.Sprintf("%s/web-app/src/pages/%s.jsx", projectName, pageName)
+		file, _ := os.Create(filePath)
+
+		var sb strings.Builder
+		sb.WriteString("import React from 'react';\n\n")
+		fmt.Fprintf(&sb, "export default function %s() {\n\treturn (\n\t\t<div className=\"page-container\">\n", pageName)
+		
+		content := page.GetContent()
+		anyBlocks := make([]any, len(content))
+		for i, v := range content { anyBlocks[i] = v }
+		sb.WriteString(mgr.renderBlocksToJSX(anyBlocks))
+
+		sb.WriteString("\n\t\t</div>\n\t);\n}")
+		file.WriteString(sb.String())
+		file.Close()
+	}
+
+	// 5. Génération du Router (App.jsx)
+	appPath := fmt.Sprintf("%s/web-app/src/App.jsx", projectName)
+	appFile, _ := os.Create(appPath)
+	var ab strings.Builder
+	ab.WriteString("import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';\n")
+	for _, page := range webApp.GetPages() {
+		pName := strings.ReplaceAll(page.GetNom(), " ", "")
+		fmt.Fprintf(&ab, "import %s from './pages/%s';\n", pName, pName)
+	}
+	ab.WriteString("\nfunction App() {\n\treturn (\n\t\t<Router>\n\t\t\t<Routes>\n")
+	for _, page := range webApp.GetPages() {
+		pName := strings.ReplaceAll(page.GetNom(), " ", "")
+		uri := ""
+		if uri == "" { uri = "/" }
+		fmt.Fprintf(&ab, "\t\t\t\t<Route path=\"%s\" element={<%s />} />\n", uri, pName)
+	}
+	ab.WriteString("\t\t\t</Routes>\n\t\t</Router>\n\t);\n}\n\nexport default App;")
+	appFile.WriteString(ab.String())
+	appFile.Close()
+
+	fmt.Printf("Exportation de la Web App terminée : %s\n", projectName)
 }
 
 // generateGormTags transforme les contraintes de l'UI en chaîne de tags GORM

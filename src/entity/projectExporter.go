@@ -229,7 +229,8 @@ func (mgr *ProjectManager) setupFileArch(name string) {
 		"src/controllers",
 		"src/middlewares",
 		"src/routes",
-		"src/models",
+		"src/models/gorm",
+		"src/models/pg",
 	}
 	for _, val := range dirList {
 		config.CheckCreateDir(projectPath + val)
@@ -241,10 +242,14 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	bdd := Project.GetBDD()
 	mgr.setupFileArch(projectName)
 	models := bdd.GetModels()
+	api := Project.GetRestApi()
 
 	// Exportation des modèles pour les deux ORM/Librairies
 	mgr.gormAPIModelExporter(models, projectName)
 	mgr.pgAPIModelExporter(models, projectName)
+
+	// Exportation des controllers basés sur les endpoints
+	mgr.controllerAPIExporter(api.GetEndpoints(), projectName)
 
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
@@ -256,18 +261,17 @@ func (mgr *ProjectManager) gormAPIModelExporter(models []Model, projectName stri
 		if mName == "" {
 			continue
 		}
-
-		filePath := fmt.Sprintf("%s/%s/api/src/models/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
-		file, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+		n := strings.ReplaceAll(mName, " ", "_")
+		fmt.Println(n)
+		filePath := fmt.Sprintf("%s/%s/api/src/models/gorm/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(n))
+		file, err := os.Create(filePath)
 		if err != nil {
-			fmt.Printf("Erreur lors de la création du fichier GORM %s : %v\n", filePath, err)
+			fmt.Printf("Error creating GORM model file %s : %v\n", filePath, err)
 			continue
 		}
 
 		var sb strings.Builder
-		if val,err :=config.CheckEmptyFile(filePath); val && err == nil {
-			sb.WriteString("package models\n\n")
-		}
+		sb.WriteString("package gorm\n\n")
 		structName := strings.ToUpper(mName[:1]) + mName[1:]
 		fmt.Fprintf(&sb, "type %s struct {\n", structName)
 
@@ -291,17 +295,15 @@ func (mgr *ProjectManager) pgAPIModelExporter(models []Model, projectName string
 			continue
 		}
 
-		filePath := fmt.Sprintf("%s/%s/api/src/models/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
-		file, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+		filePath := fmt.Sprintf("%s/%s/api/src/models/pg/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(mName))
+		file, err := os.Create(filePath)
 		if err != nil {
-			fmt.Printf("Erreur lors de la création du fichier PG %s : %v\n", filePath, err)
+			fmt.Printf("Error creating PG model file %s : %v\n", filePath, err)
 			continue
 		}
 
 		var sb strings.Builder
-		if val,err :=config.CheckEmptyFile(filePath); val && err == nil {
-			sb.WriteString("package models\n\n")
-		}
+		sb.WriteString("package pg\n\n")
 		structName := strings.ToUpper(mName[:1]) + mName[1:]
 		fmt.Fprintf(&sb, "type %s struct {\n", structName)
 
@@ -326,6 +328,69 @@ func (mgr *ProjectManager) mapToGoType(uiType string) string {
 		return "string"
 	default:
 		return "string"
+	}
+}
+
+func (mgr *ProjectManager) controllerAPIExporter(endpoints []Endpoint, projectName string) {
+	for _, ep := range endpoints {
+		eName := ep.GetNom()
+		if eName == "" {
+			continue
+		}
+
+		filePath := fmt.Sprintf("%s/%s/api/src/controllers/%s.go", config.PROJECT_DIR, projectName, strings.ToLower(strings.ReplaceAll(eName, " ", "_")))
+		file, err := os.Create(filePath)
+		if err != nil {
+			fmt.Printf("Error creating controller %s : %v\n", filePath, err)
+			continue
+		}
+
+		var sb strings.Builder
+		sb.WriteString("package controllers\n\n")
+		sb.WriteString("import (\n")
+		sb.WriteString("\t\"encoding/json\"\n")
+		sb.WriteString("\t\"net/http\"\n")
+		sb.WriteString("\t\"src/models/gorm\"\n")
+		sb.WriteString("\t\"src/models/pg\"\n")
+		sb.WriteString("\t\"src/config\"\n")
+		sb.WriteString(")\n\n")
+
+		funcName := strings.ToUpper(eName[:1]) + eName[1:]
+
+		// Identification du modèle associé
+		var modelName string
+		if len(ep.GetModel()) > 0 {
+			modelName = ep.GetModel()[0].GetNom()
+		}
+
+		fmt.Fprintf(&sb, "// %s handles the %s request for %s\n", funcName, ep.GetMethod(), ep.GetUri())
+		fmt.Fprintf(&sb, "func %s(w http.ResponseWriter, r *http.Request) {\n", strings.ReplaceAll(funcName, " ", "_"))
+
+		if modelName != "" {
+			structName := strings.ToUpper(modelName[:1]) + modelName[1:]
+			varName := strings.ToLower(modelName) + "s"
+
+			// Exemple GORM
+			sb.WriteString("\t// GORM Implementation\n")
+			fmt.Fprintf(&sb, "\tvar %sGorm []gorm.%s\n", varName, structName)
+			fmt.Fprintf(&sb, "\tconfig.DB.Find(&%sGorm)\n\n", varName)
+
+			// Exemple PG (commenté par défaut pour éviter les erreurs de compilation)
+			sb.WriteString("\t// PG Implementation (Example)\n")
+			sb.WriteString("\t/*\n")
+			fmt.Fprintf(&sb, "\tvar %sPg []pg.%s\n", varName, structName)
+			fmt.Fprintf(&sb, "\tconfig.PG.Model(&%sPg).Select()\n", varName)
+			sb.WriteString("\t*/\n\n")
+
+			fmt.Fprintf(&sb, "\tjson.NewEncoder(w).Encode(%sGorm)\n", varName)
+		} else {
+			fmt.Fprintf(&sb, "\tjson.NewEncoder(w).Encode(map[string]string{\"message\": \"%s endpoint reached\"})\n", eName)
+		}
+
+		sb.WriteString("}\n")
+
+		file.WriteString(sb.String())
+		file.Close()
 	}
 }
 

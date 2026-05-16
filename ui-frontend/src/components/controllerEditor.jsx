@@ -1,12 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { 
-    Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText, Settings, 
-    CheckCircle, AlertCircle, Link as LinkIcon, ArrowRight, Wand2,
-    Zap, Activity, Database, Link2, ChevronDown, ChevronRight
+    Save, Plus, Edit3, Trash2, Loader2, Cpu, FileText, 
+    CheckCircle, AlertCircle, Link as LinkIcon, Database, ChevronDown, ChevronRight
 } from "lucide-react";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../hooks/useNavigate";
 import { GoApp } from "../services/bridge";
+import ControllerEditorHeader from "./controllerEditor/controllerEditorHeader";
+import NewController from "./controllerEditor/newController";
 
 export default function ControllerEditor({ projectName }) {
     const navigateTo = useNavigate();
@@ -17,8 +18,6 @@ export default function ControllerEditor({ projectName }) {
     const [toast, setToast] = useState(null);
     const [collapsedEndpoints, setCollapsedEndpoints] = useState({});
 
-    // 1. TOUS LES HOOKS EN PREMIER (Ordre immuable)
-    
     useEffect(() => {
         const loadProject = async () => {
             setLoading(true);
@@ -29,18 +28,14 @@ export default function ControllerEditor({ projectName }) {
         loadProject();
     }, [projectName]);
 
-    // Calcul des données dérivées pour le useMemo
     const siteData = project?.type === "static" ? project?.site_statique : project?.web_app;
     const typeKey = project?.type === "static" ? "site_statique" : "web_app";
     const controllers = siteData?.controllers || [];
     const pages = siteData?.pages || [];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const endpoints = project?.rest_api?.endpoints || [];
     
     const activeController = selectedIndex !== null ? controllers[selectedIndex] : null;
     const activeBindings = activeController?.bindings;
-
-    // 2. FONCTIONS DE LOGIQUE
 
     const showToast = (message, type = "success") => {
         setToast({ message, type });
@@ -80,7 +75,6 @@ export default function ControllerEditor({ projectName }) {
     };
 
     const updateGroupConfig = (endpointNom, field, value) => {
-        // Appliquer la modification à tous les bindings de ce groupe spécifique
         updateController(selectedIndex, 'bindings', (prev = []) => {
             return prev.map(b => b.endpoint_nom === endpointNom ? { ...b, [field]: value } : b);
         });
@@ -89,7 +83,6 @@ export default function ControllerEditor({ projectName }) {
     const toggleBinding = (endpointNom, fieldNom, isChecked) => {
         updateController(selectedIndex, 'bindings', (prev = []) => {
             if (isChecked) {
-                // Trouver le meilleur ID d'élément correspondant au nom du champ
                 const bestMatchId = availableIds.find(id => 
                     id.toLowerCase().includes(fieldNom.toLowerCase()) || 
                     fieldNom.toLowerCase().includes(id.toLowerCase())
@@ -121,41 +114,17 @@ export default function ControllerEditor({ projectName }) {
         }
     };
 
-    // 3. RENDUS CONDITIONNELS (Après les hooks)
-
     if (loading) return <div className="flex h-screen items-center justify-center bg-couleur3"><Loader2 className="animate-spin text-couleur1" /></div>;
 
     return (
         <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
             {/* Header */}
-            <div className="p-4 flex items-center justify-between border-b border-couleur1/10 bg-white/50 backdrop-blur-md">
-                <div className="flex items-center gap-4">
-                    <button onClick={() => editMode ? setEditMode(false) : navigateTo("Dashboard")} className="p-2 rounded-xl border hover:bg-white transition-all">
-                        <FcPrevious size={18} />
-                    </button>
-                    <h1 className="text-xl font-bold text-couleur1 flex items-center gap-2">
-                        <Cpu size={24} /> Controller Editor : {projectName}
-                    </h1>
-                </div>
-                <button onClick={handleSave} className="bg-couleur1 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2">
-                    <Save size={18} /> Save All
-                </button>
-            </div>
-
+            
+            <ControllerEditorHeader editMode={editMode} handleSave={handleSave} navigateTo={navigateTo} projectName={projectName} setEditMode={setEditMode}></ControllerEditorHeader>
             <div className="flex-1 p-8 overflow-y-auto">
                 {!editMode ? (
                     <div className="space-y-6">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-bold text-couleur1">Project Logic</h2>
-                            <button onClick={() => {
-                                const newController = { nom: "New Controller", page_nom: pages[0]?.nom || "", bindings: [] };
-                                setProject(prev => ({
-                                    ...prev, [typeKey]: { ...prev[typeKey], controllers: [...(prev[typeKey].controllers || []), newController] }
-                                }));
-                            }} className="bg-couleur1 text-white px-4 py-2 rounded-xl flex items-center gap-2">
-                                <Plus size={18} /> Add Controller
-                            </button>
-                        </div>
+                        <NewController pages={pages} setProject={setProject} typeKey={typeKey}></NewController>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {controllers.map((ctrl, index) => (
                                 <div key={index} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 shadow-sm hover:shadow-md transition-all">
@@ -311,7 +280,7 @@ export default function ControllerEditor({ projectName }) {
     );
 }
 
-function FieldToggleRow({ fieldNom, isActive, onToggle, binding, onChange }) {
+function FieldToggleRow({ fieldNom, isActive, onToggle }) {
     return (
         <div className={`flex items-center justify-between p-2.5 px-4 rounded-xl border transition-all ${isActive ? 'bg-white shadow-sm border-couleur1/20' : 'bg-transparent border-transparent opacity-60 hover:opacity-100'}`}>
             {/* Checkbox et Nom du champ */}
@@ -324,29 +293,6 @@ function FieldToggleRow({ fieldNom, isActive, onToggle, binding, onChange }) {
                 />
                 <span className={`text-xs font-bold ${isActive ? 'text-couleur1' : 'text-couleur1/60'}`}>{fieldNom}</span>
             </div>
-
-            {isActive && binding && (
-                <div className="flex items-center gap-4 animate-in fade-in slide-in-from-right-1 duration-200">
-                    {/* <select 
-                        value={binding.trigger} 
-                        onChange={(e) => onChange({...binding, trigger: e.target.value})} 
-                        className="p-1 text-[10px] font-bold rounded border border-couleur1/10 bg-couleur3/5 outline-none cursor-pointer"
-                    >
-                        <option value="onLoad">onLoad</option>
-                        <option value="onClick">onClick</option>
-                        <option value="onHover">onHover</option>
-                    </select>
-                    <select 
-                        value={binding.action} 
-                        onChange={(e) => onChange({...binding, action: e.target.value})} 
-                        className="p-1 text-[10px] font-bold rounded border border-couleur1/10 bg-couleur3/5 outline-none cursor-pointer"
-                    >
-                        <option value="fill_content">Fill</option>
-                        <option value="set_style">Style</option>
-                        <option value="redirect">Redirect</option>
-                    </select> */}
-                </div>
-            )}
         </div>
     );
 }

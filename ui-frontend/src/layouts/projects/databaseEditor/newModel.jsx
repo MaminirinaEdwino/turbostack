@@ -1,5 +1,6 @@
 import { Check, Trash2, Edit, Plus, X } from "lucide-react";
 import { useState } from "react";
+import RelationModal from "./RelationModal";
 
 export default function NewModel({ modelList, setModelList, setToggle }) {
     const [modelName, setModelName] = useState('')
@@ -14,6 +15,8 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
 
     const [editingIndex, setEditingIndex] = useState(-1);
     const [editField, setEditField] = useState({ nom: "", type: "", default_value: "", constraint: [] })
+    const [showRelationModal, setShowRelationModal] = useState(false);
+    const [fieldToEditRelation, setFieldToEditRelation] = useState(null); // Pour savoir quel champ est en cours d'édition de relation
 
     const handleNewField = (e) => {
         if (e) e.preventDefault();
@@ -21,14 +24,23 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
         setAddfield(false)
         setNewField({ nom: "", type: "", default_value: "", constraint: [] })
     }
+    
+    const handleSelectRelation = (relationString) => {
+        if (fieldToEditRelation) {
+            const current = Array.isArray(fieldToEditRelation.constraint) ? fieldToEditRelation.constraint : [];
+            const next = [...current.filter(c => !c.startsWith('relation:')), relationString];
+            if (fieldToEditRelation === newField) setNewField({ ...newField, constraint: next });
+            else if (fieldToEditRelation === editField) setEditField({ ...editField, constraint: next });
+        }
+        setShowRelationModal(false);
+        setFieldToEditRelation(null);
+    };
 
     const toggleConstraint = (field, setter, constraint) => {
         const current = Array.isArray(field.constraint) ? field.constraint : (field.constraint ? [field.constraint] : []);
-        
         if (constraint === "relation") {
-            const target = prompt("Enter target model and field (e.g. User.id):");
-            if (!target) return;
-            setter({ ...field, constraint: [...current, `relation:${target}`] });
+            setFieldToEditRelation(field);
+            setShowRelationModal(true);
             return;
         }
 
@@ -133,14 +145,16 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                                 const isActive = isRel 
                                                     ? editField.constraint?.some(cons => typeof cons === 'string' && cons.startsWith('relation:'))
                                                     : editField.constraint?.includes(c);
+                                                const displayValue = isRel 
+                                                    ? (editField.constraint?.find(cons => typeof cons === 'string' && cons.startsWith('relation:')) || "relation")
+                                                    : c;
                                                 return (
                                                 <button
                                                     key={c}
                                                     type="button"
                                                     onClick={() => {
                                                         if (isRel && isActive) {
-                                                            const next = editField.constraint.filter(cons => typeof cons !== 'string' || !cons.startsWith('relation:'));
-                                                            setEditField({ ...editField, constraint: next });
+                                                            toggleConstraint(editField, setEditField, c); // Permet de désélectionner la relation
                                                         } else {
                                                             toggleConstraint(editField, setEditField, c);
                                                         }
@@ -150,8 +164,8 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                                             ? "bg-couleur1 text-white border-couleur1"
                                                             : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
                                                     }`}
-                                                >
-                                                    {isRel ? "relation" : c}
+                                                > 
+                                                    {isRel ? `🔗 ${displayValue.split(':')[1]}` : c}
                                                 </button>
                                                 );
                                             })}
@@ -209,14 +223,16 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                         const isActive = isRel 
                                             ? newField.constraint?.some(cons => typeof cons === 'string' && cons.startsWith('relation:'))
                                             : newField.constraint?.includes(c);
+                                        const displayValue = isRel 
+                                            ? (newField.constraint?.find(cons => typeof cons === 'string' && cons.startsWith('relation:')) || "relation")
+                                            : c;
                                         return (
                                         <button
                                             key={c}
                                             type="button"
                                             onClick={() => {
                                                 if (isRel && isActive) {
-                                                    const next = newField.constraint.filter(cons => typeof cons !== 'string' || !cons.startsWith('relation:'));
-                                                    setNewField({ ...newField, constraint: next });
+                                                    toggleConstraint(newField, setNewField, c); // Permet de désélectionner la relation
                                                 } else {
                                                     toggleConstraint(newField, setNewField, c);
                                                 }
@@ -227,7 +243,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                                     : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
                                             }`}
                                         >
-                                            {isRel ? "relation" : c}
+                                            {isRel ? `🔗 ${displayValue.split(':')[1]}` : c}
                                         </button>
                                         );
                                     })}
@@ -254,5 +270,12 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
             <option value="false" />
             <option value="''" />
         </datalist>
+        {showRelationModal && (
+            <RelationModal
+                models={modelList?.models || []}
+                onSelectRelation={handleSelectRelation}
+                onClose={() => setShowRelationModal(false)}
+            />
+        )}
     </form>)
 }

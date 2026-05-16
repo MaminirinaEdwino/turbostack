@@ -252,6 +252,9 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	// Exportation des routes groupées par modèles
 	mgr.routesAPIExporter(api.GetEndpoints(), projectName)
 
+	// Exportation de la configuration de la base de données
+	mgr.configAPIExporter(projectName)
+
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 
@@ -403,6 +406,40 @@ func (mgr *ProjectManager) routesAPIExporter(endpoints []Endpoint, projectName s
 		}
 		sb.WriteString("}\n\n")
 	}
+	file.WriteString(sb.String())
+}
+
+// configAPIExporter génère le fichier de configuration pour la connexion à PostgreSQL
+func (mgr *ProjectManager) configAPIExporter(projectName string) {
+	filePath := fmt.Sprintf("%s/%s/api/src/config/db.go", config.PROJECT_DIR, projectName)
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating config file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	sb.WriteString("package config\n\n")
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"database/sql\"\n")
+	sb.WriteString("\t\"fmt\"\n")
+	sb.WriteString("\t\"log\"\n")
+	sb.WriteString("\t_ \"github.com/lib/pq\"\n")
+	sb.WriteString(")\n\n")
+
+	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
+	sb.WriteString("func InitDB() {\n")
+	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
+	sb.WriteString("\tconnStr := \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
+	sb.WriteString("\tvar err error\n")
+	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\tfmt.Println(\"Successfully connected to database\")\n")
+	sb.WriteString("}\n")
+
 	file.WriteString(sb.String())
 }
 

@@ -22,6 +22,7 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("saveBdd", ps.SaveProjectBDD)
 	w.Bind("exportProject", ps.ExportProject)
 	w.Bind("fetchProjectFiles", ps.FeychProjectFiles)
+	w.Bind("getFileContent", ps.GetFileContent)
 }
 
 func (s *ProjectService) ExportProject(name, typeProject string) string {
@@ -79,8 +80,16 @@ func (s *ProjectService) SaveProjectBDD(name string, bddJson string) string {
 }
 
 func (mgr *ProjectService) FeychProjectFiles(name string) []entity.FileNode {
-	file, _ :=  mgr.Manager.GetProjectFiles(name)
+	file, _ := mgr.Manager.GetProjectFiles(name)
 	return file
+}
+
+func (s *ProjectService) GetFileContent(projectName, path string) string {
+	content, err := s.Manager.GetFileContent(projectName, path)
+	if err != nil {
+		return fmt.Sprintf("Erreur lors de la lecture du fichier : %v", err)
+	}
+	return content
 }
 
 func (s *ProjectService) FetchProjects() []string {
@@ -94,7 +103,7 @@ func (s *ProjectService) FetchProjects() []string {
 
 func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
 	var pJson entity.ProjectJSON
-	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR,name)
+	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, name)
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)

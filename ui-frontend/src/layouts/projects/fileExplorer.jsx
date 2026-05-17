@@ -3,16 +3,24 @@ import { Folder, File, ChevronRight, ChevronDown, HardDrive, RefreshCw, ChevronL
 import { GoApp } from '../../services/bridge';
 import { useNavigate } from '../../hooks/useNavigate';
 
-const FileNode = ({ node, level }) => {
+const FileNode = ({ node, level, onFileClick, selectedPath }) => {
     const [isOpen, setIsOpen] = useState(level < 1);
     const hasChildren = node.children && node.children.length > 0;
+
+    const handleClick = () => {
+        if (node.is_dir) {
+            setIsOpen(!isOpen);
+        } else {
+            onFileClick(node.path);
+        }
+    };
 
     return (
         <div className="select-none">
             <div 
-                className="flex items-center gap-2 py-1.5 px-2 hover:bg-couleur1/5 cursor-pointer rounded-lg transition-colors group"
+                className={`flex items-center gap-2 py-1.5 px-2 hover:bg-couleur1/5 cursor-pointer rounded-lg transition-colors group ${selectedPath === node.path ? 'bg-couleur1/10' : ''}`}
                 style={{ paddingLeft: `${level * 16 + 8}px` }}
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={handleClick}
             >
                 <div className="w-4 h-4 flex items-center justify-center">
                     {node.is_dir && (
@@ -38,7 +46,13 @@ const FileNode = ({ node, level }) => {
             {node.is_dir && isOpen && hasChildren && (
                 <div className="animate-in slide-in-from-left-1 duration-200">
                     {node.children.map((child) => (
-                        <FileNode key={child.path} node={child} level={level + 1} />
+                        <FileNode 
+                            key={child.path} 
+                            node={child} 
+                            level={level + 1} 
+                            onFileClick={onFileClick} 
+                            selectedPath={selectedPath} 
+                        />
                     ))}
                 </div>
             )}
@@ -49,8 +63,12 @@ const FileNode = ({ node, level }) => {
 export default function FileExplorer({ projectName }) {
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedPath, setSelectedPath] = useState(null);
+    const [content, setContent] = useState("");
     const navigate = useNavigate()
-    const loadFiles = async () => {
+
+    const loadFiles = async (showLoading = true) => {
+        if (showLoading) setLoading(true);
         setLoading(true);
         try {
             // Note: Assurez-vous d'ajouter fetchProjectFiles dans votre bridge.js
@@ -60,6 +78,17 @@ export default function FileExplorer({ projectName }) {
             console.error("Error loading files:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleFileClick = async (path) => {
+        setSelectedPath(path);
+        setContent("Chargement...");
+        try {
+            const res = await GoApp.getFileContent(projectName, path);
+            setContent(res);
+        } catch (err) {
+            setContent("Erreur : " + err);
         }
     };
 
@@ -84,14 +113,36 @@ export default function FileExplorer({ projectName }) {
                     <RefreshCw size={16} />
                 </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                {!loading && files.length > 0 ? (
-                    <div className="space-y-0.5">
-                        {files.map((node) => <FileNode key={node.path} node={node} level={0} />)}
-                    </div>
-                ) : !loading && (
-                    <div className="h-full flex flex-col items-center justify-center opacity-20 italic text-sm">No files exported yet</div>
-                )}
+            <div className="flex-1 flex overflow-hidden">
+                {/* Sidebar: Arborescence */}
+                <div className="w-1/3 border-r border-couleur1/10 overflow-y-auto p-4 custom-scrollbar bg-couleur3/5 dark:bg-black/10">
+                    {!loading && files.length > 0 ? (
+                        <div className="space-y-0.5">
+                            {files.map((node) => (
+                                <FileNode 
+                                    key={node.path} 
+                                    node={node} 
+                                    level={0} 
+                                    onFileClick={handleFileClick} 
+                                    selectedPath={selectedPath} 
+                                />
+                            ))}
+                        </div>
+                    ) : !loading && (
+                        <div className="h-full flex flex-col items-center justify-center opacity-20 italic text-sm">No files exported yet</div>
+                    )}
+                </div>
+
+                {/* Main: Visionneuse de contenu */}
+                <div className="w-2/3 flex flex-col bg-white dark:bg-gray-950 overflow-hidden">
+                    {selectedPath ? (
+                        <pre className="flex-1 overflow-auto p-6 text-xs font-mono text-couleur1/80 leading-relaxed custom-scrollbar whitespace-pre">
+                            {content}
+                        </pre>
+                    ) : (
+                        <div className="flex-1 flex items-center justify-center text-couleur1/20 italic text-sm">Selectionnez un fichier pour voir son contenu</div>
+                    )}
+                </div>
             </div>
         </div>
     );

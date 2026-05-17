@@ -147,6 +147,15 @@ func (mgr *ProjectManager) GetProjectFiles(projectName string) ([]FileNode, erro
 	return walkDir(rootPath, "")
 }
 
+func (mgr *ProjectManager) GetFileContent(projectName string, filePath string) (string, error) {
+	fullPath := filepath.Join(config.PROJECT_DIR, projectName, filePath)
+	data, err := os.ReadFile(fullPath)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
 func walkDir(fullPath, relPath string) ([]FileNode, error) {
 	entries, err := os.ReadDir(fullPath)
 	if err != nil {

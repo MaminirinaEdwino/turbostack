@@ -56,7 +56,7 @@ function App() {
       case 'api_editor': return <ApiEditor projectName={actualProject}></ApiEditor>
       case 'page_editor': return <PageEditor projectName={actualProject}></PageEditor>
       case 'controller_editor': return <ControllerEditor projectName={actualProject}></ControllerEditor>
-      case 'Files': return <FileExplorer></FileExplorer>
+      case 'Files': return <FileExplorer projectName={actualProject}></FileExplorer>
       default: return <HomePage />; // Fallback
     }
   };

@@ -7,8 +7,8 @@ func ControllerImportWriter(sb *strings.Builder, projectName string) {
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"encoding/json\"\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\""+projectName+"/src/models\"\n")
-	sb.WriteString("\t\""+projectName+"/src/config\"\n")
+	sb.WriteString("\t\""+strings.ReplaceAll(projectName, " ","_")+"/src/models\"\n")
+	sb.WriteString("\t\""+strings.ReplaceAll(projectName, " ","_")+"/src/config\"\n")
 	sb.WriteString("\t_ \"github.com/lib/pq\"\n")
 	sb.WriteString(")\n\n")
 }

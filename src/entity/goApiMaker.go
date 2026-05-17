@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strings"
@@ -60,7 +61,7 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 	sb.WriteString("package routes\n\n")
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"" + projectName + "src/controllers\"\n")
+	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/controllers\"\n")
 	sb.WriteString(")\n\n")
 
 	// Groupement des endpoints par nom de modèle
@@ -118,7 +119,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 
 		fmt.Fprintf(&sb, "// %s handles the %s request for %s\n", funcName, ep.GetMethod(), ep.GetUri())
 		// fmt.Fprintf(&sb, "func %s(w http.ResponseWriter, r *http.Request) {\n", strings.ReplaceAll(funcName, " ", "_"))
-
+		var tmpBuffer bytes.Buffer
 		if modelName != "" {
 			structName := strings.ToUpper(modelName[:1]) + modelName[1:]
 			tableName := strings.ToLower(modelName)
@@ -127,7 +128,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 			var scanTargets []string
 			for _, attr := range activeModel.GetAttributs() {
 				columns = append(columns, strings.ToLower(attr.GetNom()))
-				scanTargets = append(scanTargets, "&item."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
+				scanTargets = append(scanTargets, "&tmp."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
 			}
 
 			switch ep.method {
@@ -142,10 +143,29 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 				fmt.Fprint(&sb, goapimaker.Update(tableName, attrs, ep.params[0]))
 			case "GET":
 				if len(ep.params) > 0 {
-					fmt.Fprint(&sb, goapimaker.SelectBy(tableName, ep.params[0]))
+					data := struct {
+						StructName      string
+						DbCallerHandler string
+						Query           string
+						Params          string
+						ScanParams      string
+						ResponseWriter  string
+					}{
+						StructName: structName,
+						DbCallerHandler: goapimaker.DBCallerHandler("pg"),
+						Query: goapimaker.SelectBy(tableName, ep.params[0]),
+						ScanParams: strings.ReplaceAll(strings.Join(scanTargets, ", "),"tmp", "res"),
+						ResponseWriter: goapimaker.WriteResponseWriter(),
+						Params: ep.params[0],
+					}
+					err := goapimaker.SelectBytemplate().Execute(&tmpBuffer, data)
+					if err != nil {
+						fmt.Println(err)
+					}
+					fmt.Fprintln(&sb, tmpBuffer.String())
 				} else {
-					
-					fmt.Fprint(&sb, goapimaker.SelectTemplate(strings.ReplaceAll(funcName, " ", "_"), goapimaker.DBCallerHandler("pg"), structName, goapimaker.Select(tableName), strings.Join(scanTargets, ""), goapimaker.WriteResponseWriter()))
+
+					fmt.Fprint(&sb, goapimaker.SelectTemplate(strings.ReplaceAll(funcName, " ", "_"), goapimaker.DBCallerHandler("pg"), structName, goapimaker.Select(tableName), strings.Join(scanTargets, ", "), goapimaker.WriteResponseWriter()))
 				}
 			case "POST":
 				var attrs []string
@@ -155,17 +175,10 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 				fmt.Fprint(&sb, goapimaker.Insert(tableName, attrs))
 			}
 
-			// sb.WriteString("\tif err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t\treturn\n\t}\n\tdefer rows.Close()\n\n")
-			// fmt.Fprintf(&sb, "\tvar results []models.%s\n", structName)
-			// fmt.Fprintf(&sb, "\tfor rows.Next() {\n\t\tvar item models.%s\n", structName)
-			// fmt.Fprintf(&sb, "\t\tif err := rows.Scan(%s); err != nil {\n\t\t\tcontinue\n\t\t}\n", strings.Join(scanTargets, ", "))
-			// sb.WriteString("\t\tresults = append(results, item)\n\t}\n")
-			// sb.WriteString("\tjson.NewEncoder(w).Encode(results)\n")
 		} else {
 			fmt.Fprintf(&sb, "\tjson.NewEncoder(w).Encode(map[string]string{\"message\": \"%s endpoint reached\"})\n", eName)
 		}
 
-		sb.WriteString("}\n")
 
 		file.WriteString(sb.String())
 		file.Close()
@@ -191,9 +204,9 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 	sb.WriteString("\t\"fmt\"\n")
 	sb.WriteString("\t\"log\"\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"" + projectName + "/src/config\"\n")
-	sb.WriteString("\t\"" + projectName + "/src/routes\"\n")
-	sb.WriteString("\t\"" + projectName + "/src/middlewares\"\n")
+	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/config\"\n")
+	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/routes\"\n")
+	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/middlewares\"\n")
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("func main() {\n")

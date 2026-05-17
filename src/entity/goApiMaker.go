@@ -136,11 +136,8 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 
 				fmt.Fprint(&sb, goapimaker.Delete(tableName, ep.params[0]))
 			case "PUT":
-				var attrs []string
-				for i, val := range ep.model[0].attributs {
-					attrs = append(attrs, fmt.Sprintf("%s = $%d", val.nom, i+1))
-				}
-				fmt.Fprint(&sb, goapimaker.Update(tableName, attrs, ep.params[0]))
+				
+				fmt.Fprint(&sb, goapimaker.PutHandler(structName, ep.nom, "ps", columns, strings.Join(scanTargets, ", "), ep.params[0]))
 			case "GET":
 				if len(ep.params) > 0 {
 					data := struct {

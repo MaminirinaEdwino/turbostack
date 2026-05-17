@@ -39,7 +39,7 @@ json.NewEncoder(w).Encode(res)
 	`
 }
 
-func SelectBytemplate() *template.Template{
+func SelectBytemplate() *template.Template {
 	content := `
 func {{ .StructName }}(w http.ResponseWriter, r *http.Request){
 	{{ .Params }} := r.PathValue("{{ .Params }}")
@@ -56,9 +56,35 @@ func {{ .StructName }}(w http.ResponseWriter, r *http.Request){
 	return temp
 }
 
-func PutHandler(structName, epName,sgbd string , attrs []string, ScanParamsWriter string) string {
-	tmp, _ := template.ParseFiles("module/go_api/templates/putHandler.gotmp")
-	
+func PutTemplate() *template.Template {
+	content := `
+func {{ .EndPointName }}HandlerPut(w http.ResponseWriter, r *http.Request){
+	var body models.{{ .EndPointName }}
+	var res models.{{ .EndPointName }}
+	{{ .Params }} := r.PathValue("{{ .Params }}")
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	{{ .DbCallerHandler }}
+	rows, err := db.Query("{{ .PutQuery }}", {{ .Params }})
+	if err != nil {
+		log.Fatal(err)
+	}
+	rows.Next()
+	rows.Scan({{ .ScanParams }})
+	{{ .ResponseWriter }}
+}		
+`
+	temp := template.New(content)
+	temp.Parse(content)
+	return temp
+}
+
+func PutHandler(structName, epName, sgbd string, attrs []string, ScanParamsWriter string, params string) string {
+	tmp := PutTemplate()
+
 	var tmpBuffer bytes.Buffer
 	data := struct {
 		EndPointName    string
@@ -66,12 +92,14 @@ func PutHandler(structName, epName,sgbd string , attrs []string, ScanParamsWrite
 		PutQuery        string
 		ScanParams      string
 		ResponseWriter  string
+		Params          string
 	}{
 		EndPointName:    structName,
 		DbCallerHandler: DBCallerHandler(sgbd),
 		PutQuery:        Update(epName, attrs, sgbd),
 		ScanParams:      ScanParamsWriter,
-		ResponseWriter:  strings.ReplaceAll(WriteResponseWriter(), "res", "tmp"),
+		ResponseWriter:  WriteResponseWriter(),
+		Params:          params,
 	}
 	err := tmp.Execute(&tmpBuffer, data)
 	if err != nil {

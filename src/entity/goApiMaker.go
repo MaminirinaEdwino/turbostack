@@ -105,7 +105,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 		}
 
 		var sb strings.Builder
-		goapimaker.ControllerImportWriter(sb, projectName)
+		goapimaker.ControllerImportWriter(&sb, projectName)
 
 		funcName := strings.ToUpper(eName[:1]) + eName[1:]
 
@@ -117,7 +117,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 		modelName := activeModel.GetNom()
 
 		fmt.Fprintf(&sb, "// %s handles the %s request for %s\n", funcName, ep.GetMethod(), ep.GetUri())
-		fmt.Fprintf(&sb, "func %s(w http.ResponseWriter, r *http.Request) {\n", strings.ReplaceAll(funcName, " ", "_"))
+		// fmt.Fprintf(&sb, "func %s(w http.ResponseWriter, r *http.Request) {\n", strings.ReplaceAll(funcName, " ", "_"))
 
 		if modelName != "" {
 			structName := strings.ToUpper(modelName[:1]) + modelName[1:]
@@ -129,35 +129,38 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 				columns = append(columns, strings.ToLower(attr.GetNom()))
 				scanTargets = append(scanTargets, "&item."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
 			}
+
 			switch ep.method {
 			case "DELETE":
+
 				fmt.Fprint(&sb, goapimaker.Delete(tableName, ep.params[0]))
 			case "PUT":
 				var attrs []string
-				for i, val := range ep.model[0].attributs{
+				for i, val := range ep.model[0].attributs {
 					attrs = append(attrs, fmt.Sprintf("%s = $%d", val.nom, i+1))
 				}
 				fmt.Fprint(&sb, goapimaker.Update(tableName, attrs, ep.params[0]))
 			case "GET":
-				if len(ep.params)>0 {
+				if len(ep.params) > 0 {
 					fmt.Fprint(&sb, goapimaker.SelectBy(tableName, ep.params[0]))
-				}else{
-					fmt.Fprint(&sb, goapimaker.Select(tableName))
+				} else {
+					
+					fmt.Fprint(&sb, goapimaker.SelectTemplate(strings.ReplaceAll(funcName, " ", "_"), goapimaker.DBCallerHandler("pg"), structName, goapimaker.Select(tableName), strings.Join(scanTargets, ""), goapimaker.WriteResponseWriter()))
 				}
 			case "POST":
 				var attrs []string
-				for _, val := range ep.model[0].attributs{
+				for _, val := range ep.model[0].attributs {
 					attrs = append(attrs, fmt.Sprintf("%s", val.nom))
 				}
 				fmt.Fprint(&sb, goapimaker.Insert(tableName, attrs))
 			}
 
-			sb.WriteString("\tif err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t\treturn\n\t}\n\tdefer rows.Close()\n\n")
-			fmt.Fprintf(&sb, "\tvar results []models.%s\n", structName)
-			fmt.Fprintf(&sb, "\tfor rows.Next() {\n\t\tvar item models.%s\n", structName)
-			fmt.Fprintf(&sb, "\t\tif err := rows.Scan(%s); err != nil {\n\t\t\tcontinue\n\t\t}\n", strings.Join(scanTargets, ", "))
-			sb.WriteString("\t\tresults = append(results, item)\n\t}\n")
-			sb.WriteString("\tjson.NewEncoder(w).Encode(results)\n")
+			// sb.WriteString("\tif err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t\treturn\n\t}\n\tdefer rows.Close()\n\n")
+			// fmt.Fprintf(&sb, "\tvar results []models.%s\n", structName)
+			// fmt.Fprintf(&sb, "\tfor rows.Next() {\n\t\tvar item models.%s\n", structName)
+			// fmt.Fprintf(&sb, "\t\tif err := rows.Scan(%s); err != nil {\n\t\t\tcontinue\n\t\t}\n", strings.Join(scanTargets, ", "))
+			// sb.WriteString("\t\tresults = append(results, item)\n\t}\n")
+			// sb.WriteString("\tjson.NewEncoder(w).Encode(results)\n")
 		} else {
 			fmt.Fprintf(&sb, "\tjson.NewEncoder(w).Encode(map[string]string{\"message\": \"%s endpoint reached\"})\n", eName)
 		}

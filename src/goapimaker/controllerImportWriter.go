@@ -2,7 +2,7 @@ package goapimaker
 
 import "strings"
 
-func ControllerImportWriter(sb strings.Builder, projectName string) {
+func ControllerImportWriter(sb *strings.Builder, projectName string) {
 	sb.WriteString("package controllers\n\n")
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"encoding/json\"\n")

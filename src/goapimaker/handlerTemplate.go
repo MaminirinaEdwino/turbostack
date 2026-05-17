@@ -23,6 +23,7 @@ func %s(w http.ResponseWriter, r *http.Request){
 		res = append(res, tmp)
 	}
 	%s
+}
 	`, HandlerName, DbCaller, ResponseType, Query, ResponseType, ScanValue, ResponseWriter)
 }
 
@@ -43,7 +44,7 @@ json.NewEncoder(w).Encode(res)
 
 func SelectBytemplate() *template.Template {
 	content := `
-func {{ .StructName }}(w http.ResponseWriter, r *http.Request){
+func {{ .FuncName }}(w http.ResponseWriter, r *http.Request){
 	{{ .Params }} := r.PathValue("{{ .Params }}")
 	var res models.{{ .StructName }}
 	{{ .DbCallerHandler }}
@@ -60,7 +61,7 @@ func {{ .StructName }}(w http.ResponseWriter, r *http.Request){
 
 func PutTemplate() *template.Template {
 	content := `
-func {{ .EndPointName }}(w http.ResponseWriter, r *http.Request){
+func {{ .FuncName }}(w http.ResponseWriter, r *http.Request){
 	var body models.{{ .EndPointName }}
 	var res models.{{ .EndPointName }}
 	{{ .Params }} := r.PathValue("{{ .Params }}")
@@ -84,7 +85,7 @@ func {{ .EndPointName }}(w http.ResponseWriter, r *http.Request){
 	return temp
 }
 
-func PutHandler(structName, epName, sgbd string, attrs []string, ScanParamsWriter string, params string) string {
+func PutHandler(modelName, epName, sgbd string, attrs []string, ScanParamsWriter string, params string) string {
 	tmp := PutTemplate()
 
 	var tmpBuffer bytes.Buffer
@@ -95,13 +96,15 @@ func PutHandler(structName, epName, sgbd string, attrs []string, ScanParamsWrite
 		ScanParams      string
 		ResponseWriter  string
 		Params          string
+		FuncName        string
 	}{
-		EndPointName:    structName,
+		EndPointName:    utils.ToUpperFirstLetter(modelName),
 		DbCallerHandler: DBCallerHandler(sgbd),
 		PutQuery:        Update(epName, attrs, sgbd),
 		ScanParams:      ScanParamsWriter,
 		ResponseWriter:  WriteResponseWriter(),
 		Params:          params,
+		FuncName:        strings.ReplaceAll(epName, " ","_"),
 	}
 	err := tmp.Execute(&tmpBuffer, data)
 	if err != nil {
@@ -118,9 +121,9 @@ func %s(w http.ResponseWriter, r *http.Request){
 		Message string
 	}
 	%s
-	rows,err := db.Query("%s", %s)
+	rows,_ := db.Query("%s", %s)
 	rows.Next()
-	tmp := response{
+	res := response{
 		Message: "users deleted",
 	}
 	%s
@@ -131,7 +134,7 @@ func %s(w http.ResponseWriter, r *http.Request){
 func InsertHandler(epName, sgbd, tableName string, attr []string) string {
 	var bodyParam []string
 	for _, val := range attr {
-		bodyParam = append(bodyParam, fmt.Sprintf("body.%s", val))
+		bodyParam = append(bodyParam, fmt.Sprintf("body.%s", utils.ToUpperFirstLetter(val)))
 	}
 	return fmt.Sprintf(`
 	func %s(w http.ResponseWriter, r *http.Request){
@@ -142,7 +145,7 @@ func InsertHandler(epName, sgbd, tableName string, attr []string) string {
 		%s
 	}`+"\n",
 		epName,
-		WriteBodyDecodeur(epName),
+		WriteBodyDecodeur(tableName),
 		DBCallerHandler(sgbd),
 		Insert(tableName, attr),
 		strings.Join(bodyParam, ", "),
@@ -150,7 +153,7 @@ func InsertHandler(epName, sgbd, tableName string, attr []string) string {
 		WriteResponseWriter())
 }
 
-func WriteBodyDecodeur(structName string) string {
+func WriteBodyDecodeur(modelName string) string {
 	var tmpBuffer bytes.Buffer
 
 	tmp := BodyDecodeurTemplate()
@@ -159,7 +162,7 @@ func WriteBodyDecodeur(structName string) string {
 		EndPointName string
 		ErrorChecker string
 	}{
-		EndPointName: structName,
+		EndPointName: utils.ToUpperFirstLetter(modelName),
 		ErrorChecker: utils.WriteErrorCheker("Parsing Error"),
 	}
 

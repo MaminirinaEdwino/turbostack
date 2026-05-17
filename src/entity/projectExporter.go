@@ -33,6 +33,7 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	apiMaker.configAPIExporter(projectName)
 	apiMaker.middlewareAPIExporter(projectName)
 	apiMaker.mainAPIExporter(api.GetEndpoints(), projectName)
+	apiMaker.writeModSumFile(projectName)
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 

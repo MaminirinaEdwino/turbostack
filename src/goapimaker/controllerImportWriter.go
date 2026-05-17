@@ -13,7 +13,9 @@ func ControllerImportWriter(sb *strings.Builder, projectName string, method stri
 	}
 	sb.WriteString("\t\"encoding/json\"\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/models\"\n")
+	if method != "DELETE" {
+		sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/models\"\n")
+	}
 	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/config\"\n")
 	sb.WriteString("\t_ \"github.com/lib/pq\"\n")
 	sb.WriteString(")\n\n")

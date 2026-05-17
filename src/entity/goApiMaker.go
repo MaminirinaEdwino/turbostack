@@ -133,9 +133,9 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 
 			switch ep.method {
 			case "DELETE":
-				fmt.Fprint(&sb, goapimaker.DeleteHandler(strings.ReplaceAll(funcName, " ", "_"), "pg", ep.params[0], tableName ))
+				fmt.Fprint(&sb, goapimaker.DeleteHandler(strings.ReplaceAll(funcName, " ", "_"), "pg", ep.params[0], tableName))
 			case "PUT":
-				fmt.Fprint(&sb, goapimaker.PutHandler(strings.ReplaceAll(funcName, " ", "_"), strings.ReplaceAll(funcName, " ", "_"), "pg", columns, strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"), ep.params[0]))
+				fmt.Fprint(&sb, goapimaker.PutHandler(ep.model[0].nom, strings.ReplaceAll(funcName, " ", "_"), "pg", columns, strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"), ep.params[0]))
 			case "GET":
 				if len(ep.params) > 0 {
 					data := struct {
@@ -145,13 +145,15 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 						Params          string
 						ScanParams      string
 						ResponseWriter  string
+						FuncName        string
 					}{
-						StructName: structName,
+						StructName:      structName,
 						DbCallerHandler: goapimaker.DBCallerHandler("pg"),
-						Query: goapimaker.SelectBy(tableName, ep.params[0]),
-						ScanParams: strings.ReplaceAll(strings.Join(scanTargets, ", "),"tmp", "res"),
-						ResponseWriter: goapimaker.WriteResponseWriter(),
-						Params: ep.params[0],
+						Query:           goapimaker.SelectBy(tableName, ep.params[0]),
+						ScanParams:      strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"),
+						ResponseWriter:  goapimaker.WriteResponseWriter(),
+						Params:          ep.params[0],
+						FuncName:        strings.ReplaceAll(funcName, " ","_"),
 					}
 					err := goapimaker.SelectBytemplate().Execute(&tmpBuffer, data)
 					if err != nil {
@@ -173,7 +175,6 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 		} else {
 			fmt.Fprintf(&sb, "\tjson.NewEncoder(w).Encode(map[string]string{\"message\": \"%s endpoint reached\"})\n", eName)
 		}
-
 
 		file.WriteString(sb.String())
 		file.Close()
@@ -237,6 +238,15 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 	sb.WriteString("}\n")
 
 	file.WriteString(sb.String())
+}
+
+func (mgr *GoApiMaker) writeModSumFile(projectName string) {
+	modfilepath := fmt.Sprintf("%s/%s/api/go.mod", config.PROJECT_DIR, projectName)
+	sumfilepath := fmt.Sprintf("%s/%s/api/go.sum", config.PROJECT_DIR, projectName)
+	modfile, _ := os.Create(modfilepath)
+	modfile.WriteString(goapimaker.WriteGoMod(strings.ReplaceAll(projectName, " ", "_")))
+	sumfile, _ := os.Create(sumfilepath)
+	sumfile.WriteString(goapimaker.WriteSum())
 }
 
 func (mgr *GoApiMaker) configAPIExporter(projectName string) {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -25,7 +24,6 @@ func main() {
 	if err := projectMgr.LoadProjects(); err != nil {
 		log.Printf("Erreur lors du chargement des projets : %v", err)
 	}
-	fmt.Println(projectMgr.Projects)
 	mgr := api.NewManager()
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})
@@ -38,13 +36,12 @@ func main() {
 	w.SetSize(800, 600, webview.HintNone)
 	go func() {
 		fs := http.FileServer(http.FS(assets))
-		http.ListenAndServe(":8080", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Optionnel : rediriger toutes les routes vers index.html pour le SPA Routing
+		http.ListenAndServe(":1627", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			r.URL.Path = "/ui-dist" + r.URL.Path
 			fs.ServeHTTP(w, r)
 		}))
 	}()
 
-	w.Navigate("http://localhost:8080")
+	w.Navigate("http://localhost:1627")
 	w.Run()
 }

@@ -106,7 +106,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 		}
 
 		var sb strings.Builder
-		goapimaker.ControllerImportWriter(&sb, projectName)
+		goapimaker.ControllerImportWriter(&sb, projectName, ep.method)
 
 		funcName := strings.ToUpper(eName[:1]) + eName[1:]
 
@@ -133,11 +133,9 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 
 			switch ep.method {
 			case "DELETE":
-
-				fmt.Fprint(&sb, goapimaker.Delete(tableName, ep.params[0]))
+				fmt.Fprint(&sb, goapimaker.DeleteHandler(strings.ReplaceAll(funcName, " ", "_"), "pg", ep.params[0], tableName ))
 			case "PUT":
-				
-				fmt.Fprint(&sb, goapimaker.PutHandler(structName, ep.nom, "ps", columns, strings.Join(scanTargets, ", "), ep.params[0]))
+				fmt.Fprint(&sb, goapimaker.PutHandler(strings.ReplaceAll(funcName, " ", "_"), strings.ReplaceAll(funcName, " ", "_"), "pg", columns, strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"), ep.params[0]))
 			case "GET":
 				if len(ep.params) > 0 {
 					data := struct {
@@ -169,7 +167,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 				for _, val := range ep.model[0].attributs {
 					attrs = append(attrs, fmt.Sprintf("%s", val.nom))
 				}
-				fmt.Fprint(&sb, goapimaker.Insert(tableName, attrs))
+				fmt.Fprint(&sb, goapimaker.InsertHandler(strings.ReplaceAll(funcName, " ", "_"), "pg", tableName, attrs))
 			}
 
 		} else {

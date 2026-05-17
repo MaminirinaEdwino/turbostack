@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+
+	"github.com/MaminirinaEdwino/turbostack/src/utils"
 )
 
 func SelectTemplate(HandlerName string, DbCaller string, ResponseType string, Query string, ScanValue string, ResponseWriter string) string {
@@ -58,7 +60,7 @@ func {{ .StructName }}(w http.ResponseWriter, r *http.Request){
 
 func PutTemplate() *template.Template {
 	content := `
-func {{ .EndPointName }}HandlerPut(w http.ResponseWriter, r *http.Request){
+func {{ .EndPointName }}(w http.ResponseWriter, r *http.Request){
 	var body models.{{ .EndPointName }}
 	var res models.{{ .EndPointName }}
 	{{ .Params }} := r.PathValue("{{ .Params }}")
@@ -106,4 +108,74 @@ func PutHandler(structName, epName, sgbd string, attrs []string, ScanParamsWrite
 		fmt.Println(err)
 	}
 	return tmpBuffer.String()
+}
+
+func DeleteHandler(epName, sgbd, params, tableName string) string {
+	return fmt.Sprintf(`
+func %s(w http.ResponseWriter, r *http.Request){
+	%s := r.PathValue("%s")
+	type response struct{
+		Message string
+	}
+	%s
+	rows,err := db.Query("%s", %s)
+	rows.Next()
+	tmp := response{
+		Message: "users deleted",
+	}
+	%s
+}
+	`, epName, params, params, DBCallerHandler(sgbd), Delete(tableName, sgbd), params, WriteResponseWriter())
+}
+
+func InsertHandler(epName, sgbd, tableName string, attr []string) string {
+	var bodyParam []string
+	for _, val := range attr {
+		bodyParam = append(bodyParam, fmt.Sprintf("body.%s", val))
+	}
+	return fmt.Sprintf(`
+	func %s(w http.ResponseWriter, r *http.Request){
+		%s
+		%s
+	res, err := db.Exec("%s", %s)
+		%s
+		%s
+	}`+"\n",
+		epName,
+		WriteBodyDecodeur(epName),
+		DBCallerHandler(sgbd),
+		Insert(tableName, attr),
+		strings.Join(bodyParam, ", "),
+		utils.WriteErrorCheker("insert error"),
+		WriteResponseWriter())
+}
+
+func WriteBodyDecodeur(structName string) string {
+	var tmpBuffer bytes.Buffer
+
+	tmp := BodyDecodeurTemplate()
+
+	data := struct {
+		EndPointName string
+		ErrorChecker string
+	}{
+		EndPointName: structName,
+		ErrorChecker: utils.WriteErrorCheker("Parsing Error"),
+	}
+
+	err := tmp.Execute(&tmpBuffer, data)
+	utils.ErrorChecker(err)
+	return tmpBuffer.String()
+}
+
+func BodyDecodeurTemplate() *template.Template {
+	content := `
+var body models.{{ .EndPointName }} 
+decoder := json.NewDecoder(r.Body) 
+err := decoder.Decode(&body)
+{{ .ErrorChecker }}
+	`
+	temp := template.New(content)
+	temp.Parse(content)
+	return temp
 }

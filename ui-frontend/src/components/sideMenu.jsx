@@ -42,6 +42,7 @@ export default function SideMenu() {
         { name: 'Web App', icon: <Layout size={18} /> },
         { name: 'Static Site', icon: <Globe size={18} /> },
         { name: 'Api', icon: <Settings size={18} /> },
+        { name: 'Files', icon: <Folder size={18} /> },
         { name: 'Export', icon: <SendToBack size={18} /> },
     ]
     // Ajout des liens directs vers les éditeurs si un projet est actif

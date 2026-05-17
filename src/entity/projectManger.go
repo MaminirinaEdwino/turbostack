@@ -4,10 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"slices"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 )
+
+type FileNode struct {
+	Name     string     `json:"name"`
+	Path     string     `json:"path"`
+	IsDir    bool       `json:"is_dir"`
+	Children []FileNode `json:"children,omitempty"`
+	Size     int64      `json:"size"`
+}
 
 type ProjectManager struct {
 	Projects []Project
@@ -128,4 +137,38 @@ func (mgr *ProjectManager) GetByName(name string) Project {
 		}
 	}
 	return Project{}
+}
+
+func (mgr *ProjectManager) GetProjectFiles(projectName string) ([]FileNode, error) {
+	rootPath := filepath.Join(config.PROJECT_DIR, projectName)
+	if _, err := os.Stat(rootPath); os.IsNotExist(err) {
+		return []FileNode{}, nil
+	}
+	return walkDir(rootPath, "")
+}
+
+func walkDir(fullPath, relPath string) ([]FileNode, error) {
+	entries, err := os.ReadDir(fullPath)
+	if err != nil {
+		return nil, err
+	}
+	var nodes []FileNode
+	for _, entry := range entries {
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+		node := FileNode{
+			Name:  entry.Name(),
+			Path:  filepath.Join(relPath, entry.Name()),
+			IsDir: entry.IsDir(),
+			Size:  info.Size(),
+		}
+		if entry.IsDir() {
+			children, _ := walkDir(filepath.Join(fullPath, entry.Name()), node.Path)
+			node.Children = children
+		}
+		nodes = append(nodes, node)
+	}
+	return nodes, nil
 }

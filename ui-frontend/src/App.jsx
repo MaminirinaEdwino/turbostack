@@ -17,6 +17,7 @@ import PageEditor from './layouts/page/pageEditor/pageEditor';
 import ControllerEditor from './components/controllerEditor';
 import { Loader2 } from 'lucide-react';
 import logo from './assets/logotransparent.png';
+import FileExplorer from './layouts/projects/fileExplorer';
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
@@ -55,6 +56,7 @@ function App() {
       case 'api_editor': return <ApiEditor projectName={actualProject}></ApiEditor>
       case 'page_editor': return <PageEditor projectName={actualProject}></PageEditor>
       case 'controller_editor': return <ControllerEditor projectName={actualProject}></ControllerEditor>
+      case 'Files': return <FileExplorer></FileExplorer>
       default: return <HomePage />; // Fallback
     }
   };

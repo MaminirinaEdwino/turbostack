@@ -26,5 +26,8 @@ export const GoApp = {
     },
     exportProject: async(name, type)=>{
         return await window.exportProject(name, type)
+    },
+    fetchProjectFiles: async(name)=>{
+        return await window.fetchProjectFiles(name)
     }
 }

@@ -21,6 +21,7 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("saveProject", ps.SaveProject)
 	w.Bind("saveBdd", ps.SaveProjectBDD)
 	w.Bind("exportProject", ps.ExportProject)
+	w.Bind("fetchProjectFiles", ps.FeychProjectFiles)
 }
 
 func (s *ProjectService) ExportProject(name, typeProject string) string {
@@ -75,6 +76,11 @@ func (s *ProjectService) SaveProjectBDD(name string, bddJson string) string {
 	pJson.Nom = name
 	s.Manager.SaveProject(pJson)
 	return "Success"
+}
+
+func (mgr *ProjectService) FeychProjectFiles(name string) []entity.FileNode {
+	file, _ :=  mgr.Manager.GetProjectFiles(name)
+	return file
 }
 
 func (s *ProjectService) FetchProjects() []string {

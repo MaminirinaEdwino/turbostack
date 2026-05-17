@@ -26,3 +26,14 @@ func CheckCreateDir(path string){
 		os.MkdirAll(filePath, os.ModePerm)
 	}
 }
+
+func CheckEmptyFile(chemin string) (bool, error) {
+	info, err := os.Stat(chemin)
+	if err != nil {
+		return false, err
+	}
+	if info.IsDir() {
+		return false, fmt.Errorf("%s est un dossier, pas un fichier", chemin)
+	}
+	return info.Size() == 0, nil
+}

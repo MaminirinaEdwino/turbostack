@@ -21,7 +21,7 @@ func (page *Page) GetNom() string {
 	return page.nom
 }
 
-func (page *Page) GetContenu() any {
+func (page *Page) GetContent() []pageContent {
 	return page.contenu
 }
 

@@ -32,10 +32,9 @@ function App() {
   }, [isDarkMode]);
 
   useEffect(() => {
-    // Simulation d'une phase d'initialisation pour éviter le flash blanc
     const timer = setTimeout(() => {
       setIsAppReady(true);
-    }, 1000); // 1 seconde suffit pour une transition fluide
+    }, 1000); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -64,7 +63,6 @@ function App() {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
         <div className="flex flex-col items-center gap-4">
-          {/* <Loader2 className="w-12 h-12 text-couleur1 animate-spin" /> */}
           <img src={logo} alt="" />
           <h1 className="text-xl font-black text-couleur1 tracking-[0.2em] uppercase animate-pulse">TurboStack</h1>
         </div>

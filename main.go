@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log"
 	"os"
 
@@ -23,6 +24,7 @@ func main() {
 	if err := projectMgr.LoadProjects(); err != nil {
 		log.Printf("Erreur lors du chargement des projets : %v", err)
 	}
+	fmt.Println(projectMgr.Projects)
 	mgr := api.NewManager()
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})

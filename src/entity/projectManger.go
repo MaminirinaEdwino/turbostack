@@ -29,18 +29,20 @@ func (mgr *ProjectManager) LoadProjects() error {
 		return err
 	}
 	for _, val := range projectFiles {
-		var pJson ProjectJSON
-		var p Project
-		filePath := fmt.Sprintf("%s/%s", config.PROJECT_DIR, val.Name())
-		saveFile, err := os.ReadFile(filePath)
-		if err != nil {
-			return err
-		}
+		if !val.IsDir() {
+			var pJson ProjectJSON
+			var p Project
+			filePath := fmt.Sprintf("%s/%s", config.PROJECT_DIR, val.Name())
+			saveFile, err := os.ReadFile(filePath)
+			if err != nil {
+				return err
+			}
 
-		json.Unmarshal(saveFile, &pJson)
-		p.SetNom(pJson.Nom)
-		p.SetType(pJson.Type)
-		mgr.Projects = append(mgr.Projects, p)
+			json.Unmarshal(saveFile, &pJson)
+			p.SetNom(pJson.Nom)
+			p.SetType(pJson.Type)
+			mgr.Projects = append(mgr.Projects, p)
+		}
 	}
 	return nil
 }

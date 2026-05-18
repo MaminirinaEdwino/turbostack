@@ -70,11 +70,9 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 
 		// Conversion du contenu JSON en HTML
 		content := page.GetContent()
-		anyBlocks := make([]any, len(content))
-		for i, v := range content {
-			anyBlocks[i] = v
-		}
-		sb.WriteString(ssm.RenderBlocksToHTML(anyBlocks))
+		
+		fmt.Println(ssm.RenderBlocksToHTML(content, projectName))
+		sb.WriteString(ssm.RenderBlocksToHTML(content, projectName))
 
 		sb.WriteString("\n</body>\n</html>")
 

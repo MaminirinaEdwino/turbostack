@@ -12,6 +12,7 @@ import {
     Layout,
     Globe,
     Cpu,
+    PanelsTopLeft,
     SendHorizonal,
     SendToBack
 } from "lucide-react";
@@ -48,10 +49,12 @@ export default function SideMenu() {
     // Ajout des liens directs vers les éditeurs si un projet est actif
     if (actualProject) {
         menuItems.splice(2, 0, {
-            name: 'Editor',
-            icon: <LucidePuzzle size={18} />,
+            name: 'Workspace Unifié',
+            icon: <PanelsTopLeft size={18} />,
+            label: 'Workspace Unifié',
             isDropdown: true,
             subItems: [
+                { name: 'unified_editor', icon: <PanelsTopLeft size={18} />, label: 'Éditeur Master' },
                 { name: 'db_editor', icon: <Database size={18} />, label: 'DB Editor' },
                 { name: 'api_editor', icon: <Settings size={18} />, label: 'API Editor' },
                 { name: 'page_editor', icon: <LayoutDashboard size={18} />, label: 'Page Editor' },

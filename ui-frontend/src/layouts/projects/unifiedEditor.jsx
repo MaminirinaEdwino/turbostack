@@ -306,6 +306,7 @@ export default function UnifiedEditor({ projectName }) {
      * Transforme l'objet projet en nœuds et liens pour React Flow
      * Cette fonction est appelée à chaque fois que l'état 'project' change
      */
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     const refreshFlowLayout = useCallback(() => {
         if (!project) return;
 
@@ -323,7 +324,12 @@ export default function UnifiedEditor({ projectName }) {
                 id: `model-${model.nom}`,
                 type: 'dbModel',
                 position: { x: 50, y: 100 + (idx * rowHeight) },
-                data: { label: model.nom, fields: model.champs, description: "Table" }
+                data: { 
+                    label: model.nom, 
+                    fields: model.champs, 
+                    description: "Table",
+                    onEdit: () => navigateTo('db_editor')
+                }
             });
         });
 
@@ -334,7 +340,11 @@ export default function UnifiedEditor({ projectName }) {
                 id: `api-${ep.nom}`,
                 type: 'apiEndpoint',
                 position: { x: 50 + colWidth, y: 100 + (idx * rowHeight) },
-                data: { ...ep, label: ep.nom }
+                data: { 
+                    ...ep, 
+                    label: ep.nom,
+                    onEdit: () => navigateTo('api_editor')
+                }
             });
 
             // Liens API -> Modèles
@@ -358,7 +368,13 @@ export default function UnifiedEditor({ projectName }) {
                 id: `page-${page.nom}`,
                 type: 'uiPage',
                 position: { x: 50 + (colWidth * 2), y: 100 + (idx * rowHeight) },
-                data: { label: page.nom, uri: page.uri, boundEndpoints: [] }
+                data: { 
+                    label: page.nom, 
+                    uri: page.uri, 
+                    boundEndpoints: [],
+                    onEdit: () => navigateTo('page_editor'),
+                    onEditLogic: () => navigateTo('controller_editor')
+                }
             });
         });
 
@@ -399,7 +415,11 @@ export default function UnifiedEditor({ projectName }) {
                 id: componentId,
                 type: 'uiComponent',
                 position: { x: 50 + (colWidth * 3), y: 100 + (idx * rowHeight) },
-                data: { label: comp.nom, description: 'UI Component' }
+                data: { 
+                    label: comp.nom, 
+                    description: 'UI Component',
+                    onEdit: () => navigateTo('page_editor')
+                }
             });
 
             // Vérifier si le composant a été généré à partir d'un endpoint
@@ -420,6 +440,7 @@ export default function UnifiedEditor({ projectName }) {
 
         setNodes(newNodes);
         setEdges(newEdges);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [project, setNodes, setEdges]);
 
     const handleNodeClick = useCallback((event, node) => {
@@ -551,7 +572,7 @@ export default function UnifiedEditor({ projectName }) {
 
             {/* Toast Notification */}
             {toast && (
-                <div className={`fixed bottom-10 right-10 z-[100] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl transition-all duration-300 border ${toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
+                <div className={`fixed bottom-10 right-10 z-100 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl transition-all duration-300 border ${toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
                     toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
                         "bg-green-50 border-green-200 text-green-700"
                     }`}>

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { 
-    ReactFlow, 
-    Controls, 
-    Background, 
-    MiniMap, 
-    useNodesState, 
-    useEdgesState, 
+import {
+    ReactFlow,
+    Controls,
+    Background,
+    MiniMap,
+    useNodesState,
+    useEdgesState,
     addEdge,
-    MarkerType 
+    MarkerType
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useNavigate } from "../../hooks/useNavigate"; // Import de useNavigate
@@ -26,10 +26,6 @@ const nodeTypes = {
     uiPage: NodeUIPage,
 };
 
-/**
- * UnifiedEditor - Une nouvelle interface regroupant les outils de conception.
- * Visualisation globale via React Flow.
- */
 export default function UnifiedEditor({ projectName }) {
     const navigateTo = useNavigate(); // Initialisation du hook de navigation
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -37,15 +33,132 @@ export default function UnifiedEditor({ projectName }) {
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState(null);
-    const onConnect = useCallback(
-        (params) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges]
-    );
 
     const showToast = (message, type = "success") => {
         setToast({ message, type });
         if (type !== "loading") setTimeout(() => setToast(null), 3000);
     };
+
+
+    /**
+     * Gère la suppression des liaisons (edges)
+     * Met à jour l'objet projet en supprimant les relations logiques
+     */
+    const onEdgesDelete = useCallback(
+        (deletedEdges) => {
+            setProject((prev) => {
+                if (!prev) return prev;
+                const newProject = JSON.parse(JSON.stringify(prev));
+
+                deletedEdges.forEach((edge) => {
+                    const { source, target } = edge;
+
+                    // CAS 1 : Suppression de la liaison Modèle -> API
+                    if (source.startsWith("model-") && target.startsWith("api-")) {
+                        const modelNom = source.replace("model-", "");
+                        const apiNom = target.replace("api-", "");
+                        const ep = newProject.rest_api?.endpoints?.find(e => e.nom === apiNom);
+
+                        if (ep && ep.model) {
+                            ep.model = ep.model.filter(m => m.nom !== modelNom);
+                            showToast(`Lien vers le modèle ${modelNom} supprimé de l'API ${apiNom}`, "info");
+                        }
+                    }
+
+                    // CAS 2 : Suppression de la liaison API -> Page UI
+                    if (source.startsWith("api-") && target.startsWith("page-")) {
+                        const apiNom = source.replace("api-", "");
+                        const pageNom = target.replace("page-", "");
+                        const typeKey = newProject.type === "static" ? "site_statique" : "web_app";
+
+                        let controllers = newProject[typeKey]?.controllers || [];
+                        let ctrlIdx = controllers.findIndex(c => c.page_nom === pageNom);
+
+                        if (ctrlIdx !== -1) {
+                            controllers[ctrlIdx].bindings = (controllers[ctrlIdx].bindings || [])
+                                .filter(b => b.endpoint_nom !== apiNom);
+                            showToast(`Liaison API ${apiNom} retirée de la page ${pageNom}`, "info");
+                        }
+                    }
+                });
+
+                return newProject;
+            });
+        },
+        [showToast]
+    );
+
+
+    const onConnect = useCallback(
+        (params) => {
+            const { source, target } = params;
+            let edgeStyle = {};
+            let markerColor = "";
+
+            // Définition du style visuel selon le type de connexion
+            if (source.startsWith("model-") && target.startsWith("api-")) {
+                edgeStyle = { stroke: '#8b5cf6' };
+                markerColor = '#8b5cf6';
+            } else if (source.startsWith("api-") && target.startsWith("page-")) {
+                edgeStyle = { stroke: '#10b981' };
+                markerColor = '#10b981';
+            }
+
+            // Ajout visuel de l'arête
+            setEdges((eds) => addEdge({
+                ...params,
+                animated: true,
+                style: edgeStyle,
+                markerEnd: { type: MarkerType.ArrowClosed, color: markerColor }
+            }, eds));
+
+            // Logique métier : Mise à jour du projet
+            setProject((prev) => {
+                if (!prev) return prev;
+                const newProject = JSON.parse(JSON.stringify(prev));
+
+                // CAS 1 : Modèle -> API
+                if (source.startsWith("model-") && target.startsWith("api-")) {
+                    const modelNom = source.replace("model-", "");
+                    const apiNom = target.replace("api-", "");
+                    const model = newProject.bdd?.models?.find(m => m.nom === modelNom);
+                    const ep = newProject.rest_api?.endpoints?.find(e => e.nom === apiNom);
+
+                    if (model && ep) {
+                        if (!ep.model) ep.model = [];
+                        if (!ep.model.some(m => m.nom === modelNom)) {
+                            ep.model.push(model);
+                            showToast(`Modèle ${modelNom} lié à l'API ${apiNom}`);
+                        }
+                    }
+                }
+
+                // CAS 2 : API -> Page UI
+                if (source.startsWith("api-") && target.startsWith("page-")) {
+                    const apiNom = source.replace("api-", "");
+                    const pageNom = target.replace("page-", "");
+                    const typeKey = newProject.type === "static" ? "site_statique" : "web_app";
+
+                    let controllers = newProject[typeKey].controllers || [];
+                    let ctrlIdx = controllers.findIndex(c => c.page_nom === pageNom);
+                    const newBinding = { id_element: "root", endpoint_nom: apiNom, trigger: "onLoad", action: "fill_content", map_field: "data" };
+
+                    if (ctrlIdx === -1) {
+                        controllers.push({ nom: `Ctrl_${pageNom}`, page_nom: pageNom, bindings: [newBinding] });
+                    } else {
+                        controllers[ctrlIdx].bindings = [...(controllers[ctrlIdx].bindings || []), newBinding];
+                    }
+                    newProject[typeKey].controllers = controllers;
+                    showToast(`API ${apiNom} liée à la page ${pageNom}`);
+                }
+
+                return newProject;
+            });
+        },
+        [setEdges, showToast]
+    );
+
+
 
     const loadProjectLayout = useCallback(async (showLoader = true) => {
         if (showLoader) setLoading(true);
@@ -132,7 +245,7 @@ export default function UnifiedEditor({ projectName }) {
 
     const handleSave = async () => {
         if (!project) return;
-        
+
         showToast("Sauvegarde du projet...", "loading");
         try {
             console.log("save")
@@ -149,7 +262,7 @@ export default function UnifiedEditor({ projectName }) {
     };
 
     useEffect(() => {
-        const loader = ()=>{
+        const loader = () => {
             loadProjectLayout();
         }
         loader()
@@ -180,7 +293,7 @@ export default function UnifiedEditor({ projectName }) {
                     <button onClick={loadProjectLayout} className="p-2 text-couleur1/40 hover:text-couleur1 transition-colors" title="Recharger la disposition">
                         <RefreshCcw size={18} />
                     </button>
-                    <button 
+                    <button
                         onClick={handleSave}
                         className="flex items-center gap-2 bg-couleur1 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:scale-105 transition-all"
                     >
@@ -201,6 +314,7 @@ export default function UnifiedEditor({ projectName }) {
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
+                        onEdgesDelete={onEdgesDelete}
                         nodeTypes={nodeTypes}
                         fitView
                     >
@@ -213,13 +327,12 @@ export default function UnifiedEditor({ projectName }) {
 
             {/* Toast Notification */}
             {toast && (
-                <div className={`fixed bottom-10 right-10 z-[100] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl transition-all duration-300 border ${
-                    toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
+                <div className={`fixed bottom-10 right-10 z-[100] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl transition-all duration-300 border ${toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" :
                     toast.type === "loading" ? "bg-blue-50 border-blue-200 text-blue-700" :
-                    "bg-green-50 border-green-200 text-green-700"
-                }`}>
+                        "bg-green-50 border-green-200 text-green-700"
+                    }`}>
                     {toast.type === "loading" ? <Loader2 size={18} className="animate-spin" /> :
-                     toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
+                        toast.type === "error" ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
                     <span className="font-bold text-sm">{toast.message}</span>
                 </div>
             )}

@@ -36,6 +36,7 @@ export default function UnifiedEditor({ projectName }) {
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState(null);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const showToast = (message, type = "success") => {
         setToast({ message, type });
         if (type !== "loading") setTimeout(() => setToast(null), 3000);

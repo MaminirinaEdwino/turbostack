@@ -18,7 +18,7 @@ import { GoApp } from "../../services/bridge";
 import NodeDbModel from "./NodeDbModel";
 import NodeApiEndpoint from "./NodeApiEndpoint";
 import NodeUIPage from "./NodeUIPage";
-import { ArrowLeft, CheckCircle, AlertCircle, Loader2, PanelsTopLeft, RefreshCcw, Save } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertCircle, Loader2, PanelsTopLeft, RefreshCcw, Save, Plus } from "lucide-react";
 
 const nodeTypes = {
     dbModel: NodeDbModel,
@@ -158,6 +158,131 @@ export default function UnifiedEditor({ projectName }) {
         [setEdges, showToast]
     );
 
+    /**
+     * Ajoute une nouvelle table (Modèle BDD) au projet
+     */
+    const handleAddTable = () => {
+        const tableName = window.prompt("Nom de la nouvelle table :");
+        if (!tableName) return;
+
+        setProject((prev) => {
+            if (!prev) return prev;
+
+            // Vérification de l'existence
+            if (prev.bdd?.models?.some(m => m.nom.toLowerCase() === tableName.toLowerCase())) {
+                showToast("Cette table existe déjà", "error");
+                return prev;
+            }
+
+            const newModel = {
+                nom: tableName,
+                champs: [
+                    { nom: "id", type: "int", constraint: ["primary key", "autoincrement"] }
+                ]
+            };
+
+            const updatedProject = {
+                ...prev,
+                bdd: {
+                    ...prev.bdd,
+                    models: [...(prev.bdd?.models || []), newModel]
+                }
+            };
+
+            showToast(`Table ${tableName} créée`);
+            return updatedProject;
+        });
+    };
+
+    /**
+     * Transforme l'objet projet en nœuds et liens pour React Flow
+     * Cette fonction est appelée à chaque fois que l'état 'project' change
+     */
+    const refreshFlowLayout = useCallback(() => {
+        if (!project) return;
+
+        const newNodes = [];
+        const newEdges = [];
+
+        // Configuration de la disposition
+        const colWidth = 350;
+        const rowHeight = 180;
+
+        // 1. Génération des Modèles de BDD (Colonne 1)
+        const models = project.bdd?.models || [];
+        models.forEach((model, idx) => {
+            newNodes.push({
+                id: `model-${model.nom}`,
+                type: 'dbModel',
+                position: { x: 50, y: 100 + (idx * rowHeight) },
+                data: { label: model.nom, fields: model.champs, description: "Table" }
+            });
+        });
+
+        // 2. Génération des Endpoints API (Colonne 2)
+        const endpoints = project.rest_api?.endpoints || [];
+        endpoints.forEach((ep, idx) => {
+            newNodes.push({
+                id: `api-${ep.nom}`,
+                type: 'apiEndpoint',
+                position: { x: 50 + colWidth, y: 100 + (idx * rowHeight) },
+                data: { ...ep, label: ep.nom }
+            });
+
+            // Liens API -> Modèles
+            ep.model?.forEach(m => {
+                newEdges.push({
+                    id: `edge-api-model-${ep.nom}-${m.nom}`,
+                    source: `model-${m.nom}`,
+                    target: `api-${ep.nom}`,
+                    animated: true,
+                    style: { stroke: '#8b5cf6' },
+                    markerEnd: { type: MarkerType.ArrowClosed, color: '#8b5cf6' }
+                });
+            });
+        });
+
+        // 3. Génération des Pages UI (Colonne 3)
+        const siteData = project.type === "static" ? project.site_statique : project.web_app;
+        const pages = siteData?.pages || [];
+        pages.forEach((page, idx) => {
+            newNodes.push({
+                id: `page-${page.nom}`,
+                type: 'uiPage',
+                position: { x: 50 + (colWidth * 2), y: 100 + (idx * rowHeight) },
+                data: { label: page.nom, uri: page.uri, boundEndpoints: [] }
+            });
+        });
+
+        // 4. Liaisons via Controllers (Edges API -> UI)
+        const controllers = siteData?.controllers || [];
+        controllers.forEach(ctrl => {
+            ctrl.bindings?.forEach(bind => {
+                const edgeId = `edge-ui-api-${ctrl.page_nom}-${bind.endpoint_nom}`;
+                // Éviter les doublons de liens visuels si plusieurs champs sont liés au même endpoint
+                if (!newEdges.some(e => e.id === edgeId)) {
+                    newEdges.push({
+                        id: edgeId,
+                        source: `api-${bind.endpoint_nom}`,
+                        target: `page-${ctrl.page_nom}`,
+                        label: bind.trigger,
+                        animated: true,
+                        style: { stroke: '#10b981' },
+                        markerEnd: { type: MarkerType.ArrowClosed, color: '#10b981' }
+                    });
+                }
+
+                // Mise à jour des data du noeud page pour afficher les APIs liées dans la liste
+                const pageNode = newNodes.find(n => n.id === `page-${ctrl.page_nom}`);
+                if (pageNode && !pageNode.data.boundEndpoints.includes(bind.endpoint_nom)) {
+                    pageNode.data.boundEndpoints.push(bind.endpoint_nom);
+                }
+            });
+        });
+
+        setNodes(newNodes);
+        setEdges(newEdges);
+    }, [project, setNodes, setEdges]);
 
 
     const loadProjectLayout = useCallback(async (showLoader = true) => {
@@ -240,8 +365,15 @@ export default function UnifiedEditor({ projectName }) {
 
         setNodes(newNodes);
         setEdges(newEdges);
+    }, [project, setNodes, setEdges]);
+
+    // Chargement initial du projet
+    const loadProjectData = useCallback(async () => {
+        setLoading(true);
+        const res = await GoApp.fetchProjectByName(projectName);
+        if (res) setProject(res);
         setLoading(false);
-    }, [projectName, setNodes, setEdges]);
+    }, [projectName]);
 
     const handleSave = async () => {
         if (!project) return;
@@ -262,11 +394,13 @@ export default function UnifiedEditor({ projectName }) {
     };
 
     useEffect(() => {
-        const loader = () => {
-            loadProjectLayout();
-        }
-        loader()
-    }, [loadProjectLayout]);
+        loadProjectData();
+    }, [loadProjectData]);
+
+    // Met à jour le graphique dès que le projet change (ajout table, liaison, etc.)
+    useEffect(() => {
+        refreshFlowLayout();
+    }, [refreshFlowLayout]);
 
     return (
         <div className="flex flex-col w-full h-screen bg-couleur3 dark:bg-gray-950 overflow-hidden">
@@ -290,8 +424,14 @@ export default function UnifiedEditor({ projectName }) {
                         <ArrowLeft size={18} />
                     </button>
                     {/* Bouton pour recharger la disposition du projet */}
-                    <button onClick={loadProjectLayout} className="p-2 text-couleur1/40 hover:text-couleur1 transition-colors" title="Recharger la disposition">
+                    <button onClick={loadProjectData} className="p-2 text-couleur1/40 hover:text-couleur1 transition-colors" title="Recharger la disposition">
                         <RefreshCcw size={18} />
+                    </button>
+                    <button
+                        onClick={handleAddTable}
+                        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-couleur1 border border-couleur1/20 px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-couleur3 transition-all"
+                    >
+                        <Plus size={16} /> Add Table
                     </button>
                     <button
                         onClick={handleSave}

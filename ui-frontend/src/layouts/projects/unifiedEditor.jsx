@@ -17,13 +17,15 @@ import { GoApp } from "../../services/bridge";
 // Import des composants de nœuds personnalisés
 import NodeDbModel from "./NodeDbModel";
 import NodeApiEndpoint from "./NodeApiEndpoint";
-import NodeUIPage from "./NodeUIPage";
+import NodeUIPage from "./NodeUIPage"; 
+import NodeComponent from "./NodeComponent"; // New import
 import { ArrowLeft, CheckCircle, AlertCircle, Loader2, PanelsTopLeft, RefreshCcw, Save, Plus } from "lucide-react";
 
 const nodeTypes = {
     dbModel: NodeDbModel,
     apiEndpoint: NodeApiEndpoint,
     uiPage: NodeUIPage,
+    uiComponent: NodeComponent, // New node type
 };
 
 export default function UnifiedEditor({ projectName }) {
@@ -195,6 +197,112 @@ export default function UnifiedEditor({ projectName }) {
     };
 
     /**
+     * Ajoute un nouvel endpoint API au projet
+     */
+    const handleAddEndpoint = () => {
+        const name = window.prompt("Nom de l'endpoint API :");
+        if (!name) return;
+
+        setProject(prev => {
+            if (!prev) return prev;
+            if (prev.rest_api?.endpoints?.some(e => e.nom === name)) {
+                showToast("Cet endpoint existe déjà", "error");
+                return prev;
+            }
+
+            const newEp = { 
+                nom: name, 
+                uri: `/${name.toLowerCase().replace(/\s/g, '-')}`, 
+                method: "GET", 
+                role: "public", 
+                model: [],
+                params: [],
+                manual_fields: []
+            };
+
+            const updatedProject = {
+                ...prev,
+                rest_api: {
+                    ...prev.rest_api,
+                    endpoints: [...(prev.rest_api.endpoints || []), newEp]
+                }
+            };
+            showToast(`Endpoint ${name} créé`);
+            return updatedProject;
+        });
+    };
+
+    /**
+     * Ajoute une nouvelle page au projet
+     */
+    const handleAddPage = () => {
+        const name = window.prompt("Nom de la page UI :");
+        if (!name) return;
+
+        setProject(prev => {
+            if (!prev) return prev;
+            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+            
+            if (prev[typeKey]?.pages?.some(p => p.nom === name)) {
+                showToast("Cette page existe déjà", "error");
+                return prev;
+            }
+
+            const newPage = {
+                id: Math.random().toString(36).substr(2, 9),
+                nom: name,
+                uri: `/${name.toLowerCase().replace(/\s/g, '-')}`,
+                content: []
+            };
+
+            const updatedProject = {
+                ...prev,
+                [typeKey]: {
+                    ...prev[typeKey],
+                    pages: [...(prev[typeKey].pages || []), newPage]
+                }
+            };
+            showToast(`Page ${name} créée`);
+            return updatedProject;
+        });
+    };
+
+    /**
+     * Ajoute un nouveau composant au projet
+     */
+    const handleAddComponent = () => {
+        const name = window.prompt("Nom du composant UI :");
+        if (!name) return;
+
+        setProject(prev => {
+            if (!prev) return prev;
+            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+            const compKey = prev[typeKey]?.composants ? "composants" : "composant";
+
+            if (prev[typeKey]?.[compKey]?.some(c => c.nom === name)) {
+                showToast("Ce composant existe déjà", "error");
+                return prev;
+            }
+
+            const newComp = {
+                id: Math.random().toString(36).substr(2, 9),
+                nom: name,
+                content: []
+            };
+
+            const updatedProject = {
+                ...prev,
+                [typeKey]: {
+                    ...prev[typeKey],
+                    [compKey]: [...(prev[typeKey][compKey] || []), newComp]
+                }
+            };
+            showToast(`Composant ${name} créé`);
+            return updatedProject;
+        });
+    };
+
+    /**
      * Transforme l'objet projet en nœuds et liens pour React Flow
      * Cette fonction est appelée à chaque fois que l'état 'project' change
      */
@@ -280,92 +388,45 @@ export default function UnifiedEditor({ projectName }) {
             });
         });
 
-        setNodes(newNodes);
-        setEdges(newEdges);
-    }, [project, setNodes, setEdges]);
-
-
-    const loadProjectLayout = useCallback(async (showLoader = true) => {
-        if (showLoader) setLoading(true);
-        const res = await GoApp.fetchProjectByName(projectName);
-        if (!res) {
-            setLoading(false);
-            return;
-        }
-        setProject(res);
-        const project = res;
-
-        const newNodes = [];
-        const newEdges = [];
-
-        // Positions de base
-        const colWidth = 350;
-        const rowHeight = 180;
-
-        // 1. Génération des Modèles de BDD (Colonne 1)
-        const models = project.bdd?.models || [];
-        models.forEach((model, idx) => {
+        // 5. Génération des Composants UI (Colonne 4)
+        const allComponents = [
+            ...(project.web_app?.composant || []), // Note: 'composant' for web_app
+            ...(project.site_statique?.composants || []) // Note: 'composants' for site_statique
+        ];
+        allComponents.forEach((comp, idx) => {
+            const componentId = `comp-${comp.nom}`;
             newNodes.push({
-                id: `model-${model.nom}`,
-                type: 'dbModel',
-                position: { x: 50, y: 100 + (idx * rowHeight) },
-                data: { label: model.nom, fields: model.champs, description: "Table" }
-            });
-        });
-
-        // 2. Génération des Endpoints API (Colonne 2)
-        const endpoints = project.rest_api?.endpoints || [];
-        endpoints.forEach((ep, idx) => {
-            newNodes.push({
-                id: `api-${ep.nom}`,
-                type: 'apiEndpoint',
-                position: { x: 50 + colWidth, y: 100 + (idx * rowHeight) },
-                data: { ...ep, label: ep.nom }
+                id: componentId,
+                type: 'uiComponent',
+                position: { x: 50 + (colWidth * 3), y: 100 + (idx * rowHeight) },
+                data: { label: comp.nom, description: 'UI Component' }
             });
 
-            // Liens API -> Modèles
-            ep.model?.forEach(m => {
+            // Vérifier si le composant a été généré à partir d'un endpoint
+            if (comp.nom.startsWith("Comp_")) {
+                const endpointNom = comp.nom.substring(5); // "Comp_EndpointName" -> "EndpointName"
                 newEdges.push({
-                    id: `edge-api-model-${ep.nom}-${m.nom}`,
-                    source: `model-${m.nom}`,
-                    target: `api-${ep.nom}`,
+                    id: `e-api-${endpointNom}-comp-${comp.nom}`,
+                    source: `api-${endpointNom}`,
+                    target: componentId,
+                    type: 'smoothstep',
                     animated: true,
-                    style: { stroke: '#8b5cf6' },
-                    markerEnd: { type: MarkerType.ArrowClosed, color: '#8b5cf6' }
+                    label: 'generates',
+                    markerEnd: { type: MarkerType.ArrowClosed },
+                    style: { stroke: '#FFD700' }, // Gold color for component generation
                 });
-            });
-        });
-
-        // 3. Génération des Pages UI (Colonne 3)
-        const siteData = project.type === "static" ? project.site_statique : project.web_app;
-        const pages = siteData?.pages || [];
-        pages.forEach((page, idx) => {
-            newNodes.push({
-                id: `page-${page.nom}`,
-                type: 'uiPage',
-                position: { x: 50 + (colWidth * 2), y: 100 + (idx * rowHeight) },
-                data: { label: page.nom, uri: page.uri, boundEndpoints: [] }
-            });
-        });
-
-        // 4. Liaisons via Controllers (Edges API -> UI)
-        const controllers = siteData?.controllers || [];
-        controllers.forEach(ctrl => {
-            ctrl.bindings?.forEach(bind => {
-                newEdges.push({
-                    id: `edge-ui-api-${ctrl.page_nom}-${bind.endpoint_nom}`,
-                    source: `api-${bind.endpoint_nom}`,
-                    target: `page-${ctrl.page_nom}`,
-                    label: bind.trigger,
-                    style: { stroke: '#10b981' },
-                    markerEnd: { type: MarkerType.ArrowClosed, color: '#10b981' }
-                });
-            });
+            }
         });
 
         setNodes(newNodes);
         setEdges(newEdges);
     }, [project, setNodes, setEdges]);
+
+    const handleNodeClick = useCallback((event, node) => {
+        showToast(`Édition de ${node.type.replace('dbModel', 'Modèle DB').replace('apiEndpoint', 'Endpoint API').replace('uiPage', 'Page UI').replace('uiComponent', 'Composant UI')} "${node.data.label}"... (Fonctionnalité d'édition directe à venir)`, "info");
+        // Ici, dans une version plus avancée, vous navigueriez vers l'éditeur spécifique
+        // Par exemple : if (node.type === 'dbModel') navigateTo(`db_editor?model=${node.data.label}`);
+    }, [showToast]);
 
     // Chargement initial du projet
     const loadProjectData = useCallback(async () => {
@@ -427,11 +488,33 @@ export default function UnifiedEditor({ projectName }) {
                     <button onClick={loadProjectData} className="p-2 text-couleur1/40 hover:text-couleur1 transition-colors" title="Recharger la disposition">
                         <RefreshCcw size={18} />
                     </button>
+                    {/* Bouton pour ajouter une table */}
                     <button
                         onClick={handleAddTable}
                         className="flex items-center gap-2 bg-white dark:bg-gray-800 text-couleur1 border border-couleur1/20 px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-couleur3 transition-all"
                     >
                         <Plus size={16} /> Add Table
+                    </button>
+                    {/* Bouton pour ajouter un endpoint API */}
+                    <button
+                        onClick={handleAddEndpoint}
+                        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-couleur1 border border-couleur1/20 px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-couleur3 transition-all"
+                    >
+                        <Plus size={16} /> Add API
+                    </button>
+                    {/* Bouton pour ajouter une page UI */}
+                    <button
+                        onClick={handleAddPage}
+                        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-couleur1 border border-couleur1/20 px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-couleur3 transition-all"
+                    >
+                        <Plus size={16} /> Add Page
+                    </button>
+                    {/* Bouton pour ajouter un composant UI */}
+                    <button
+                        onClick={handleAddComponent}
+                        className="flex items-center gap-2 bg-white dark:bg-gray-800 text-couleur1 border border-couleur1/20 px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-couleur3 transition-all"
+                    >
+                        <Plus size={16} /> Add Component
                     </button>
                     <button
                         onClick={handleSave}
@@ -454,6 +537,7 @@ export default function UnifiedEditor({ projectName }) {
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
+                        onNodeClick={handleNodeClick}
                         onEdgesDelete={onEdgesDelete}
                         nodeTypes={nodeTypes}
                         fitView

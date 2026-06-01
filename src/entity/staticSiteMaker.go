@@ -55,11 +55,11 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 
 		// Gestion des balises auto-fermantes
 		if tag == "img" {
-			sb.WriteString(fmt.Sprintf("<img src=\"%s\" class=\"%s\" data-id=\"%s\" style=\"%s\"/>", content, className, id, style))
+			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-id=\"%s\" />", content, className, id)
 			continue
 		}
 
-		fmt.Fprintf(&sb, "<%s class=\"%s\" data-id=\"%s\" style=\"%s\"> ", tag, className, id, style)
+		fmt.Fprintf(&sb, "<%s class=\"%s\" data-id=\"%s\" > ", tag, className, id)
 		var cssVal map[string]map[string]string
 		if style != "" {
 			er := json.Unmarshal([]byte(style), &cssVal)

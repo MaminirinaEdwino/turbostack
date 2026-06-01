@@ -23,10 +23,14 @@ func (ssm *Staticsitemaker) SetupStaticArch(name string) {
 	}
 }
 
-func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName string) string {
-	cssPath := fmt.Sprintf("%s/%s/static/css/style.css", config.PROJECT_DIR, projectName)
+func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName string, pageName string) string {
+	cssPath := fmt.Sprintf("%s/%s/static/css/%s.css", config.PROJECT_DIR, projectName, pageName)
 	cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
 	var sb strings.Builder
+
+	var desktopSb strings.Builder
+	var tabletSb strings.Builder
+
 	for _, b := range blocks {
 		block := b
 
@@ -54,36 +58,45 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 		desktop := cssVal["desktop"]
 		tablet := cssVal["tablet"]
 		mobile := cssVal["mobile"]
-		if len(desktop)>0 {
-			fmt.Fprint(cssFile, "@media screen and (min-width: 1024px) {\n")
-			fmt.Fprintf(cssFile, " %s{\n", tag)
-			for key, val := range desktop {
-				fmt.Fprintf(cssFile, "%s:%s", key, val)
-			}
-			fmt.Fprint(cssFile, " }\n")
-		}
-		if len(tablet)>0 {
-			fmt.Fprint(cssFile, "@media screen and (min-width: 1024px) {\n")
-			fmt.Fprintf(cssFile, " %s{\n", tag)
+		if len(tablet) > 0 {
+			tabletSb.WriteString(fmt.Sprintf("%s{\n", tag))
 			for key, val := range tablet {
-				fmt.Fprintf(cssFile, "%s:%s", key, val)
+				tabletSb.WriteString(fmt.Sprintf("\t%s:%s;", key, val))
 			}
-			fmt.Fprint(cssFile, " }\n")
+			tabletSb.WriteString(" }\n")
 		}
-		if len(mobile)>0 {
+		if len(desktop) > 0 {
+			fmt.Fprintf(&desktopSb, " %s{\n", tag)
+			for key, val := range desktop {
+				fmt.Fprintf(&desktopSb, "\t%s:%s;\n", key, val)
+			}
+			desktopSb.WriteString(" }\n")
+		}
+
+		if len(mobile) > 0 {
 			fmt.Fprintf(cssFile, " %s{\n", tag)
 			for key, val := range mobile {
-				fmt.Fprintf(cssFile, "%s:%s", key, val)
+				fmt.Fprintf(cssFile, "\t%s:%s;\n", key, val)
 			}
 			fmt.Fprint(cssFile, " }\n")
 		}
 		sb.WriteString(content)
 
 		if len(block.children) > 0 {
-			sb.WriteString(mgr.RenderBlocksToHTML(block.children, projectName))
+			sb.WriteString(mgr.RenderBlocksToHTML(block.children, projectName, pageName))
 		}
 		fmt.Printf("</%s>\n", tag)
 		fmt.Fprintf(&sb, "</%s>", tag)
+	}
+	if desktopSb.Len() > 0 {
+		cssFile.WriteString("@media screen and (min-width: 1024px) {\n")
+		cssFile.WriteString(desktopSb.String())
+		cssFile.WriteString("}\n")
+	}
+	if tabletSb.Len() > 0 {
+		cssFile.WriteString("@media screen and (min-width: 768px) {\n")
+		cssFile.WriteString(tabletSb.String())
+		cssFile.WriteString("}\n")
 	}
 	return sb.String()
 }

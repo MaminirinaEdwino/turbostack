@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/MaminirinaEdwino/turbostack/src/api"
@@ -35,14 +36,14 @@ func main() {
 	mgr.RegisterAll(w)
 	w.SetTitle("Turbo Stack")
 	w.SetSize(800, 600, webview.HintNone)
-	// go func() {
-	// 	fs := http.FileServer(http.FS(assets))
-	// 	http.ListenAndServe(":1627", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 		r.URL.Path = "/ui-dist" + r.URL.Path
-	// 		fs.ServeHTTP(w, r)
-	// 	}))
-	// }()
+	go func() {
+		fs := http.FileServer(http.FS(assets))
+		http.ListenAndServe(":1627", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r.URL.Path = "/ui-dist" + r.URL.Path
+			fs.ServeHTTP(w, r)
+		}))
+	}()
 
-	w.Navigate("http://localhost:5173")
+	w.Navigate("http://localhost:1627")
 	w.Run()
 }

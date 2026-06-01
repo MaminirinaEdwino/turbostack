@@ -64,7 +64,7 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 		sb.WriteString("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n")
 		sb.WriteString("\t<meta charset=\"UTF-8\">\n")
 		fmt.Fprintf(&sb, "\t<title>%s</title>\n", page.GetNom())
-		sb.WriteString(fmt.Sprintf("\t<link rel=\"stylesheet\" href=\"css/%s.css\">\n", pageName))
+		fmt.Fprintf(&sb, "\t<link rel=\"stylesheet\" href=\"css/%s.css\">\n", pageName)
 		sb.WriteString("</head>\n<body>\n")
 
 		// Conversion du contenu JSON en HTML

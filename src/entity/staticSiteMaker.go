@@ -23,9 +23,22 @@ func (ssm *Staticsitemaker) SetupStaticArch(name string) {
 	}
 }
 
+func checkValueSb(sb *strings.Builder, key, value string) {
+	fmt.Println("value : ", value)
+	if value != "" {
+		fmt.Fprintf(sb, "\t%s:%s;\n", key, value)
+	}
+}
+
+func checkValueFile(sb *os.File, key, value string) {
+	if len(strings.Split(value, "")) > 0 {
+		fmt.Fprintf(sb, "\t%s:%s;\n", key, value)
+	}
+}
+
 func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName string, pageName string) string {
 	cssPath := fmt.Sprintf("%s/%s/static/css/%s.css", config.PROJECT_DIR, projectName, pageName)
-	cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+	cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
 	var sb strings.Builder
 
 	var desktopSb strings.Builder
@@ -59,33 +72,33 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 		tablet := cssVal["tablet"]
 		mobile := cssVal["mobile"]
 		if len(tablet) > 0 {
-			tabletSb.WriteString(fmt.Sprintf("%s{\n", tag))
+			fmt.Fprintf(&tabletSb, "%s{\n", tag)
 			for key, val := range tablet {
-				tabletSb.WriteString(fmt.Sprintf("\t%s:%s;", key, val))
+				checkValueSb(&tabletSb, key, val)
 			}
-			tabletSb.WriteString(" }\n")
+			tabletSb.WriteString("}\n")
 		}
 		if len(desktop) > 0 {
-			fmt.Fprintf(&desktopSb, " %s{\n", tag)
+			fmt.Fprintf(&desktopSb, "%s{\n", tag)
 			for key, val := range desktop {
-				fmt.Fprintf(&desktopSb, "\t%s:%s;\n", key, val)
+				checkValueSb(&desktopSb, key, val)
 			}
-			desktopSb.WriteString(" }\n")
+			desktopSb.WriteString("}\n")
 		}
 
 		if len(mobile) > 0 {
-			fmt.Fprintf(cssFile, " %s{\n", tag)
+			fmt.Fprintf(cssFile, "%s{\n", tag)
 			for key, val := range mobile {
-				fmt.Fprintf(cssFile, "\t%s:%s;\n", key, val)
+				checkValueFile(cssFile, key, val)
 			}
-			fmt.Fprint(cssFile, " }\n")
+			fmt.Fprint(cssFile, "}\n")
 		}
 		sb.WriteString(content)
 
 		if len(block.children) > 0 {
 			sb.WriteString(mgr.RenderBlocksToHTML(block.children, projectName, pageName))
 		}
-		fmt.Printf("</%s>\n", tag)
+
 		fmt.Fprintf(&sb, "</%s>", tag)
 	}
 	if desktopSb.Len() > 0 {

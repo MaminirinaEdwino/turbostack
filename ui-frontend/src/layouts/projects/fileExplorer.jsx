@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Folder, File, ChevronRight, ChevronDown, HardDrive, RefreshCw, ChevronLeftCircle } from 'lucide-react';
 import { GoApp } from '../../services/bridge';
 import { useNavigate } from '../../hooks/useNavigate';
+import FileExplorerDirectory from './fileExplorerDirectory';
+import FileExplorerHeader from './fileExplorerHeader';
 
 const FileNode = ({ node, level, onFileClick, selectedPath }) => {
     const [isOpen, setIsOpen] = useState(level < 1);
@@ -17,32 +19,7 @@ const FileNode = ({ node, level, onFileClick, selectedPath }) => {
 
     return (
         <div className="select-none">
-            <div 
-                className={`flex items-center gap-2 py-1.5 px-2 hover:bg-couleur1/5 cursor-pointer rounded-lg transition-colors group ${selectedPath === node.path ? 'bg-couleur1/10' : ''}`}
-                style={{ paddingLeft: `${level * 16 + 8}px` }}
-                onClick={handleClick}
-            >
-                <div className="w-4 h-4 flex items-center justify-center">
-                    {node.is_dir && (
-                        <span className="text-couleur1/40">
-                            {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                        </span>
-                    )}
-                </div>
-                {node.is_dir ? (
-                    <Folder size={16} className="text-couleur1 fill-couleur1/10" />
-                ) : (
-                    <File size={16} className="text-couleur1/60" />
-                )}
-                <span className={`text-sm truncate ${node.is_dir ? 'font-bold text-couleur1' : 'text-couleur1/80'}`}>
-                    {node.name}
-                </span>
-                {!node.is_dir && (
-                    <span className="text-[9px] opacity-0 group-hover:opacity-40 ml-auto font-mono whitespace-nowrap bg-couleur1/10 px-1 rounded">
-                        {(node.size / 1024).toFixed(1)} KB
-                    </span>
-                )}
-            </div>
+            <FileExplorerDirectory handleClick={handleClick} isOpen={isOpen} level={level} node={node} selectedPath={selectedPath}></FileExplorerDirectory>
             {node.is_dir && isOpen && hasChildren && (
                 <div className="animate-in slide-in-from-left-1 duration-200">
                     {node.children.map((child) => (
@@ -97,22 +74,8 @@ export default function FileExplorer({ projectName }) {
     }, [projectName]);
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-gray-950 rounded-[2rem] border border-couleur1/10 shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-couleur1/10 bg-couleur3/5 dark:bg-white/5 flex items-center justify-between">
-
-                <div className="flex items-center gap-3">
-                    <div onClick={()=>navigate('Dashboard')} className="p-2 bg-couleur1/10 rounded-xl">
-                        <ChevronLeftCircle size={20} className="text-couleur1" />
-                    </div>
-                    <div className="p-2 bg-couleur1/10 rounded-xl">
-                        <HardDrive size={20} className="text-couleur1" />
-                    </div>
-                    <h2 className="font-black text-couleur1 text-sm uppercase tracking-wider">Project Explorer</h2>
-                </div>
-                <button onClick={loadFiles} className={`p-2 hover:bg-couleur1/10 rounded-full text-couleur1 transition-all ${loading ? 'animate-spin' : ''}`}>
-                    <RefreshCw size={16} />
-                </button>
-            </div>
+        <div className="flex flex-col h-full bg-white dark:bg-gray-950 rounded-4xl border border-couleur1/10 shadow-sm overflow-hidden">
+            <FileExplorerHeader loadFiles={loadFiles} loading={loading} navigate={navigate}></FileExplorerHeader>
             <div className="flex-1 flex overflow-hidden">
                 {/* Sidebar: Arborescence */}
                 <div className="w-1/3 border-r border-couleur1/10 overflow-y-auto p-4 custom-scrollbar bg-couleur3/5 dark:bg-black/10">

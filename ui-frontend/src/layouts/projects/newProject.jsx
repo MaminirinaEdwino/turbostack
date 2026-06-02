@@ -4,7 +4,7 @@ import newProjetIllustration from "../../assets/newProject.svg";
 import { useNavigate } from "../../hooks/useNavigate";
 import { useState } from "react";
 import { GoApp } from "../../services/bridge";
-import { Plus, X, FolderPlus } from "lucide-react";
+import { X, FolderPlus } from "lucide-react";
 export default function NewProject() {
     const navigateTo = useNavigate();
     const [newProjectValue, setNewProject] = useState({
@@ -15,18 +15,10 @@ export default function NewProject() {
     const handleCreateProject = async (e) => {
         e.preventDefault()
         
-        // Appel au backend Go via le bridge
         if(await GoApp.createProject(newProjectValue.name, newProjectValue.description, newProjectValue.type) == "Project already exists"){
             alert("Project already exists")
             return
         }
-        
-        // setNewProject({
-        //     name: "",
-        //     description: "",
-        //     type: ""
-        // })
-        // Redirection vers la liste des projets après création
         
         navigateTo("Project")
     }

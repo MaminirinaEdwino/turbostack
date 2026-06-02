@@ -8,11 +8,9 @@ import { setActualWindow } from "../../appSlice";
 export default function ProjectPageView({ project }) {
     const dispatch = useDispatch();
 
-    // Calcul des statistiques basées sur la structure JSON
     const getStats = () => {
         let stats = [];
 
-        // Toujours afficher les modèles de la BDD racine
         stats.push({
             title: "DB Models",
             total: project.bdd?.models?.length || 0,
@@ -20,7 +18,6 @@ export default function ProjectPageView({ project }) {
             onClick: () => dispatch(setActualWindow('db_editor'))
         });
 
-        // Section API REST
         if (project.type === "api") {
             stats.push({
                 title: "Endpoints",
@@ -28,21 +25,13 @@ export default function ProjectPageView({ project }) {
                 icon: <Settings size={24} />,
                 onClick: () => dispatch(setActualWindow('api_editor'))
             });
-            // stats.push({ 
-            //     title: "API Models", 
-            //     total: project.rest_api.bdd?.models?.length || 0, 
-            //     icon: <Database size={24} />,
-            //     onClick: () => dispatch(setActualWindow('db_editor'))
-            // });
         }
 
-        // Section Web App
         if (project.type === "webapp") {
             stats.push({ title: "App Pages", total: project.web_app.pages?.length || 0, icon: <FileText size={24} />  });
             stats.push({ title: "App Components", total: project.web_app.composant?.length || 0, icon: <LucidePuzzle size={24} /> });
         }
 
-        // Section Site Statique
         if (project.type === "static") {
             stats.push({ title: "Static Pages", total: project.site_statique.pages?.length || 0, icon: <FileText size={24} />, onClick: () => dispatch(setActualWindow('page_editor')) });
             stats.push({ title: "Static Components", total: project.site_statique.composants?.length || 0, icon: <LucidePuzzle size={24} /> });

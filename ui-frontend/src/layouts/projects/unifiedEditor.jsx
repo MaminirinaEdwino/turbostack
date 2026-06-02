@@ -10,11 +10,10 @@ import {
     MarkerType
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useNavigate } from "../../hooks/useNavigate"; // Import de useNavigate
+import { useNavigate } from "../../hooks/useNavigate"; 
 
 import { GoApp } from "../../services/bridge";
 
-// Import des composants de nœuds personnalisés
 import NodeDbModel from "./NodeDbModel";
 import NodeApiEndpoint from "./NodeApiEndpoint";
 import NodeUIPage from "./NodeUIPage"; 
@@ -42,11 +41,6 @@ export default function UnifiedEditor({ projectName }) {
         if (type !== "loading") setTimeout(() => setToast(null), 3000);
     };
 
-
-    /**
-     * Gère la suppression des liaisons (edges)
-     * Met à jour l'objet projet en supprimant les relations logiques
-     */
     const onEdgesDelete = useCallback(
         (deletedEdges) => {
             setProject((prev) => {
@@ -307,7 +301,7 @@ export default function UnifiedEditor({ projectName }) {
      * Transforme l'objet projet en nœuds et liens pour React Flow
      * Cette fonction est appelée à chaque fois que l'état 'project' change
      */
-    // eslint-disable-next-line react-hooks/preserve-manual-memoization
+     
     const refreshFlowLayout = useCallback(() => {
         if (!project) return;
 

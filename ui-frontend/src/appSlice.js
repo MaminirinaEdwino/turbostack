@@ -9,7 +9,7 @@ const appSlice = createSlice({
   initialState: {
     actualWindow: lastWindow,
     actualProject: lastProject,
-    toggleMenuSide: false,
+    toggleMenuSide: true,
     darkMode: lastDarkMode,
   },
   reducers: {

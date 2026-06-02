@@ -1,8 +1,7 @@
 import {
     LayoutDashboard, CreditCard,
-    Image as ImageIcon, Database, FileText, LogOut, Settings,
+    Database, Settings,
     Folder,
-    LucidePuzzle,
     SidebarClose,
     SidebarOpen,
     ChevronDown,
@@ -13,7 +12,6 @@ import {
     Globe,
     Cpu,
     PanelsTopLeft,
-    SendHorizonal,
     SendToBack
 } from "lucide-react";
 import { useNavigate } from "../hooks/useNavigate";
@@ -38,6 +36,7 @@ export default function SideMenu() {
 
         { name: 'Subscription', icon: <CreditCard size={18} /> },
     ];
+    
     let projectMenu = [
         { name: 'Models', icon: <Database size={18} /> },
         { name: 'Web App', icon: <Layout size={18} /> },
@@ -54,7 +53,7 @@ export default function SideMenu() {
             label: 'Workspace',
             isDropdown: true,
             subItems: [
-                { name: 'unified_editor', icon: <PanelsTopLeft size={18} />, label: 'Éditeur Master' },
+                { name: 'unified_editor', icon: <PanelsTopLeft size={18} />, label: 'Global view' },
                 { name: 'db_editor', icon: <Database size={18} />, label: 'DB Editor' },
                 { name: 'api_editor', icon: <Settings size={18} />, label: 'API Editor' },
                 { name: 'page_editor', icon: <LayoutDashboard size={18} />, label: 'Page Editor' },

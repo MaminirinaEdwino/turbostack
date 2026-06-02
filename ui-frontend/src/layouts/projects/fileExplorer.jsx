@@ -48,7 +48,6 @@ export default function FileExplorer({ projectName }) {
         if (showLoading) setLoading(true);
         setLoading(true);
         try {
-            // Note: Assurez-vous d'ajouter fetchProjectFiles dans votre bridge.js
             const res = await GoApp.fetchProjectFiles(projectName);
             setFiles(res || []);
         } catch (error) {

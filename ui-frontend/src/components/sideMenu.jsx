@@ -68,7 +68,7 @@ export default function SideMenu() {
         e.preventDefault()
         dispatch(setToggleMenuSide())
     }
-    return <aside className={`flex flex-col p-6 bg-couleur3 dark:bg-gray-900 transition-all duration-300 ease-in-out border-r border-couleur1/10 dark:border-white/10 ${toggleMenu ? "w-64" : "w-24"} `} >
+    return <aside className={`flex flex-col p-2 dark:bg-gray-950 transition-all duration-300 ease-in-out border-r border-couleur1/10 dark:border-white/10 ${toggleMenu ? "w-56" : "w-15"} `} >
         <div className="flex items-center gap-2 mb-10 overflow-hidden whitespace-nowrap" >
             <div className="w-8 h-8  shrink-0"> <img src={logo} alt="TurboStack" /> </div>
             <span className={`text-xl font-bold text-couleur1 transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`} >TurboStack</span>
@@ -101,7 +101,7 @@ export default function SideMenu() {
                             onMouseLeave={() => !toggleMenu && setEditorExpanded(false)}
                         >
                             <div
-                                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all overflow-hidden whitespace-nowrap 
+                                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all overflow-hidden whitespace-nowrap 
                                     ${isActive
                                         ? "bg-couleur1 text-couleur3 border-couleur1 shadow-sm"
                                         : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1 hover:text-couleur3"}`}
@@ -158,7 +158,7 @@ export default function SideMenu() {
                 return (
                     <div
                         key={item.name}
-                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all overflow-hidden whitespace-nowrap 
+                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all overflow-hidden whitespace-nowrap 
                             ${isActive
                                 ? "bg-couleur1 text-couleur3 border-couleur1 shadow-sm"
                                 : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1 hover:text-couleur3"}`}

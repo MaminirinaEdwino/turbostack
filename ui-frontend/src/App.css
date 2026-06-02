@@ -1,39 +1,57 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-    --color-couleur1: #1a535c; /* Primaire (Sidebar, Titres) */
-    --color-couleur2: #4ecdc4; /* Secondaire (Accents) */
-    --color-couleur3: #f7fff7; /* Background principal */
-    --color-couleur4: #ff6b6b; /* Alertes / Logout */
-    --color-couleur5: #ffffff; /* Fond des cartes */
-    --color-couleur6: #2c3e50; /* Texte */
-    --color-couleur7: #95a5a6; /* Bordures et texte secondaire */
+  --color-couleur1: #1a535c;
+  /* Primaire (Sidebar, Titres) */
+  --color-couleur2: #4ecdc4;
+  /* Secondaire (Accents) */
+  --color-couleur3: #f7fff7;
+  /* Background principal */
+  --color-couleur4: #ff6b6b;
+  /* Alertes / Logout */
+  --color-couleur5: #ffffff;
+  /* Fond des cartes */
+  --color-couleur6: #2c3e50;
+  /* Texte */
+  --color-couleur7: #95a5a6;
+  /* Bordures et texte secondaire */
 }
 
-.sidemenu{
+.sidemenu {
   scrollbar-width: none;
 }
 
-.newProjectForm{
+.newProjectForm {
   @apply w-2/3 flex flex-col p-4 border rounded border-couleur1 m-2 box-border;
+
   &>div {
-    @apply flex flex-col p-2 ;
-    &>label{
+    @apply flex flex-col p-2;
+
+    &>label {
       @apply text-couleur1;
     }
-    input, select, textarea{
+
+    input,
+    select,
+    textarea {
       @apply border-couleur1 border rounded px-2 py-1;
     }
   }
-  main{
+
+  main {
     @apply flex gap-2 justify-end p-2;
-    button{
-      @apply py-2 px-6 rounded cursor-pointer; 
+
+    button {
+      @apply py-2 px-6 rounded cursor-pointer;
     }
-    button:first-child{
+
+    button:first-child {
       @apply bg-couleur1 text-couleur3;
     }
-    button:last-child{
+
+    button:last-child {
       @apply bg-couleur3 text-couleur1 border border-couleur1;
     }
   }

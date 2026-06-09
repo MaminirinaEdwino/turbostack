@@ -116,7 +116,7 @@ export default function SideMenu() {
         {/* Theme Toggle */}
         <button
           onClick={() => dispatch(setToggleDarkMode())}
-          className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all border-couleur7 text-couleur1 hover:bg-couleur1 hover:text-white justify-start fixed w-fit bottom-0 right-1 z-10 dark:bg-couleur1/50 dark:text-white dark:border-none"
+          className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all border-couleur7 text-couleur1 hover:bg-couleur1 hover:text-white justify-start fixed w-fit bottom-0 right-2 z-10 dark:bg-couleur1 dark:text-white dark:border-none"
         >
           <div className="shrink-0">
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}

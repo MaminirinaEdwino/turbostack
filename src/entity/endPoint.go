@@ -1,26 +1,28 @@
 package entity
 
 type Endpoint struct {
-	nom    string
-	uri    string
-	method string
-	model  []Model
-	params []string
-	role   string
+	nom           string
+	uri           string
+	method        string
+	model         []Model
+	params        []string
+	role          string
+	returnContent []string
+	logic         map[string]string
 }
 
 func (e *Endpoint) ToJSON() EndpointJSON {
 	var model []ModelJSON
-	for _, val := range e.model{
+	for _, val := range e.model {
 		model = append(model, val.ToJSON())
 	}
 	return EndpointJSON{
-		Nom: e.nom,
-		Uri: e.uri,
+		Nom:    e.nom,
+		Uri:    e.uri,
 		Method: e.method,
-		Model: model,
+		Model:  model,
 		Params: e.params,
-		Role: e.role,
+		Role:   e.role,
 	}
 }
 

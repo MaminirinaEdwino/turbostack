@@ -248,7 +248,7 @@ export default function DbEditor({ projectName }) {
           <h1 className="text-couleur1 text-3xl font-semibold dark:text-couleur3/50">
             {" "}
             <button
-              className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5 "
+              className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 bg-couleur5 dark:bg-couleur1/50"
               title="go back"
               onClick={() => navigateTo("Dashboard")}
             >
@@ -265,10 +265,10 @@ export default function DbEditor({ projectName }) {
             <Save size={18} /> Save
           </button>
 
-          <div className="relative">
+          <div className="relative ">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-couleur1 border border-couleur1/20 rounded-lg hover:bg-couleur1/5 transition-all"
+              className="p-2 text-couleur1 border border-couleur1/20 rounded-lg hover:bg-couleur1/5 transition-all dark:bg-white/30 dark:hover:bg-white/70"
             >
               <MoreVertical size={20} />
             </button>

@@ -29,8 +29,8 @@ export default function PageEditor({ projectName }) {
   const [selectedComponentIndex, setSelectedComponentIndex] = useState(null);
   const [editingType, setEditingType] = useState("page"); // 'page' ou 'component'
   const [loading, setLoading] = useState(true);
-  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [viewport, setViewport] = useState({
     width: "100%",
@@ -349,19 +349,19 @@ export default function PageEditor({ projectName }) {
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
       {/* Header Commun */}
-      <div className="p-4 flex items-center justify-between border-b border-couleur1/10 bg-white/50 backdrop-blur-md sticky top-0 z-10">
+      <div className="p-4 flex items-center justify-between border-b border-couleur1/10 bg-white/50 dark:bg-couleur1/50 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <button
             onClick={() =>
               editMode ? setEditMode(false) : navigateTo("Dashboard")
             }
-            className="p-2 rounded-xl border hover:bg-white transition-all"
+            className="p-2 rounded-xl border hover:bg-white transition-all dark:hover:bg-couleur1"
           >
             <div className="flex items-center gap-1 pr-1">
               <FcPrevious size={18} />
               {editMode && (
-                <span className="text-[10px] font-bold uppercase text-couleur1">
-                  Retour
+                <span className="text-[10px] font-bold uppercase text-couleur1 dark:text-white/50 ">
+                  Go back
                 </span>
               )}
             </div>
@@ -369,13 +369,13 @@ export default function PageEditor({ projectName }) {
           <h1 className="text-xl font-bold text-couleur1">
             {editMode ? (
               <div className="flex items-center gap-2">
-                <span className="opacity-50 text-xs uppercase">
+                <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
                   Edit {editingType}:
                 </span>
                 <input
                   value={activeItem?.nom}
                   onChange={(e) => updateActiveItemField("nom", e.target.value)}
-                  className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1"
+                  className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50"
                 />
               </div>
             ) : (
@@ -427,12 +427,12 @@ export default function PageEditor({ projectName }) {
 
             {/* Main content: Prévisualisation isolée (Iframe) */}
             <div
-              className={`flex-1 absolute w-full flex flex-col bg-white dark:bg-gray-900 rounded-[2.5rem] border border-couleur1/10 shadow-2xl overflow-hidden h-[calc(100vh-140px)] transition-all duration-300 ${isLeftSidebarOpen ? "ml-80" : ""} ${isRightSidebarOpen ? "mr-96" : ""}`}
+              className={`flex-1 absolute w-fit flex flex-col bg-white dark:bg-gray-900 rounded-[2.5rem] border border-couleur1/10 shadow-2xl overflow-hidden h-[calc(100vh-140px)] transition-all duration-300 ${isLeftSidebarOpen ? "ml-80" : ""} ${isRightSidebarOpen ? "mr-96" : ""}`}
             >
               {!isLeftSidebarOpen && (
                 <button
                   onClick={() => setIsLeftSidebarOpen(true)}
-                  className="absolute -top-8 -left-8 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform"
+                  className="fixed left-0 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform"
                 >
                   <PanelRightOpen size={20} />
                 </button>
@@ -440,13 +440,13 @@ export default function PageEditor({ projectName }) {
               {!isRightSidebarOpen && (
                 <button
                   onClick={() => setIsRightSidebarOpen(true)}
-                  className="absolute right-4 top-24 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform"
+                  className="fixed right-0 top-24 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform"
                 >
                   <PanelLeftOpen size={20} />
                 </button>
               )}
 
-              <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between">
+              <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between ">
                 <div className="flex gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
                   <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-400/40"></div>
@@ -484,7 +484,7 @@ export default function PageEditor({ projectName }) {
                     <button
                       onClick={() =>
                         setViewport({
-                          width: "100%",
+                          width: "1280px",
                           height: "100%",
                           name: "desktop",
                         })
@@ -497,7 +497,7 @@ export default function PageEditor({ projectName }) {
                   </div>
 
                   <span className="text-[10px] font-bold text-couleur1/40 uppercase tracking-widest">
-                    Live Canvas Preview
+                    Preview
                   </span>
                   {/* Zoom Controls */}
                   <div className="flex items-center gap-2">

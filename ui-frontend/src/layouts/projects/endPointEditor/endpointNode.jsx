@@ -1,4 +1,4 @@
-import { Edit, Trash2, Globe } from "lucide-react";
+import { Edit, Trash2, Globe, Code } from "lucide-react";
 
 export default function EndpointNode({ data }) {
   const methodColors = {
@@ -39,6 +39,15 @@ export default function EndpointNode({ data }) {
             }}
           >
             <Trash2 size={14} />
+          </button>
+          <button
+            className="text-blue-50 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              data.onScript();
+            }}
+          >
+            <Code size={14} />
           </button>
         </div>
       </div>

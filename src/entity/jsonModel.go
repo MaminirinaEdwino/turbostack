@@ -27,25 +27,26 @@ type ComposantJSON struct {
 }
 
 type EndpointJSON struct {
-	Nom    string      `json:"nom"`
-	Uri    string      `json:"uri"`
-	Method string      `json:"method"`
-	Model  []ModelJSON `json:"model"`
-	Params []string    `json:"params"`
-	Role   string      `json:"role"`
+	Nom    string            `json:"nom"`
+	Uri    string            `json:"uri"`
+	Method string            `json:"method"`
+	Model  []ModelJSON       `json:"model"`
+	Params []string          `json:"params"`
+	Role   string            `json:"role"`
+	Logic  map[string]string `json:"logic"`
 }
 
 type ControllerJSON struct {
-    Nom         string            `json:"nom"`
-    PageCible   string            `json:"page_nom"`   // Nom de la PageJSON à laquelle il est lié
-    Bindings    []DataBindingJSON `json:"bindings"`   // Les liaisons précises
+	Nom       string            `json:"nom"`
+	PageCible string            `json:"page_nom"` // Nom de la PageJSON à laquelle il est lié
+	Bindings  []DataBindingJSON `json:"bindings"` // Les liaisons précises
 }
 type DataBindingJSON struct {
-    IDElement   string `json:"id_element"`   // L'ID du bloc dans PageContentJSON (ex: "sep9h5o5a")
-    EndpointNom string `json:"endpoint_nom"` // Le nom de l'EndpointJSON à appeler
-    Trigger     string `json:"trigger"`      // "onLoad", "onClick", "onHover"
-    Action      string `json:"action"`       // "fill_content", "set_style", "redirect"
-    MapField    string `json:"map_field"`    // Champ du JSON API à mapper (ex: "data.title")
+	IDElement   string `json:"id_element"`   // L'ID du bloc dans PageContentJSON (ex: "sep9h5o5a")
+	EndpointNom string `json:"endpoint_nom"` // Le nom de l'EndpointJSON à appeler
+	Trigger     string `json:"trigger"`      // "onLoad", "onClick", "onHover"
+	Action      string `json:"action"`       // "fill_content", "set_style", "redirect"
+	MapField    string `json:"map_field"`    // Champ du JSON API à mapper (ex: "data.title")
 }
 
 type ModelJSON struct {
@@ -96,4 +97,3 @@ type PageContentJSON struct {
 	Styles    string            `json:"styles"`
 	Children  []PageContentJSON `json:"children"`
 }
-

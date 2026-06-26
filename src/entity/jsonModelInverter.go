@@ -41,6 +41,7 @@ func (ej *EndpointJSON) ToModel() Endpoint {
 		model:  model,
 		params: ej.Params,
 		role:   ej.Role,
+		logic:  ej.Logic,
 	}
 }
 
@@ -142,9 +143,9 @@ func (wj *WebAppJSON) ToModel() WebApp {
 
 func (cj *ControllerJSON) ToModel() Controller {
 	return Controller{
-		Nom:          cj.Nom,
+		Nom:       cj.Nom,
 		PageCible: cj.PageCible,
-		Bindings: cj.Bindings,
+		Bindings:  cj.Bindings,
 	}
 }
 

@@ -23,6 +23,7 @@ func (e *Endpoint) ToJSON() EndpointJSON {
 		Model:  model,
 		Params: e.params,
 		Role:   e.role,
+		Logic:  e.logic,
 	}
 }
 
@@ -72,4 +73,12 @@ func (e *Endpoint) SetParams(Params []string) {
 
 func (e *Endpoint) SetRole(Role string) {
 	e.role = Role
+}
+
+func (e *Endpoint) GetLogic() map[string]string {
+	return e.logic
+}
+
+func (e *Endpoint) SetLogic(logic map[string]string) {
+	e.logic = logic
 }

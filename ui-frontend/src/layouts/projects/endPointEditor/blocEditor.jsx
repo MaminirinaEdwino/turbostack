@@ -9,18 +9,32 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { FunctionNode, VarNode } from "./customNode";
+import {
+  FunctionNode,
+  ModelNode,
+  SelectNode,
+  VarNode,
+  WhereNode,
+} from "./customNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
   functionNode: FunctionNode,
   varNode: VarNode,
+  modelNode: ModelNode,
+  selectNode: SelectNode,
+  whereNode: WhereNode,
 };
 
 // ==========================================
 // 1. TRADUCTION : De l'Arbre Imbriqué -> Liste Plate (Gère plusieurs enfants)
 // ==========================================
-function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
+function flattenLogicTree(
+  logicNode,
+  onNodeDataChange,
+  onDeleteNode,
+  addChildAutomatically,
+) {
   const nodes = [];
   const edges = [];
 
@@ -48,6 +62,7 @@ function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
         ...data,
         onNodeDataChange,
         onDeleteNode,
+        addChildAutomatically,
       },
     });
 
@@ -125,6 +140,28 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
+  const isValidConnection = useCallback(
+    (connection) => {
+      const sourceNode = nodes.find((n) => n.id === connection.source);
+      const targetNode = nodes.find((n) => n.id === connection.target);
+
+      if (!sourceNode || !targetNode) return false;
+      if (sourceNode == targetNode) return false;
+      if (targetNode.type == "selectNode" && sourceNode.type != "modelNode")
+        return false;
+      const queryModifiers = ["whereNode", "joinNode"];
+      if (queryModifiers.includes(targetNode.type)) {
+        const validSources = ["selectNode", "whereNode", "joinNode"];
+        if (!validSources.includes(sourceNode.type)) {
+          console.warn(
+            "Les blocs WHERE ou JOIN doivent suivre un bloc SELECT, WHERE ou JOIN !",
+          );
+          return false;
+        }
+      }
+    },
+    [nodes],
+  );
   // FONCTION : Modifier un bloc à chaud
   const onNodeDataChange = useCallback((id, newData) => {
     setNodes((nds) =>
@@ -139,7 +176,45 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
       eds.filter((edge) => edge.source !== id && edge.target !== id),
     );
   }, []);
+  const addChildAutomatically = useCallback(
+    (parentId, childType) => {
+      setNodes((currentNodes) => {
+        const parentNode = currentNodes.find((n) => n.id === parentId);
+        if (!parentNode) return currentNodes;
 
+        const childId = `${childType}_${Math.random().toString(36).substr(2, 5)}`;
+
+        // Positionner le bloc enfant intelligemment à droite du parent
+        const childPosition = {
+          x: parentNode.position.x + 300,
+          y: parentNode.position.y + ((currentNodes.length * 20) % 60), // Léger décalage pour éviter les superpositions si clics successifs
+        };
+
+        let blockData = {
+          name: childType === "selectNode" ? "SelectFields" : "WhereCondition",
+          onNodeDataChange,
+          onDeleteNode,
+          addChildAutomatically: parentNode.data.addChildAutomatically, // Permet le chaînage à l'infini (ex: dbModel -> select -> where)
+        };
+
+        const newChildNode = {
+          id: childId,
+          type: childType,
+          position: childPosition,
+          data: blockData,
+        };
+
+        // Ajouter le lien immédiatement
+        setEdges((currentEdges) => [
+          ...currentEdges,
+          { id: `e-${parentId}-${childId}`, source: parentId, target: childId },
+        ]);
+
+        return [...currentNodes, newChildNode];
+      });
+    },
+    [onDeleteNode, onNodeDataChange],
+  );
   // Charger la structure de données de l'API
   useEffect(() => {
     if (endpoint?.logic?.node) {
@@ -147,6 +222,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
         endpoint.logic.node,
         onNodeDataChange,
         onDeleteNode,
+        addChildAutomatically,
       );
       setNodes(initialNodes);
       setEdges(initialEdges);
@@ -154,7 +230,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
       setNodes([]);
       setEdges([]);
     }
-  }, [endpoint, onNodeDataChange, onDeleteNode]);
+  }, [endpoint, onNodeDataChange, onDeleteNode, addChildAutomatically]);
 
   // FONCTION : Ajouter un nouveau bloc d'API depuis la barre latérale
   const addNewBlock = (type) => {
@@ -172,12 +248,69 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
         "default value": "",
         onNodeDataChange,
         onDeleteNode,
+        addChildAutomatically,
       },
     };
 
     setNodes((nds) => [...nds, newNode]);
   };
 
+  const addModelBlock = (name) => {
+    const uniqueId = `modelNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const modelBlock = {
+      id: uniqueId,
+      type: "modelNode",
+      position: basePosition,
+      data: {
+        name: name,
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+      },
+    };
+
+    setNodes((nds) => [...nds, modelBlock]);
+  };
+
+  const addSelectBlock = () => {
+    const uniqueId = `selectNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const selectBlock = {
+      id: uniqueId,
+      type: "selectNode",
+      position: basePosition,
+      data: {
+        field: [],
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+      },
+    };
+
+    setNodes((nds) => [...nds, selectBlock]);
+  };
+
+  const addWhereBlock = () => {
+    const uniqueId = `whereNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const selectBlock = {
+      id: uniqueId,
+      type: "whereNode",
+      position: basePosition,
+      data: {
+        condition: "",
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+      },
+    };
+
+    setNodes((nds) => [...nds, selectBlock]);
+  };
   const handleSave = useCallback(() => {
     const rebuiltTree = rebuildLogicTree(nodes, edges);
 
@@ -292,6 +425,23 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           >
             + Variable locale
           </button>
+          {project != undefined &&
+            project != null &&
+            project.rest_api.endpoints[endpoint].model.map((mdl) => (
+              <>
+                <button
+                  className="px-8 py-2 bg-couleur1 rounded-sm cursor-pointer font-bold border-none"
+                  onClick={() => {
+                    addModelBlock(mdl.nom);
+                  }}
+                >
+                  {mdl.nom} model
+                </button>
+              </>
+            ))}
+
+          <button onClick={addSelectBlock}>SELECT</button>
+          <button onClick={addWhereBlock}>WHERE</button>
         </div>
 
         {/* CANVAS DE VISUAL SCRIPTING */}
@@ -303,6 +453,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             nodeTypes={nodeTypes}
+            isValidConnection={isValidConnection}
             fitView
           >
             <Background color="#565f89" gap={16} />

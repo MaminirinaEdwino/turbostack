@@ -104,6 +104,128 @@ export function FunctionNode({ id, data, isConnectable }) {
   );
 }
 
+export function ModelNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+  return (
+    <div className="p-2 bg-couleur6 ">
+      <div>model {data.name}</div>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+        style={{ background: "#f38ba8" }}
+      />
+      <div
+        style={{
+          background: "#24283b",
+          padding: "8px",
+          borderRadius: "4px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        <span style={{ fontSize: "10px", color: "#565f89", uppercase: "true" }}>
+          Suites logiques disponibles :
+        </span>
+
+        <button
+          onClick={() => data.addChildAutomatically(id, "selectNode")}
+          className="nodrag"
+          style={{
+            background: "#3d59a1",
+            color: "#fff",
+            border: "none",
+            padding: "4px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "11px",
+            textAlign: "left",
+          }}
+        >
+          ➕ Ajouter un SELECT
+        </button>
+
+        <button
+          onClick={() => data.addChildAutomatically(id, "joinNode")}
+          className="nodrag"
+          style={{
+            background: "#bb9af7",
+            color: "#fff",
+            border: "none",
+            padding: "4px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "11px",
+            textAlign: "left",
+          }}
+        >
+          ➕ Ajouter un JOIN
+        </button>
+      </div>
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+        style={{ background: "#f38ba8" }}
+      />
+    </div>
+  );
+}
+
+export function WhereNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+  return (
+    <div>
+      <div>WHERE</div>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+        style={{ background: "#f38ba8" }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+        style={{ background: "#f38ba8" }}
+      />
+    </div>
+  );
+}
+
+export function SelectNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+  return (
+    <div>
+      <div> SELECT</div>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+        style={{ background: "#f38ba8" }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+        style={{ background: "#f38ba8" }}
+      />
+    </div>
+  );
+}
 // 2. NŒUD VARIABLE (ex: Payload d'entrée, Variable locale d'API)
 export function VarNode({ id, data, isConnectable }) {
   const onChange = (field, value) => {

@@ -18,13 +18,13 @@ const nodeTypes = {
 };
 
 // ==========================================
-// 1. TRADUCTION : De l'Arbre Imbriqué -> Liste Plate
+// 1. TRADUCTION : De l'Arbre Imbriqué -> Liste Plate (Gère plusieurs enfants)
 // ==========================================
 function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
   const nodes = [];
   const edges = [];
 
-  function traverse(currentNode, parentId = null, depth = 0, index = 0) {
+  function traverse(currentNode, parentId = null, depth = 0, indexOffset = 0) {
     if (!currentNode || Object.keys(currentNode).length === 0) return null;
 
     const isFunction = !!currentNode.function;
@@ -36,7 +36,9 @@ function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
     const data = isFunction
       ? { ...currentNode.function }
       : { ...currentNode.var };
-    const position = { x: depth * 280 + 50, y: index * 150 + 100 };
+
+    // Ajustement de la position X/Y pour étaler visuellement les branches multiples
+    const position = { x: depth * 280 + 50, y: indexOffset * 180 + 100 };
 
     nodes.push({
       id: currentId,
@@ -44,8 +46,8 @@ function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
       position,
       data: {
         ...data,
-        onNodeDataChange, // Permet l'édition inline
-        onDeleteNode, // Permet la suppression directe
+        onNodeDataChange,
+        onDeleteNode,
       },
     });
 
@@ -57,8 +59,12 @@ function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
       });
     }
 
-    if (isFunction && currentNode.function.child) {
-      traverse(currentNode.function.child, currentId, depth + 1, index);
+    // Gestion du tableau multi-enfants (children)
+    if (isFunction && Array.isArray(currentNode.function.children)) {
+      currentNode.function.children.forEach((child, idx) => {
+        // Chaque enfant est décalé verticalement pour éviter la superposition
+        traverse(child, currentId, depth + 1, indexOffset + idx);
+      });
     }
   }
 
@@ -67,7 +73,7 @@ function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
 }
 
 // ==========================================
-// 2. TRADUCTION : De la Liste Plate -> Arbre Imbriqué
+// 2. TRADUCTION : De la Liste Plate -> Arbre Imbriqué (Multi-enfants)
 // ==========================================
 function rebuildLogicTree(nodes, edges) {
   const targetIds = new Set(edges.map((e) => e.target));
@@ -79,19 +85,22 @@ function rebuildLogicTree(nodes, edges) {
     const isFunction = currentNode.type === "functionNode";
 
     if (isFunction) {
-      const edgeToChild = edges.find((e) => e.source === currentNode.id);
-      const childNode = edgeToChild
-        ? nodes.find((n) => n.id === edgeToChild.target)
-        : null;
+      // Trouver TOUS les liens sortants depuis ce nœud vers des enfants
+      const edgesToChildren = edges.filter((e) => e.source === currentNode.id);
 
-      // Nettoyage des callbacks internes de l'interface graphique avant envoi du JSON
-      const { onNodeDataChange, onDeleteNode, child, ...pureData } =
+      const childrenNodes = edgesToChildren
+        .map((edge) => nodes.find((n) => n.id === edge.target))
+        .filter(Boolean);
+
+      // Nettoyage des callbacks UI avant de générer le JSON
+      const { onNodeDataChange, onDeleteNode, children, ...pureData } =
         currentNode.data;
 
       return {
         function: {
           ...pureData,
-          child: childNode ? buildNode(childNode) : {},
+          // Reconstitution récursive du tableau d'enfants
+          children: childrenNodes.map((childNode) => buildNode(childNode)),
         },
       };
     } else {
@@ -173,18 +182,22 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     const rebuiltTree = rebuildLogicTree(nodes, edges);
 
     setProjet((prev) => {
-      // Trouver l'index de l'endpoint en cours d'édition pour mettre à jour sa structure
-      const updatedEndpoints = { ...prev.rest_api.endpoints };
-      if (updatedEndpoints[endpoint]) {
-        updatedEndpoints[endpoint].logic = {
-          ...updatedEndpoints[endpoint].logic,
-          node: rebuiltTree,
+      if (prev != null) {
+        const updatedEndpoints = prev.rest_api.endpoints;
+        if (updatedEndpoints[endpoint]) {
+          updatedEndpoints[endpoint].logic = {
+            ...updatedEndpoints[endpoint].logic,
+            node: rebuiltTree,
+          };
+        }
+        console.log(updatedEndpoints);
+        return {
+          ...prev,
+          rest_api: { ...prev.rest_api, endpoints: updatedEndpoints },
         };
+      } else {
+        return { ...prev };
       }
-      return {
-        ...prev,
-        rest_api: { ...prev.rest_api, endpoints: updatedEndpoints },
-      };
     });
   }, [nodes, edges, endpoint, setProjet]);
 

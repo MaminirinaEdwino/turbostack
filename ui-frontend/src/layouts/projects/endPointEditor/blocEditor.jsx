@@ -4,32 +4,38 @@ import {
   applyEdgeChanges,
   addEdge,
   ReactFlow,
+  Background,
+  Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
+import { FunctionNode, VarNode } from "./customNode";
+
+// Déclaration des types de nœuds sur mesure
+const nodeTypes = {
+  functionNode: FunctionNode,
+  varNode: VarNode,
+};
+
 // ==========================================
-// 1. TRADUCTION : De l'Arbre Imbriqué -> Liste Plate (React Flow)
+// 1. TRADUCTION : De l'Arbre Imbriqué -> Liste Plate
 // ==========================================
-function flattenLogicTree(logicNode) {
+function flattenLogicTree(logicNode, onNodeDataChange, onDeleteNode) {
   const nodes = [];
   const edges = [];
 
   function traverse(currentNode, parentId = null, depth = 0, index = 0) {
-    if (!currentNode) return null;
+    if (!currentNode || Object.keys(currentNode).length === 0) return null;
 
-    // Déterminer le type et générer un ID unique
     const isFunction = !!currentNode.function;
     const nodeType = isFunction ? "functionNode" : "varNode";
     const currentId = isFunction
-      ? `func_${currentNode.function.name}_${depth}_${index}`
-      : `var_${currentNode.var.name}_${depth}_${index}`;
+      ? `func_${currentNode.function.name || "new"}_${Math.random().toString(36).substr(2, 5)}`
+      : `var_${currentNode.var.name || "new"}_${Math.random().toString(36).substr(2, 5)}`;
 
-    // Extraction des données métiers
     const data = isFunction
       ? { ...currentNode.function }
       : { ...currentNode.var };
-
-    // Positionnement visuel automatique de base (arbre de haut en bas ou gauche à droite)
     const position = { x: depth * 280 + 50, y: index * 150 + 100 };
 
     nodes.push({
@@ -37,12 +43,12 @@ function flattenLogicTree(logicNode) {
       type: nodeType,
       position,
       data: {
-        label: isFunction ? `Fonction: ${data.name}` : `Variable: ${data.name}`,
         ...data,
+        onNodeDataChange, // Permet l'édition inline
+        onDeleteNode, // Permet la suppression directe
       },
     });
 
-    // Créer un lien visuel si on vient d'un parent
     if (parentId) {
       edges.push({
         id: `e-${parentId}-${currentId}`,
@@ -51,7 +57,6 @@ function flattenLogicTree(logicNode) {
       });
     }
 
-    // Si c'est une fonction et qu'elle a un enfant, on continue la récursivité
     if (isFunction && currentNode.function.child) {
       traverse(currentNode.function.child, currentId, depth + 1, index);
     }
@@ -62,10 +67,9 @@ function flattenLogicTree(logicNode) {
 }
 
 // ==========================================
-// 2. TRADUCTION : De la Liste Plate -> Arbre Imbriqué (Format TurboStack)
+// 2. TRADUCTION : De la Liste Plate -> Arbre Imbriqué
 // ==========================================
 function rebuildLogicTree(nodes, edges) {
-  // Trouver le nœud racine (celui qui n'est la cible d'aucun lien/edge)
   const targetIds = new Set(edges.map((e) => e.target));
   const rootNode = nodes.find((n) => !targetIds.has(n.id));
 
@@ -75,26 +79,28 @@ function rebuildLogicTree(nodes, edges) {
     const isFunction = currentNode.type === "functionNode";
 
     if (isFunction) {
-      // Trouver le lien qui part de ce nœud fonction vers son enfant
       const edgeToChild = edges.find((e) => e.source === currentNode.id);
       const childNode = edgeToChild
         ? nodes.find((n) => n.id === edgeToChild.target)
         : null;
 
+      // Nettoyage des callbacks internes de l'interface graphique avant envoi du JSON
+      const { onNodeDataChange, onDeleteNode, child, ...pureData } =
+        currentNode.data;
+
       return {
         function: {
-          name: currentNode.data.name,
-          params: currentNode.data.params || "",
-          child: childNode ? buildNode(childNode) : {}, // Imbrication récursive
+          ...pureData,
+          child: childNode ? buildNode(childNode) : {},
         },
       };
     } else {
-      // C'est une variable
+      const { onNodeDataChange, onDeleteNode, ...pureData } = currentNode.data;
       return {
         var: {
-          name: currentNode.data.name,
-          type: currentNode.data.type,
-          "default value": currentNode.data["default value"],
+          name: pureData.name || "",
+          type: pureData.type || "string",
+          "default value": pureData["default value"] || "",
         },
       };
     }
@@ -104,38 +110,83 @@ function rebuildLogicTree(nodes, edges) {
 }
 
 // ==========================================
-// COMPOSANT PRINCIPAL
+// COMPOSANT LOGIQUE DE TURBOSTACK
 // ==========================================
 export default function TurboStackScripting({ setProjet, endpoint, project }) {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
-  // Charger le projet et aplatir l'arbre pour l'affichage au démarrage
+  // FONCTION : Modifier un bloc à chaud
+  const onNodeDataChange = useCallback((id, newData) => {
+    setNodes((nds) =>
+      nds.map((node) => (node.id === id ? { ...node, data: newData } : node)),
+    );
+  }, []);
+
+  // FONCTION : Supprimer un bloc d'instruction
+  const onDeleteNode = useCallback((id) => {
+    setNodes((nds) => nds.filter((node) => node.id !== id));
+    setEdges((eds) =>
+      eds.filter((edge) => edge.source !== id && edge.target !== id),
+    );
+  }, []);
+
+  // Charger la structure de données de l'API
   useEffect(() => {
-    const setter = (initialNodes, initialEdges) => {
-      setNodes(initialNodes);
-      setEdges(initialEdges);
-    };
     if (endpoint?.logic?.node) {
       const { initialNodes, initialEdges } = flattenLogicTree(
         endpoint.logic.node,
+        onNodeDataChange,
+        onDeleteNode,
       );
-      setter(initialNodes, initialEdges);
+      setNodes(initialNodes);
+      setEdges(initialEdges);
+    } else {
+      setNodes([]);
+      setEdges([]);
     }
-  }, [endpoint]); // Se déclenche si on change de contexte/endpoint
+  }, [endpoint, onNodeDataChange, onDeleteNode]);
 
-  // Sauvegarder et reconstruire la structure imbriquée
+  // FONCTION : Ajouter un nouveau bloc d'API depuis la barre latérale
+  const addNewBlock = (type) => {
+    const uniqueId = `${type}_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const newNode = {
+      id: uniqueId,
+      type: type === "function" ? "functionNode" : "varNode",
+      position: basePosition,
+      data: {
+        name: type === "function" ? "GetUsersDB" : "userId",
+        params: type === "function" ? "ctx" : "",
+        type: "string",
+        "default value": "",
+        onNodeDataChange,
+        onDeleteNode,
+      },
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+  };
+
   const handleSave = useCallback(() => {
     const rebuiltTree = rebuildLogicTree(nodes, edges);
 
-    setProjet((prev) => ({
-      ...prev,
-      logic: {
-        ...prev.logic,
-        node: rebuiltTree, // On remet l'arbre imbriqué ici
-      },
-    }));
-  }, [nodes, edges, setProjet]);
+    setProjet((prev) => {
+      // Trouver l'index de l'endpoint en cours d'édition pour mettre à jour sa structure
+      const updatedEndpoints = { ...prev.rest_api.endpoints };
+      if (updatedEndpoints[endpoint]) {
+        updatedEndpoints[endpoint].logic = {
+          ...updatedEndpoints[endpoint].logic,
+          node: rebuiltTree,
+        };
+      }
+      return {
+        ...prev,
+        rest_api: { ...prev.rest_api, endpoints: updatedEndpoints },
+      };
+    });
+  }, [nodes, edges, endpoint, setProjet]);
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -151,7 +202,14 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
   );
 
   return (
-    <div style={{ width: "100%", height: "80vh" }}>
+    <div
+      style={{
+        width: "100%",
+        height: "80vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <button
         onClick={handleSave}
         style={{
@@ -162,28 +220,82 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           border: "none",
           borderRadius: 4,
           cursor: "pointer",
+          fontWeight: "bold",
         }}
       >
-        Enregistrer l'Arbre Logique {endpoint}{" "}
-        {project != null && project.rest_api.endpoints[endpoint].uri}
+        Enregistrer la logique de l'API ({endpoint})
       </button>
+
       <div
-        className="flex"
-        style={{ width: "100%", height: "100%", border: "1px solid #ddd" }}
+        style={{
+          display: "flex",
+          flex: 1,
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+          overflow: "hidden",
+        }}
       >
-        <div>
-          <button>var</button>
-          <button>if</button>
-          <button>function</button>
+        {/* BARRE LATÉRALE D'INSTRUCTIONS D'API */}
+        <div
+          style={{
+            width: "200px",
+            background: "#24283b",
+            padding: "15px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            borderRight: "1px solid #45475a",
+          }}
+        >
+          <h4
+            style={{ color: "#a9b1d6", margin: "0 0 10px 0", fontSize: "14px" }}
+          >
+            Composants API
+          </h4>
+          <button
+            onClick={() => addNewBlock("function")}
+            style={{
+              padding: "8px",
+              background: "#3d59a1",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            + Action (Fonction)
+          </button>
+          <button
+            onClick={() => addNewBlock("var")}
+            style={{
+              padding: "8px",
+              background: "#e0af68",
+              color: "#1a1b26",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            + Variable locale
+          </button>
         </div>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          fitView
-        />
+
+        {/* CANVAS DE VISUAL SCRIPTING */}
+        <div style={{ flex: 1, position: "relative", background: "#1a1b26" }}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            fitView
+          >
+            <Background color="#565f89" gap={16} />
+            <Controls />
+          </ReactFlow>
+        </div>
       </div>
     </div>
   );

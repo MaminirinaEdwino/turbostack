@@ -139,6 +139,15 @@ function rebuildLogicTree(nodes, edges) {
 export default function TurboStackScripting({ setProjet, endpoint, project }) {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [model, setModel] = useState([]);
+
+  useEffect(() => {
+
+    if (typeof (project) == "object" && endpoint != null) {
+      console.log(project, endpoint)
+      setModel(project?.rest_api.endpoints[endpoint].model)
+    }
+  }, [endpoint, project])
 
   const isValidConnection = useCallback(
     (connection) => {
@@ -425,9 +434,8 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           >
             + Variable locale
           </button>
-          {project != undefined &&
-            project != null &&
-            project.rest_api.endpoints[endpoint].model.map((mdl) => (
+          {
+           model.map((mdl) => (
               <>
                 <button
                   className="px-8 py-2 bg-couleur1 rounded-sm cursor-pointer font-bold border-none"

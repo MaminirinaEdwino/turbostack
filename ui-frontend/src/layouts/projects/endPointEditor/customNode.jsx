@@ -1,5 +1,6 @@
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
+import { Plug, Plus } from "lucide-react";
 
 // Style commun pour les nœuds d'API
 const nodeStyle = {
@@ -111,8 +112,8 @@ export function ModelNode({ id, data, isConnectable }) {
     }
   };
   return (
-    <div className="p-2 bg-couleur6 ">
-      <div>model {data.name}</div>
+    <div className="p-2 bg-couleur6 rounded-md min-w-40">
+      <div className="w-full text-center dark:text-white/50 p-2">{data.name}</div>
       <Handle
         type="target"
         position={Position.Left}
@@ -121,7 +122,6 @@ export function ModelNode({ id, data, isConnectable }) {
       />
       <div
         style={{
-          background: "#24283b",
           padding: "8px",
           borderRadius: "4px",
           display: "flex",
@@ -129,13 +129,11 @@ export function ModelNode({ id, data, isConnectable }) {
           gap: "6px",
         }}
       >
-        <span style={{ fontSize: "10px", color: "#565f89", uppercase: "true" }}>
-          Suites logiques disponibles :
-        </span>
+
 
         <button
           onClick={() => data.addChildAutomatically(id, "selectNode")}
-          className="nodrag"
+          className="nodrag flex gap-1 justify-center items-center"
           style={{
             background: "#3d59a1",
             color: "#fff",
@@ -144,15 +142,14 @@ export function ModelNode({ id, data, isConnectable }) {
             borderRadius: "4px",
             cursor: "pointer",
             fontSize: "11px",
-            textAlign: "left",
           }}
         >
-          ➕ Ajouter un SELECT
+          <Plug size={14}/> SELECT
         </button>
 
         <button
-          onClick={() => data.addChildAutomatically(id, "joinNode")}
-          className="nodrag"
+          onClick={() => data.addChildAutomatically(id, "whereNode")}
+          className="nodrag flex gap-1 justify-center items-center"
           style={{
             background: "#bb9af7",
             color: "#fff",
@@ -164,7 +161,7 @@ export function ModelNode({ id, data, isConnectable }) {
             textAlign: "left",
           }}
         >
-          ➕ Ajouter un JOIN
+          <Plug size={14}/> JOIN
         </button>
       </div>
       <Handle
@@ -184,7 +181,7 @@ export function WhereNode({ id, data, isConnectable }) {
     }
   };
   return (
-    <div>
+    <div className="p-2 bg-couleur6 rounded-md">
       <div>WHERE</div>
       <Handle
         type="target"
@@ -209,14 +206,17 @@ export function SelectNode({ id, data, isConnectable }) {
     }
   };
   return (
-    <div>
-      <div> SELECT</div>
+    <div className="bg-couleur6 rounded-md p-2 min-w-32" >
+      <div className="text-center p-2 text-white/50"> SELECT </div>
       <Handle
         type="target"
         position={Position.Left}
         isConnectable={isConnectable}
         style={{ background: "#f38ba8" }}
       />
+      <div>
+        <button className="flex gap-1  bg-couleur1 rounded-md p-1 text-white text-xs justify-center w-full font-light" onClick={()=>data.addChildAutomatically(id, "whereNode")}> <Plug size={14}/> WHERE </button>
+      </div>
       <Handle
         type="source"
         position={Position.Right}

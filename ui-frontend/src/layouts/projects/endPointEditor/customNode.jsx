@@ -1,6 +1,6 @@
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
-import { Plug, Plus } from "lucide-react";
+import { Play, Plug, Plus } from "lucide-react";
 
 // Style commun pour les nœuds d'API
 const nodeStyle = {
@@ -324,4 +324,18 @@ export function VarNode({ id, data, isConnectable }) {
       </div>
     </div>
   );
+}
+
+export function RootNode({ isConnectable }) {
+  return <div className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 ">
+    <Play size={14} className="" />
+    <Handle
+      type="source"
+      position={Position.Right}
+      isConnectable={isConnectable}
+      style={{
+
+      }}
+    />
+  </div>
 }

@@ -12,13 +12,16 @@ import "@xyflow/react/dist/style.css";
 import {
   FunctionNode,
   ModelNode,
+  RootNode,
   SelectNode,
   VarNode,
   WhereNode,
 } from "./customNode";
+import { Plus } from "lucide-react";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
+  rootNode: RootNode,
   functionNode: FunctionNode,
   varNode: VarNode,
   modelNode: ModelNode,
@@ -283,6 +286,23 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     setNodes((nds) => [...nds, modelBlock]);
   };
 
+  const addRootBlock = () => {
+    const uniqueid = `rootNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+    const rootBlock = {
+      id: uniqueid,
+      type: "rootNode",
+      position: basePosition,
+      data: {
+        name: "rootNode",
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+    setNodes((nds) => [...nds, rootBlock]);
+  }
+
   const addSelectBlock = () => {
     const uniqueId = `selectNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
@@ -407,6 +427,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           >
             Composants API
           </h4>
+          <button
+            onClick={()=>addRootBlock()}
+            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+          >
+            <Plus size={14} /> RootNode
+          </button>
           <button
             onClick={() => addNewBlock("function")}
             style={{

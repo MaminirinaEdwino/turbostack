@@ -3,16 +3,7 @@ import { Handle, Position } from "@xyflow/react";
 import { Play, Plug, Plus } from "lucide-react";
 
 // Style commun pour les nœuds d'API
-const nodeStyle = {
-  background: "#1e1e2e",
-  color: "#cdd6f4",
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #45475a",
-  minWidth: "200px",
-  fontSize: "13px",
-  fontFamily: "monospace",
-};
+
 
 // 1. NŒUD FONCTION (ex: Requête DB, Validation, Envoi de Réponse)
 export function FunctionNode({ id, data, isConnectable }) {
@@ -169,7 +160,7 @@ export function WhereNode({ id, data, isConnectable }) {
   );
 }
 
-export function SelectNode({ id, data, isConnectable }) {
+export function SelectNode({ id, data, isConnectable, selectType }) {
   const onChange = (field, value) => {
     if (data.onNodeDataChange) {
       data.onNodeDataChange(id, { ...data, [field]: value });
@@ -177,7 +168,7 @@ export function SelectNode({ id, data, isConnectable }) {
   };
   return (
     <div className="p-2 bg-gray-900 rounded-md min-w-40 border border-couleur2 font-mono" >
-      <div className="text-center mb-2 text-white/50  border-b border-couleur2"> SELECT </div>
+      <div className="text-center mb-2 text-white/50  border-b border-couleur2"> GET { selectType }</div>
       <Handle
         type="target"
         position={Position.Left}

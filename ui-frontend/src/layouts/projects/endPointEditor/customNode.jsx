@@ -112,56 +112,26 @@ export function ModelNode({ id, data, isConnectable }) {
     }
   };
   return (
-    <div className="p-2 bg-couleur6 rounded-md min-w-40">
-      <div className="w-full text-center dark:text-white/50 p-2">{data.name}</div>
+    <div className="p-2 bg-gray-900 rounded-md min-w-40 border border-couleur2 font-mono">
+      <div className="w-full text-center dark:text-white/50 border-b b-2 border-b-couleur2">{data.name}</div>
       <Handle
         type="target"
         position={Position.Left}
         isConnectable={isConnectable}
-        style={{ background: "#f38ba8" }}
       />
-      <div
-        style={{
-          padding: "8px",
-          borderRadius: "4px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "6px",
-        }}
-      >
-
-
+      <div className="flex gap-2 p-2 justify-center text-couleur2">
         <button
           onClick={() => data.addChildAutomatically(id, "selectNode")}
-          className="nodrag flex gap-1 justify-center items-center"
-          style={{
-            background: "#3d59a1",
-            color: "#fff",
-            border: "none",
-            padding: "4px",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "11px",
-          }}
+          className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
         >
-          <Plug size={14}/> SELECT
+          <Plug size={10}/> SELECT
         </button>
 
         <button
           onClick={() => data.addChildAutomatically(id, "whereNode")}
-          className="nodrag flex gap-1 justify-center items-center"
-          style={{
-            background: "#bb9af7",
-            color: "#fff",
-            border: "none",
-            padding: "4px",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "11px",
-            textAlign: "left",
-          }}
+          className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
         >
-          <Plug size={14}/> JOIN
+          <Plug size={10}/> JOIN
         </button>
       </div>
       <Handle
@@ -181,8 +151,8 @@ export function WhereNode({ id, data, isConnectable }) {
     }
   };
   return (
-    <div className="p-2 bg-couleur6 rounded-md">
-      <div>WHERE</div>
+    <div className="p-2 bg-gray-900 rounded-md min-w-40 border border-couleur2 font-mono">
+      <div className="flex justify-center text-white/50 border-b border-couleur2 mb-2">WHERE</div>
       <Handle
         type="target"
         position={Position.Left}
@@ -206,16 +176,16 @@ export function SelectNode({ id, data, isConnectable }) {
     }
   };
   return (
-    <div className="bg-couleur6 rounded-md p-2 min-w-32" >
-      <div className="text-center p-2 text-white/50"> SELECT </div>
+    <div className="p-2 bg-gray-900 rounded-md min-w-40 border border-couleur2 font-mono" >
+      <div className="text-center mb-2 text-white/50  border-b border-couleur2"> SELECT </div>
       <Handle
         type="target"
         position={Position.Left}
         isConnectable={isConnectable}
         style={{ background: "#f38ba8" }}
       />
-      <div>
-        <button className="flex gap-1  bg-couleur1 rounded-md p-1 text-white text-xs justify-center w-full font-light" onClick={()=>data.addChildAutomatically(id, "whereNode")}> <Plug size={14}/> WHERE </button>
+      <div className="flex justify-center text-couleur2">
+        <button className="flex justify-center gap-1 items-center text-[10px]" onClick={()=>data.addChildAutomatically(id, "whereNode")}> <Plug size={10}/> WHERE </button>
       </div>
       <Handle
         type="source"

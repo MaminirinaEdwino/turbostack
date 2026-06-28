@@ -1,4 +1,4 @@
-import { Position } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 
 export function SelectNode({ id, data, isConnectable, selectType }) {
   // const onChange = (field, value) => {

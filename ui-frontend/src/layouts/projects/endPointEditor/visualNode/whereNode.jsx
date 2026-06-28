@@ -1,4 +1,4 @@
-import { Position } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 
 export function WhereNode({ id, data, isConnectable }) {
   // const onChange = (field, value) => {

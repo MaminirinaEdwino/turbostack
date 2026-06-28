@@ -1,4 +1,4 @@
-import { Position } from "@xyflow/react";
+import { Handle,Position } from "@xyflow/react";
 import nodestyle from "../nodeStyle";
 
 export function VarNode({ id, data, isConnectable }) {

@@ -264,7 +264,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     setNodes((nds) => [...nds, newNode]);
   };
 
-  const addModelBlock = (name) => {
+  const addModelBlock = (name, modelInfo) => {
     const uniqueId = `modelNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -274,6 +274,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
       position: basePosition,
       data: {
         name: name,
+        model: modelInfo,
         onNodeDataChange,
         onDeleteNode,
         addChildAutomatically,
@@ -463,7 +464,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
                 <button
                   className="px-8 py-2 bg-couleur1 rounded-sm cursor-pointer font-bold border-none"
                   onClick={() => {
-                    addModelBlock(mdl.nom);
+                    addModelBlock(mdl.nom, mdl);
                   }}
                 >
                   {mdl.nom} model

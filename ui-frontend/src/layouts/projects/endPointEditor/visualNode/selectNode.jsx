@@ -1,6 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
+import { Plug } from "lucide-react";
 
-export function SelectNode({ id, data, isConnectable, selectType }) {
+export default  function SelectNode({ id, data, isConnectable, selectType }) {
   // const onChange = (field, value) => {
   //   if (data.onNodeDataChange) {
   //     data.onNodeDataChange(id, { ...data, [field]: value });

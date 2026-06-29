@@ -1,7 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
-import { nodeStyle } from "../nodeStyle";
+// import  {nodeStyle}  from "../nodeStyle";
 
-export function FunctionNode({ id, data, isConnectable }) {
+export default function FunctionNode({ id, data, isConnectable }) {
   const onChange = (field, value) => {
     if (data.onNodeDataChange) {
       data.onNodeDataChange(id, { ...data, [field]: value });
@@ -9,7 +9,7 @@ export function FunctionNode({ id, data, isConnectable }) {
   };
 
   return (
-    <div style={nodeStyle} className="shadow-lg">
+    <div className="shadow-lg">
       <Handle
         type="target"
         position={Position.Left}

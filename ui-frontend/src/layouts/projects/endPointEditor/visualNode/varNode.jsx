@@ -1,7 +1,7 @@
 import { Handle,Position } from "@xyflow/react";
-import nodestyle from "../nodeStyle";
+// import {nodestyle} from "../nodeStyle";
 
-export function VarNode({ id, data, isConnectable }) {
+export default function VarNode({ id, data, isConnectable }) {
   const onChange = (field, value) => {
     if (data.onNodeDataChange) {
       data.onNodeDataChange(id, { ...data, [field]: value });
@@ -10,7 +10,7 @@ export function VarNode({ id, data, isConnectable }) {
 
   return (
     <div
-      style={{ ...nodestyle, borderLeft: "4px solid #fab387" }}
+      style={{  borderLeft: "4px solid #fab387" }}
       className="shadow-lg"
     >
       <Handle

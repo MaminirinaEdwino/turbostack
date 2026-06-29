@@ -1,23 +1,20 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   applyNodeChanges,
   applyEdgeChanges,
   addEdge,
-  ReactFlow,
   Background,
+  ReactFlow,
   Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-
-import {
-  FunctionNode,
-  ModelNode,
-  RootNode,
-  SelectNode,
-  VarNode,
-  WhereNode,
-} from "./customNode";
 import { Plus } from "lucide-react";
+import  RootNode  from "./visualNode/rootNode";
+import  FunctionNode  from "./visualNode/functionNode";
+import  VarNode  from "./visualNode/varNode";
+import  SelectNode  from "./visualNode/selectNode";
+import  WhereNode  from "./visualNode/whereNode";
+import  ModelNode  from "./visualNode/modelNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {

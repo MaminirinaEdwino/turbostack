@@ -1,4 +1,4 @@
-export const nodeStyle = {
+const nodeStyle = {
   background: "#1e1e2e",
   color: "#cdd6f4",
   padding: "12px",
@@ -8,3 +8,5 @@ export const nodeStyle = {
   fontSize: "13px",
   fontFamily: "monospace",
 };
+
+export default  nodeStyle ;

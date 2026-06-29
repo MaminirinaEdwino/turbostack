@@ -1,7 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
 import { Plug } from "lucide-react";
 
-export function ModelNode({ id, data, isConnectable }) {
+export default function ModelNode({ id, data, isConnectable }) {
   // const onChange = (field, value) => {
   //   if (data.onNodeDataChange) {
   //     data.onNodeDataChange(id, { ...data, [field]: value });

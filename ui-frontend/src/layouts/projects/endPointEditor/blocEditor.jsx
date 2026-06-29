@@ -186,7 +186,9 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     );
   }, []);
   const addChildAutomatically = useCallback(
-    (parentId, childType) => {
+    (parentId, childType, otherData) => {
+      const { selectedType } = otherData;
+      console.log(selectedType)
       setNodes((currentNodes) => {
         const parentNode = currentNodes.find((n) => n.id === parentId);
         if (!parentNode) return currentNodes;
@@ -200,11 +202,18 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
         };
 
         let blockData = {
-          name: childType === "selectNode" ? "SelectFields" : "WhereCondition",
+          name: childType ,
           onNodeDataChange,
           onDeleteNode,
           addChildAutomatically: parentNode.data.addChildAutomatically, // Permet le chaînage à l'infini (ex: dbModel -> select -> where)
+          selectedType: otherData.selectedType && otherData.selectedType,
+          model: otherData.model && otherData.model
         };
+
+        // if (childType == "selectNode" && typeof(otherData) == "object") {
+        //   console.log(typeof(otherData))
+        //   blockData.data.selectedType = otherData.selectedType
+        // }
 
         const newChildNode = {
           id: childId,

@@ -12,7 +12,9 @@ export default function SelectNode({ id, data, isConnectable }) {
     <div className="p-2 bg-gray-900 rounded-md min-w-40 border border-couleur2 font-mono" >
       <div className="text-center mb-2 text-white/50  border-b border-couleur2"> GET {data.selectedType} FROM {data.model.nom}</div>
       <div className="text-[10px] border-b border-couleur2 p-2">
-        {data.model.champs.map((field) => <div className="text-couleur2 flex  gap-2 items-center" > <input type="checkbox" id={ field.nom } onChange={(e)=>onChange(`${field.nom}`, e.target.value)} /> <label for={field.nom}>{ field.nom }</label></div>)}
+        {data.model.champs.map((field) => <div
+          className={` flex  gap-2 items-center rounded-sm p-2 m-1 ${data[field.nom] ? "bg-couleur2 text-couleur1": "text-couleur2"}`} >
+          <input type="checkbox" className="hidden" id={field.nom} onChange={(e) => onChange(`${field.nom}`, e.target.checked)} /> <label htmlFor={field.nom} >{field.nom}</label></div>)}
       </div>
       <Handle
         type="target"

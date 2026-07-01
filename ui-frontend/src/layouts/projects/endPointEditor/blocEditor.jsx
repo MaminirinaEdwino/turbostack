@@ -15,6 +15,7 @@ import  VarNode  from "./visualNode/varNode";
 import  SelectNode  from "./visualNode/selectNode";
 import  WhereNode  from "./visualNode/whereNode";
 import  ModelNode  from "./visualNode/modelNode";
+import BodyParamsNode from "./visualNode/bodyParamsNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -24,6 +25,7 @@ const nodeTypes = {
   modelNode: ModelNode,
   selectNode: SelectNode,
   whereNode: WhereNode,
+  bodyParamsNode: BodyParamsNode
 };
 
 // ==========================================
@@ -140,12 +142,23 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [model, setModel] = useState([]);
+  const [endPointModel, setEndPointModel] = useState([]);
 
   useEffect(() => {
-
     if (typeof (project) == "object" && endpoint != null) {
-      console.log(project, endpoint)
-      setModel(project?.rest_api.endpoints[endpoint].model)
+      let modelList = [];
+      let endPointModelList = [];
+      project?.rest_api.endpoints[endpoint].model.map((mdl) => {
+        project?.bdd.models.map((mdl2) => {
+          if (mdl2.nom == mdl.nom) {
+            console.log("same")
+            modelList.push(mdl2);
+            endPointModelList.push(mdl);
+          }
+        })
+      })
+      setModel(modelList)
+      setEndPointModel(endPointModelList)
     }
   }, [endpoint, project])
 
@@ -347,6 +360,25 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, selectBlock]);
   };
+
+  const addBodyParamsBlock = (bodyParams) => {
+    const uniqueId = `bodyParams_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "bodyParamsNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+        bodyParams: bodyParams
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
   const handleSave = useCallback(() => {
     const rebuiltTree = rebuildLogicTree(nodes, edges);
 
@@ -479,10 +511,26 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
                   {mdl.nom} model
                 </button>
               </>
-            ))}
-
-          <button onClick={addSelectBlock}>SELECT</button>
-          <button onClick={addWhereBlock}>WHERE</button>
+            ))
+          }
+          {
+            endPointModel.map((mdl) => <div>
+              {mdl.nom} params
+              {mdl.champs.map((field) => <button onClick={()=>addBodyParamsBlock({field: field})}>
+                {field.nom}
+              </button>)}
+            </div>)
+          }
+          <div>
+            <div>Request Params</div>
+            <div>
+              {
+                typeof (project) == "object" && project != null && endpoint!= undefined && project.rest_api.endpoints[endpoint].params.map((p) => <>
+                  :{p}
+                </>)
+              }
+            </div>
+          </div>
         </div>
 
         {/* CANVAS DE VISUAL SCRIPTING */}

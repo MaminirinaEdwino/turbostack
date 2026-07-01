@@ -16,6 +16,7 @@ import  SelectNode  from "./visualNode/selectNode";
 import  WhereNode  from "./visualNode/whereNode";
 import  ModelNode  from "./visualNode/modelNode";
 import BodyParamsNode from "./visualNode/bodyParamsNode";
+import RequestParams from "./visualNode/requestParams";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -25,7 +26,8 @@ const nodeTypes = {
   modelNode: ModelNode,
   selectNode: SelectNode,
   whereNode: WhereNode,
-  bodyParamsNode: BodyParamsNode
+  bodyParamsNode: BodyParamsNode,
+  requestParamsNode: RequestParams
 };
 
 // ==========================================
@@ -379,6 +381,24 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, block]);
   }
+  const addRequestParamsBlock = (requestParams) => {
+    const uniqueId = `bodyParams_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "requestParamsNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+        requestParams: requestParams
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
   const handleSave = useCallback(() => {
     const rebuiltTree = rebuildLogicTree(nodes, edges);
 
@@ -525,9 +545,9 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             <div>Request Params</div>
             <div>
               {
-                typeof (project) == "object" && project != null && endpoint!= undefined && project.rest_api.endpoints[endpoint].params.map((p) => <>
+                typeof (project) == "object" && project != null && endpoint!= undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button onClick={()=>addRequestParamsBlock(`${p}`)}>
                   :{p}
-                </>)
+                </button>)
               }
             </div>
           </div>

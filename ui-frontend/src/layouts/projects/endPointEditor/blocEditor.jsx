@@ -17,6 +17,7 @@ import  WhereNode  from "./visualNode/whereNode";
 import  ModelNode  from "./visualNode/modelNode";
 import BodyParamsNode from "./visualNode/bodyParamsNode";
 import RequestParams from "./visualNode/requestParams";
+import InsertNode from "./visualNode/insertNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -27,7 +28,8 @@ const nodeTypes = {
   selectNode: SelectNode,
   whereNode: WhereNode,
   bodyParamsNode: BodyParamsNode,
-  requestParamsNode: RequestParams
+  requestParamsNode: RequestParams,
+  insertNode: InsertNode
 };
 
 // ==========================================
@@ -382,7 +384,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     setNodes((nds) => [...nds, block]);
   }
   const addRequestParamsBlock = (requestParams) => {
-    const uniqueId = `bodyParams_${Math.random().toString(36).substr(2, 5)}`;
+    const uniqueId = `requestParams_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
     const block = {
@@ -439,10 +441,11 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     <div
       style={{
         width: "100%",
-        height: "80vh",
+        height: "90vh",
         display: "flex",
         flexDirection: "column",
       }}
+
     >
       <button
         onClick={handleSave}
@@ -479,6 +482,8 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             flexDirection: "column",
             gap: "10px",
             borderRight: "1px solid #45475a",
+            height: "100%",
+            overflowY: "scroll"
           }}
         >
           <h4
@@ -534,18 +539,20 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             ))
           }
           {
-            endPointModel.map((mdl) => <div>
-              {mdl.nom} params
-              {mdl.champs.map((field) => <button onClick={()=>addBodyParamsBlock({field: field})}>
+            endPointModel.map((mdl) => <div className="p-2 flex flex-col items-start">
+              <div className="border-b">{mdl.nom} body params</div>
+              {mdl.champs.map((field) => <button
+                className="p-2 rounded-sm text-center w-full my-1 bg-gray-900 border border-couleur1 text-couleur2"
+                onClick={() => addBodyParamsBlock({ field: field })}>
                 {field.nom}
               </button>)}
             </div>)
           }
-          <div>
-            <div>Request Params</div>
+          <div className="p-2">
+            <div className="border-b mb-2">Request Params</div>
             <div>
               {
-                typeof (project) == "object" && project != null && endpoint!= undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button onClick={()=>addRequestParamsBlock(`${p}`)}>
+                typeof (project) == "object" && project != null && endpoint!= undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="p-2 w-full text-center border border-couleur2 bg-gray-900 rounded-sm text-couleur2" onClick={()=>addRequestParamsBlock(`${p}`)}>
                   :{p}
                 </button>)
               }

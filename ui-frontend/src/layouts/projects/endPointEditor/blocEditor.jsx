@@ -18,6 +18,7 @@ import  ModelNode  from "./visualNode/modelNode";
 import BodyParamsNode from "./visualNode/bodyParamsNode";
 import RequestParams from "./visualNode/requestParams";
 import InsertNode from "./visualNode/insertNode";
+import ReturnNode from "./visualNode/returnTypeNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -29,7 +30,8 @@ const nodeTypes = {
   whereNode: WhereNode,
   bodyParamsNode: BodyParamsNode,
   requestParamsNode: RequestParams,
-  insertNode: InsertNode
+  insertNode: InsertNode,
+  returnNode: ReturnNode
 };
 
 // ==========================================

@@ -50,19 +50,14 @@ export default function ModelNode({ id, data, isConnectable }) {
           <Plug size={10}/> INSERT
         </button>
         <button
-          onClick={() => data.addChildAutomatically(id, "selectNode", {})}
+          onClick={() => data.addChildAutomatically(id, "updateNode", {model: data.model})}
           className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
         >
           <Plug size={10}/> UPDATE
         </button>
+
         <button
-          onClick={() => data.addChildAutomatically(id, "selectNode", {})}
-          className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
-        >
-          <Plug size={10}/> INSERT
-        </button>
-        <button
-          onClick={() => data.addChildAutomatically(id, "selectNode", {})}
+          onClick={() => data.addChildAutomatically(id, "deleteNode", {model: data.model})}
           className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
         >
           <Plug size={10}/> DELETE

@@ -19,6 +19,8 @@ import BodyParamsNode from "./visualNode/bodyParamsNode";
 import RequestParams from "./visualNode/requestParams";
 import InsertNode from "./visualNode/insertNode";
 import ReturnNode from "./visualNode/returnTypeNode";
+import UpdateNode from "./visualNode/updateNode";
+import DeleteNode from "./visualNode/deleteNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -31,7 +33,9 @@ const nodeTypes = {
   bodyParamsNode: BodyParamsNode,
   requestParamsNode: RequestParams,
   insertNode: InsertNode,
-  returnNode: ReturnNode
+  returnNode: ReturnNode,
+  updateNode: UpdateNode,
+  deleteNode: DeleteNode
 };
 
 // ==========================================
@@ -192,7 +196,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
         return false;
       const queryModifiers = ["whereNode", "joinNode"];
       if (queryModifiers.includes(targetNode.type)) {
-        const validSources = ["selectNode", "whereNode", "joinNode"];
+        const validSources = ["selectNode", "whereNode", "joinNode", "requestParamsNode", "bodyParamsNode"];
         if (!validSources.includes(sourceNode.type)) {
           console.warn(
             "Les blocs WHERE ou JOIN doivent suivre un bloc SELECT, WHERE ou JOIN !",
@@ -219,8 +223,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
   }, []);
   const addChildAutomatically = useCallback(
     (parentId, childType, otherData) => {
-      const { selectedType } = otherData;
-      console.log(selectedType)
+      // const { selectedType } = otherData;
       setNodes((currentNodes) => {
         const parentNode = currentNodes.find((n) => n.id === parentId);
         if (!parentNode) return currentNodes;
@@ -239,7 +242,8 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           onDeleteNode,
           addChildAutomatically: parentNode.data.addChildAutomatically, // Permet le chaînage à l'infini (ex: dbModel -> select -> where)
           selectedType: otherData.selectedType && otherData.selectedType,
-          model: otherData.model && otherData.model
+          model: otherData.model && otherData.model,
+          parentType: otherData.parentType && otherData.parentType
         };
 
         // if (childType == "selectNode" && typeof(otherData) == "object") {

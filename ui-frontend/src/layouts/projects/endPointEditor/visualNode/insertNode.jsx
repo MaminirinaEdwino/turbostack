@@ -45,7 +45,7 @@ export default function InsertNode({ id, data, isConnectable }) {
       isConnectable={isConnectable}
     />
     <div>
-      <button className="p-2 text-couleur2 flex text-[9px] gap-2 items-center" onClick={() => data.addChildAutomatically(id, "returnNode", { model: data.model })}> <Plug size={10}/> RETURN</button>
+      <button className="p-2 text-couleur2 flex text-[9px] gap-2 items-center" onClick={() => data.addChildAutomatically(id, "returnNode", { model: data.model, parentType: "insertNode" })}> <Plug size={10}/> RETURN</button>
     </div>
   </div>
 }

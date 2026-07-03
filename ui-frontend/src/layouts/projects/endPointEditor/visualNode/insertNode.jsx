@@ -23,7 +23,7 @@ export default function InsertNode({ id, data, isConnectable }) {
       data.model.champs.map((field, id) => <div className="flex gap-2">
         <div className="">
           <Handle
-            nodeId={`insertNodeValue_${field}_${id}`}
+            nodeid={`insertNodeValue_${field}_${id}`}
             type="target"
             position={Position.Left}
             isConnectable={isConnectable}

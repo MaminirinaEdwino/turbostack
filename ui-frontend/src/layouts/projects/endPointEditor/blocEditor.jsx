@@ -170,9 +170,10 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     (connection) => {
       const sourceNode = nodes.find((n) => n.id === connection.source);
       const targetNode = nodes.find((n) => n.id === connection.target);
-
+      console.log(sourceNode, targetNode, edges)
       if (!sourceNode || !targetNode) return false;
       if (sourceNode == targetNode) return false;
+
       if (targetNode.type == "selectNode" && sourceNode.type != "modelNode")
         return false;
       const queryModifiers = ["whereNode", "joinNode"];

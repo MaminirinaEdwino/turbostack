@@ -10,41 +10,27 @@ export default function VarNode({ id, data, isConnectable }) {
 
   return (
     <div
-      style={{  borderLeft: "4px solid #fab387" }}
-      className="shadow-lg"
+      className="shadow-lg bg-gray-900 p-2 border border-couleur2 rounded-md"
     >
       <Handle
+      id={"var_"+id}
         type="target"
         position={Position.Left}
         isConnectable={isConnectable}
-        style={{ background: "#f38ba8" }}
       />
 
       <div
         className="flex justify-between items-center"
-        style={{
-          borderBottom: "1px solid #45475a",
-          paddingBottom: "4px",
-          marginBottom: "8px",
-        }}
+
       >
         <span style={{ color: "#fab387", fontWeight: "bold" }}>
-          📦 Variable
+          Variable
         </span>
-        <button
+        {/* <button
           onClick={() => data.onDeleteNode(id)}
-          style={{
-            background: "#f38ba8",
-            color: "#11111b",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            padding: "2px 6px",
-            fontSize: "10px",
-          }}
         >
           ✕
-        </button>
+        </button>*/}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -53,37 +39,24 @@ export default function VarNode({ id, data, isConnectable }) {
           placeholder="Nom"
           value={data.name || ""}
           onChange={(e) => onChange("name", e.target.value)}
-          className="nodrag"
-          style={{
-            background: "#313244",
-            color: "#cdd6f4",
-            border: "1px solid #45475a",
-            borderRadius: "4px",
-            padding: "2px 4px",
-          }}
+          className="nodrag bg-couleur2 px-2 py-1 rounded-sm"
         />
 
         <select
           value={data.type || "string"}
           onChange={(e) => onChange("type", e.target.value)}
           className="nodrag"
-          style={{
-            background: "#313244",
-            color: "#cdd6f4",
-            border: "1px solid #45475a",
-            borderRadius: "4px",
-            padding: "2px 4px",
-          }}
         >
           <option value="string">String</option>
           <option value="int">Integer</option>
           <option value="boolean">Boolean</option>
           <option value="json">JSON / Object</option>
+          <option value="node">Node</option>
         </select>
 
         <input
           type="text"
-          placeholder="Valeur par défaut"
+          placeholder="Default Value"
           value={data["default value"] || ""}
           onChange={(e) => onChange("default value", e.target.value)}
           className="nodrag"
@@ -94,6 +67,11 @@ export default function VarNode({ id, data, isConnectable }) {
             borderRadius: "4px",
             padding: "2px 4px",
           }}
+        />
+        <Handle
+          type="source"
+          isConnectable={isConnectable}
+          position={Position.Right}
         />
       </div>
     </div>

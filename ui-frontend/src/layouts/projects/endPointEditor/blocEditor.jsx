@@ -196,7 +196,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
         return false;
       const queryModifiers = ["whereNode", "joinNode"];
       if (queryModifiers.includes(targetNode.type)) {
-        const validSources = ["selectNode", "whereNode", "joinNode", "requestParamsNode", "bodyParamsNode"];
+        const validSources = ["selectNode", "whereNode", "joinNode", "requestParamsNode", "bodyParamsNode", "varNode"];
         if (!validSources.includes(sourceNode.type)) {
           console.warn(
             "Les blocs WHERE ou JOIN doivent suivre un bloc SELECT, WHERE ou JOIN !",

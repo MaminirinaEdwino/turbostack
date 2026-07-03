@@ -8,8 +8,8 @@ export default function BodyParamsNode({ id, data, isConnectable }) {
   // };
   return <div key={id} className="bg-gray-900 p-2 border border-couleur2 rounded-md text-couleur2">
     <Handle
-      position={Position.Left}
-      type="target"
+      position={Position.Right}
+      type="source"
       isConnectable={isConnectable}
     />
     <div className="text-[10px] border-b border-couleur2 mb-2">Request Body params</div>

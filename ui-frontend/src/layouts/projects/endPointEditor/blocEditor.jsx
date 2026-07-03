@@ -170,10 +170,22 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     (connection) => {
       const sourceNode = nodes.find((n) => n.id === connection.source);
       const targetNode = nodes.find((n) => n.id === connection.target);
-      console.log(sourceNode, targetNode, edges)
+      console.log(sourceNode, targetNode)
       if (!sourceNode || !targetNode) return false;
       if (sourceNode == targetNode) return false;
+      if (connection.targetHandle && connection.targetHandle.startsWith("param-")) {
+        if (connection.sourceHandle == "exec-source") {
+          console.warn("connection non valide")
+          return false;
+        }
+      }
 
+      if (connection.targetHandle === "exec-target") {
+        if (connection.SourceHandle && connection.sourceHandle.startsWith("param-")) {
+          console.warn("connection non valide")
+          return false;
+        }
+      }
       if (targetNode.type == "selectNode" && sourceNode.type != "modelNode")
         return false;
       const queryModifiers = ["whereNode", "joinNode"];

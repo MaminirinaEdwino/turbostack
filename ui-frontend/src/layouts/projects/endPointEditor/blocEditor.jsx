@@ -21,6 +21,7 @@ import InsertNode from "./visualNode/insertNode";
 import ReturnNode from "./visualNode/returnTypeNode";
 import UpdateNode from "./visualNode/updateNode";
 import DeleteNode from "./visualNode/deleteNode";
+import ResponseNode from "./visualNode/responseNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -35,7 +36,8 @@ const nodeTypes = {
   insertNode: InsertNode,
   returnNode: ReturnNode,
   updateNode: UpdateNode,
-  deleteNode: DeleteNode
+  deleteNode: DeleteNode,
+  responseNode: ResponseNode
 };
 
 // ==========================================
@@ -176,7 +178,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     (connection) => {
       const sourceNode = nodes.find((n) => n.id === connection.source);
       const targetNode = nodes.find((n) => n.id === connection.target);
-      console.log(sourceNode, targetNode)
+      // console.log(sourceNode, targetNode)
       if (!sourceNode || !targetNode) return false;
       if (sourceNode == targetNode) return false;
       if (connection.targetHandle && connection.targetHandle.startsWith("param-")) {
@@ -420,6 +422,24 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, block]);
   }
+  const addResponseBlock= () => {
+    const uniqueId = `response_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "responseNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+        response: []
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
   const handleSave = useCallback(() => {
     const rebuiltTree = rebuildLogicTree(nodes, edges);
 
@@ -543,6 +563,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           >
             + Variable locale
           </button>
+          <button onClick={()=>addResponseBlock()}>Response</button>
           {
            model.map((mdl) => (
               <>

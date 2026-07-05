@@ -1,4 +1,4 @@
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useNodeConnections } from "@xyflow/react";
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Plug } from "lucide-react";
 import { useState } from "react";
 
@@ -9,14 +9,19 @@ export default function ModelNode({ id, data, isConnectable }) {
   //   }
   // };
   const [expand, setExpand] = useState(false);
+  const isConnected = useNodeConnections({id: id,handleType: "target", handleId: "model_handle_target"})
   // let otherData = {}
   return (
+
     <div className="p-2 bg-gray-900 rounded-md min-w-40 border border-couleur2 font-mono">
       <div className="w-full text-center dark:text-white/50 border-b b-2 border-b-couleur2">{data.name}</div>
+
       <Handle
         type="target"
+        id={"model_handle_target"}
         position={Position.Left}
         isConnectable={isConnectable}
+        style={{backgroundColor: `${isConnected.length >0 && "#4ecdc4"}`}}
       />
       <div className="p-2 text-[10px] text-couleur2 border-b">
         <div>

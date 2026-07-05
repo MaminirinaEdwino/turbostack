@@ -23,6 +23,7 @@ import UpdateNode from "./visualNode/updateNode";
 import DeleteNode from "./visualNode/deleteNode";
 import ResponseNode from "./visualNode/responseNode";
 import StatusCodeNode from "./visualNode/statusCodeNode";
+import TryCatchNode from "./visualNode/tryCatchNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -39,7 +40,8 @@ const nodeTypes = {
   updateNode: UpdateNode,
   deleteNode: DeleteNode,
   responseNode: ResponseNode,
-  statusCodeNode: StatusCodeNode
+  statusCodeNode: StatusCodeNode,
+  tryCatchNode: TryCatchNode
 };
 
 // ==========================================
@@ -442,6 +444,25 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, block]);
   }
+
+  const addTryCatchBlock = () =>{
+    const uniqueId = `response_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "tryCatchNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+
   const addStatusCodeBlock= () => {
     const uniqueId = `response_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
@@ -563,6 +584,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             <Plus size={14} /> Status Code
           </button>
           <button
+            onClick={()=>addTryCatchBlock()}
+            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+          >
+            <Plus size={14} /> Try Catch Node
+          </button>
+          <button
             onClick={() => addNewBlock("function")}
             style={{
               padding: "8px",
@@ -589,7 +616,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           >
             + Variable locale
           </button>
-          <button onClick={()=>addResponseBlock()}>Response</button>
+          <button className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1" onClick={()=>addResponseBlock()}>Response</button>
           {
            model.map((mdl) => (
               <>

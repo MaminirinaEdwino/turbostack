@@ -17,6 +17,12 @@ export default function ElseIfNode({id, data, isConnectable}) {
                 isConnectable={isConnectable}
                 id={"condition_handle"}
             />
+            <div className="relative text-couleur2 flex justify-evenly">
+                <button onClick={()=>data.addChildAutomatically(id, "superiorNode", {})}>{'>'}</button>
+                <button onClick={()=>data.addChildAutomatically(id, "inferiorNode", {})}>{'<'}</button>
+                <button onClick={()=>data.addChildAutomatically(id, "equalNode", {})}>{'=='}</button>
+                <button onClick={()=>data.addChildAutomatically(id, "differentNode", {})}>{'!='}</button>
+            </div>
         </div>
         <div className="relative">
             <h3 className="text-couleur2 p-4 flex justify-between">Execute</h3>

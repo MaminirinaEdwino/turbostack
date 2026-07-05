@@ -1,4 +1,4 @@
-import { Handle, Position, useOnSelectionChange } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 
 export default function ElseNode({id, data, isConnectable}) {
     return <div className="bg-gray-900 border border-couleur2 rounded-md min-w-40 font-mono">

@@ -28,6 +28,8 @@ import IfNode from "./visualNode/ifNode";
 import ElseNode from "./visualNode/elseNode";
 import IfElseNode from "./visualNode/ifElseNode";
 import ElseIfNode from "./visualNode/elseIfNode";
+import { DifferentNode, EqualNode, InferiorNode, SuperiorNode } from "./visualNode/conditionNode";
+import WhileNode from "./visualNode/whileNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -49,7 +51,12 @@ const nodeTypes = {
   ifNode: IfNode,
   elseNode: ElseNode,
   ifElseNode: IfElseNode,
-  elseIfNode: ElseIfNode
+  elseIfNode: ElseIfNode,
+  equalNode: EqualNode,
+  differentNode: DifferentNode,
+  superiorNode: SuperiorNode,
+  inferiorNode: InferiorNode,
+  whileNode: WhileNode
 };
 
 // ==========================================
@@ -477,6 +484,23 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, block]);
   }
+  const addWhileBlock = () =>{
+    const uniqueId = `whileNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "whileNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
 
   const addConditionBlock = () =>{
     const uniqueId = `ifElseNode_${Math.random().toString(36).substr(2, 5)}`;
@@ -618,6 +642,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           </button>
           <button
             onClick={()=>addTryCatchBlock()}
+            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+          >
+            <Plus size={14} /> Try Catch Node
+          </button>
+          <button
+            onClick={()=>addWhileBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
             <Plus size={14} /> Try Catch Node

@@ -27,13 +27,14 @@ type ComposantJSON struct {
 }
 
 type EndpointJSON struct {
-	Nom    string            `json:"nom"`
-	Uri    string            `json:"uri"`
-	Method string            `json:"method"`
-	Model  []ModelJSON       `json:"model"`
-	Params []string          `json:"params"`
-	Role   string            `json:"role"`
-	Logic  map[string]string `json:"logic"`
+	Nom           string            `json:"nom"`
+	Uri           string            `json:"uri"`
+	Method        string            `json:"method"`
+	Model         []ModelJSON       `json:"model"`
+	Params        []string          `json:"params"`
+	Role          string            `json:"role"`
+	Logic         map[string]string `json:"logic"`
+	ReturnContent []ModelJSON          `json:"return_content"`
 }
 
 type ControllerJSON struct {

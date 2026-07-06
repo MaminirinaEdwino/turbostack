@@ -15,6 +15,7 @@ export default function EditEndpoint({
     model: [],
     params: [],
     manual_fields: [],
+    return_content: []
   });
   const [manualField, setManualField] = useState({ nom: "", type: "string" });
   const [tableName, setTableName] = useState("");
@@ -37,6 +38,7 @@ export default function EditEndpoint({
         params: ep.params || [],
         manual_fields: ep.manual_fields || [],
         role: ep.role || "public",
+        return_content: ep.return_content || [],
       });
     };
     if (project?.rest_api?.endpoints?.[index]) {
@@ -46,6 +48,7 @@ export default function EditEndpoint({
         model: ep.model || [],
         params: ep.params || [],
         manual_fields: ep.manual_fields || [],
+        return_content: ep.return_content || [],
       });
     }
   }, [index, project]); // On surveille l'index ET le projet pour garantir le chargement des données
@@ -77,13 +80,14 @@ export default function EditEndpoint({
       setEndpoint({
         ...endpoint,
         model: endpoint.model.filter((m) => m.nom !== model.nom),
+        return_content: endpoint.return_content.filter((m) => m.nom !== model.nom),
         params: endpoint.params.filter(
           (p) => !model.champs.some((c) => c.nom === p),
         ),
         uri: newUri,
       });
     } else {
-      setEndpoint({ ...endpoint, model: [...endpoint.model, { ...model }] });
+      setEndpoint({ ...endpoint, model: [...endpoint.model, { ...model }], return_content: [...endpoint.return_content, { ...model }] });
     }
   };
 
@@ -199,6 +203,21 @@ export default function EditEndpoint({
     setEndpoint({ ...endpoint, model: updatedModels });
   };
 
+  const toggleResponseBody = (modelName, field) => {
+    console.log("d")
+    const updatedModels = endpoint.return_content.map((m) => {
+      if (m.nom === modelName) {
+        const hasField = m.champs.some((f) => f.nom === field.nom);
+        if (hasField) {
+          return { ...m, champs: m.champs.filter((f) => f.nom !== field.nom) };
+        } else {
+          return { ...m, champs: [...m.champs, field] };
+        }
+      }
+      return m;
+    });
+    setEndpoint({ ...endpoint, return_content: updatedModels });
+  };
   return (
     <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-137.5 max-h-[85vh] overflow-y-auto">
       <h3 className="font-bold text-2xl text-couleur1 mb-4">Edit Endpoint</h3>
@@ -265,24 +284,23 @@ export default function EditEndpoint({
         <label className="text-xs font-bold opacity-50 uppercase">
           Associated Models
         </label>
-        <div className="flex flex-wrap gap-2 mt-2 border border-dashed border-couleur1/30 p-3 rounded-lg min-h-[60px]">
+        <div className="flex flex-wrap gap-2 mt-2 border border-dashed border-couleur1/30 p-3 rounded-lg min-h-15">
           {availableModels.map((m, i) => (
             <button
               key={i}
               type="button"
               onClick={() => toggleModelSelection(m)}
-              className={`px-3 py-1 rounded-full text-xs transition-colors border ${
-                endpoint.model.some((sel) => sel.nom === m.nom)
-                  ? "bg-couleur1 text-white border-couleur1"
-                  : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur3"
-              }`}
+              className={`px-3 py-1 rounded-full text-xs transition-colors border ${endpoint.model.some((sel) => sel.nom === m.nom)
+                ? "bg-couleur1 text-white border-couleur1"
+                : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur3"
+                }`}
             >
               {m.nom}
             </button>
           ))}
         </div>
       </div>
-
+      {/*
       <div className="flex flex-col gap-1 mb-6">
         <label className="text-xs font-bold opacity-50 uppercase">
           Manual Fields
@@ -359,11 +377,11 @@ export default function EditEndpoint({
           </div>
         )}
       </div>
-
+*/}
       {(endpoint.model.length > 0 || endpoint.manual_fields.length > 0) && (
         <div className="flex flex-col gap-3 mb-6 border-t border-couleur1/10 pt-4">
           <label className="text-xs font-bold opacity-50 uppercase">
-            Fields Configuration (URI vs Body)
+            Fields Configuration
           </label>
 
           {/* Config pour les champs manuels */}
@@ -462,6 +480,56 @@ export default function EditEndpoint({
                             type="checkbox"
                             checked={m.champs.some((bc) => bc.nom === f.nom)}
                             onChange={() => toggleBodyField(m.nom, f)}
+                            className="accent-couleur1 cursor-pointer w-4 h-4"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
+          {endpoint.return_content.map((m) => {
+            if (m.nom === "Manual") return null;
+            const originalModel = availableModels.find(
+              (om) => om.nom === m.nom,
+            );
+            return (
+              <div
+                key={m.nom}
+                className="bg-couleur3/30 p-4 rounded-lg border border-couleur1/10 shadow-inner"
+              >
+                <h4 className="text-sm font-bold text-couleur1 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-couleur1"></div>
+                  {m.nom}
+                </h4>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="text-left opacity-60">
+                      <th className="pb-2">Field Name</th>
+                      <th className="pb-2 text-center">Response Body</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {originalModel?.champs.map((f) => (
+                      <tr
+                        key={f.nom}
+                        className="border-t border-couleur1/5 hover:bg-white/40 transition-colors"
+                      >
+                        <td className="py-2 text-couleur1 font-medium">
+                          {f.nom}{" "}
+                          <span className="text-[10px] opacity-40">
+                            [{f.type}]
+                          </span>
+                        </td>
+
+
+                        <td className="py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={m.champs.some((bc) => bc.nom === f.nom)}
+                            onChange={() => toggleResponseBody(m.nom, f)}
                             className="accent-couleur1 cursor-pointer w-4 h-4"
                           />
                         </td>

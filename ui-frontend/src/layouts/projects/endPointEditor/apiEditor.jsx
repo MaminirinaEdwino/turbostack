@@ -320,7 +320,7 @@ export default function ApiEditor({ projectName }) {
           colorMode={isDarkMode ? "dark" : "light"}
         >
           <Controls />
-          <Background variant="dots" gap={12} size={1} />
+          <Background variant="lines" gap={40} size={3} />
         </ReactFlow>
       </div>
       <div
@@ -330,7 +330,7 @@ export default function ApiEditor({ projectName }) {
         }}
       >
         <button
-          onClick={(e) => {
+          onClick={() => {
             setToggleVisualScriptModal("none");
           }}
         >

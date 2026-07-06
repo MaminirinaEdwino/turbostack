@@ -7,7 +7,7 @@ type Endpoint struct {
 	model         []Model
 	params        []string
 	role          string
-	returnContent []string
+	returnContent []Model
 	logic         map[string]string
 }
 
@@ -16,14 +16,19 @@ func (e *Endpoint) ToJSON() EndpointJSON {
 	for _, val := range e.model {
 		model = append(model, val.ToJSON())
 	}
+	var retunModel []ModelJSON
+	for _, val := range e.model {
+		retunModel = append(retunModel, val.ToJSON())
+	}
 	return EndpointJSON{
-		Nom:    e.nom,
-		Uri:    e.uri,
-		Method: e.method,
-		Model:  model,
-		Params: e.params,
-		Role:   e.role,
-		Logic:  e.logic,
+		Nom:           e.nom,
+		Uri:           e.uri,
+		Method:        e.method,
+		Model:         model,
+		Params:        e.params,
+		Role:          e.role,
+		Logic:         e.logic,
+		ReturnContent: retunModel,
 	}
 }
 

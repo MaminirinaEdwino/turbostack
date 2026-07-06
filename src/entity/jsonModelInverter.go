@@ -47,6 +47,7 @@ func (ej *EndpointJSON) ToModel() Endpoint {
 		role:          ej.Role,
 		logic:         ej.Logic,
 		returnContent: returnModel,
+		returnContentType: ej.ReturnContentType,
 	}
 }
 

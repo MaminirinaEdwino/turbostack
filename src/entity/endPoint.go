@@ -1,14 +1,15 @@
 package entity
 
 type Endpoint struct {
-	nom           string
-	uri           string
-	method        string
-	model         []Model
-	params        []string
-	role          string
-	returnContent []Model
-	logic         map[string]string
+	nom               string
+	uri               string
+	method            string
+	model             []Model
+	params            []string
+	role              string
+	returnContent     []Model
+	logic             map[string]string
+	returnContentType string
 }
 
 func (e *Endpoint) ToJSON() EndpointJSON {
@@ -29,6 +30,7 @@ func (e *Endpoint) ToJSON() EndpointJSON {
 		Role:          e.role,
 		Logic:         e.logic,
 		ReturnContent: retunModel,
+		ReturnContentType: e.returnContentType,
 	}
 }
 

@@ -15,7 +15,8 @@ export default function EditEndpoint({
     model: [],
     params: [],
     manual_fields: [],
-    return_content: []
+    return_content: [],
+    return_content_type : "object"
   });
   const [manualField, setManualField] = useState({ nom: "", type: "string" });
   const [tableName, setTableName] = useState("");
@@ -39,6 +40,7 @@ export default function EditEndpoint({
         manual_fields: ep.manual_fields || [],
         role: ep.role || "public",
         return_content: ep.return_content || [],
+        return_content_type: ep.return_content_type || "object"
       });
     };
     if (project?.rest_api?.endpoints?.[index]) {
@@ -49,6 +51,7 @@ export default function EditEndpoint({
         params: ep.params || [],
         manual_fields: ep.manual_fields || [],
         return_content: ep.return_content || [],
+        return_content_type: ep.return_content_type || "object"
       });
     }
   }, [index, project]); // On surveille l'index ET le projet pour garantir le chargement des données
@@ -490,6 +493,26 @@ export default function EditEndpoint({
               </div>
             );
           })}
+
+          <div>
+            <label className="text-xs font-bold opacity-50 uppercase">
+              Response Body 
+            </label>
+            <div className="text-xs border w-fit rounded-sm border-couleur1">
+              <button className={`p-2 ${endpoint.return_content_type =="array" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e)=>{
+                e.preventDefault()
+                setEndpoint({...endpoint, return_content_type: "array"})
+              }}>
+                ARRAY
+              </button>
+              <button className={`p-2 ${endpoint.return_content_type =="object" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e)=>{
+                e.preventDefault()
+                setEndpoint({...endpoint, return_content_type: "object"})
+              }}>
+                OBJECT
+              </button>
+            </div>
+          </div>
           {endpoint.return_content.map((m) => {
             if (m.nom === "Manual") return null;
             const originalModel = availableModels.find(

@@ -30,6 +30,7 @@ import IfElseNode from "./visualNode/ifElseNode";
 import ElseIfNode from "./visualNode/elseIfNode";
 import { DifferentNode, EqualNode, InferiorNode, SuperiorNode } from "./visualNode/conditionNode";
 import WhileNode from "./visualNode/whileNode";
+import ForNode from "./visualNode/forNode";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -56,7 +57,8 @@ const nodeTypes = {
   differentNode: DifferentNode,
   superiorNode: SuperiorNode,
   inferiorNode: InferiorNode,
-  whileNode: WhileNode
+  whileNode: WhileNode,
+  forNode: ForNode
 };
 
 // ==========================================
@@ -502,6 +504,23 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     setNodes((nds) => [...nds, block]);
   }
 
+  const addForBlock = () =>{
+    const uniqueId = `forNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "forNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
   const addConditionBlock = () =>{
     const uniqueId = `ifElseNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
@@ -650,8 +669,15 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             onClick={()=>addWhileBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
-            <Plus size={14} /> Try Catch Node
+            <Plus size={14} /> While Node
           </button>
+          <button
+            onClick={()=>addForBlock()}
+            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+          >
+            <Plus size={14} /> For Node
+          </button>
+
           <button
             onClick={()=>addConditionBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"

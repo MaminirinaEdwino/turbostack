@@ -78,9 +78,9 @@ export default function EndpointNode({ data }) {
           {"}"}
         </code> }
       </div>
-      <div className="p-3 space-y-1 box-border text-[10px]">
+      <div className="p-3 space-y-1 box-border text-[10px] ">
         <h3 className="text-white/50">Response Body</h3>
-        {data.return_content != null && data.return_content.length == 1 && <code className="dark:text-couleur2" >
+        {data.return_content != null && data.return_content.length == 1 && <code className="dark:text-couleur2 " >
           {data.return_content_type =="array" && "["} 
           {"{"} <br />
           {data.return_content[0].champs.map((field)=><>

@@ -324,22 +324,18 @@ export default function ApiEditor({ projectName }) {
         </ReactFlow>
       </div>
       <div
-        className="fixed z-10 w-screen h-screen bg-couleur6"
+        className="fixed z-10 w-screen "
         style={{
           display: toggleVisualScriptModal,
         }}
       >
-        <button
-          onClick={() => {
-            setToggleVisualScriptModal("none");
-          }}
-        >
-          Close
-        </button>
+        
         <TurboStackScripting
           setProjet={setProject}
           endpoint={selectedEndpointIndex}
           project={project}
+          setToggleVisualScriptModal={setToggleVisualScriptModal}
+          colorMode={isDarkMode ? "dark" : "light"}
         ></TurboStackScripting>
       </div>
     </div>

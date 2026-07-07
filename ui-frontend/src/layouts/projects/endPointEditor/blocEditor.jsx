@@ -8,13 +8,13 @@ import {
   Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Plus } from "lucide-react";
-import  RootNode  from "./visualNode/rootNode";
-import  FunctionNode  from "./visualNode/functionNode";
-import  VarNode  from "./visualNode/varNode";
-import  SelectNode  from "./visualNode/selectNode";
-import  WhereNode  from "./visualNode/whereNode";
-import  ModelNode  from "./visualNode/modelNode";
+import { LogOut, Plus, Save } from "lucide-react";
+import RootNode from "./visualNode/rootNode";
+import FunctionNode from "./visualNode/functionNode";
+import VarNode from "./visualNode/varNode";
+import SelectNode from "./visualNode/selectNode";
+import WhereNode from "./visualNode/whereNode";
+import ModelNode from "./visualNode/modelNode";
 import BodyParamsNode from "./visualNode/bodyParamsNode";
 import RequestParams from "./visualNode/requestParams";
 import InsertNode from "./visualNode/insertNode";
@@ -171,7 +171,7 @@ function rebuildLogicTree(nodes, edges) {
 // ==========================================
 // COMPOSANT LOGIQUE DE TURBOSTACK
 // ==========================================
-export default function TurboStackScripting({ setProjet, endpoint, project }) {
+export default function TurboStackScripting({ setProjet, endpoint, project, setToggleVisualScriptModal, colorMode }) {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [model, setModel] = useState([]);
@@ -260,7 +260,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
         };
 
         let blockData = {
-          name: childType ,
+          name: childType,
           onNodeDataChange,
           onDeleteNode,
           addChildAutomatically: parentNode.data.addChildAutomatically, // Permet le chaînage à l'infini (ex: dbModel -> select -> where)
@@ -284,14 +284,14 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
         // Ajouter le lien immédiatement
         if (otherData.sourceHandle) {
           setEdges((currentEdges) => [
-          ...currentEdges,
-          { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle },
-        ]);
-        }else{
+            ...currentEdges,
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle },
+          ]);
+        } else {
           setEdges((currentEdges) => [
-          ...currentEdges,
-          { id: `e-${parentId}-${childId}`, source: parentId, target: childId, },
-        ]);
+            ...currentEdges,
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, },
+          ]);
         }
 
         return [...currentNodes, newChildNode];
@@ -450,7 +450,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, block]);
   }
-  const addResponseBlock= () => {
+  const addResponseBlock = () => {
     const uniqueId = `responseNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -469,7 +469,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     setNodes((nds) => [...nds, block]);
   }
 
-  const addTryCatchBlock = () =>{
+  const addTryCatchBlock = () => {
     const uniqueId = `tryCatchNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -486,7 +486,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, block]);
   }
-  const addWhileBlock = () =>{
+  const addWhileBlock = () => {
     const uniqueId = `whileNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -504,7 +504,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     setNodes((nds) => [...nds, block]);
   }
 
-  const addForBlock = () =>{
+  const addForBlock = () => {
     const uniqueId = `forNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -521,7 +521,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
 
     setNodes((nds) => [...nds, block]);
   }
-  const addConditionBlock = () =>{
+  const addConditionBlock = () => {
     const uniqueId = `ifElseNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -539,7 +539,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     setNodes((nds) => [...nds, block]);
   }
 
-  const addStatusCodeBlock= () => {
+  const addStatusCodeBlock = () => {
     const uniqueId = `response_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -597,28 +597,28 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
     <div
       style={{
         width: "100%",
-        height: "90vh",
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
       }}
 
     >
-      <button
-        onClick={handleSave}
-        style={{
-          marginBottom: 10,
-          padding: "10px 20px",
-          background: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: 4,
-          cursor: "pointer",
-          fontWeight: "bold",
-        }}
-      >
-        Enregistrer la logique de l'API ({endpoint})
-      </button>
-
+      <div className="text-white flex gap-2 fixed z-20 right-0 p-2">
+        <button
+          onClick={handleSave}
+          className="w-fit bg-green-500 p-2 rounded"
+        >
+          <Save size={30}/>
+        </button>
+        <button
+          className=" p-2  text-center rounded bg-red-500"
+          onClick={() => {
+            setToggleVisualScriptModal("none");
+          }}
+        >
+          <LogOut size={30}/>
+        </button>
+      </div>
       <div
         style={{
           display: "flex",
@@ -648,38 +648,38 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             Composants API
           </h4>
           <button
-            onClick={()=>addRootBlock()}
+            onClick={() => addRootBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
             <Plus size={14} /> RootNode
           </button>
           <button
-            onClick={()=>addStatusCodeBlock()}
+            onClick={() => addStatusCodeBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
             <Plus size={14} /> Status Code
           </button>
           <button
-            onClick={()=>addTryCatchBlock()}
+            onClick={() => addTryCatchBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
             <Plus size={14} /> Try Catch Node
           </button>
           <button
-            onClick={()=>addWhileBlock()}
+            onClick={() => addWhileBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
             <Plus size={14} /> While Node
           </button>
           <button
-            onClick={()=>addForBlock()}
+            onClick={() => addForBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
             <Plus size={14} /> For Node
           </button>
 
           <button
-            onClick={()=>addConditionBlock()}
+            onClick={() => addConditionBlock()}
             className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
           >
             <Plus size={14} /> Condition Node
@@ -711,9 +711,9 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
           >
             + Variable locale
           </button>
-          <button className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1" onClick={()=>addResponseBlock()}>Response</button>
+          <button className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1" onClick={() => addResponseBlock()}>Response</button>
           {
-           model.map((mdl) => (
+            model.map((mdl) => (
               <>
                 <button
                   className="px-8 py-2 bg-couleur1 rounded-sm cursor-pointer font-bold border-none"
@@ -740,7 +740,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             <div className="border-b mb-2">Request Params</div>
             <div>
               {
-                typeof (project) == "object" && project != null && endpoint!= undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="p-2 w-full text-center border border-couleur2 bg-gray-900 rounded-sm text-couleur2" onClick={()=>addRequestParamsBlock(`${p}`)}>
+                typeof (project) == "object" && project != null && endpoint != undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="p-2 w-full text-center border border-couleur2 bg-gray-900 rounded-sm text-couleur2" onClick={() => addRequestParamsBlock(`${p}`)}>
                   :{p}
                 </button>)
               }
@@ -759,8 +759,9 @@ export default function TurboStackScripting({ setProjet, endpoint, project }) {
             nodeTypes={nodeTypes}
             isValidConnection={isValidConnection}
             fitView
+            colorMode={colorMode}
           >
-            <Background color="#565f89" gap={16} />
+            <Background color="#565f89" gap={16} variant="lines" />
             <Controls />
           </ReactFlow>
         </div>

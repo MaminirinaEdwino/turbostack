@@ -285,12 +285,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
         if (otherData.sourceHandle) {
           setEdges((currentEdges) => [
             ...currentEdges,
-            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle },
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle, style: {stroke: "red"} },
           ]);
         } else {
           setEdges((currentEdges) => [
             ...currentEdges,
-            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, },
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, style: {stroke: "red"} },
           ]);
         }
 
@@ -619,15 +619,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
           <LogOut size={30}/>
         </button>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          overflow: "hidden",
-        }}
-      >
+      <div className="flex flex-1 overflow-hidden" >
         {/* BARRE LATÉRALE D'INSTRUCTIONS D'API */}
         <div
           style={{

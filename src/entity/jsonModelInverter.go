@@ -39,14 +39,14 @@ func (ej *EndpointJSON) ToModel() Endpoint {
 		returnModel = append(returnModel, val.ToModel())
 	}
 	return Endpoint{
-		nom:           ej.Nom,
-		uri:           ej.Uri,
-		method:        ej.Method,
-		model:         model,
-		params:        ej.Params,
-		role:          ej.Role,
-		logic:         ej.Logic,
-		returnContent: returnModel,
+		nom:               ej.Nom,
+		uri:               ej.Uri,
+		method:            ej.Method,
+		model:             model,
+		params:            ej.Params,
+		role:              ej.Role,
+		logic:             ej.Logic,
+		returnContent:     returnModel,
 		returnContentType: ej.ReturnContentType,
 	}
 }
@@ -94,6 +94,8 @@ func (pj *ProjectJSON) ToModel() Project {
 		rest_api:      pj.RestApi.ToModel(),
 		web_app:       pj.WebApp.ToModel(),
 		site_statique: pj.SiteStatique.ToModel(),
+		updateAt:      pj.UpdateAt,
+		createdAt:     pj.CreatedAt,
 	}
 }
 

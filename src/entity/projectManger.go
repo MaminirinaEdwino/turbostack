@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"sort"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 )
@@ -39,11 +40,13 @@ func (mgr *ProjectManager) LoadProjects() error {
 			}
 
 			json.Unmarshal(saveFile, &pJson)
-			p.SetNom(pJson.Nom)
-			p.SetType(pJson.Type)
+			p = pJson.ToModel()
 			mgr.Projects = append(mgr.Projects, p)
 		}
 	}
+	sort.Slice(mgr.Projects, func(i, j int) bool {
+		return mgr.Projects[i].updateAt.After(mgr.Projects[j].updateAt)
+	})
 	return nil
 }
 
@@ -86,6 +89,9 @@ func (mgr *ProjectManager) SaveProject(project ProjectJSON) error {
 	if err != nil {
 		return err
 	}
+	pModel := project.ToModel()
+	pModel.SetUpdateAt()
+	project = pModel.ToJSON()
 	jsonData, err := json.MarshalIndent(project, "", "    ")
 	if err != nil {
 		return nil
@@ -111,6 +117,8 @@ func (mgr *ProjectManager) Create(project Project) {
 	var tmp Project
 	tmp.SetNom(project.GetNom())
 	tmp.SetType(project.GetType())
+	tmp.SetCreatedAt()
+	tmp.SetUpdateAt()
 	mgr.Projects = append(mgr.Projects, tmp)
 }
 

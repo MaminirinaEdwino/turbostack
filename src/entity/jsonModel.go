@@ -69,6 +69,8 @@ type ProjectJSON struct {
 	WebApp       WebAppJSON       `json:"web_app"`
 	SiteStatique SiteStatiqueJSON `json:"site_statique"`
 	Description  string           `json:"description"`
+	UpdateAt     time.Time        `json:"update_at"`
+	CreatedAt    time.Time        `json:"created_at"`
 }
 
 type RestApiJSON struct {

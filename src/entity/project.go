@@ -1,24 +1,30 @@
 package entity
 
+import "time"
+
 type Project struct {
-	nom          string
-	type_project string
-	description string
+	nom           string
+	type_project  string
+	description   string
 	bdd           BDD
 	rest_api      RestApi
 	web_app       WebApp
 	site_statique SiteStatique
+	updateAt      time.Time
+	createdAt     time.Time
 }
 
 func (p *Project) ToJSON() ProjectJSON {
 	return ProjectJSON{
 		Nom:          p.nom,
 		Type:         p.type_project,
-		Description: p.description,
+		Description:  p.description,
 		BDD:          p.bdd.ToJSON(),
 		RestApi:      p.rest_api.ToJSON(),
 		WebApp:       p.web_app.ToJSON(),
 		SiteStatique: p.site_statique.ToJSON(),
+		UpdateAt:     p.updateAt,
+		CreatedAt:    p.createdAt,
 	}
 }
 
@@ -48,6 +54,14 @@ func (project *Project) GetSiteStatique() SiteStatique {
 	return project.site_statique
 }
 
+func (Project *Project) GetCreatedAt() time.Time {
+	return Project.createdAt
+}
+
+func (Project *Project) GetUpdateAt() time.Time {
+	return Project.updateAt
+}
+
 func (project *Project) SetNom(Nom string) *Project {
 	project.nom = Nom
 	return project
@@ -56,7 +70,6 @@ func (project *Project) SetDescription(Description string) *Project {
 	project.description = Description
 	return project
 }
-
 
 func (project *Project) SetType(Type string) *Project {
 	project.type_project = Type
@@ -80,5 +93,14 @@ func (project *Project) SetWebApp(WebApp WebApp) *Project {
 
 func (project *Project) SetSiteStatique(SiteStatique SiteStatique) *Project {
 	project.site_statique = SiteStatique
+	return project
+}
+func (project *Project) SetCreatedAt() *Project {
+	project.createdAt = time.Now()
+	return project
+}
+
+func (project *Project) SetUpdateAt() *Project {
+	project.updateAt = time.Now()
 	return project
 }

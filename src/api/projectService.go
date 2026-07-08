@@ -92,11 +92,11 @@ func (s *ProjectService) GetFileContent(projectName, path string) string {
 	return content
 }
 
-func (s *ProjectService) FetchProjects() []string {
-	var projectList []string
+func (s *ProjectService) FetchProjects() []entity.ProjectJSON {
+	var projectList []entity.ProjectJSON
 
 	for _, val := range s.Manager.Projects {
-		projectList = append(projectList, val.GetNom())
+		projectList = append(projectList, val.ToJSON())
 	}
 	return projectList
 }

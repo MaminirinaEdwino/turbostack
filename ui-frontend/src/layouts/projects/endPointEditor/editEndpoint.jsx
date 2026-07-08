@@ -16,7 +16,7 @@ export default function EditEndpoint({
     params: [],
     manual_fields: [],
     return_content: [],
-    return_content_type : "object"
+    return_content_type: "object"
   });
   const [manualField, setManualField] = useState({ nom: "", type: "string" });
   const [tableName, setTableName] = useState("");
@@ -481,7 +481,7 @@ export default function EditEndpoint({
                         <td className="py-2 text-center">
                           <input
                             type="checkbox"
-                            checked={m.champs.some((bc) => bc.nom === f.nom)}
+                            checked={m.champs && m.champs.some((bc) => bc.nom === f.nom)}
                             onChange={() => toggleBodyField(m.nom, f)}
                             className="accent-couleur1 cursor-pointer w-4 h-4"
                           />
@@ -496,18 +496,18 @@ export default function EditEndpoint({
 
           <div>
             <label className="text-xs font-bold opacity-50 uppercase">
-              Response Body 
+              Response Body
             </label>
             <div className="text-xs border w-fit rounded-sm border-couleur1">
-              <button className={`p-2 ${endpoint.return_content_type =="array" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e)=>{
+              <button className={`p-2 ${endpoint.return_content_type == "array" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
                 e.preventDefault()
-                setEndpoint({...endpoint, return_content_type: "array"})
+                setEndpoint({ ...endpoint, return_content_type: "array" })
               }}>
                 ARRAY
               </button>
-              <button className={`p-2 ${endpoint.return_content_type =="object" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e)=>{
+              <button className={`p-2 ${endpoint.return_content_type == "object" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
                 e.preventDefault()
-                setEndpoint({...endpoint, return_content_type: "object"})
+                setEndpoint({ ...endpoint, return_content_type: "object" })
               }}>
                 OBJECT
               </button>
@@ -551,7 +551,7 @@ export default function EditEndpoint({
                         <td className="py-2 text-center">
                           <input
                             type="checkbox"
-                            checked={m.champs.some((bc) => bc.nom === f.nom)}
+                            checked={m.champs && m.champs.some((bc) => bc.nom === f.nom)}
                             onChange={() => toggleResponseBody(m.nom, f)}
                             className="accent-couleur1 cursor-pointer w-4 h-4"
                           />

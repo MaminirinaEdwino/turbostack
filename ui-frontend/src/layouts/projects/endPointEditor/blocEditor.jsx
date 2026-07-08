@@ -184,7 +184,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
       project?.rest_api.endpoints[endpoint].model.map((mdl) => {
         project?.bdd.models.map((mdl2) => {
           if (mdl2.nom == mdl.nom) {
-            console.log("same")
+            // console.log("same")
             modelList.push(mdl2);
             endPointModelList.push(mdl);
           }
@@ -721,7 +721,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
           {
             endPointModel.map((mdl) => <div className="p-2 flex flex-col items-start">
               <div className="border-b">{mdl.nom} body params</div>
-              {mdl.champs.map((field) => <button
+              {mdl.champs && mdl.champs.map((field) => <button
                 className="p-2 rounded-sm text-center w-full my-1 bg-gray-900 border border-couleur1 text-couleur2"
                 onClick={() => addBodyParamsBlock({ field: field })}>
                 {field.nom}

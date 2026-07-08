@@ -7,7 +7,7 @@ export default function EndpointNode({ data }) {
     PUT: "bg-amber-500",
     DELETE: "bg-red-500",
   };
-
+  console.log(data)
   return (
     <div className="border border-couleur1 dark:border-white/10 rounded-lg overflow-hidden bg-white dark:bg-gray-800 min-w-60 shadow-sm dark:border-none">
       <div className="border-b border-couleur1 dark:border-white/10 p-2 bg-couleur3 dark:bg-gray-900 flex justify-between items-center gap-4">
@@ -70,25 +70,25 @@ export default function EndpointNode({ data }) {
       </div>
       <div className="p-3 space-y-1 box-border text-[10px]">
         <h3 className="text-white/50">Body Content</h3>
-        {data.model.length == 1 && <code className="dark:text-couleur2" >
+        { data.model.length == 1 && <code className="dark:text-couleur2" >
           {"{"} <br />
-          {data.model[0].champs.map((field)=><>
-          <span className="pl-4"></span>{field.nom} : {field.type == "string" ? "string" : 1} <br />
+          {data.model[0].champs && data.model[0].champs.map((field) => <>
+            <span className="pl-4"></span>{field.nom} : {field.type == "string" ? "string" : 1} <br />
           </>)}
           {"}"}
-        </code> }
+        </code>}
       </div>
       <div className="p-3 space-y-1 box-border text-[10px] ">
         <h3 className="text-white/50">Response Body</h3>
         {data.return_content != null && data.return_content.length == 1 && <code className="dark:text-couleur2 " >
-          {data.return_content_type =="array" && "["} 
+          {data.return_content_type == "array" && "["}
           {"{"} <br />
-          {data.return_content[0].champs.map((field)=><>
-          <span className="pl-4"></span>{field.nom} : {field.type == "string" ? "string" : 1} <br />
+          {data.return_content[0].champs && data.return_content[0].champs.map((field) => <>
+            <span className="pl-4"></span>{field.nom} : {field.type == "string" ? "string" : 1} <br />
           </>)}
-          {"}"} 
-          {data.return_content_type =="array" && "]"}
-        </code> }
+          {"}"}
+          {data.return_content_type == "array" && "]"}
+        </code>}
       </div>
     </div>
   );

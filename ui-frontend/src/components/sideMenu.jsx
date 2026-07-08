@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { setToggleDarkMode, setToggleMenuSide } from "../appSlice";
 import logo from "../assets/logotransparent.png";
+import { GoApp } from "../services/bridge";
+import { useEffect } from "react";
 export default function SideMenu() {
   const navigateTo = useNavigate();
   const dispatch = useDispatch();
@@ -29,6 +31,42 @@ export default function SideMenu() {
   const actualProject = useSelector((state) => state.app.actualProject);
   const isDarkMode = useSelector((state) => state.app.darkMode);
   const [editorExpanded, setEditorExpanded] = useState(false);
+  const [subItems, setSubItems] = useState([
+    {
+      name: "unified_editor",
+      icon: <PanelsTopLeft size={18} />,
+      label: "Global view",
+    },
+    {
+      name: "db_editor",
+      icon: <Database size={18} />,
+      label: "DB Editor"
+    },
+    {
+      name: "api_editor",
+      icon: <Settings size={18} />,
+      label: "API Editor",
+    },
+    {
+      name: "page_editor",
+      icon: <LayoutDashboard size={18} />,
+      label: "Page Editor",
+    },
+    {
+      name: "controller_editor",
+      icon: <Cpu size={18} />,
+      label: "Controller Editor",
+    },
+  ])
+  // const [project, setProject] = useState(null)
+  const [projectMenu, setProjectMenu] = useState([
+    { name: "Models", icon: <Database size={18} /> },
+    { name: "Web App", icon: <Layout size={18} /> },
+    { name: "Static Site", icon: <Globe size={18} /> },
+    { name: "Api", icon: <Settings size={18} /> },
+    { name: "Files", icon: <Folder size={18} /> },
+    { name: "Export", icon: <SendToBack size={18} /> },
+  ])
 
   let menuItems = [
     { name: "Dashboard", icon: <LayoutDashboard size={18} /> },
@@ -39,14 +77,98 @@ export default function SideMenu() {
     { name: "Subscription", icon: <CreditCard size={18} /> },
   ];
 
-  let projectMenu = [
-    { name: "Models", icon: <Database size={18} /> },
-    { name: "Web App", icon: <Layout size={18} /> },
-    { name: "Static Site", icon: <Globe size={18} /> },
-    { name: "Api", icon: <Settings size={18} /> },
-    { name: "Files", icon: <Folder size={18} /> },
-    { name: "Export", icon: <SendToBack size={18} /> },
-  ];
+  // let projectMenu = [
+  //   { name: "Models", icon: <Database size={18} /> },
+  //   { name: "Web App", icon: <Layout size={18} /> },
+  //   { name: "Static Site", icon: <Globe size={18} /> },
+  //   { name: "Api", icon: <Settings size={18} /> },
+  //   { name: "Files", icon: <Folder size={18} /> },
+  //   { name: "Export", icon: <SendToBack size={18} /> },
+  // ];
+
+  useEffect(() => {
+    const loadProject = async () => {
+      const res = await GoApp.fetchProjectByName(actualProject);
+      if (res) {
+        // setProject(res);
+        console.log(res.type)
+        if (res.type == "api") {
+          setSubItems([
+            {
+              name: "db_editor",
+              icon: <Database size={18} />,
+              label: "DB Editor"
+            },
+            {
+              name: "api_editor",
+              icon: <Settings size={18} />,
+              label: "API Editor",
+            }
+          ])
+          setProjectMenu([
+            { name: "Models", icon: <Database size={18} /> },
+            { name: "Api", icon: <Settings size={18} /> },
+            { name: "Files", icon: <Folder size={18} /> },
+            { name: "Export", icon: <SendToBack size={18} /> },
+          ])
+        } else if (res.type == "bdd") {
+          setSubItems([
+            {
+              name: "db_editor",
+              icon: <Database size={18} />,
+              label: "DB Editor"
+            }
+          ])
+          setProjectMenu([
+            { name: "Models", icon: <Database size={18} /> },
+            { name: "Files", icon: <Folder size={18} /> },
+            { name: "Export", icon: <SendToBack size={18} /> },
+          ])
+        } else if (res.type == "static") {
+          if (res.rest_api != null) {
+            setSubItems([
+              {
+                name: "page_editor",
+                icon: <LayoutDashboard size={18} />,
+                label: "Page Editor",
+              }, {
+                name: "db_editor",
+                icon: <Database size={18} />,
+                label: "DB Editor"
+              }, {
+                name: "api_editor",
+                icon: <Settings size={18} />,
+                label: "API Editor",
+              }
+            ])
+            setProjectMenu([
+              { name: "Models", icon: <Database size={18} /> },
+              { name: "Static Site", icon: <Globe size={18} /> },
+              { name: "Api", icon: <Settings size={18} /> },
+              { name: "Files", icon: <Folder size={18} /> },
+              { name: "Export", icon: <SendToBack size={18} /> },
+            ])
+          } else {
+            setSubItems([
+              {
+                name: "page_editor",
+                icon: <LayoutDashboard size={18} />,
+                label: "Page Editor",
+              }
+            ])
+            setProjectMenu([
+              { name: "Static Site", icon: <Globe size={18} /> },
+              { name: "Files", icon: <Folder size={18} /> },
+              { name: "Export", icon: <SendToBack size={18} /> },
+            ])
+          }
+
+        }
+      }
+    };
+    loadProject()
+  }, [actualProject]);
+
   // Ajout des liens directs vers les éditeurs si un projet est actif
   if (actualProject) {
     menuItems.splice(2, 0, {
@@ -54,29 +176,7 @@ export default function SideMenu() {
       icon: <PanelsTopLeft size={18} />,
       label: "Workspace",
       isDropdown: true,
-      subItems: [
-        {
-          name: "unified_editor",
-          icon: <PanelsTopLeft size={18} />,
-          label: "Global view",
-        },
-        { name: "db_editor", icon: <Database size={18} />, label: "DB Editor" },
-        {
-          name: "api_editor",
-          icon: <Settings size={18} />,
-          label: "API Editor",
-        },
-        {
-          name: "page_editor",
-          icon: <LayoutDashboard size={18} />,
-          label: "Page Editor",
-        },
-        {
-          name: "controller_editor",
-          icon: <Cpu size={18} />,
-          label: "Controller Editor",
-        },
-      ],
+      subItems: subItems,
     });
     menuItems.push(...projectMenu);
   }
@@ -144,11 +244,10 @@ export default function SideMenu() {
               >
                 <div
                   className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all overflow-hidden whitespace-nowrap
-                                    ${
-                                      isActive
-                                        ? "bg-couleur1 text-couleur3 border-couleur1 shadow-sm"
-                                        : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1 hover:text-couleur3"
-                                    }`}
+                                    ${isActive
+                      ? "bg-couleur1 text-couleur3 border-couleur1 shadow-sm"
+                      : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1 hover:text-couleur3"
+                    }`}
                   onClick={() =>
                     toggleMenu ? setEditorExpanded(!editorExpanded) : null
                   }
@@ -209,11 +308,10 @@ export default function SideMenu() {
             <div
               key={item.name}
               className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all overflow-hidden whitespace-nowrap
-                            ${
-                              isActive
-                                ? "bg-couleur1 text-couleur3 border-couleur1 shadow-sm"
-                                : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1 hover:text-couleur3"
-                            }`}
+                            ${isActive
+                  ? "bg-couleur1 text-couleur3 border-couleur1 shadow-sm"
+                  : "border-couleur7 text-couleur1 hover:bg-opacity-10 hover:bg-couleur1 hover:text-couleur3"
+                }`}
               onClick={() => navigateTo(item.name)}
             >
               <div className="shrink-0">{item.icon}</div>

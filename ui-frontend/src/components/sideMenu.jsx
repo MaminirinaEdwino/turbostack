@@ -77,21 +77,12 @@ export default function SideMenu() {
     { name: "Subscription", icon: <CreditCard size={18} /> },
   ];
 
-  // let projectMenu = [
-  //   { name: "Models", icon: <Database size={18} /> },
-  //   { name: "Web App", icon: <Layout size={18} /> },
-  //   { name: "Static Site", icon: <Globe size={18} /> },
-  //   { name: "Api", icon: <Settings size={18} /> },
-  //   { name: "Files", icon: <Folder size={18} /> },
-  //   { name: "Export", icon: <SendToBack size={18} /> },
-  // ];
-
   useEffect(() => {
     const loadProject = async () => {
       const res = await GoApp.fetchProjectByName(actualProject);
       if (res) {
         // setProject(res);
-        console.log(res.type)
+        // console.log(res.type)
         if (res.type == "api") {
           setSubItems([
             {

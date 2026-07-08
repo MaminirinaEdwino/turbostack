@@ -5,7 +5,7 @@ export default function ProjectCard({ index, name, handleProjectSelection }) {
     <>
       <div
         key={index}
-        onClick={() => handleProjectSelection(name)}
+        onClick={() => handleProjectSelection(name.nom)}
         className="group bg-white dark:bg-gray-900 border border-couleur1/10 dark:border-white/10 rounded-2xl p-6 cursor-pointer hover:shadow-2xl hover:border-couleur1/40 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col relative overflow-hidden dark:border-none"
       >
         {/* Background Decoration */}
@@ -16,15 +16,16 @@ export default function ProjectCard({ index, name, handleProjectSelection }) {
         </div>
 
         <h3 className="text-xl font-bold text-couleur1 truncate mb-2 dark:text-couleur3/80">
-          {name}
+          {name.nom}
         </h3>
         <p className="text-sm text-couleur1/50 line-clamp-2 mb-6 dark:text-couleur3/30">
-          Open workspace to configure API endpoints and database schema.
+          {/* Open workspace to configure API endpoints and database schema. */}
+          {name.description}
         </p>
 
         <div className="mt-auto pt-4 border-t border-couleur1/5 flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-couleur1 opacity-40 text-[10px] font-bold uppercase tracking-wider dark:text-couleur3/80">
-            <LayoutGrid size={12} /> Workspace
+            <LayoutGrid size={12} /> {name.type}
           </div>
           <div className="text-couleur1 opacity-0 group-hover:opacity-100 transition-opacity font-bold text-xs flex items-center gap-1">
             Manage <Plus size={14} className="rotate-45" />

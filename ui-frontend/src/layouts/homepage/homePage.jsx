@@ -32,7 +32,7 @@ const HomePage = () => {
                 try {
                     const projects = await GoApp.fetchProjects();
                     if (projects) {
-                        setRecentProjects(projects.slice(-4).reverse());
+                        setRecentProjects(projects.slice(0,5));
                     }
                 } catch (err) {
                     console.error("Error loading projects list:", err);
@@ -165,8 +165,8 @@ const HomePage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {recentProjects.length > 0 ? (
                                 recentProjects.map((projectName, index) => (
-                                    <div key={index} onClick={() => dispatch(setActualProject(projectName))} className="cursor-pointer">
-                                        <ProjectCard name={projectName} />
+                                    <div key={index} onClick={() => dispatch(setActualProject(projectName.nom))} className="cursor-pointer">
+                                        <ProjectCard name={projectName.nom} type={projectName.type} updateAt={projectName.update_at}/>
                                     </div>
                                 ))
                             ) : (

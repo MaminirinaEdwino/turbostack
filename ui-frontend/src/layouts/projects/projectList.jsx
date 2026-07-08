@@ -32,7 +32,7 @@ export default function ProjectList() {
   };
 
   const filteredProjects = projectList.filter((name) =>
-    name.toLowerCase().includes(searchTerm.toLowerCase()),
+    name.nom.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (

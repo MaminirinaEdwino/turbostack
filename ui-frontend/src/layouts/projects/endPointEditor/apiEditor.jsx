@@ -178,7 +178,7 @@ export default function ApiEditor({ projectName }) {
 
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
-      <div className="p-2 m-2 h-fit flex items-center justify-between">
+      <div className="p-2 pb-4 h-fit flex items-center justify-between fixed z-20 w-[100vw] -top-13 hover:top-0 transition-all ease-out bg-white-50">
         <div>
           <h1 className="text-couleur1 dark:text-gray-100 text-3xl font-semibold flex items-center gap-2">
             <button
@@ -311,7 +311,7 @@ export default function ApiEditor({ projectName }) {
         </div>
       )}
 
-      <div className="w-auto h-full bg-white dark:bg-gray-900 m-5 rounded border border-couleur1 dark:border-white/10">
+      <div className="w-auto h-full bg-white dark:bg-gray-900 ">
         <ReactFlow
           nodes={nodes}
           onNodesChange={onNodesChange}

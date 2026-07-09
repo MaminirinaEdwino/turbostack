@@ -243,7 +243,7 @@ export default function DbEditor({ projectName }) {
 
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-couleur6 ">
-      <div className=" p-2 m-2 h-fit flex items-center justify-between">
+      <div className=" p-2 m-2 h-fit flex items-center justify-between fixed w-screen z-20">
         <div>
           <h1 className="text-couleur1 text-3xl font-semibold dark:text-couleur3/50">
             {" "}
@@ -370,7 +370,7 @@ export default function DbEditor({ projectName }) {
         </div>
       )}
 
-      <div className="w-auto h-full bg-white m-5 rounded border border-couleur1 dark:bg-gray-900">
+      <div className="w-auto h-full bg-white dark:bg-gray-900">
         <ReactFlow
           nodes={nodes}
           edges={edges}

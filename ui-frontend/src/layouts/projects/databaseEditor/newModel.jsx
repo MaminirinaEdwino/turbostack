@@ -1,6 +1,8 @@
 import { Check, Trash2, Edit, Plus, X } from "lucide-react";
 import { useState } from "react";
 import RelationModal from "./RelationModal";
+import { FcCancel } from "react-icons/fc";
+import { MdCancel } from "react-icons/md";
 
 export default function NewModel({ modelList, setModelList, setToggle }) {
     const [modelName, setModelName] = useState('')
@@ -24,7 +26,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
         setAddfield(false)
         setNewField({ nom: "", type: "", default_value: "", constraint: [] })
     }
-    
+
     const handleSelectRelation = (relationString) => {
         if (fieldToEditRelation === "edit") {
             const current = Array.isArray(editField.constraint) ? editField.constraint : [];
@@ -104,9 +106,9 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
     }
     return (<form className="bg-couleur5 border border-couleur1 m-2 p-4 rounded-lg flex flex-col">
         <h3 className="font-semibold text-2xl text-couleur1">New Table</h3>
-        <div className=" p-2 ">
-            <label className="text-couleur1" htmlFor="modelName">Model Name</label>
-            <input className="border border-couleur1 m-2 px-2 py-1 rounded-lg" type="text" id="modelName" onInput={(e) => setModelName(e.target.value)} value={modelName} />
+        <div className=" p-2 flex flex-col">
+            <label className="text-couleur1" htmlFor="modelName">Table Name</label>
+            <input className="border border-couleur1  my-1 px-2 py-1 rounded-lg" type="text" id="modelName" onInput={(e) => setModelName(e.target.value)} value={modelName} placeholder="Table name" />
         </div>
         <div>
             <div className="flex justify-between items-center p-2">
@@ -120,24 +122,24 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                 <table className="w-full rounded p-2 m-1 box-border">
                     <thead className="">
                         <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Default Value</th>
-                            <th>Constraint</th>
-                            <th>Action</th>
+                            <th className="min-w-40">Name</th>
+                            <th className="min-w-30">Type</th>
+                            <th className="min-w-40">Default Value</th>
+                            <th className="min-w-30">Constraint</th>
+                            <th className="min-w-30">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {fields.map((item, idx) => (
                             editingIndex === idx ? (
                                 <tr key={idx} className="p-1 border-b border-couleur1/10">
-                                    <td>
+                                    <td className="min-w-20">
                                         <input type="text" onInput={(e) => setEditField({ ...editField, nom: e.target.value })} value={editField.nom} className="w-full p-2 border-b border-couleur1 outline-0 bg-white" />
                                     </td>
                                     <td>
-                                        <select 
-                                            className="bg-white w-full p-2 border-b border-couleur1 outline-0 text-xs" 
-                                            onInput={(e) => setEditField({ ...editField, type: e.target.value })} 
+                                        <select
+                                            className="bg-white w-full p-2 border-b border-couleur1 outline-0 text-xs"
+                                            onInput={(e) => setEditField({ ...editField, type: e.target.value })}
                                             value={editField.type}
                                         >
                                             <option value="">Type</option>
@@ -146,36 +148,37 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                             <option value="text">TEXT</option>
                                         </select>
                                     </td>
-                                    <td><input list="default-value-list" className="w-full p-2 border-b border-couleur1 outline-0 bg-white " type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} /></td>
+                                    <td>
+                                        <input list="default-value-list" className="w-full p-2 border-b border-couleur1 outline-0 bg-white " type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} />
+                                    </td>
                                     <td>
                                         <div className="flex flex-wrap gap-1 min-w-30">
                                             {["primary key", "unique", "not null", "relation", ...(editField.type === "int" ? ["autoincrement"] : [])].map(c => {
                                                 const isRel = c === "relation";
-                                                const isActive = isRel 
+                                                const isActive = isRel
                                                     ? editField.constraint?.some(cons => typeof cons === 'string' && cons.startsWith('relation:'))
                                                     : editField.constraint?.includes(c);
-                                                const displayValue = isRel 
+                                                const displayValue = isRel
                                                     ? (editField.constraint?.find(cons => typeof cons === 'string' && cons.startsWith('relation:')) || "relation")
                                                     : c;
                                                 return (
-                                                <button
-                                                    key={c}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        if (isRel && isActive) {
-                                                            toggleConstraint(editField, setEditField, c); // Permet de désélectionner la relation
-                                                        } else {
-                                                            toggleConstraint(editField, setEditField, c);
-                                                        }
-                                                    }}
-                                                    className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${
-                                                        isActive
+                                                    <button
+                                                        key={c}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (isRel && isActive) {
+                                                                toggleConstraint(editField, setEditField, c); // Permet de désélectionner la relation
+                                                            } else {
+                                                                toggleConstraint(editField, setEditField, c);
+                                                            }
+                                                        }}
+                                                        className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${isActive
                                                             ? "bg-couleur1 text-white border-couleur1"
                                                             : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
-                                                    }`}
-                                                >
-                                                    {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
-                                                </button>
+                                                            }`}
+                                                    >
+                                                        {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
+                                                    </button>
                                                 );
                                             })}
                                         </div>
@@ -192,14 +195,14 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                     <td className="py-2">{item.default_value || "-"}</td>
                                     <td className="py-2 text-xs italic opacity-60">{Array.isArray(item.constraint) ? item.constraint.join(", ") : (item.constraint || "-")}</td>
                                     <td className="flex gap-2 py-2">
-                                        <button 
-                                            className="p-1.5 bg-amber-400 text-white rounded shadow-sm hover:bg-amber-500 transition-colors" 
+                                        <button
+                                            className="p-1.5 bg-amber-400 text-white rounded shadow-sm hover:bg-amber-500 transition-colors"
                                             onClick={(e) => { e.preventDefault(); startEditing(idx, item); }}
                                         >
                                             <Edit size={16}></Edit>
                                         </button>
-                                        <button 
-                                            className="p-1.5 bg-red-500 text-white rounded shadow-sm hover:bg-red-600 transition-colors" 
+                                        <button
+                                            className="p-1.5 bg-red-500 text-white rounded shadow-sm hover:bg-red-600 transition-colors"
                                             onClick={(e) => { e.preventDefault(); setFields(fields.filter((_, i) => i !== idx)) }}
                                         >
                                             <Trash2 size={16}></Trash2>
@@ -210,12 +213,12 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                         ))}
                         {addField && <tr className="p-1">
                             <td>
-                                <input type="text" placeholder="Field Name" onInput={(e) => setNewField({ ...newField, nom: e.target.value })} value={newField.nom} className="m-2 p-2 border-b border-couleur1 outline-0 "/>
+                                <input type="text" placeholder="Field Name" onInput={(e) => setNewField({ ...newField, nom: e.target.value })} value={newField.nom} className="m-2 p-2 border-b border-couleur1 outline-0 " />
                             </td>
                             <td>
-                                <select 
-                                    className="bg-white m-2 p-2 border-b border-couleur1 outline-0 text-xs" 
-                                    onInput={(e) => setNewField({ ...newField, type: e.target.value })} 
+                                <select
+                                    className="bg-white m-2 p-2 border-b border-couleur1 outline-0  appearance-none"
+                                    onInput={(e) => setNewField({ ...newField, type: e.target.value })}
                                     value={newField.type}
                                 >
                                     <option value="">Type</option>
@@ -226,40 +229,44 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                             </td>
                             <td><input list="default-value-list" className="m-2 p-2 border-b border-couleur1 outline-0 " type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
                             <td>
-                                <div className="flex flex-wrap gap-1 min-w-30">
+                                <div className="flex flex-wrap gap-1 min-w-30 p-1">
                                     {["primary key", "unique", "not null", "relation", ...(newField.type === "int" ? ["autoincrement"] : [])].map(c => {
                                         const isRel = c === "relation";
-                                        const isActive = isRel 
+                                        const isActive = isRel
                                             ? newField.constraint?.some(cons => typeof cons === 'string' && cons.startsWith('relation:'))
                                             : newField.constraint?.includes(c);
-                                        const displayValue = isRel 
+                                        const displayValue = isRel
                                             ? (newField.constraint?.find(cons => typeof cons === 'string' && cons.startsWith('relation:')) || "relation")
                                             : c;
                                         return (
-                                        <button
-                                            key={c}
-                                            type="button"
-                                            onClick={() => {
-                                                if (isRel && isActive) {
-                                                    toggleConstraint(newField, setNewField, c); // Permet de désélectionner la relation
-                                                } else {
-                                                    toggleConstraint(newField, setNewField, c);
-                                                }
-                                            }}
-                                            className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${
-                                                isActive
+                                            <button
+                                                key={c}
+                                                type="button"
+                                                onClick={() => {
+                                                    if (isRel && isActive) {
+                                                        toggleConstraint(newField, setNewField, c); // Permet de désélectionner la relation
+                                                    } else {
+                                                        toggleConstraint(newField, setNewField, c);
+                                                    }
+                                                }}
+                                                className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${isActive
                                                     ? "bg-couleur1 text-white border-couleur1"
                                                     : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
-                                            }`}
-                                        >
-                                            {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
-                                        </button>
+                                                    }`}
+                                            >
+                                                {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
+                                            </button>
                                         );
                                     })}
                                 </div>
                             </td>
-                            <td>
-                                <button type="button" onClick={handleNewField} className="bg-couleur1 text-white font-semibold p-2 rounded"><Check></Check></button>
+                            <td className="flex justify-center items-center gap-2">
+                                {
+                                    newField.type != "" && newField.nom != "" && <>
+                                        <button type="button" onClick={handleNewField} className="bg-couleur1 text-white font-semibold p-2 rounded"><Check></Check></button>
+                                        <button type="button" onClick={()=>setAddfield(false)} className="bg-red-600 text-white font-semibold p-2 rounded"><MdCancel size={24}></MdCancel></button>
+                                    </>
+                                }
                             </td>
                         </tr>}
                     </tbody>

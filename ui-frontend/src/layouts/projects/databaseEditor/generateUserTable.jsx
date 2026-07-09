@@ -1,4 +1,4 @@
-import { Check, X, User } from "lucide-react";
+import { Check, User } from "lucide-react";
 import { useState } from "react";
 
 export default function GenerateUserTable({ setModelList, modelList, setToggle }) {

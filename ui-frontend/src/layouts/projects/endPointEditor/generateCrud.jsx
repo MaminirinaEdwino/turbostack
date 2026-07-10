@@ -35,12 +35,12 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
             {
                 nom: `List ${selectedModel.nom}`,
                 uri: baseUri, method: "GET", role: "public",
-                model: [], params: [], manual_fields: []
+                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{selectedModel}]
             },
             {
                 nom: `Get ${selectedModel.nom} by ID`,
                 uri: `${baseUri}/:id`, method: "GET", role: "public",
-                model: [], params: ["id"], manual_fields: [{ nom: "id", type: "int" }]
+                model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: []
             },
             {
                 nom: `Create ${selectedModel.nom}`,
@@ -52,12 +52,12 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
                 nom: `Update ${selectedModel.nom}`,
                 uri: `${baseUri}/:id`, method: "PUT", role: "public",
                 model: [{ ...selectedModel, champs: selectedChamps }],
-                params: ["id"], manual_fields: [{ nom: "id", type: "int" }]
+                params: ["id"], manual_fields: []
             },
             {
                 nom: `Delete ${selectedModel.nom}`,
                 uri: `${baseUri}/:id`, method: "DELETE", role: "public",
-                model: [], params: ["id"], manual_fields: [{ nom: "id", type: "int" }]
+                model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: []
             }
         ];
 

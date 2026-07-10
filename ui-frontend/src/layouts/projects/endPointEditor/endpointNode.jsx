@@ -68,7 +68,7 @@ export default function EndpointNode({ data }) {
         )}
       </div>
       <div className="p-3 space-y-1 box-border text-[10px]">
-        <h3 className="text-white/50">Body Content</h3>
+        <h3 className="dark:text-white/50">Body Content</h3>
         { data.model.length == 1 && <code className="dark:text-couleur2" >
           {"{"} <br />
           {data.model[0].champs && data.model[0].champs.map((field) => <>
@@ -78,7 +78,7 @@ export default function EndpointNode({ data }) {
         </code>}
       </div>
       <div className="p-3 space-y-1 box-border text-[10px] ">
-        <h3 className="text-white/50">Response Body</h3>
+        <h3 className="dark:text-white/50">Response Body</h3>
         {data.return_content != null && data.return_content.length == 1 && <code className="dark:text-couleur2 " >
           {data.return_content_type == "array" && "["}
           {"{"} <br />

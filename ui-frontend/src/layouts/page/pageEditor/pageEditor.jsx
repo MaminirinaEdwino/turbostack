@@ -368,15 +368,27 @@ export default function PageEditor({ projectName }) {
           </button>
           <h1 className="text-xl font-bold text-couleur1">
             {editMode ? (
-              <div className="flex items-center gap-2">
-                <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
-                  Edit {editingType}:
-                </span>
-                <input
-                  value={activeItem?.nom}
-                  onChange={(e) => updateActiveItemField("nom", e.target.value)}
-                  className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50"
-                />
+              <div className="flex items-start gap-2 flex-col w-fit">
+                <div className="flex gap-5 justify-between items-center  w-full">
+                  <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
+                    Edit {editingType} name :
+                  </span>
+                  <input
+                    value={activeItem?.nom}
+                    onChange={(e) => updateActiveItemField("nom", e.target.value)}
+                    className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50 text-sm"
+                  />
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
+                    Edit {editingType} uri :
+                  </span>
+                  <input
+                    value={activeItem?.uri}
+                    onChange={(e) => updateActiveItemField("uri", e.target.value)}
+                    className="bg-transparent text-sm border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50"
+                  />
+                </div>
               </div>
             ) : (
               `Project : ${projectName}`
@@ -394,12 +406,12 @@ export default function PageEditor({ projectName }) {
       {/* Vue Conditionnelle */}
       <div className="flex-1 overflow-y-auto p-8">
         {editMode ? (
-          <div className="flex h-full min-h-150 relative">
+          <div className="flex h-full min-h-150 ">
             {/* Left Sidebar: Structure & Blocks */}
             <aside
-              className={`fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out ${isLeftSidebarOpen ? "translate-x-0" : "-translate-x-full"} w-80 bg-couleur3 dark:bg-gray-950 border-r border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}
+              className={`fixed top-0 h-full z-50 transition-transform duration-300 ease-in-out ${isLeftSidebarOpen ? "left-0" : "-left-100"} w-80 bg-couleur3 dark:bg-gray-950 border-r border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto  `}
             >
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-6 sticky -top-6 bg-couleur3">
                 <h2 className="text-xs font-black uppercase text-couleur1/40">
                   Structure
                 </h2>
@@ -445,99 +457,99 @@ export default function PageEditor({ projectName }) {
                   <PanelLeftOpen size={20} />
                 </button>
               )}
-
-              <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between ">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
-                  <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-400/40"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-400/40"></div>
-                </div>
-                <div className="flex items-center gap-4">
-                  {/* Sélecteurs de Viewport */}
-                  <div className="flex items-center bg-white/50 dark:bg-gray-800 rounded-lg p-1 shadow-inner border border-couleur1/5">
-                    <button
-                      onClick={() =>
-                        setViewport({
-                          width: "375px",
-                          height: "667px",
-                          name: "mobile",
-                        })
-                      }
-                      className={`p-1.5 rounded-md transition-all ${viewport.name === "mobile" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
-                      title="Mobile (375x667)"
-                    >
-                      <Smartphone size={14} />
-                    </button>
-                    <button
-                      onClick={() =>
-                        setViewport({
-                          width: "768px",
-                          height: "1024px",
-                          name: "tablet",
-                        })
-                      }
-                      className={`p-1.5 rounded-md transition-all ${viewport.name === "tablet" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
-                      title="Tablette (768x1024)"
-                    >
-                      <Tablet size={14} />
-                    </button>
-                    <button
-                      onClick={() =>
-                        setViewport({
-                          width: "1280px",
-                          height: "100%",
-                          name: "desktop",
-                        })
-                      }
-                      className={`p-1.5 rounded-md transition-all ${viewport.name === "desktop" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
-                      title="Bureau (Plein écran)"
-                    >
-                      <Monitor size={14} />
-                    </button>
+              <div className="">
+                <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between " onDragStart={(e) => console.log(e.target.style.left)} draggable>
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
+                    <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-400/40"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-400/20 border border-green-400/40"></div>
                   </div>
+                  <div className="flex items-center gap-4">
+                    {/* Sélecteurs de Viewport */}
+                    <div className="flex items-center bg-white/50 dark:bg-gray-800 rounded-lg p-1 shadow-inner border border-couleur1/5">
+                      <button
+                        onClick={() =>
+                          setViewport({
+                            width: "375px",
+                            height: "667px",
+                            name: "mobile",
+                          })
+                        }
+                        className={`p-1.5 rounded-md transition-all ${viewport.name === "mobile" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
+                        title="Mobile (375x667)"
+                      >
+                        <Smartphone size={14} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setViewport({
+                            width: "768px",
+                            height: "1024px",
+                            name: "tablet",
+                          })
+                        }
+                        className={`p-1.5 rounded-md transition-all ${viewport.name === "tablet" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
+                        title="Tablette (768x1024)"
+                      >
+                        <Tablet size={14} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setViewport({
+                            width: "1280px",
+                            height: "100%",
+                            name: "desktop",
+                          })
+                        }
+                        className={`p-1.5 rounded-md transition-all ${viewport.name === "desktop" ? "bg-couleur1 text-white shadow-md" : "text-couleur1/40 hover:text-couleur1"}`}
+                        title="Bureau (Plein écran)"
+                      >
+                        <Monitor size={14} />
+                      </button>
+                    </div>
 
-                  <span className="text-[10px] font-bold text-couleur1/40 uppercase tracking-widest">
-                    Preview
-                  </span>
-                  {/* Zoom Controls */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleZoomOut}
-                      className="p-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-medium text-couleur1 dark:text-gray-300">
-                      {Math.round(zoomLevel * 100)}%
+                    <span className="text-[10px] font-bold text-couleur1/40 uppercase tracking-widest">
+                      Preview
                     </span>
-                    <button
-                      onClick={handleZoomIn}
-                      className="p-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs"
-                    >
-                      +
-                    </button>
-                    <button
-                      onClick={handleResetZoom}
-                      className="ml-2 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs"
-                    >
-                      Reset
-                    </button>
+                    {/* Zoom Controls */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleZoomOut}
+                        className="p-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs"
+                      >
+                        -
+                      </button>
+                      <span className="text-sm font-medium text-couleur1 dark:text-gray-300">
+                        {Math.round(zoomLevel * 100)}%
+                      </span>
+                      <button
+                        onClick={handleZoomIn}
+                        className="p-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs"
+                      >
+                        +
+                      </button>
+                      <button
+                        onClick={handleResetZoom}
+                        className="ml-2 px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs"
+                      >
+                        Reset
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <div className="w-12"></div>
-              </div>
-              <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar ">
-                <iframe
-                  title="Page Preview"
-                  style={{
-                    width: viewport.width,
-                    height: viewport.height,
-                    transform: `scale(${zoomLevel})`, // Correction ici
-                    transformOrigin: "top center", // Correction ici
-                  }}
-                  className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1/10 rounded-sm "
-                  srcDoc={`
+                  <div className="w-12"></div>
+                </div>
+                <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar " >
+                  <iframe
+                    title="Page Preview"
+                    style={{
+                      width: viewport.width,
+                      height: viewport.height,
+                      transform: `scale(${zoomLevel})`, // Correction ici
+                      transformOrigin: "top center", // Correction ici
+                    }}
+                    className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1/10 rounded-sm "
+                    srcDoc={`
                                     <!DOCTYPE html>
                                     <html lang="en">
                                         <head>
@@ -554,15 +566,17 @@ export default function PageEditor({ projectName }) {
                                         <body>${previewHtml}</body>
                                     </html>
                                 `}
-                />
+                  />
+                </div>
               </div>
             </div>
+
 
             {/* Right Sidebar: Properties & Global */}
             <aside
               className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? "translate-x-0" : "translate-x-full"} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}
             >
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-6 sticky -top-6 bg-couleur3">
                 <h2 className="text-xs font-black uppercase text-couleur1/40">
                   Configuration
                 </h2>
@@ -698,13 +712,12 @@ export default function PageEditor({ projectName }) {
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-10 right-10 z-100 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${
-            toast.type === "error"
-              ? "bg-red-50 border-red-200 text-red-700"
-              : toast.type === "loading"
-                ? "bg-blue-50 border-blue-200 text-blue-700"
-                : "bg-green-50 border-green-200 text-green-700"
-          }`}
+          className={`fixed bottom-10 right-10 z-100 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${toast.type === "error"
+            ? "bg-red-50 border-red-200 text-red-700"
+            : toast.type === "loading"
+              ? "bg-blue-50 border-blue-200 text-blue-700"
+              : "bg-green-50 border-green-200 text-green-700"
+            }`}
         >
           {toast.type === "loading" ? (
             <Loader2 size={18} className="animate-spin" />

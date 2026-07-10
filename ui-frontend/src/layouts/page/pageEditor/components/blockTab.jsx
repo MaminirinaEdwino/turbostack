@@ -4,7 +4,7 @@ import { Puzzle } from 'lucide-react';
 
 export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents }) {
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 ">
             {/* Types de Blocs Standard */}
             <div className="flex flex-col gap-3">
                 <h3 className="text-xs font-black uppercase text-couleur1/40">Blocs Standard</h3>

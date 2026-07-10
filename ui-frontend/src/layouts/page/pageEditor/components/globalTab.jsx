@@ -6,7 +6,7 @@ export default function GlobalTab({
     selectedGlobalTag, setSelectedGlobalTag, availableSelectors, pageStyles, handlePageStyleChange, activeViewport = "desktop"
 }) {
     return <>
-        <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+        <div className="flex flex-col gap-6 animate-in fade-in duration-300 ">
             <div className="flex items-center gap-3 p-4 bg-couleur1/5 rounded-2xl border border-couleur1/10">
                 <div className="p-3 bg-couleur1 text-white rounded-xl shadow-sm">
                     <Globe size={18} />

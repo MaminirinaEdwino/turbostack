@@ -18,6 +18,11 @@ export default function EditEndpoint({
     return_content: [],
     return_content_type: "object"
   });
+  const methodWithBody = [
+    "PUT",
+    "PATCH",
+    "POST"
+  ]
   const [manualField, setManualField] = useState({ nom: "", type: "string" });
   const [tableName, setTableName] = useState("");
 
@@ -241,7 +246,7 @@ export default function EditEndpoint({
             Method
           </label>
           <select
-            className="border border-couleur1 p-2 rounded-lg bg-white"
+            className="border border-couleur1 p-2 rounded-lg bg-white appearance-none"
             value={endpoint.method}
             onChange={(e) =>
               setEndpoint({ ...endpoint, method: e.target.value })
@@ -258,7 +263,7 @@ export default function EditEndpoint({
             Access Role
           </label>
           <select
-            className="border border-couleur1 p-2 rounded-lg bg-white capitalize"
+            className="border border-couleur1 p-2 rounded-lg bg-white capitalize appearance-none"
             value={endpoint.role}
             onChange={(e) => setEndpoint({ ...endpoint, role: e.target.value })}
           >
@@ -303,7 +308,7 @@ export default function EditEndpoint({
           ))}
         </div>
       </div>
-    
+
       <div className="flex flex-col gap-1 mb-6">
         <label className="text-xs font-bold opacity-50 uppercase">
           Manual Fields
@@ -359,7 +364,7 @@ export default function EditEndpoint({
         {endpoint.manual_fields.length > 0 && (
           <div className="mt-4 p-3 bg-couleur1/5 border border-dashed border-couleur1/30 rounded-lg">
             <label className="text-[10px] font-bold text-couleur1 uppercase mb-2 block">
-              Générer une table BDD
+              Generate BDD Table
             </label>
             <div className="flex gap-2">
               <input
@@ -374,7 +379,7 @@ export default function EditEndpoint({
                 onClick={generateTableFromManual}
                 className="bg-couleur1 text-white px-3 py-1 rounded-lg text-xs flex items-center gap-2 hover:bg-opacity-90 transition-all"
               >
-                <Database size={14} /> Créer Table
+                <Database size={14} /> Create Table
               </button>
             </div>
           </div>
@@ -455,7 +460,8 @@ export default function EditEndpoint({
                     <tr className="text-left opacity-60">
                       <th className="pb-2">Field Name</th>
                       <th className="pb-2 text-center">URI Param</th>
-                      <th className="pb-2 text-center">Body Request</th>
+                      {(methodWithBody.includes(endpoint.method)) && <th className="pb-2 text-center">Body Request</th>}
+                      {/* <th className="pb-2 text-center">Body Request</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -478,14 +484,22 @@ export default function EditEndpoint({
                             className="accent-couleur1 cursor-pointer w-4 h-4"
                           />
                         </td>
-                        <td className="py-2 text-center">
+                        {(methodWithBody.includes(endpoint.method)) && <td className="py-2 text-center">
                           <input
                             type="checkbox"
                             checked={m.champs && m.champs.some((bc) => bc.nom === f.nom)}
                             onChange={() => toggleBodyField(m.nom, f)}
                             className="accent-couleur1 cursor-pointer w-4 h-4"
                           />
-                        </td>
+                        </td>}
+                        {/* <td className="py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={m.champs && m.champs.some((bc) => bc.nom === f.nom)}
+                            onChange={() => toggleBodyField(m.nom, f)}
+                            className="accent-couleur1 cursor-pointer w-4 h-4"
+                          />
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>

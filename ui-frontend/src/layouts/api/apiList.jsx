@@ -70,8 +70,8 @@ export default function APIlist() {
 
   // Helper for method colors
   const methodColors = {
-    GET: "bg-green-500",
-    POST: "bg-blue-500",
+    GET: "bg-blue-500",
+    POST: "bg-green-500",
     PUT: "bg-amber-500",
     DELETE: "bg-red-500",
   };

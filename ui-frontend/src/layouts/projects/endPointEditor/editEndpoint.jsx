@@ -303,7 +303,7 @@ export default function EditEndpoint({
           ))}
         </div>
       </div>
-      {/*
+    
       <div className="flex flex-col gap-1 mb-6">
         <label className="text-xs font-bold opacity-50 uppercase">
           Manual Fields
@@ -380,7 +380,7 @@ export default function EditEndpoint({
           </div>
         )}
       </div>
-*/}
+
       {(endpoint.model.length > 0 || endpoint.manual_fields.length > 0) && (
         <div className="flex flex-col gap-3 mb-6 border-t border-couleur1/10 pt-4">
           <label className="text-xs font-bold opacity-50 uppercase">
@@ -536,6 +536,29 @@ export default function EditEndpoint({
                   </thead>
                   <tbody>
                     {originalModel?.champs.map((f) => (
+                      <tr
+                        key={f.nom}
+                        className="border-t border-couleur1/5 hover:bg-white/40 transition-colors"
+                      >
+                        <td className="py-2 text-couleur1 font-medium">
+                          {f.nom}{" "}
+                          <span className="text-[10px] opacity-40">
+                            [{f.type}]
+                          </span>
+                        </td>
+
+
+                        <td className="py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={m.champs && m.champs.some((bc) => bc.nom === f.nom)}
+                            onChange={() => toggleResponseBody(m.nom, f)}
+                            className="accent-couleur1 cursor-pointer w-4 h-4"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                    {manualField.champs && manualField?.champs.map((f) => (
                       <tr
                         key={f.nom}
                         className="border-t border-couleur1/5 hover:bg-white/40 transition-colors"

@@ -122,15 +122,16 @@ export default function SideMenu() {
                 name: "page_editor",
                 icon: <LayoutDashboard size={18} />,
                 label: "Page Editor",
-              }, {
-                name: "db_editor",
-                icon: <Database size={18} />,
-                label: "DB Editor"
-              }, {
-                name: "api_editor",
-                icon: <Settings size={18} />,
-                label: "API Editor",
-              }
+              }, 
+              // {
+              //   name: "db_editor",
+              //   icon: <Database size={18} />,
+              //   label: "DB Editor"
+              // }, {
+              //   name: "api_editor",
+              //   icon: <Settings size={18} />,
+              //   label: "API Editor",
+              // }
             ])
             setProjectMenu([
               { name: "Models", icon: <Database size={18} /> },

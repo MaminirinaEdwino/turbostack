@@ -3,6 +3,7 @@ package entity
 type Page struct {
 	nom     string
 	contenu []pageContent
+	uri     string
 }
 
 func (p *Page) ToJSON() PageJSON {
@@ -10,10 +11,11 @@ func (p *Page) ToJSON() PageJSON {
 	for _, val := range p.contenu {
 		pcontent = append(pcontent, val.ToJSON())
 	}
-	
+
 	return PageJSON{
-		Nom: p.nom,
+		Nom:     p.nom,
 		Contenu: pcontent,
+		Uri: p.uri,
 	}
 }
 
@@ -34,4 +36,3 @@ func (page *Page) SetContenu(Contenu []pageContent) *Page {
 	page.contenu = Contenu
 	return page
 }
-

@@ -359,11 +359,6 @@ export default function PageEditor({ projectName }) {
           >
             <div className="flex items-center gap-1 pr-1">
               <FcPrevious size={18} />
-              {editMode && (
-                <span className="text-[10px] font-bold uppercase text-couleur1 dark:text-white/50 ">
-                  Go back
-                </span>
-              )}
             </div>
           </button>
           <h1 className="text-xl font-bold text-couleur1">
@@ -458,7 +453,7 @@ export default function PageEditor({ projectName }) {
                 </button>
               )}
               <div className="">
-                <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between " onDragStart={(e) => console.log(e.target.style.left)} draggable>
+                <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between ">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
                     <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-400/40"></div>

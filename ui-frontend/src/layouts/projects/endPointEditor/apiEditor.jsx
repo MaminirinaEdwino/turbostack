@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "../../../hooks/useNavigate";
-import { useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { GoApp } from "../../../services/bridge";
 import {
   applyNodeChanges,
@@ -24,8 +24,11 @@ import {
   Layers,
   MoreVertical,
   Cross,
+  Sun,
+  Moon,
 } from "lucide-react";
 import TurboStackScripting from "./blocEditor";
+import DarkModeToggle from "../../../components/darkModeToggle";
 
 const nodeType = { endpoint: EndpointNode };
 
@@ -56,6 +59,7 @@ export default function ApiEditor({ projectName }) {
       }
     };
     if (!project) loadProject();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectName]);
 
   const deleteEndpoint = useCallback((index) => {
@@ -105,6 +109,7 @@ export default function ApiEditor({ projectName }) {
       setter(updatedNodes);
     }
     console.log("api ", JSON.stringify(project));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project]); // Added nodes to dependency array
 
   const showToast = (message, type = "success") => {
@@ -114,6 +119,7 @@ export default function ApiEditor({ projectName }) {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const reorganizeNodes = () => {
     setNodes((prevNodes) =>
       prevNodes.map((node, index) => ({
@@ -123,6 +129,7 @@ export default function ApiEditor({ projectName }) {
     );
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const saveApi = async () => {
     showToast("Sauvegarde en cours...", "loading");
     try {
@@ -175,10 +182,10 @@ export default function ApiEditor({ projectName }) {
     reorganizeNodes,
     navigateTo,
   ]);
-
+  // const isDarkMode = useSelector((state)=>state.app.darkMode)
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
-      <div className="p-2 pb-4 h-fit flex items-center justify-between fixed z-20 w-[100vw] -top-13 hover:top-0 transition-all ease-out bg-white-50">
+      <div className="p-2 pb-4 h-fit flex items-center justify-between fixed z-20 w-screen border border-couleur2 -top-12 hover:top-0 transition-all ease-out bg-white-50 dark:bg-couleur6 rounded-b-xl box-border bg-couleur3">
         <div>
           <h1 className="text-couleur1 dark:text-gray-100 text-3xl font-semibold flex items-center gap-2">
             <button
@@ -248,7 +255,7 @@ export default function ApiEditor({ projectName }) {
           </div>
         </div>
       </div>
-
+      <DarkModeToggle></DarkModeToggle>
       {/* Modal de création */}
       <div
         className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}
@@ -292,13 +299,12 @@ export default function ApiEditor({ projectName }) {
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${
-            toast.type === "error"
-              ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
-              : toast.type === "loading"
-                ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400"
-                : "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
-          }`}
+          className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${toast.type === "error"
+            ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
+            : toast.type === "loading"
+              ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400"
+              : "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
+            }`}
         >
           {toast.type === "loading" ? (
             <Loader2 size={18} className="animate-spin" />
@@ -329,7 +335,7 @@ export default function ApiEditor({ projectName }) {
           display: toggleVisualScriptModal,
         }}
       >
-        
+
         <TurboStackScripting
           setProjet={setProject}
           endpoint={selectedEndpointIndex}

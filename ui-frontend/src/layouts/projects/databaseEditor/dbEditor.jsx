@@ -25,6 +25,7 @@ import {
   User,
   MoreVertical,
 } from "lucide-react";
+import DarkModeToggle from "../../../components/darkModeToggle";
 
 const initialNodes = [];
 const nodeType = { model: DbModel };
@@ -243,6 +244,7 @@ export default function DbEditor({ projectName }) {
 
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-couleur6 ">
+      <DarkModeToggle></DarkModeToggle>
       <div className=" p-2 m-2 h-fit flex items-center justify-between fixed w-screen z-20">
         <div>
           <h1 className="text-couleur1 text-3xl font-semibold dark:text-couleur3/50">

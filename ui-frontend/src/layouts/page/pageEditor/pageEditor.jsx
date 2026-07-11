@@ -21,6 +21,7 @@ import {
 import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../../../hooks/useNavigate";
+import DarkModeToggle from "../../../components/darkModeToggle";
 
 export default function PageEditor({ projectName }) {
   const navigateTo = useNavigate();
@@ -397,7 +398,7 @@ export default function PageEditor({ projectName }) {
           <Save size={18} /> Save Project
         </button>
       </div>
-
+      <DarkModeToggle></DarkModeToggle>
       {/* Vue Conditionnelle */}
       <div className="flex-1 overflow-y-auto p-8">
         {editMode ? (

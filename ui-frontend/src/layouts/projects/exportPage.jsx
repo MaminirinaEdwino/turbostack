@@ -74,6 +74,7 @@ export default function ProjectHomePage({ projectName }) {
 
   return (
     <div className="p-10 h-screen dark:bg-gray-900 mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <DarkModeToggle></DarkModeToggle>
       <Exportheader
         navigateTo={navigateTo}
         projectName={projectName}

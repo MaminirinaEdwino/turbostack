@@ -5,6 +5,7 @@ import { useNavigate } from "../../hooks/useNavigate";
 import Exportheader from "./exportHeader";
 import ExportButton from "./exportBtn";
 import ExportNotification from "./exportNotification";
+import DarkModeToggle from "../../components/darkModeToggle";
 
 export default function ProjectHomePage({ projectName }) {
   const navigateTo = useNavigate();

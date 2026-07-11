@@ -11,12 +11,14 @@ export default function ProjectPageView({ project }) {
   const getStats = () => {
     let stats = [];
 
-    stats.push({
-      title: "DB Models",
-      total: project.bdd?.models?.length || 0,
-      icon: <Database size={24} />,
-      onClick: () => dispatch(setActualWindow("db_editor")),
-    });
+    if (project.type === "bdd") {
+      stats.push({
+        title: "DB Models",
+        total: project.bdd?.models?.length || 0,
+        icon: <Database size={24} />,
+        onClick: () => dispatch(setActualWindow("db_editor")),
+      });
+    }
 
     if (project.type === "api") {
       stats.push({
@@ -51,6 +53,7 @@ export default function ProjectPageView({ project }) {
         title: "Static Components",
         total: project.site_statique.composants?.length || 0,
         icon: <LucidePuzzle size={24} />,
+        onClick: () => dispatch(setActualWindow("page_editor")),
       });
     }
     return stats;

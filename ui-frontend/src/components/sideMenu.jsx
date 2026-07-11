@@ -134,9 +134,9 @@ export default function SideMenu() {
               // }
             ])
             setProjectMenu([
-              { name: "Models", icon: <Database size={18} /> },
+              // { name: "Models", icon: <Database size={18} /> },
               { name: "Static Site", icon: <Globe size={18} /> },
-              { name: "Api", icon: <Settings size={18} /> },
+              // { name: "Api", icon: <Settings size={18} /> },
               { name: "Files", icon: <Folder size={18} /> },
               { name: "Export", icon: <SendToBack size={18} /> },
             ])

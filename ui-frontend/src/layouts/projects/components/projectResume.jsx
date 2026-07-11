@@ -1,4 +1,4 @@
-import { Database, Settings, WebhookIcon } from "lucide-react";
+import { Database, Globe, Settings, WebhookIcon } from "lucide-react";
 import { PiBrowserFill } from "react-icons/pi";
 
 export default function ProjectResume({nom, type, description}){
@@ -7,7 +7,7 @@ export default function ProjectResume({nom, type, description}){
     <p className="font-semibold text-2xl flex items-center gap-2" title={description}>{nom} 
         {type == "api"&& <Settings></Settings>}
         {type == "webapp"&& <PiBrowserFill></PiBrowserFill>}
-        {type == "static"&& <WebhookIcon></WebhookIcon>}
+        {type == "static"&& <Globe></Globe>}
         {type == "bdd"&& <Database></Database>}
     </p>
     

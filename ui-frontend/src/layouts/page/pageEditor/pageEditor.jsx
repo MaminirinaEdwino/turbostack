@@ -355,9 +355,9 @@ export default function PageEditor({ projectName }) {
             onClick={() =>
               editMode ? setEditMode(false) : navigateTo("Dashboard")
             }
-            className="p-2 rounded-xl border hover:bg-white transition-all dark:hover:bg-couleur1"
+            className="p-2 rounded-xl border hover:bg-white transition-all border-couleur1 dark:hover:bg-couleur1"
           >
-            <div className="flex items-center gap-1 pr-1">
+            <div className="flex items-center gap-1 pr-1 text-couleur1">
               <FcPrevious size={18} />
             </div>
           </button>
@@ -366,7 +366,7 @@ export default function PageEditor({ projectName }) {
               <div className="flex items-start gap-2 flex-col w-fit">
                 <div className="flex gap-5 justify-between items-center  w-full">
                   <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
-                    Edit {editingType} name :
+                    {editingType} name :
                   </span>
                   <input
                     value={activeItem?.nom}
@@ -376,7 +376,7 @@ export default function PageEditor({ projectName }) {
                 </div>
                 <div className="flex justify-between items-center w-full">
                   <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
-                    Edit {editingType} uri :
+                    {editingType} uri :
                   </span>
                   <input
                     value={activeItem?.uri}
@@ -492,7 +492,7 @@ export default function PageEditor({ projectName }) {
                         onClick={() =>
                           setViewport({
                             width: "1280px",
-                            height: "100%",
+                            height: "720px",
                             name: "desktop",
                           })
                         }

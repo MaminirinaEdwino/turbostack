@@ -253,7 +253,7 @@ export default function PageEditor({ projectName }) {
             if (obj.tablet)
               css += `@media (max-width: 1024px) { [data-block-id="${b.id}"] { ${format(obj.tablet)} } }\n`;
             if (obj.mobile)
-              css += `@media (max-width: 768px) { [data-block-id="${b.id}"] { ${format(obj.mobile)} } }\n`;
+              css += `@media (max-width: 375px) { [data-block-id="${b.id}"] { ${format(obj.mobile)} } }\n`;
           } catch (e) {
             console.error(e);
           }

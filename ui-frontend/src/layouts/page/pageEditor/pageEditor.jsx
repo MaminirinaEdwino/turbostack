@@ -8,7 +8,6 @@ import {
   Edit3,
   Trash2,
   Loader2,
-  Type,
   X,
   PanelLeftOpen,
   CheckCircle,
@@ -53,11 +52,11 @@ export default function PageEditor({ projectName }) {
 
   // New zoom handlers
   const handleZoomIn = () => {
-    setZoomLevel((prev) => Math.min(prev + 0.1, 2)); // Max zoom 200%
+    setZoomLevel((prev) => Math.min(prev + 0.05, 2)); // Max zoom 200%
   };
 
   const handleZoomOut = () => {
-    setZoomLevel((prev) => Math.max(prev - 0.1, 0.5)); // Min zoom 50%
+    setZoomLevel((prev) => Math.max(prev - 0.05, 0.5)); // Min zoom 50%
   };
 
   const handleResetZoom = () => {
@@ -338,6 +337,7 @@ export default function PageEditor({ projectName }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editMode, project, zoomLevel]);
 
   if (loading)
@@ -440,20 +440,20 @@ export default function PageEditor({ projectName }) {
               {!isLeftSidebarOpen && (
                 <button
                   onClick={() => setIsLeftSidebarOpen(true)}
-                  className="fixed left-0 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform"
+                  className="fixed  z-10 p-3 -left-8 hover:left-1 delay-200 transition-all bg-couleur1 text-white rounded-full shadow-lg hover:scale-105"
                 >
-                  <PanelRightOpen size={20} />
+                  <PanelLeftOpen size={20} />
                 </button>
               )}
               {!isRightSidebarOpen && (
                 <button
                   onClick={() => setIsRightSidebarOpen(true)}
-                  className="fixed right-0 top-24 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-transform"
+                  className="fixed -right-8 hover:right-1 delay-200 top-24 z-10 p-3 bg-couleur1 text-white rounded-full shadow-lg hover:scale-105 transition-all "
                 >
-                  <PanelLeftOpen size={20} />
+                  <PanelRightOpen size={20} />
                 </button>
               )}
-              <div className="">
+              <div className="border border-red-500 h-full">
                 <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between ">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
@@ -480,7 +480,7 @@ export default function PageEditor({ projectName }) {
                         onClick={() =>
                           setViewport({
                             width: "768px",
-                            height: "1024px",
+                            // height: "1024px",
                             name: "tablet",
                           })
                         }
@@ -493,7 +493,7 @@ export default function PageEditor({ projectName }) {
                         onClick={() =>
                           setViewport({
                             width: "1280px",
-                            height: "720px",
+                            // height: "720px",
                             name: "desktop",
                           })
                         }
@@ -535,16 +535,17 @@ export default function PageEditor({ projectName }) {
 
                   <div className="w-12"></div>
                 </div>
-                <div className="flex-1 overflow-auto flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar " >
+                <div className="overflow-scroll flex justify-center items-start border bg-gray-100 dark:bg-gray-800/30  custom-scrollbar h-full" >
                   <iframe
                     title="Page Preview"
                     style={{
                       width: viewport.width,
-                      height: viewport.height,
+                      // height: viewport.height,
                       transform: `scale(${zoomLevel})`, // Correction ici
                       transformOrigin: "top center", // Correction ici
+                      overflow:"scroll"
                     }}
-                    className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1/10 rounded-sm "
+                    className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1 rounded-sm h-full "
                     srcDoc={`
                                     <!DOCTYPE html>
                                     <html lang="en">

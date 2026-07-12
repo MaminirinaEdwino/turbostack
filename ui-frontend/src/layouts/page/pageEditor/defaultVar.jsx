@@ -1,4 +1,5 @@
-import { Box, Heading1, Heading2, ImageIcon, Link, Pilcrow, Square } from "lucide-react";
+import { Box, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon } from "lucide-react";
+import { BsTextarea } from "react-icons/bs";
 
 export const STYLE_CONTROLS = [
     { label: "Texte", prop: "color", type: "color" },
@@ -12,17 +13,27 @@ export const STYLE_CONTROLS = [
     { label: "Largeur", prop: "width", type: "number", placeholder: "100" },
     { label: "Hauteur", prop: "height", type: "number", placeholder: "auto" },
     { label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
-    { label: "Flex dir", prop: "flex-direction", type: "select", options: ["vertical", "horizontal"] },
+    { label: "Flex dir", prop: "flex-direction", type: "select", options: ["row", "column"] },
 ];
 
 export const BLOCK_TYPES = [
-    { label: "Section", tag: "div", icon: <Box size={14} />, defaultContent: "Conteneur vide" },
-    { label: "Titre 1", tag: "h1", icon: <Heading1 size={14} />, defaultContent: "Titre principal" },
-    { label: "Titre 2", tag: "h2", icon: <Heading2 size={14} />, defaultContent: "Sous-titre" },
-    { label: "Paragraphe", tag: "p", icon: <Pilcrow size={14} />, defaultContent: "Votre texte ici..." },
-    { label: "Lien", tag: "a", icon: <Link size={14} />, defaultContent: "Cliquez ici", defaultHref: "/" },
-    { label: "Image", tag: "img", icon: <ImageIcon size={14} />, defaultContent: "https://via.placeholder.com/800x400" },
-    { label: "Bouton", tag: "button", icon: <Square size={14} />, defaultContent: "Cliquez ici" },
+    { label: "Div", tag: "div", icon: <Box size={14} />, defaultContent: "Container", group: "container" },
+    { label: "Section", tag: "section", icon: <Box size={14} />, defaultContent: "Section", group: "container" },
+    { label: "Main", tag: "main", icon: <Box size={14} />, defaultContent: "Main", group: "container" },
+    { label: "Aside", tag: "aside", icon: <Box size={14} />, defaultContent: "Aside", group: "container" },
+    { label: "Heading 1", tag: "h1", icon: <Heading1 size={14} />, defaultContent: "Heading 1", group: "heading" },
+    { label: "Heading 2", tag: "h2", icon: <Heading2 size={14} />, defaultContent: "Heading 2", group: "heading" },
+    { label: "Heading 3", tag: "h3", icon: <Heading3 size={14} />, defaultContent: "Heading 3", group: "heading" },
+    { label: "Heading 4", tag: "h4", icon: <Heading4 size={14} />, defaultContent: "Heading 4", group: "heading" },
+    { label: "Heading 5", tag: "h5", icon: <Heading5 size={14} />, defaultContent: "Heading 5", group: "heading" },
+    { label: "Heading 6", tag: "h6", icon: <Heading6 size={14} />, defaultContent: "Heading 6", group: "heading" },
+    { label: "Paragraphe", tag: "p", icon: <Pilcrow size={14} />, defaultContent: "Paragraphe...", group: "text" },
+    { label: "Link", tag: "a", icon: <Link size={14} />, defaultContent: "Click here", defaultHref: "/", group: "link" },
+    { label: "Image", tag: "img", icon: <ImageIcon size={14} />, defaultContent: "https://via.placeholder.com/800x400", group: "media" },
+    { label: "Video", tag: "video", icon: <VideoIcon size={14} />, defaultContent: "https://via.placeholder.com/800x400", group: "media" },
+    { label: "Button", tag: "button", icon: <Square size={14} />, defaultContent: "Click here", group: "button" },
+    { label: "Label", tag: "label", icon: <Text size={14} />, defaultContent: "label", group: "text", attr: [{ name: "for", type: "text", defaultContent: "text" }] },
+    { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text"},
 ];
 
 export const TAG_STYLE_GROUPS = {

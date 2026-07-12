@@ -66,6 +66,7 @@ export default function ProjectPageView({ project }) {
       <div className="flex flex-col gap-5">
         <div className="lg:col-span-1">
           <ProjectResume nom={project.nom} type={project.type} />
+          
         </div>
         <div className="lg:col-span-2 flex items-start gap-4 p-5 rounded-xl border shadow-sm border-couleur7 bg-couleur5 dark:bg-couleur6/10 dark:border-none   transition-all">
           <div className="w-12 h-12 rounded-lg flex items-center justify-center border-2 border-couleur1 text-couleur1 shrink-0 dark:text-white">

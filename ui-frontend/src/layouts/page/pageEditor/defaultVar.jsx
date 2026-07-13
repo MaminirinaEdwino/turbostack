@@ -14,6 +14,21 @@ export const STYLE_CONTROLS = [
     { label: "Hauteur", prop: "height", type: "number", placeholder: "auto" },
     { label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
     { label: "Flex dir", prop: "flex-direction", type: "select", options: ["row", "column"] },
+    { label: "Animation delay", prop: "animation-delay", type: "number", unite: [{ name: "second", value: "s" }] },
+    { label: "animation-­direction", prop: "animation-direction", type: "select", options: ["normal", "alternate"] },
+    { label: "Animation duration", prop: "animation-duration", type: "number", unite: [{ name: "second", value: "s" }] },
+    { label: "animation-iteration-count", prop: "animation-iteration-count", type: "number" },
+    { label: "animation-name", prop: "animation-name", type: "text" },
+    { label: "animation-play-state", prop: "animation-play-state", type: "select", options: ["running", "pause"] },
+    { label: "animaiton-timing-function", prop: "animation-timing-function", type: "select", options: ["ease", "linear", "easy-in", "ease-out", "ease-in-out"] },
+    { label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"] },
+    { label: "backgroud-break", prop: "background-break", type: "select", options: ["bounding-box", "each-box", "continuous"] },
+    { label: "backgroud-clip", prop: "background-clip", type: "select", options: ["border-box", "padding-box", "content-box", "no-clip"] },
+    { label: "backgroud-image", prop: "background-image", type: "text" },
+    { label: "backgroud-origin", prop: "background-origin", type: "select", options: ["border-box", "padding-box", "content-box"] },
+    { label: "backgroud-position", prop: "background-position", type: "select", options: ["top left", "top center", "top right", "center left", "center center", "center right", "bottom left", "bottom center", "bottom right"] },
+    { label: "backgroud-repeat", prop: "background-repeat", type: "select", options: ["repeat", "repeat-x", "repeat-y", "no-repeat"] },
+    { label: "backgroud-size", prop: "background-size", type: "select", options: ["auto", "cover", "contain"] },
 ];
 
 export const BLOCK_TYPES = [
@@ -33,7 +48,7 @@ export const BLOCK_TYPES = [
     { label: "Video", tag: "video", icon: <VideoIcon size={14} />, defaultContent: "https://via.placeholder.com/800x400", group: "media" },
     { label: "Button", tag: "button", icon: <Square size={14} />, defaultContent: "Click here", group: "button" },
     { label: "Label", tag: "label", icon: <Text size={14} />, defaultContent: "label", group: "text", attr: [{ name: "for", type: "text", defaultContent: "text" }] },
-    { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text"},
+    { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
 ];
 
 export const TAG_STYLE_GROUPS = {

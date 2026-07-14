@@ -1,11 +1,14 @@
 import { MousePointer2, Copy, ClipboardPaste } from "lucide-react";
-import { BLOCK_TYPES, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
+import { BLOCK_TYPES, GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
+import { useState } from "react";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
     activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle
 }) {
+    const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
+
     // Extraction intelligente des styles selon le viewport
     const getStylesForViewport = () => {
         if (!currentActiveBlock?.styles) return {};
@@ -86,73 +89,78 @@ export default function PropertiesTab({
                                     </button>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
-                                {STYLE_CONTROLS.filter(ctrl => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.prop)).map((ctrl) => {
-                                    let currentValue = currentStyles[ctrl.prop] || "";
+                            <div className=" gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
+                                {GROUP_LIST.map(group => <div className="mb-2">
+                                    <h3 className={"text-couleur6 my-1 transition-all  duration-200 ease-in-out " + (activeGroup != group && "text-xs")} onClick={() => setActiveGroup(group)}>{group}</h3>
+                                    <div className={"grid grid-cols-2 transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
+                                        {STYLE_CONTROLS.filter((ctrl) => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.group)).map((ctrl) => {
+                                            if (group == ctrl.group) {
+                                                let currentValue = currentStyles[ctrl.prop] || "";
 
-                                    return (
-                                        <div key={ctrl.prop} className="flex flex-col gap-1">
-                                            <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
-                                            {ctrl.type === "number" ? (
-                                                <div className="flex gap-1">
-                                                    {/* Input numérique pour la valeur */}
-                                                    <input
-                                                        type="number"
-                                                        className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
-                                                        placeholder="e.g. 10"
-                                                        value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
-                                                        disabled={currentValue === "auto"}
-                                                        onChange={(e) => {
-                                                            const numValue = e.target.value;
-                                                            let unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
-                                                            if (unit === "auto") unit = "px";
-                                                            handleStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${unit}`);
-                                                        }}
-                                                    />
-                                                    {/* Sélecteur d'unité */}
-                                                    <select
-                                                        className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
-                                                        value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
-                                                        onChange={(e) => {
-                                                            const newUnit = e.target.value;
-                                                            if (newUnit === "auto") {
-                                                                handleStyleChange(ctrl.prop, "auto");
-                                                            } else {
-                                                                const numValue = parseFloat(currentValue) || 0;
-                                                                handleStyleChange(ctrl.prop, `${numValue}${newUnit}`);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <option value="px">px</option>
-                                                        <option value="em">em</option>
-                                                        <option value="%">%</option>
-                                                        <option value="rem">rem</option>
-                                                        {["margin", "width", "height"].includes(ctrl.prop) && <option value="auto">auto</option>}
-                                                    </select>
-                                                </div>
-                                            ) : ctrl.type === "select" ? (
-                                                <select
-                                                    className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
-                                                    value={currentValue}
-                                                    onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
-                                                >
-                                                    <option value="">--</option>
-                                                    {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                </select>
-                                            ) : (
-                                                <input
-                                                    type={ctrl.type}
-                                                    className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'} rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all`}
-                                                    placeholder={ctrl.placeholder}
-                                                    // For color inputs, ensure value is always a string, even if empty
-                                                    value={currentValue}
-                                                    onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
-                                                />)
+                                                return (
+                                                    <div key={ctrl.prop} className="flex flex-col gap-1">
+                                                        <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
+                                                        {ctrl.type === "number" ? (
+                                                            <div className="flex gap-1">
+                                                                {/* Input numérique pour la valeur */}
+                                                                <input
+                                                                    type="number"
+                                                                    className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                    placeholder="e.g. 10"
+                                                                    value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
+                                                                    disabled={currentValue === "auto"}
+                                                                    onChange={(e) => {
+                                                                        const numValue = e.target.value;
+                                                                        let unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
+                                                                        if (unit === "auto") unit = "px";
+                                                                        handleStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${ctrl.unite ? unit : ""}`);
+                                                                    }}
+                                                                />
+                                                                {/* Sélecteur d'unité */}
+                                                                {ctrl.unite && <select
+                                                                    className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                    value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
+                                                                    onChange={(e) => {
+                                                                        const newUnit = e.target.value;
+                                                                        if (newUnit === "auto") {
+                                                                            handleStyleChange(ctrl.prop, "auto");
+                                                                        } else {
+                                                                            const numValue = parseFloat(currentValue) || 0;
+                                                                            handleStyleChange(ctrl.prop, `${numValue}${newUnit}`);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {ctrl.unite && <>
+                                                                        {ctrl.unite.map(unite=><option value={unite}>{unite}</option>)}
+                                                                    </>}
+                                                                </select>}
+                                                            </div>
+                                                        ) : ctrl.type === "select" ? (
+                                                            <select
+                                                                className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                value={currentValue}
+                                                                onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
+                                                            >
+                                                                <option value="">--</option>
+                                                                {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                                            </select>
+                                                        ) : (
+                                                            <input
+                                                                type={ctrl.type}
+                                                                className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'} rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all`}
+                                                                placeholder={ctrl.placeholder}
+                                                                // For color inputs, ensure value is always a string, even if empty
+                                                                value={currentValue}
+                                                                onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
+                                                            />)
+                                                        }
+                                                    </div>
+                                                )
                                             }
-                                        </div>
-                                    )
-                                })
-                                }
+                                        })
+                                        }
+                                    </div>
+                                </div>)}
                             </div>
 
 

@@ -4,8 +4,8 @@ import { BsTextarea } from "react-icons/bs";
 export const STYLE_CONTROLS = [
     { label: "Texte", prop: "color", type: "color", group: "typo" },
     { label: "Taille", prop: "font-size", type: "number", placeholder: "e.g. 16", group: "typo" },
-    { label: "Align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "type" },
-    { label: "Gras", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "type" },
+    { label: "Align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "typo" },
+    { label: "Gras", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "typo" },
     { label: "Fond", prop: "background-color", type: "color", group: "background" },
     { group: "sizing", label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10" },
     { group: "sizing", label: "Marge", prop: "margin", type: "number", placeholder: "e.g. 0" },
@@ -15,7 +15,7 @@ export const STYLE_CONTROLS = [
     { group: "display", label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
     { group: "display", label: "Flex dir", prop: "flex-direction", type: "select", options: ["row", "column"] },
     { group: "animation", label: "Animation delay", prop: "animation-delay", type: "number", unite: ["s"] },
-    { group: "animation", label: "animation-­direction", prop: "animation-direction", type: "select", options: ["normal", "alternate"] },
+    { group: "animation", label: "animation-direction", prop: "animation-direction", type: "select", options: ["normal", "alternate"] },
     { group: "animation", label: "Animation duration", prop: "animation-duration", type: "number", unite: ["s"] },
     { group: "animation", label: "animation-iteration-count", prop: "animation-iteration-count", type: "number" },
     { group: "animation", label: "animation-name", prop: "animation-name", type: "text" },
@@ -48,10 +48,10 @@ export const STYLE_CONTROLS = [
     { group: "sizing", label: "margin-bottom", prop: "margin-bottom", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "sizing", label: "margin-left", prop: "margin-left", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "sizing", label: "margin-right", prop: "margin-right", type: "number", unite: ["px", "em", "rem", "cm"] },
-    { group: "sizing", prop: "margin-top", label: "padding-top", type: "number", unite: ["px", "em", "rem", "cm"] },
-    { group: "sizing", prop: "margin-bottom", label: "padding-bottom", type: "number", unite: ["px", "em", "rem", "cm"] },
-    { group: "sizing", prop: "margin-left", label: "padding-left", type: "number", unite: ["px", "em", "rem", "cm"] },
-    { group: "sizing", prop: "margin-right", label: "padding-right", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "padding-top", label: "padding-top", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "padding-bottom", label: "padding-bottom", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "padding-left", label: "padding-left", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "padding-right", label: "padding-right", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "sizing", prop: "overflow", label: "overflow", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
     { group: "sizing", prop: "overflow-x", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
     { group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
@@ -92,18 +92,30 @@ export const BLOCK_TYPES = [
     { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
 
 ];
+export const GROUP_LIST = ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"]
 
 export const TAG_STYLE_GROUPS = {
-    h1: ["color", "font-size", "text-align", "font-weight", "margin"],
-    h2: ["color", "font-size", "text-align", "font-weight", "margin"],
-    p: ["color", "font-size", "text-align", "margin"],
-    a: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius"],
-    button: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius", "margin"],
-    div: ["background-color", "padding", "margin", "border-radius", "width", "height", "display", "flex-direction"],
-    img: ["width", "height", "border-radius", "margin", "display"],
-    page: ["color", "font-size", "background-color", "padding", "margin"],
-    generic: ["color", "font-size", "text-align", "font-weight", "background-color", "padding", "margin", "border-radius", "width", "height", "display"]
+    h1: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    h2: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    p: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    a: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    button: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    div: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    img: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    page: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    generic: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"]
 };
+// export const TAG_STYLE_GROUPS = {
+//     h1: ["color", "font-size", "text-align", "font-weight", "margin"],
+//     h2: ["color", "font-size", "text-align", "font-weight", "margin"],
+//     p: ["color", "font-size", "text-align", "margin"],
+//     a: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius"],
+//     button: ["color", "font-size", "font-weight", "background-color", "padding", "border-radius", "margin"],
+//     div: ["background-color", "padding", "margin", "border-radius", "width", "height", "display", "flex-direction"],
+//     img: ["width", "height", "border-radius", "margin", "display"],
+//     page: ["color", "font-size", "background-color", "padding", "margin"],
+//     generic: ["color", "font-size", "text-align", "font-weight", "background-color", "padding", "margin", "border-radius", "width", "height", "display"]
+// };
 
 export const PSEUDO_CLASS = [
     "active", "focus", "visited", "hover", "link", "checked", "selection", "lang", "nth-child(n)", "nth-last-child(n)", "first-child", "only-child", "last-child", "nth-last-of-type()", "empty", "root", "not(x)", "target"

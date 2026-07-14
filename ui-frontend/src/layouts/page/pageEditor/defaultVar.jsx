@@ -44,8 +44,14 @@ export const STYLE_CONTROLS = [
     { group: "border", label: "border-right-color", prop: "border-right-color", type: "color" },
     { group: "border", label: "border-right-width", prop: "border-right-width", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "border", label: "border-right-style", prop: "border-right-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
-
-
+    { group: "sizing", label: "margin-top", prop: "margin-top", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", label: "margin-bottom", prop: "margin-bottom", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", label: "margin-left", prop: "margin-left", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", label: "margin-right", prop: "margin-right", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "margin-top", label: "padding-top", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "margin-bottom", label: "padding-bottom", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "margin-left", label: "padding-left", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "margin-right", label: "padding-right", type: "number", unite: ["px", "em", "rem", "cm"] },
 ];
 
 export const BLOCK_TYPES = [

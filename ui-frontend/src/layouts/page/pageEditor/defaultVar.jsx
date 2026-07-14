@@ -14,9 +14,9 @@ export const STYLE_CONTROLS = [
     { group: "sizing", label: "Hauteur", prop: "height", type: "number", placeholder: "auto" },
     { group: "display", label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
     { group: "display", label: "Flex dir", prop: "flex-direction", type: "select", options: ["row", "column"] },
-    { group: "animation", label: "Animation delay", prop: "animation-delay", type: "number", unite: [{ name: "second", value: "s" }] },
+    { group: "animation", label: "Animation delay", prop: "animation-delay", type: "number", unite: ["s"] },
     { group: "animation", label: "animation-­direction", prop: "animation-direction", type: "select", options: ["normal", "alternate"] },
-    { group: "animation", label: "Animation duration", prop: "animation-duration", type: "number", unite: [{ name: "second", value: "s" }] },
+    { group: "animation", label: "Animation duration", prop: "animation-duration", type: "number", unite: ["s"] },
     { group: "animation", label: "animation-iteration-count", prop: "animation-iteration-count", type: "number" },
     { group: "animation", label: "animation-name", prop: "animation-name", type: "text" },
     { group: "animation", label: "animation-play-state", prop: "animation-play-state", type: "select", options: ["running", "pause"] },
@@ -29,6 +29,23 @@ export const STYLE_CONTROLS = [
     { group: "background", label: "backgroud-position", prop: "background-position", type: "select", options: ["top left", "top center", "top right", "center left", "center center", "center right", "bottom left", "bottom center", "bottom right"] },
     { group: "background", label: "backgroud-repeat", prop: "background-repeat", type: "select", options: ["repeat", "repeat-x", "repeat-y", "no-repeat"] },
     { group: "background", label: "backgroud-size", prop: "background-size", type: "select", options: ["auto", "cover", "contain"] },
+    { group: "border", label: "border-color", prop: "border-color", type: "color" },
+    { group: "border", label: "border-width", prop: "border-width", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "border", label: "border-style", prop: "border-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
+    { group: "border", label: "border-bottom-color", prop: "border-bottom-color", type: "color" },
+    { group: "border", label: "border-bottom-width", prop: "border-bottom-width", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "border", label: "border-bottom-style", prop: "border-bottom-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
+    { group: "border", label: "border-top-color", prop: "border-top-color", type: "color" },
+    { group: "border", label: "border-top-width", prop: "border-top-width", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "border", label: "border-top-style", prop: "border-top-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
+    { group: "border", label: "border-left-color", prop: "border-left-color", type: "color" },
+    { group: "border", label: "border-left-width", prop: "border-left-width", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "border", label: "border-left-style", prop: "border-left-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
+    { group: "border", label: "border-right-color", prop: "border-right-color", type: "color" },
+    { group: "border", label: "border-right-width", prop: "border-right-width", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "border", label: "border-right-style", prop: "border-right-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
+
+
 ];
 
 export const BLOCK_TYPES = [

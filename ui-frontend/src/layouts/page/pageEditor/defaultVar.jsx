@@ -52,6 +52,10 @@ export const STYLE_CONTROLS = [
     { group: "sizing", prop: "margin-bottom", label: "padding-bottom", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "sizing", prop: "margin-left", label: "padding-left", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "sizing", prop: "margin-right", label: "padding-right", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "sizing", prop: "overflow", label: "overflow", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
+    { group: "sizing", prop: "overflow-x", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
+    { group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
+    { group: "sizing", prop: "overflow-style", label: "overflow-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"] }
 ];
 
 export const BLOCK_TYPES = [

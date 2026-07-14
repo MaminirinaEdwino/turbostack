@@ -59,7 +59,17 @@ export const STYLE_CONTROLS = [
     { group: "outline", prop: "outline-color", label: "outline-color", type: "color" },
     { group: "outline", prop: "outline-offset", label: "outline-offset", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "outline", prop: "outline-width", label: "outline-width", type: "number", unite: ["px", "em", "rem", "cm"] },
-    { group: "outline", prop: "outline-style", label: "outline-style", type: "select", options: ["none", "groove", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] }
+    { group: "outline", prop: "outline-style", label: "outline-style", type: "select", options: ["none", "groove", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
+    { group: "text", prop: "Direction", label: "Direction", type: "select", options: ["ltr", "rtl", "inherit"] },
+    { group: "text", prop: "hanging-punctuation", label: "hanging-punctuation", type: "select", options: ["none", "start", "end", "end-edge"] },
+    { group: "text", prop: "letter-spacing", label: "letter-spacing", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "text", prop: "text-indent", label: "text-indent", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "text", prop: "punctuation-trim", label: "punctuation-trim", type: "select", options: ["none", "start", "end", "adja-cent"] },
+    { group: "text", prop: "text-align", label: "text-align", type: "select", options: ["center", "start", "end", "left", "right", "justify"] },
+    { group: "text", prop: "text-align-last", label: "text-align-last", type: "select", options: ["center", "start", "end", "left", "right", "justify"] },
+    { group: "text", prop: "text-decoration", label: "text-decoration", type: "select", options: ["none", "underline", "overline", "blink"] },
+    { group: "text", prop: "text-justify", label: "text-justify", type: "select", options: ["auto", "inter-word", "inter-ideograph", "inter-cluster", "distribute", "kashida", "tibetan"] },
+
 ];
 
 export const BLOCK_TYPES = [
@@ -80,6 +90,7 @@ export const BLOCK_TYPES = [
     { label: "Button", tag: "button", icon: <Square size={14} />, defaultContent: "Click here", group: "button" },
     { label: "Label", tag: "label", icon: <Text size={14} />, defaultContent: "label", group: "text", attr: [{ name: "for", type: "text", defaultContent: "text" }] },
     { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
+
 ];
 
 export const TAG_STYLE_GROUPS = {
@@ -93,3 +104,7 @@ export const TAG_STYLE_GROUPS = {
     page: ["color", "font-size", "background-color", "padding", "margin"],
     generic: ["color", "font-size", "text-align", "font-weight", "background-color", "padding", "margin", "border-radius", "width", "height", "display"]
 };
+
+export const PSEUDO_CLASS = [
+    "active", "focus", "visited", "hover", "link", "checked", "selection", "lang", "nth-child(n)", "nth-last-child(n)", "first-child", "only-child", "last-child", "nth-last-of-type()", "empty", "root", "not(x)", "target"
+]

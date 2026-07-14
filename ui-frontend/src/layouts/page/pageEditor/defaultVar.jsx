@@ -55,7 +55,11 @@ export const STYLE_CONTROLS = [
     { group: "sizing", prop: "overflow", label: "overflow", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
     { group: "sizing", prop: "overflow-x", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
     { group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
-    { group: "sizing", prop: "overflow-style", label: "overflow-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"] }
+    { group: "sizing", prop: "overflow-style", label: "overflow-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"] },
+    { group: "outline", prop: "outline-color", label: "outline-color", type: "color" },
+    { group: "outline", prop: "outline-offset", label: "outline-offset", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "outline", prop: "outline-width", label: "outline-width", type: "number", unite: ["px", "em", "rem", "cm"] },
+    { group: "outline", prop: "outline-style", label: "outline-style", type: "select", options: ["none", "groove", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] }
 ];
 
 export const BLOCK_TYPES = [

@@ -435,7 +435,7 @@ export default function PageEditor({ projectName }) {
 
             {/* Main content: Prévisualisation isolée (Iframe) */}
             <div
-              className={`flex-1 absolute w-fit flex flex-col bg-white dark:bg-gray-900 rounded-[2.5rem] border border-couleur1/10 shadow-2xl overflow-hidden h-[calc(100vh-140px)] transition-all duration-300 ${isLeftSidebarOpen ? "ml-80" : ""} ${isRightSidebarOpen ? "mr-96" : ""}`}
+              className={`flex-1 absolute w-fit flex flex-col bg-white dark:bg-gray-900 rounded-xl border border-couleur1/10 shadow-2xl overflow-hidden h-[calc(100vh-140px)] transition-all duration-300 ${isLeftSidebarOpen ? "ml-80" : ""} ${isRightSidebarOpen ? "mr-96" : ""}`}
             >
               {!isLeftSidebarOpen && (
                 <button
@@ -453,7 +453,7 @@ export default function PageEditor({ projectName }) {
                   <PanelRightOpen size={20} />
                 </button>
               )}
-              <div className="border border-red-500 h-full">
+              <div className=" h-full">
                 <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between ">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
@@ -535,7 +535,7 @@ export default function PageEditor({ projectName }) {
 
                   <div className="w-12"></div>
                 </div>
-                <div className="overflow-scroll flex justify-center items-start border bg-gray-100 dark:bg-gray-800/30  custom-scrollbar h-full" >
+                <div className="overflow-scroll flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar h-full" >
                   <iframe
                     title="Page Preview"
                     style={{
@@ -545,7 +545,7 @@ export default function PageEditor({ projectName }) {
                       transformOrigin: "top center", // Correction ici
                       overflow:"scroll"
                     }}
-                    className="bg-white shadow-2xl transition-all duration-500 ease-in-out border border-couleur1 rounded-sm h-full "
+                    className="bg-white shadow-2xl transition-all duration-500 ease-in-out rounded-sm h-full "
                     srcDoc={`
                                     <!DOCTYPE html>
                                     <html lang="en">

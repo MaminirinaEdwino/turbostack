@@ -9,7 +9,7 @@ export const STYLE_CONTROLS = [
     { label: "background-color", prop: "background-color", type: "color", group: "background" },
     { group: "sizing", label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10", unite: ["px", "em", "rem", "cm", "%"] },
     { group: "sizing", label: "Margin", prop: "margin", type: "number", placeholder: "e.g. 0", unite: ["px", "em", "rem", "cm", "%"] },
-    { label: "Arrondi", prop: "border-radius", type: "number", placeholder: "e.g. 8", unite: ["px", "em", "rem", "cm", "%"] },
+    { label: "Arrondi", prop: "border-radius", type: "number", placeholder: "e.g. 8", unite: ["px", "em", "rem", "cm", "%"] , group: "border"},
     { group: "sizing", label: "Largeur", prop: "width", type: "number", placeholder: "100", unite: ["px", "em", "rem", "cm", "%"] },
     { group: "sizing", label: "Hauteur", prop: "height", type: "number", placeholder: "auto", unite: ["px", "em", "rem", "cm", "%"] },
     { group: "display", label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"] },
@@ -112,7 +112,9 @@ export const TAG_STYLE_GROUPS = {
     div: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
     img: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
     page: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
-    generic: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"]
+    generic: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    "textarea:hover": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
+    "div:hover": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text"],
 };
 // export const TAG_STYLE_GROUPS = {
 //     h1: ["color", "font-size", "text-align", "font-weight", "margin"],

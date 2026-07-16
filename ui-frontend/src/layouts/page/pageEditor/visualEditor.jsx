@@ -13,13 +13,14 @@ import ChangeTabBtn from "./components/changeTabBtn";
 import BlockTab from "./components/blockTab";
 import GlobalTab from "./components/globalTab";
 import PropertiesTab from "./components/propertieTab";
+import PseudoClassTab from "./components/pseudoClassTab";
 
 
-export default function VisualEditor({ 
-    content, 
-    pageStyles = "", 
-    onPageStylesChange, 
-    onChange, 
+export default function VisualEditor({
+    content,
+    pageStyles = "",
+    onPageStylesChange,
+    onChange,
     availablePages = [],
     availableComponents = [],
     activeBlock,
@@ -27,7 +28,7 @@ export default function VisualEditor({
     activeTab,
     setActiveTab,
     activeViewport = "desktop",
-    allowedTabs = ["blocks", "global", "properties"],
+    allowedTabs = ["blocks", "global", "properties", "pseudo classes"],
     showToast
 }) {
     const [blocks, setBlocks] = useState([]);
@@ -285,7 +286,7 @@ export default function VisualEditor({
                 href: type.defaultHref || "",
                 className: "",
                 styles: "",
-                htmlId: "", 
+                htmlId: "",
                 children: []
             };
         }
@@ -346,7 +347,7 @@ export default function VisualEditor({
 
         const vp = activeViewport || "desktop";
         if (!allStyles[vp]) allStyles[vp] = {};
-        
+
         const currentTagStyles = parseStyles(allStyles[vp][selectedGlobalTag] || "");
         const updatedTagStyles = { ...currentTagStyles, [prop]: value };
         allStyles[vp][selectedGlobalTag] = stringifyStyles(updatedTagStyles);
@@ -372,8 +373,8 @@ export default function VisualEditor({
 
                         <Block index={index} getIconForTag={getIconForTag} block={block} />
                         <div className="flex items-center gap-1">
-                            <AddChild block={block} addChild={addChild}/>
-                            <DeleteBlock block={block} removeBlock={removeBlock}/>
+                            <AddChild block={block} addChild={addChild} />
+                            <DeleteBlock block={block} removeBlock={removeBlock} />
                         </div>
                     </div>
                 </div>
@@ -383,39 +384,52 @@ export default function VisualEditor({
     };
 
     return (
-        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full"> 
+        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
+            <>{activeTab}</>
             {allowedTabs.length > 1 && (
                 <div className="flex bg-white/50 dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
-                    {allowedTabs.includes("blocks") && <ChangeTabBtn icon={<Layers size={14} /> } value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'}/>}
-                    {allowedTabs.includes("global") && <ChangeTabBtn icon={<Globe size={14} /> } value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"}/>}
-                    {allowedTabs.includes("properties") && <ChangeTabBtn icon={<Settings2 size={14} /> } value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"}/>}
+                    {allowedTabs.includes("blocks") && <ChangeTabBtn icon={<Layers size={14} />} value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'} />}
+                    {allowedTabs.includes("global") && <ChangeTabBtn icon={<Globe size={14} />} value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"} />}
+                    {allowedTabs.includes("properties") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"} />}
+                    {allowedTabs.includes("pseudo classes") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"pseudo classes"} setter={setActiveTab} activeTab={activeTab} newVal={"pseudo classes"} />}
                 </div>
             )}
 
             {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
-                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents}/>
+                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents} />
             ) : activeTab === "global" && allowedTabs.includes("global") ? (
-                <GlobalTab 
-                    availableSelectors={availableSelectors} 
-                    activeViewport={activeViewport} 
-                    setSelectedGlobalTag={setSelectedGlobalTag} 
-                    handlePageStyleChange={handlePageStyleChange} 
-                    pageStyles={pageStyles} 
+                <GlobalTab
+                    availableSelectors={availableSelectors}
+                    activeViewport={activeViewport}
+                    setSelectedGlobalTag={setSelectedGlobalTag}
+                    handlePageStyleChange={handlePageStyleChange}
+                    pageStyles={pageStyles}
                     selectedGlobalTag={selectedGlobalTag}
                 />
-            ) : allowedTabs.includes("properties") ? (
-                <PropertiesTab 
-                    availablePages={availablePages} 
-                    activeViewport={activeViewport} 
-                    currentActiveBlock={currentActiveBlock} 
-                    getIconForTag={getIconForTag} 
-                    handleStyleChange={handleStyleChange} 
+            ) : allowedTabs.includes("properties") && activeTab === "properties" ? (
+                <PropertiesTab
+                    availablePages={availablePages}
+                    activeViewport={activeViewport}
+                    currentActiveBlock={currentActiveBlock}
+                    getIconForTag={getIconForTag}
+                    handleStyleChange={handleStyleChange}
                     updateBlock={updateBlock}
                     onCopyStyle={() => handleCopyStyle(currentActiveBlock?.styles)}
                     onPasteStyle={() => handlePasteStyle(currentActiveBlock?.id)}
                     hasCopiedStyle={!!copiedStyle}
                 />
-            ) : null}
+            ) : allowedTabs.includes("pseudo classes") && activeTab === "pseudo classes" ?
+                <>
+                    <PseudoClassTab
+                        currentBlock={currentActiveBlock}
+                        handlePageStyleChange={handlePageStyleChange}
+                        setSelectedGlobalTag={setSelectedGlobalTag}
+                        pageStyles={pageStyles}
+                        selectedGlobalTag={selectedGlobalTag}
+                        activeViewport={activeViewport}
+                    />
+                    teste
+                </> : null}
         </div >
     );
 }

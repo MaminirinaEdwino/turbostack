@@ -597,8 +597,8 @@ export default function PageEditor({ projectName }) {
                 activeViewport={viewport.name}
                 allowedTabs={
                   editingType === "page"
-                    ? ["global", "properties"]
-                    : ["properties"]
+                    ? ["global", "properties", "pseudo classes"]
+                    : ["properties", "pseudo classes"]
                 }
                 onChange={(blocks) => updateActiveItemField("content", blocks)}
                 onPageStylesChange={(styles) =>

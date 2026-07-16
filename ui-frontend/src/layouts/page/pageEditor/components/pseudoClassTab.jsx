@@ -1,10 +1,10 @@
 import { Globe } from "lucide-react";
-import { GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
+import { GROUP_LIST, PSEUDO_CLASS, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
 import { useState } from "react";
 
-export default function GlobalTab({
-    selectedGlobalTag, setSelectedGlobalTag, availableSelectors, pageStyles, handlePageStyleChange, activeViewport = "desktop"
+export default function PseudoClassTab({
+    currentBlock, selectedGlobalTag, setSelectedGlobalTag, pageStyles, handlePageStyleChange, activeViewport = "desktop"
 }) {
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
     return <>
@@ -14,39 +14,19 @@ export default function GlobalTab({
                     <Globe size={18} />
                 </div>
                 <div>
-                    <p className="text-[10px] font-black uppercase text-couleur1 opacity-40">Page Settings</p>
-                    <p className="text-sm font-bold text-couleur1 dark:text-gray-200">Global Page Style</p>
+                    <p className="text-[10px] font-black uppercase text-couleur1 opacity-40"> {currentBlock?.tag} Pseudo Classes </p>
+                    <p className="text-sm font-bold text-couleur1 dark:text-gray-200"></p>
                 </div>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Élément cible</label>
+                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">pseudo class</label>
                 <select
                     className="bg-white dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
                     value={selectedGlobalTag}
                     onChange={(e) => setSelectedGlobalTag(e.target.value)}
                 >
-                    <optgroup label="Balises">
-                        {availableSelectors.tags.map(tag => (<>
-                            <option key={tag} value={tag}>{tag === 'body' ? 'Toute la page (Body)' : `<${tag.toUpperCase()}>`}</option>
-                            <option key={tag} value={tag+":hover"}>{tag === 'body' ? 'Toute la page (Body)' : `<${tag.toUpperCase()}>:hover`}</option>
-                            </>
-                        ))}
-                    </optgroup>
-                    {availableSelectors.classes.length > 0 && (
-                        <optgroup label="Classes CSS">
-                            {availableSelectors.classes.map(cls => (
-                                <option key={cls} value={cls}>{cls}</option>
-                            ))}
-                        </optgroup>
-                    )}
-                    {availableSelectors.ids.length > 0 && (
-                        <optgroup label="IDs HTML">
-                            {availableSelectors.ids.map(id => (
-                                <option key={id} value={id}>{id}</option>
-                            ))}
-                        </optgroup>
-                    )}
+                    {PSEUDO_CLASS.map(pc=><option >{currentBlock?.tag}:{pc}</option>)}
                 </select>
             </div>
 
@@ -57,8 +37,8 @@ export default function GlobalTab({
                         <h3 className={"text-couleur6 my-1 transition-all  duration-200 ease-in-out " + (activeGroup != group && "text-xs opacity-50")} onClick={() => setActiveGroup(group)}>{group}</h3>
                         <div className={"grid grid-cols-2 transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
                             {STYLE_CONTROLS.filter(ctrl => {
-                                const isCustomSelector = selectedGlobalTag.startsWith('.') || selectedGlobalTag.startsWith('#');
-                                const groupKey = isCustomSelector ? "generic" : (selectedGlobalTag === "body" ? "page" : selectedGlobalTag);
+                                // const isCustomSelector = selectedGlobalTag.contains(':') || selectedGlobalTag.startsWith('#');
+                                const groupKey = "generic";
                                 return (TAG_STYLE_GROUPS[groupKey] || []).includes(ctrl.group);
                             }).map((ctrl) => {
                                 if (ctrl.group == group) {

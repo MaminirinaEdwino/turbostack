@@ -1,4 +1,4 @@
-import { Edit, Trash2, Globe, Code } from "lucide-react";
+import { Edit, Trash2, Globe, Code, Globe2 } from "lucide-react";
 
 export default function EndpointNode({ data }) {
   const methodColors = {
@@ -53,7 +53,7 @@ export default function EndpointNode({ data }) {
           >
             <Trash2 size={14} />
           </button>
-          
+
         </div>
       </div>
       <div className="p-2 space-y-1">
@@ -97,6 +97,13 @@ export default function EndpointNode({ data }) {
           {data.return_content_type == "array" && "]"}
         </code>}
       </div>
+      {data.return_page?.nom  && <div className="p-3 space-y-1 box-border text-[10px]">
+        <h3 className="dark:text-white/50">View</h3>
+        <div className="flex gap-2 items-center">
+          <Globe2 size={10}></Globe2>
+          <p>{data.return_page.nom}</p>
+        </div>
+      </div>}
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default function EditEndpoint({
     manual_fields: [],
     return_content: [],
     return_content_type: "object",
-    return_page : null
+    return_page: null
   });
   const methodWithBody = [
     "PUT",
@@ -526,15 +526,15 @@ export default function EditEndpoint({
               }}>
                 OBJECT
               </button>
-              <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
+              {endpoint.method == "GET" && <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
                 e.preventDefault()
                 setEndpoint({ ...endpoint, return_content_type: "page" })
               }}>
                 PAGE
-              </button>
+              </button>}
             </div>
           </div>
-          {endpoint.return_content.map((m) => {
+          {endpoint.return_content_type != "page" ? endpoint.return_content.map((m) => {
             if (m.nom === "Manual") return null;
             const originalModel = availableModels.find(
               (om) => om.nom === m.nom,
@@ -606,7 +606,17 @@ export default function EditEndpoint({
                 </table>
               </div>
             );
-          })}
+          }) : <div className="my-2">
+            <p className="text-xs font-bold opacity-50 uppercase">Select a page</p>
+            {project != null && project?.web_app.pages.map((p) => <button onClick={(e) => {
+              e.preventDefault()
+              if (endpoint.return_page == p) {
+                setEndpoint({ ...endpoint, return_page: null })
+              } else {
+                setEndpoint({ ...endpoint, return_page: p })
+              }
+            }} className={`${endpoint.return_page == p && "border-b border-couleur2"}`}>{p.nom}</button>)}
+          </div>}
         </div>
       )}
 

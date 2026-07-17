@@ -365,15 +365,15 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                     }}>
                         OBJECT
                     </button>
-                    <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
+                    {endpoint.method == "GET" && <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
                         e.preventDefault()
                         setEndpoint({ ...endpoint, return_content_type: "page" })
                     }}>
                         PAGE
-                    </button>
+                    </button>}
                 </div>
             </div>
-            {endpoint.return_content.map((m) => {
+            {endpoint.return_content_type != "page" ? endpoint.return_content.map((m) => {
                 if (m.nom === "Manual") return null;
                 const originalModel = availableModels.find(
                     (om) => om.nom === m.nom,
@@ -445,7 +445,17 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                         </table>
                     </div>
                 );
-            })}
+            }) : <div className="my-2">
+                <p className="text-xs font-bold opacity-50 uppercase">Select a page</p>
+                {project != null && project?.web_app.pages.map((p) => <button onClick={(e) => {
+                    e.preventDefault()
+                    if (endpoint.return_page == p) {
+                        setEndpoint({ ...endpoint, return_page: null })
+                    } else {
+                        setEndpoint({ ...endpoint, return_page: p })
+                    }
+                }} className={`${endpoint.return_page == p && "border-b border-couleur2"}`}>{p.nom}</button>)}
+            </div>}
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1 hover:bg-gray-50 transition-colors">Cancel</button>
                 <button onClick={handleSave} className="px-5 py-2 rounded-lg bg-couleur1 text-white font-semibold flex items-center gap-2 hover:bg-opacity-90 transition-all">

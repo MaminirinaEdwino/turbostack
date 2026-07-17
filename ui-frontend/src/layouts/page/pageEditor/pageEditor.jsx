@@ -375,7 +375,7 @@ export default function PageEditor({ projectName }) {
                     className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50 text-sm"
                   />
                 </div>
-                <div className="flex justify-between items-center w-full">
+                {project?.type != "web_app" && <div className="flex justify-between items-center w-full">
                   <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
                     {editingType} uri :
                   </span>
@@ -384,7 +384,7 @@ export default function PageEditor({ projectName }) {
                     onChange={(e) => updateActiveItemField("uri", e.target.value)}
                     className="bg-transparent text-sm border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50"
                   />
-                </div>
+                </div>}
               </div>
             ) : (
               `Project : ${projectName}`
@@ -630,7 +630,7 @@ export default function PageEditor({ projectName }) {
                 >
                   <div>
                     <p className="font-bold text-couleur1">{page.nom}</p>
-                    <p className="text-xs opacity-50">{page.uri}</p>
+                    {project?.type != "web_app" && <p className="text-xs opacity-50">{page.uri}</p>}
                   </div>
                   <div className="flex gap-2">
                     <button

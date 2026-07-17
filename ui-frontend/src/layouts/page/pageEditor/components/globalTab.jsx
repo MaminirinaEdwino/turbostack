@@ -95,7 +95,7 @@ export default function GlobalTab({
                                                         }}
                                                     />
                                                     <select
-                                                        className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                        className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none"
                                                         value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
                                                         onChange={(e) => {
                                                             const newUnit = e.target.value;

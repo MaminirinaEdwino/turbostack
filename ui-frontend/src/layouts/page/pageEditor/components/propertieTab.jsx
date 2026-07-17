@@ -98,14 +98,14 @@ export default function PropertiesTab({
                                                 let currentValue = currentStyles[ctrl.prop] || "";
 
                                                 return (
-                                                    <div key={ctrl.prop} className="flex flex-col gap-1">
+                                                    <div key={ctrl.prop} className="flex flex-col gap-1 justify-between my-1">
                                                         <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
                                                         {ctrl.type === "number" ? (
                                                             <div className="flex gap-1">
                                                                 {/* Input numérique pour la valeur */}
                                                                 <input
                                                                     type="number"
-                                                                    className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                    className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0"
                                                                     placeholder="e.g. 10"
                                                                     value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
                                                                     disabled={currentValue === "auto"}
@@ -118,7 +118,7 @@ export default function PropertiesTab({
                                                                 />
                                                                 {/* Sélecteur d'unité */}
                                                                 {ctrl.unite && <select
-                                                                    className="bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                    className="bg-white dark:bg-gray-900 px-2 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-10 outline-0"
                                                                     value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
                                                                     onChange={(e) => {
                                                                         const newUnit = e.target.value;
@@ -137,7 +137,7 @@ export default function PropertiesTab({
                                                             </div>
                                                         ) : ctrl.type === "select" ? (
                                                             <select
-                                                                className="w-full bg-white dark:bg-gray-900 px-2 py-1.5 rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all"
+                                                                className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  text-xs outline-none focus:ring-0 ring-couleur1/20 transition-all border-b  border-couleur2  appearance-none"
                                                                 value={currentValue}
                                                                 onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
                                                             >
@@ -147,7 +147,7 @@ export default function PropertiesTab({
                                                         ) : (
                                                             <input
                                                                 type={ctrl.type}
-                                                                className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'} rounded-lg border border-couleur1/10 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all`}
+                                                                className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none`}
                                                                 placeholder={ctrl.placeholder}
                                                                 // For color inputs, ensure value is always a string, even if empty
                                                                 value={currentValue}

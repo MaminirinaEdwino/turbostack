@@ -16,7 +16,8 @@ export default function EditEndpoint({
     params: [],
     manual_fields: [],
     return_content: [],
-    return_content_type: "object"
+    return_content_type: "object",
+    return_page : null
   });
   const methodWithBody = [
     "PUT",
@@ -524,6 +525,12 @@ export default function EditEndpoint({
                 setEndpoint({ ...endpoint, return_content_type: "object" })
               }}>
                 OBJECT
+              </button>
+              <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
+                e.preventDefault()
+                setEndpoint({ ...endpoint, return_content_type: "page" })
+              }}>
+                PAGE
               </button>
             </div>
           </div>

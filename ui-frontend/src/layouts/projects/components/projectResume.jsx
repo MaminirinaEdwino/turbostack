@@ -1,4 +1,4 @@
-import { Database, Globe, Settings, WebhookIcon } from "lucide-react";
+import { Database, Globe, Settings } from "lucide-react";
 
 export default function ProjectResume({ nom, type, description }) {
     return <div
@@ -9,6 +9,5 @@ export default function ProjectResume({ nom, type, description }) {
             {type == "static" && <Globe></Globe>}
             {type == "bdd" && <Database></Database>}
         </p>}
-
     </div>
 }

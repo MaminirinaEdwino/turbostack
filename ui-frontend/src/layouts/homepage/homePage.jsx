@@ -32,7 +32,7 @@ const HomePage = () => {
                 try {
                     const projects = await GoApp.fetchProjects();
                     if (projects) {
-                        setRecentProjects(projects.slice(0,5));
+                        setRecentProjects(projects.slice(0, 5));
                     }
                 } catch (err) {
                     console.error("Error loading projects list:", err);
@@ -49,37 +49,38 @@ const HomePage = () => {
     return (
         <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300" >
             <SideMenu />
-            <main className="flex-1 p-8 overflow-y-auto"> 
+            <main className="flex-1 p-8 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <LayoutHeader layoutName={actualProject ? `Project Dashboard` : "Global Dashboard"}/>
+                    <LayoutHeader layoutName={actualProject ? `Project Dashboard` : "Global Dashboard"} />
                     {actualProject && (
-                        <button 
-                            onClick={handleCloseProject} 
-                            title="Close project view" 
+                        <button
+                            onClick={handleCloseProject}
+                            title="Close project view"
                             className="p-2 hover:bg-couleur1 hover:text-white rounded transition-colors text-couleur1 border border-couleur1 dark:border-white/20 dark:text-gray-300"
                         >
-                            <X size={20} /> 
+                            <X size={20} />
                         </button>
                     )}
                 </div>
-                
+
                 {actualProject ? (
                     loading ? (
                         <div className="text-couleur1 dark:text-gray-400 py-10 text-center animate-pulse font-semibold">Fetching project details...</div>
                     ) : (
                         projectDetails && (
-                            <div className="space-y-8">
+                            <div className="space-y-8 flex flex-col">
+                                {projectDetails.type == "web_app" && <div className="flex items-center gap-3 mb-4 text-couleur1 dark:text-gray-200">
+                                    <div className="p-2 bg-couleur1 text-white rounded-lg shadow-sm">
+                                        <Layout size={20} />
+                                    </div>
+                                    <h2 className="text-2xl font-bold">{projectDetails.nom} Workspace</h2>
+                                </div>}
                                 <ProjectPageView project={projectDetails} />
-                                
+
                                 {/* Web App Overview Section */}
-                                {projectDetails.type === "webapp" && (
+                                {projectDetails.type === "web_app" && (
                                     <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <div className="flex items-center gap-3 mb-4 text-couleur1 dark:text-gray-200">
-                                            <div className="p-2 bg-couleur1 text-white rounded-lg shadow-sm">
-                                                <Layout size={20} />
-                                            </div>
-                                            <h2 className="text-2xl font-bold">Web Application Workspace</h2>
-                                        </div>
+
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
                                                 <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
@@ -166,7 +167,7 @@ const HomePage = () => {
                             {recentProjects.length > 0 ? (
                                 recentProjects.map((projectName, index) => (
                                     <div key={index} onClick={() => dispatch(setActualProject(projectName.nom))} className="cursor-pointer">
-                                        <ProjectCard name={projectName.nom} type={projectName.type} updateAt={projectName.update_at}/>
+                                        <ProjectCard name={projectName.nom} type={projectName.type} updateAt={projectName.update_at} />
                                     </div>
                                 ))
                             ) : (

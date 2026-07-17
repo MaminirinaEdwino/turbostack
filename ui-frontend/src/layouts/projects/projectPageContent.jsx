@@ -11,7 +11,7 @@ export default function ProjectPageView({ project }) {
   const getStats = () => {
     let stats = [];
 
-    if (project.type === "bdd") {
+    if (project.type === "bdd" || project.type === "web_app") {
       stats.push({
         title: "DB Models",
         total: project.bdd?.models?.length || 0,
@@ -20,7 +20,7 @@ export default function ProjectPageView({ project }) {
       });
     }
 
-    if (project.type === "api") {
+    if (project.type === "api"|| project.type === "web_app") {
       stats.push({
         title: "Endpoints",
         total: project.rest_api.endpoints?.length || 0,

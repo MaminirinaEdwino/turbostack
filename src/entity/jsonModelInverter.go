@@ -48,6 +48,7 @@ func (ej *EndpointJSON) ToModel() Endpoint {
 		logic:             ej.Logic,
 		returnContent:     returnModel,
 		returnContentType: ej.ReturnContentType,
+		returnPage:        ej.ReturnPage.ToModel(),
 	}
 }
 

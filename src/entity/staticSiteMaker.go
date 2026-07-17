@@ -68,6 +68,7 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 				continue
 			}
 		}
+		
 		desktop := cssVal["desktop"]
 		tablet := cssVal["tablet"]
 		mobile := cssVal["mobile"]

@@ -36,6 +36,7 @@ type EndpointJSON struct {
 	Logic             map[string]string `json:"logic"`
 	ReturnContent     []ModelJSON       `json:"return_content"`
 	ReturnContentType string            `json:"return_content_type"`
+	ReturnPage        PageJSON          `json:"return_page"`
 }
 
 type ControllerJSON struct {

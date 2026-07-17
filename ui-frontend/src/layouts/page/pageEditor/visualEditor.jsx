@@ -34,6 +34,7 @@ export default function VisualEditor({
     const [blocks, setBlocks] = useState([]);
     const [draggedId, setDraggedId] = useState(null);
     const [selectedGlobalTag, setSelectedGlobalTag] = useState("body");
+    const [selectedPseudoTag, setSelectedpseudoTag] = useState("");
     const [copiedStyle, setCopiedStyle] = useState(null);
 
     const handleCopyStyle = (styles) => {
@@ -354,6 +355,29 @@ export default function VisualEditor({
 
         onPageStylesChange(JSON.stringify(allStyles));
     };
+    const handlePseudoClassStyleChange = (prop, value) => {
+        let allStyles = { desktop: {}, tablet: {}, mobile: {} };
+        try {
+            if (pageStyles && pageStyles.trim().startsWith('{')) {
+                allStyles = { ...allStyles, ...JSON.parse(pageStyles) };
+            } else {
+                // Migration ancien format
+                allStyles.desktop[selectedGlobalTag] = pageStyles;
+            }
+        } catch (e) {
+            console.log(e)
+            allStyles.desktop[selectedGlobalTag] = pageStyles;
+        }
+
+        const vp = activeViewport || "desktop";
+        if (!allStyles[vp]) allStyles[vp] = {};
+
+        const currentTagStyles = parseStyles(allStyles[vp][selectedPseudoTag] || "");
+        const updatedTagStyles = { ...currentTagStyles, [prop]: value };
+        allStyles[vp][selectedPseudoTag] = stringifyStyles(updatedTagStyles);
+
+        onPageStylesChange(JSON.stringify(allStyles));
+    };
 
     const renderBlocksList = (blocksList, level = 0) => {
         return blocksList.map((block, index) => (
@@ -385,13 +409,13 @@ export default function VisualEditor({
 
     return (
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
-            <>{activeTab}</>
+            {/* <>{activeTab}</> */}
             {allowedTabs.length > 1 && (
                 <div className="flex bg-white/50 dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
                     {allowedTabs.includes("blocks") && <ChangeTabBtn icon={<Layers size={14} />} value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'} />}
                     {allowedTabs.includes("global") && <ChangeTabBtn icon={<Globe size={14} />} value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"} />}
                     {allowedTabs.includes("properties") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"} />}
-                    {allowedTabs.includes("pseudo classes") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"pseudo classes"} setter={setActiveTab} activeTab={activeTab} newVal={"pseudo classes"} />}
+                    {allowedTabs.includes("pseudo classes") && <ChangeTabBtn icon={<Settings2 size={14} />} value={""} setter={setActiveTab} activeTab={activeTab} newVal={"pseudo classes"} />}
                 </div>
             )}
 
@@ -422,13 +446,12 @@ export default function VisualEditor({
                 <>
                     <PseudoClassTab
                         currentBlock={currentActiveBlock}
-                        handlePageStyleChange={handlePageStyleChange}
-                        setSelectedGlobalTag={setSelectedGlobalTag}
+                        handlePageStyleChange={handlePseudoClassStyleChange}
+                        setSelectedGlobalTag={setSelectedpseudoTag}
                         pageStyles={pageStyles}
-                        selectedGlobalTag={selectedGlobalTag}
+                        selectedGlobalTag={selectedPseudoTag}
                         activeViewport={activeViewport}
                     />
-                    teste
                 </> : null}
         </div >
     );

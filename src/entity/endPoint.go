@@ -11,6 +11,7 @@ type Endpoint struct {
 	logic             map[string]string
 	returnContentType string
 	returnPage        Page
+	redirectUri       string
 }
 
 func (e *Endpoint) ToJSON() EndpointJSON {
@@ -33,6 +34,7 @@ func (e *Endpoint) ToJSON() EndpointJSON {
 		ReturnContent:     retunModel,
 		ReturnContentType: e.returnContentType,
 		ReturnPage:        e.returnPage.ToJSON(),
+		RedirectUri:       e.redirectUri,
 	}
 }
 

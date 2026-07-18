@@ -12,6 +12,7 @@ export default function EndpointNode({ data }) {
     'POST',
     'PATCH'
   ]
+  
   return (
     <div className="border border-couleur1 dark:border-white/10 rounded-lg overflow-hidden bg-white dark:bg-gray-800 min-w-60 shadow-sm dark:border-none">
       <div className="border-b border-couleur1 dark:border-white/10 p-2 bg-couleur3 dark:bg-gray-900 flex justify-between items-center gap-4">
@@ -103,6 +104,11 @@ export default function EndpointNode({ data }) {
           <Globe2 size={10}></Globe2>
           <p>{data.return_page.nom}</p>
         </div>
+      </div>}
+      {data.method == "POST" && <div className="p-3 space-y-1 box-border text-[10px]">
+        <label className="dark:text-white/50">
+          Redirect to {data.redirect_uri}
+        </label>
       </div>}
     </div>
   );

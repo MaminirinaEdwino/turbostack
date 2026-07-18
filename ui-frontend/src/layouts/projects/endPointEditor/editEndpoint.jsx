@@ -17,7 +17,8 @@ export default function EditEndpoint({
     manual_fields: [],
     return_content: [],
     return_content_type: "object",
-    return_page: null
+    return_page: null,
+    redirect_uri: null
   });
   const methodWithBody = [
     "PUT",
@@ -619,7 +620,22 @@ export default function EditEndpoint({
           </div>}
         </div>
       )}
-
+      {endpoint.method == "POST" && <div >
+        <label className="text-xs font-bold opacity-50 uppercase">
+          Redirect to
+        </label>
+        <div className="text-xs border w-fit rounded-sm border-couleur1">
+          {(project && project.rest_api.endpoints.filter(ep => ep.method === "GET")).map(ep => <button
+            onClick={(e) => {
+              e.preventDefault()
+              setEndpoint({ ...endpoint, redirect_uri: ep.uri })
+            }}
+            className={`p-2 ${endpoint.redirect_uri == ep.uri ? "bg-couleur1 text-white" : "text-couleur1"}`}
+          >
+            {ep.nom} {ep.uri}
+          </button>)}
+        </div>
+      </div>}
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
         <button
           type="button"

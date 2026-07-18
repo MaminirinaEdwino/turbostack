@@ -37,6 +37,7 @@ type EndpointJSON struct {
 	ReturnContent     []ModelJSON       `json:"return_content"`
 	ReturnContentType string            `json:"return_content_type"`
 	ReturnPage        PageJSON          `json:"return_page"`
+	RedirectUri       string            `json:"redirect_uri"`
 }
 
 type ControllerJSON struct {

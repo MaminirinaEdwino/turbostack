@@ -252,30 +252,48 @@ export default function VisualEditor({
                 type.models.map(mdl => {
                     mdl.champs.map(field => {
                         childBlock.push({
-                            id,
+                            id: Math.random().toString(36).substr(2, 9),
                             tag: "div",
                             href: type.defaultHref || "",
                             className: "",
                             styles: "",
                             children: [
                                 {
-                                    id,
+                                    id: Math.random().toString(36).substr(2, 9),
                                     tag: "div",
                                     content: field.nom,
                                     className: "",
                                     styles: "",
-                                    children: []
-                                },
-                                {
-                                    id,
-                                    tag: "div",
-                                    content: field.type,
+                                    children: [],
+                                    inputType: (type.inputType || "")
+                                }, {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    tag: field.type == "int" || field.type == "string" && "input",
+                                    // content: field.nom,
+                                    placeholder: field.nom,
                                     className: "",
                                     styles: "",
-                                    children: []
+                                    // children: [],
+                                    inputType: (field.type =="int" ? "number": field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text")
                                 }
                             ]
                         })
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        content: "send",
+                        className: "",
+                        styles: "",
+                        inputType: "submit"
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        content: "clear",
+                        className: "",
+                        styles: "",
+                        inputType: "reset"
                     })
                 })
                 newBlock = {

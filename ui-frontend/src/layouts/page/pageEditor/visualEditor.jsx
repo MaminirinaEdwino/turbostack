@@ -295,7 +295,8 @@ export default function VisualEditor({
                     href: type.defaultHref || "",
                     className: "",
                     styles: "",
-                    children: []
+                    children: [],
+                    inputType: (type.inputType || "")
                 };
             }
         }

@@ -224,6 +224,8 @@ export default function PageEditor({ projectName }) {
             return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
           if (b.tag === "a")
             return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
+          if (b.tag == "input")
+            return `<input type="${b.inputType}" placeholder="input text" />`
           return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
         })
         .join("\n");

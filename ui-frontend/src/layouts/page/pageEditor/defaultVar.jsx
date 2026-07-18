@@ -1,4 +1,4 @@
-import { Box, Form, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon } from "lucide-react";
+import { Box, Form, FormInput, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon } from "lucide-react";
 import { BsTextarea } from "react-icons/bs";
 
 export const STYLE_CONTROLS = [
@@ -95,6 +95,10 @@ export const BLOCK_TYPES = [
     { label: "Label", tag: "label", icon: <Text size={14} />, defaultContent: "label", group: "text", attr: [{ name: "for", type: "text", defaultContent: "text" }] },
     { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
     { label: "Form", tag: "form", icon: <Form size={14} />, defaultContent: "Post form", group: "form" },
+    { label: "Input (text)", tag: "input", icon: <FormInput size={14} />, inputType: "text", group: "form" },
+    { label: "Input (int)", tag: "input", icon: <FormInput size={14} />, inputType: "number", group: "form" },
+    { label: "Input (email)", tag: "input", icon: <FormInput size={14} />, inputType: "email", group: "form" },
+    { label: "Input (password)", tag: "input", icon: <FormInput size={14} />, inputType: "password", group: "form" },
     
 
 ];

@@ -247,15 +247,57 @@ export default function VisualEditor({
                 children: type.content ? JSON.parse(JSON.stringify(type.content)) : []
             };
         } else {
-            newBlock = {
-                id,
-                tag: type.tag,
-                content: type.defaultContent,
-                href: type.defaultHref || "",
-                className: "",
-                styles: "",
-                children: []
-            };
+            if (type.isFormPost) {
+                let childBlock = []
+                type.models.map(mdl => {
+                    mdl.champs.map(field => {
+                        childBlock.push({
+                            id,
+                            tag: "div",
+                            href: type.defaultHref || "",
+                            className: "",
+                            styles: "",
+                            children: [
+                                {
+                                    id,
+                                    tag: "div",
+                                    content: field.nom,
+                                    className: "",
+                                    styles: "",
+                                    children: []
+                                },
+                                {
+                                    id,
+                                    tag: "div",
+                                    content: field.type,
+                                    className: "",
+                                    styles: "",
+                                    children: []
+                                }
+                            ]
+                        })
+                    })
+                })
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    styles: "",
+                    children: childBlock,
+                    method: "post",
+                    action: type.uri
+                }
+            } else {
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    href: type.defaultHref || "",
+                    className: "",
+                    styles: "",
+                    children: []
+                };
+            }
         }
 
         const updated = [...blocks, newBlock];

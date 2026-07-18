@@ -1,4 +1,4 @@
-import { Box, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon } from "lucide-react";
+import { Box, Form, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon } from "lucide-react";
 import { BsTextarea } from "react-icons/bs";
 
 export const STYLE_CONTROLS = [
@@ -94,11 +94,14 @@ export const BLOCK_TYPES = [
     { label: "Button", tag: "button", icon: <Square size={14} />, defaultContent: "Click here", group: "button" },
     { label: "Label", tag: "label", icon: <Text size={14} />, defaultContent: "label", group: "text", attr: [{ name: "for", type: "text", defaultContent: "text" }] },
     { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
+    { label: "Form", tag: "form", icon: <Form size={14} />, defaultContent: "Post form", group: "form" },
+    
 
 ];
 export const GROUP_LIST = ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"]
 
 export const TAG_STYLE_GROUPS = {
+    form: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],
     h1: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],
     h2: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],
     h3: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],

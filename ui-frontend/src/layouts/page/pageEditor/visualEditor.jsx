@@ -268,7 +268,7 @@ export default function VisualEditor({
                                     inputType: (type.inputType || "")
                                 }, {
                                     id: Math.random().toString(36).substr(2, 9),
-                                    tag: field.type == "int" || field.type == "string" && "input",
+                                    tag: (field.type == "int" || field.type == "string") && "input",
                                     // content: field.nom,
                                     placeholder: field.nom,
                                     className: "",

@@ -458,8 +458,8 @@ export default function PageEditor({ projectName }) {
                   <PanelRightOpen size={20} />
                 </button>
               )}
-              <div className=" h-full">
-                <div className="p-4 bg-couleur3/10 dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between ">
+              <div className=" h-[80vh] overflow-scroll fixed left-0 w-screen shadow">
+                <div className="p-4 bg-couleur2/10 backdrop-blur-2xl dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between sticky top-0 z-10">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>
                     <div className="w-3 h-3 rounded-full bg-amber-400/20 border border-amber-400/40"></div>

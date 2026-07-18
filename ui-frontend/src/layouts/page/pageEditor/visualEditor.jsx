@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
     Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
-    MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle
+    MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle,
+    ChevronDown
 } from "lucide-react";
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
 import { parseStyles } from './utilsFunc';
@@ -455,15 +456,18 @@ export default function VisualEditor({
                     onClick={() => selectBlock(block.id)}
                 >
                     <div className="flex justify-between items-center">
-
+                        {/* <ChevronDown style={{color: "#1a535c"}} onClick={()=>alert()}/> */}
                         <Block index={index} getIconForTag={getIconForTag} block={block} />
                         <div className="flex items-center gap-1">
-                            <AddChild block={block} addChild={addChild} />
+
+                            {block.tag != "input" && <AddChild block={block} addChild={addChild} />}
                             <DeleteBlock block={block} removeBlock={removeBlock} />
                         </div>
                     </div>
                 </div>
-                {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
+                <div>
+                    {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
+                </div>
             </React.Fragment>
         ));
     };

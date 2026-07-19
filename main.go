@@ -2,10 +2,11 @@ package main
 
 import (
 	"embed"
-	"fmt"
+	// "fmt"
 	"log"
 	"os"
 
+	"github.com/MaminirinaEdwino/turbostack/src/activation"
 	"github.com/MaminirinaEdwino/turbostack/src/api"
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
@@ -24,7 +25,8 @@ func main() {
 	if err := projectMgr.LoadProjects(); err != nil {
 		log.Printf("Erreur lors du chargement des projets : %v", err)
 	}
-	fmt.Println(projectMgr.Projects)
+	activation.CheckActivationToken()
+	// fmt.Println(projectMgr.Projects)
 	mgr := api.NewManager()
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})

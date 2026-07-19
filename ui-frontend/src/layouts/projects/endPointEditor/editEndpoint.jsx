@@ -256,8 +256,10 @@ export default function EditEndpoint({
           >
             <option value="GET">GET</option>
             <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="DELETE">DELETE</option>
+            {project?.type != "web_app" && <>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+            </>}
           </select>
         </div>
         <div className="flex flex-col gap-1">
@@ -620,7 +622,7 @@ export default function EditEndpoint({
           </div>}
         </div>
       )}
-      {endpoint.method == "POST" && <div >
+      {project.type == "web_app" && endpoint.method == "POST" && <div >
         <label className="text-xs font-bold opacity-50 uppercase">
           Redirect to
         </label>

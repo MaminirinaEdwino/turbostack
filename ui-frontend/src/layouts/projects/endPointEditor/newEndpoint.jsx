@@ -194,8 +194,10 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                     <select className="border border-couleur1 p-2 rounded-lg bg-white" value={endpoint.method} onChange={(e) => setEndpoint({ ...endpoint, method: e.target.value })}>
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
-                        <option value="PUT">PUT</option>
-                        <option value="DELETE">DELETE</option>
+                        {project?.type != "web_app" && <>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </>}
                     </select>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -457,7 +459,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                     }
                 }} className={`${endpoint.return_page == p && "border-b border-couleur2"}`}>{p.nom}</button>)}
             </div>}
-            {endpoint.method == "POST" && <div >
+            {project.type == "web_app" && endpoint.method == "POST" && <div >
                 <label className="text-xs font-bold opacity-50 uppercase">
                     Redirect to
                 </label>

@@ -52,11 +52,11 @@ export default function SideMenu() {
       icon: <LayoutDashboard size={18} />,
       label: "Page Editor",
     },
-    {
-      name: "controller_editor",
-      icon: <Cpu size={18} />,
-      label: "Controller Editor",
-    },
+    // {
+    //   name: "controller_editor",
+    //   icon: <Cpu size={18} />,
+    //   label: "Controller Editor",
+    // },
   ])
   // const [project, setProject] = useState(null)
   const [projectMenu, setProjectMenu] = useState([

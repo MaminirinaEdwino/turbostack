@@ -2,7 +2,17 @@ import MainLayout from "../layouts/mainLayout";
 import SubscriptionCard from "../components/subscriptionCard";
 import LayoutHeader from "../components/layoutHeader";
 import illustration from "../assets/subscriptionIllustration.svg"
+import { useEffect, useState } from "react";
+import { GoApp } from "../services/bridge";
 export default function Subscription() {
+    const [subscription, setSubscription] = useState("free")
+    useEffect(()=>{
+        const checkToken = async ()=>{
+            const res = await GoApp.checkToken()
+            setSubscription(res)
+        }
+        checkToken()
+    }, [])
     const subscriptionList = [
         {
             name: "Free",
@@ -21,7 +31,7 @@ export default function Subscription() {
         <main className="flex-1 p-8 overflow-y-auto">
             <LayoutHeader layoutName={"Subscription"}></LayoutHeader>
             <div className="m-2 ">
-                Actual subscription : Free
+                Actual subscription : {new Date(subscription.exp).getMonth()} 
             </div>
             <div className="flex flex-wrap justify-center">
                 {subscriptionList.map((item, id) => <SubscriptionCard key={item.name + "" + id} name={item.name} illustration={item.illustration} text={item.text} price={item.price} />)}

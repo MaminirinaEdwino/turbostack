@@ -2,9 +2,11 @@ package activation
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	turbojwt "github.com/MaminirinaEdwino/turbostack/src/TurboJwt"
 	"github.com/MaminirinaEdwino/turbostack/src/utils"
-	"os"
 )
 
 func CheckActivationToken() map[string]interface{} {
@@ -25,6 +27,8 @@ func CheckActivationToken() map[string]interface{} {
 	}
 	res, _ := turbojwt.Verify("secret", string(tokenFile), 0)
 	fmt.Println(res)
+	fmt.Println(time.Now().Format("1-06"))
+	res["exp"] = time.Now().Unix()
 	return res
 }
 

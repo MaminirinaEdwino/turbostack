@@ -32,5 +32,11 @@ export const GoApp = {
     },
     getFileContent : async(name, path)=>{
         return await window.getFileContent(name, path)
+    },
+    saveToken: async (token)=>{
+        return await window.saveToken(token)
+    },
+    checkToken: async ()=>{
+        return await window.checkToken()
     }
 }

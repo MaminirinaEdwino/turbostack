@@ -3,6 +3,7 @@ package activation
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	turbojwt "github.com/MaminirinaEdwino/turbostack/src/TurboJwt"
@@ -25,11 +26,33 @@ func CheckActivationToken() map[string]interface{} {
 		}, 10, 0)
 		file.Write([]byte(token))
 	}
-	res, _ := turbojwt.Verify("secret", string(tokenFile), 0)
-	fmt.Println(res)
-	fmt.Println(time.Now().Format("1-06"))
-	res["exp"] = time.Now().Unix()
-	return res
+	res, tokenErr := turbojwt.Verify("secret", string(tokenFile), 0)
+	// nt, _ := turbojwt.Encode("secret", map[string]interface{}{"subscription": "pro"}, 0, 0)
+	// SaveTokenToFile(nt)
+	fval, _ := strconv.ParseFloat(fmt.Sprint(res["exp"]), 64)
+	intVal := int64(fval)
+	expTime := time.Unix(intVal, 0)
+	iatfval, _ := strconv.ParseFloat(fmt.Sprint(res["iat"]), 64)
+	iatintVal := int64(iatfval)
+	iatTime := time.Unix(iatintVal, 0)
+	dateLayout := "Monday 01 January 2006 at 15:04:05"
+
+	fmt.Println(iatTime.Format(dateLayout))
+	if tokenErr != nil {
+		return map[string]interface{}{
+			"subscription": res["subscription"],
+			"exp":          expTime.Format(dateLayout),
+			"iat":          iatTime.Format(dateLayout),
+			"message":      "old subscription has expired",
+			"expired":      "true",
+		}
+	}
+	return map[string]interface{}{
+		"subscription": res["subscription"],
+		"exp":          expTime.Format(dateLayout),
+		"iat":          iatTime.Format(dateLayout),
+		"expired":      "false",
+	}
 }
 
 func SaveTokenToFile(token string) {

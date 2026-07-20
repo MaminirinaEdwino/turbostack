@@ -17,11 +17,7 @@ func (s *UserService) SaveToken(token string) string {
 }
 
 func (s *UserService) CheckToken() map[string]interface{} {
-	act := activation.CheckActivationToken()
-	return map[string]interface{}{
-		"subscription": act["subscription"],
-		"exp" : act["exp"],
-	}
+	return activation.CheckActivationToken()
 }
 
 // On implémente l'interface Binder

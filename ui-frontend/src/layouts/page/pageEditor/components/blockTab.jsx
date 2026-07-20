@@ -59,9 +59,11 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
             <div>
                 <h3 className='text-xs font-black uppercase text-couleur1/40 mb-3'>Forms</h3>
                 <div className='grid grid-cols-2'>
-                    {typeof (project) != "string" && (project.rest_api.endpoints.filter(ep => ep.method === "POST")).map(ep => <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1'
+                    {typeof (project) != "string" && project.rest_api.endpoints != null && <>
+                        {((project.rest_api.endpoints).filter(ep => ep.method === "POST")).map(ep => <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1'
                         onClick={ ()=>addBlock({isFormPost: true, tag: "form", uri: ep.uri, defaultContent: ep.nom+" post form", models: ep.model})}
                     > <Form size={14}></Form> {ep.nom}</button>)}
+                    </>}
                 </div>
             </div>
 

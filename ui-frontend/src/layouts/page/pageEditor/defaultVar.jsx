@@ -126,6 +126,7 @@ export const TAG_STYLE_GROUPS = {
     generic: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],
     "textarea:hover": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],
     "div:hover": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],
+    "input": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition"],
 };
 // export const TAG_STYLE_GROUPS = {
 //     h1: ["color", "font-size", "text-align", "font-weight", "margin"],

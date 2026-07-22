@@ -41,16 +41,16 @@ func CheckActivationToken() map[string]interface{} {
 	if tokenErr != nil {
 		return map[string]interface{}{
 			"subscription": res["subscription"],
-			"exp":          expTime.Format(dateLayout),
-			"iat":          iatTime.Format(dateLayout),
+			"exp":          expTime.Format(time.UnixDate),
+			"iat":          iatTime.Format(time.UnixDate),
 			"message":      "old subscription has expired",
 			"expired":      "true",
 		}
 	}
 	return map[string]interface{}{
 		"subscription": res["subscription"],
-		"exp":          expTime.Format(dateLayout),
-		"iat":          iatTime.Format(dateLayout),
+		"exp":          expTime.Format(time.UnixDate),
+		"iat":          iatTime.Format(time.UnixDate),
 		"expired":      "false",
 	}
 }

@@ -56,6 +56,7 @@ export const STYLE_CONTROLS = [
     { group: "sizing", prop: "overflow-x", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
     { group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
     { group: "sizing", prop: "overflow-style", label: "overflow-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"] },
+    { group: "sizing", prop: "box-sizing", label: "box-sizing", type: "select", options: ["border-box", "content-box", "inherit", "initial"] },
     { group: "outline", prop: "outline-color", label: "outline-color", type: "color" },
     { group: "outline", prop: "outline-offset", label: "outline-offset", type: "number", unite: ["px", "em", "rem", "cm"] },
     { group: "outline", prop: "outline-width", label: "outline-width", type: "number", unite: ["px", "em", "rem", "cm"] },

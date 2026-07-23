@@ -8,6 +8,18 @@ export default function PropertiesTab({
     activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle
 }) {
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
+    const [boxShadow, setBoxShadow] = useState({
+        type: "inset",
+        left: 0,
+        leftUnite: "px",
+        right: 0,
+        rightUnite: "px",
+        top: 0,
+        topUnite: "px",
+        bottom: 0,
+        bottomUnite: "px",
+        color: ""
+    })
 
     // Extraction intelligente des styles selon le viewport
     const getStylesForViewport = () => {
@@ -131,7 +143,7 @@ export default function PropertiesTab({
                                                                     }}
                                                                 >
                                                                     {ctrl.unite && <>
-                                                                        {ctrl.unite.map(unite=><option value={unite}>{unite}</option>)}
+                                                                        {ctrl.unite.map(unite => <option value={unite}>{unite}</option>)}
                                                                     </>}
                                                                 </select>}
                                                             </div>
@@ -144,10 +156,47 @@ export default function PropertiesTab({
                                                                 <option value="">--</option>
                                                                 {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                             </select>
-                                                        ) : (
+                                                        ) : ctrl.type === "multiple-value" ? <>
+                                                            {ctrl.label === "box-shadow" && <>
+                                                                {ctrl.value.map((val) => <>
+                                                                    {val.type === "select" && <select onChange={(e) => {
+                                                                        setBoxShadow({ ...boxShadow, type: e.target.value })
+                                                                        handleStyleChange(ctrl.prop, `${boxShadow.type} ${boxShadow.left}${boxShadow.leftUnite} ${boxShadow.top}${boxShadow.topUnite} ${boxShadow.right}${boxShadow.rightUnite} ${boxShadow.bottom}${boxShadow.bottomUnite} ${boxShadow.color}`)
+                                                                    }}>
+                                                                        {val.options.map((opt) => <option value={opt}>{opt}</option>)}
+                                                                    </select>}
+                                                                    {val.type === "number" && <>
+                                                                        <input type="number" value={boxShadow[val.label]} onChange={(e) => {
+                                                                            setBoxShadow({ ...boxShadow, [val.label]: e.target.value })
+                                                                            handleStyleChange(ctrl.prop, `${boxShadow.type} ${boxShadow.left}${boxShadow.leftUnite} ${boxShadow.top}${boxShadow.topUnite} ${boxShadow.right}${boxShadow.rightUnite} ${boxShadow.bottom}${boxShadow.bottomUnite} ${boxShadow.color}`)
+                                                                        }} />
+                                                                        {val.unite && <select
+                                                                            className="bg-white dark:bg-gray-900 px-2 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-10 outline-0"
+                                                                            value={boxShadow[val.label + "Unite"]}
+                                                                            onChange={(e) => {
+                                                                                setBoxShadow({ ...boxShadow, [val.label + "Unite"]: e.target.value })
+                                                                                handleStyleChange(ctrl.prop, `${boxShadow.type} ${boxShadow.left}${boxShadow.leftUnite} ${boxShadow.top}${boxShadow.topUnite} ${boxShadow.right}${boxShadow.rightUnite} ${boxShadow.bottom}${boxShadow.bottomUnite} ${boxShadow.color}`)
+                                                                            }}
+                                                                        >
+                                                                            {val.unite && <>
+                                                                                {val.unite.map(unite => <option value={unite}>{unite}</option>)}
+                                                                            </>}
+                                                                        </select>}
+                                                                    </>}
+                                                                    {val.type === "color" && <>
+                                                                        <input type="color" name="" id="" value={boxShadow.color} onChange={(e) => {
+                                                                            setBoxShadow({ ...boxShadow, color: e.target.value })
+                                                                            handleStyleChange(ctrl.prop, `${boxShadow.type} ${boxShadow.left}${boxShadow.leftUnite} ${boxShadow.top}${boxShadow.topUnite} ${boxShadow.right}${boxShadow.rightUnite} ${boxShadow.bottom}${boxShadow.bottomUnite} ${boxShadow.color}`)
+                                                                        }} />
+                                                                    </>}
+                                                                </>)}
+
+                                                            </>}
+                                                        </> : (
                                                             <input
                                                                 type={ctrl.type}
-                                                                className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none`}
+                                                                key={Math.random()}
+                                                                className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
                                                                 placeholder={ctrl.placeholder}
                                                                 // For color inputs, ensure value is always a string, even if empty
                                                                 value={currentValue}

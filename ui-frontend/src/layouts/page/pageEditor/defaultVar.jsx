@@ -74,34 +74,7 @@ export const STYLE_CONTROLS = [
     { group: "transition", prop: "transition-time", label: "transition-time", type: "number", unite: ["s", "ms"] },
     { group: "transition", prop: "transition-delay", label: "transition-delay", type: "number", unite: ["s", "ms"] },
     { group: "transition", prop: "transition-timing-function", label: "transition", type: "select", options: ["ease", "linear", "ease-in", "ease-out", "ease-in-out"] },
-    {
-        group: "box-shadow", prop: "box-shadow", label: "box-shadow", type: "multiple-value", value: [
-            {
-                label: "box-shadow-type",
-                type: "select",
-                options: ["inset", "none"]
-            }, {
-                label: "top",
-                type: "number",
-                unite: ["px", "em", "rem", "cm"]
-            }, {
-                label: "bottom",
-                type: "number",
-                unite: ["px", "em", "rem", "cm"]
-            }, {
-                label: "left",
-                type: "number",
-                unite: ["px", "em", "rem", "cm"]
-            }, {
-                label: "bottom",
-                type: "number",
-                unite: ["px", "em", "rem", "cm"]
-            }, {
-                label: "color",
-                type: "color",
-            }]
-    },
-
+    { group: "box-shadow", prop: "box-shadow", label: "box-shadow", type: "text", placeholder: "inset 0px 0px 0px 0px #ffffff" },
 ];
 
 export const BLOCK_TYPES = [

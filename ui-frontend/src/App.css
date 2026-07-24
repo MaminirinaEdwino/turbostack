@@ -56,3 +56,10 @@
     }
   }
 }
+
+.bodyparamsStyle {
+  @apply p-2 flex gap-2 rounded-sm text-left items-center w-full my-1 dark:bg-gray-900 border dark:border-couleur1 dark:text-couleur2 border-couleur1 text-couleur1;
+}
+.dbModelStyle {
+  @apply px-8 py-2 dark:bg-couleur1 rounded-sm cursor-pointer font-bold dark:border-none border border-couleur1 bg-couleur3 text-couleur1 flex justify-start gap-2 text-left items-center;
+}

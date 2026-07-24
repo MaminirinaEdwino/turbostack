@@ -8,7 +8,7 @@ import {
   Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { LogOut, Plus, Save } from "lucide-react";
+import { Database, LogOut, Plus, Puzzle, Save } from "lucide-react";
 import RootNode from "./visualNode/rootNode";
 import FunctionNode from "./visualNode/functionNode";
 import VarNode from "./visualNode/varNode";
@@ -31,6 +31,7 @@ import ElseIfNode from "./visualNode/elseIfNode";
 import { DifferentNode, EqualNode, InferiorNode, SuperiorNode } from "./visualNode/conditionNode";
 import WhileNode from "./visualNode/whileNode";
 import ForNode from "./visualNode/forNode";
+import { GrReturn } from "react-icons/gr";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -644,98 +645,85 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
       <div className="flex flex-1 overflow-hidden" >
         {/* BARRE LATÉRALE D'INSTRUCTIONS D'API */}
         <div
-          style={{
-            width: "200px",
-            background: "#24283b",
-            padding: "15px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            borderRight: "1px solid #45475a",
-            height: "100%",
-            overflowY: "scroll"
-          }}
+          // style={{
+          //   width: "200px",
+          //   background: "#24283b",
+          //   padding: "15px",
+          //   display: "flex",
+          //   flexDirection: "column",
+          //   gap: "10px",
+          //   borderRight: "1px solid #45475a",
+          //   height: "100%",
+          //   overflowY: "scroll"
+          // }}
+          className="bg-couleur3  dark:bg-gray-900 flex flex-col gap-1 p-1 w-50"
         >
           <h4
-            style={{ color: "#a9b1d6", margin: "0 0 10px 0", fontSize: "14px" }}
+            className="text-couleur1 "
+          // style={{ color: "#a9b1d6", margin: "0 0 10px 0", fontSize: "14px" }}
           >
-            Composants API
+            Blocks
           </h4>
           <button
             onClick={() => addRootBlock()}
-            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+            className="dbModelStyle"
           >
             <Plus size={14} /> RootNode
           </button>
           <button
             onClick={() => addStatusCodeBlock()}
-            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+            className="dbModelStyle"
           >
             <Plus size={14} /> Status Code
           </button>
           <button
             onClick={() => addTryCatchBlock()}
-            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+            className="dbModelStyle"
           >
             <Plus size={14} /> Try Catch Node
           </button>
           <button
             onClick={() => addWhileBlock()}
-            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+            className="dbModelStyle"
           >
             <Plus size={14} /> While Node
           </button>
           <button
             onClick={() => addForBlock()}
-            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+            className="dbModelStyle"
           >
             <Plus size={14} /> For Node
           </button>
 
           <button
             onClick={() => addConditionBlock()}
-            className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1"
+           className="dbModelStyle"
           >
             <Plus size={14} /> Condition Node
           </button>
           <button
             onClick={() => addNewBlock("function")}
-            style={{
-              padding: "8px",
-              background: "#3d59a1",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="dbModelStyle"
           >
-            + Action (Fonction)
+            + Fonction
           </button>
           <button
+            className="dbModelStyle"
             onClick={() => addNewBlock("var")}
-            style={{
-              padding: "8px",
-              background: "#e0af68",
-              color: "#1a1b26",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
           >
-            + Variable locale
+            + Var locale
           </button>
-          <button className="p-2 border border-couleur2 bg-couleur1 rounded-md text-couleur2 flex items-center justify-center gap-1" onClick={() => addResponseBlock()}>Response</button>
+          <button className="dbModelStyle" onClick={() => addResponseBlock()}> <GrReturn size={14}/> Response</button>
           {
             model.map((mdl) => (
               <>
                 <button
-                  className="px-8 py-2 bg-couleur1 rounded-sm cursor-pointer font-bold border-none"
+                  className="dbModelStyle"
                   onClick={() => {
                     addModelBlock(mdl.nom, mdl);
                   }}
                 >
-                  {mdl.nom} model
+                  <Database size={14} /> {mdl.nom} Model
                 </button>
               </>
             ))
@@ -744,9 +732,9 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             endPointModel.map((mdl) => <div className="p-2 flex flex-col items-start">
               <div className="border-b">{mdl.nom} body params</div>
               {mdl.champs && mdl.champs.map((field) => <button
-                className="p-2 rounded-sm text-center w-full my-1 bg-gray-900 border border-couleur1 text-couleur2"
+                className="bodyparamsStyle"
                 onClick={() => addBodyParamsBlock({ field: field })}>
-                {field.nom}
+                <Puzzle size={14} /> {field.nom}
               </button>)}
             </div>)
           }
@@ -754,7 +742,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             <div className="border-b mb-2">Request Params</div>
             <div>
               {
-                typeof (project) == "object" && project != null && endpoint != undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="p-2 w-full text-center border border-couleur2 bg-gray-900 rounded-sm text-couleur2" onClick={() => addRequestParamsBlock(`${p}`)}>
+                typeof (project) == "object" && project != null && endpoint != undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="bodyparamsStyle" onClick={() => addRequestParamsBlock(`${p}`)}>
                   :{p}
                 </button>)
               }
@@ -763,7 +751,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
         </div>
 
         {/* CANVAS DE VISUAL SCRIPTING */}
-        <div style={{ flex: 1, position: "relative", background: "#1a1b26" }}>
+        <div className="bg-couleur3" style={{ flex: 1, position: "relative" }}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -775,7 +763,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             fitView
             colorMode={colorMode}
           >
-            <Background color="#565f89" gap={16} variant="lines" />
+            <Background gap={16} variant="lines" />
             <Controls />
           </ReactFlow>
         </div>

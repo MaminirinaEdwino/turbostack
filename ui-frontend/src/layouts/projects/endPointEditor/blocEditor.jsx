@@ -125,48 +125,48 @@ function flattenLogicTree(
 // ==========================================
 // 2. TRADUCTION : De la Liste Plate -> Arbre Imbriqué (Multi-enfants)
 // ==========================================
-function rebuildLogicTree(nodes, edges) {
-  const targetIds = new Set(edges.map((e) => e.target));
-  const rootNode = nodes.find((n) => !targetIds.has(n.id));
+// function rebuildLogicTree(nodes, edges) {
+//   const targetIds = new Set(edges.map((e) => e.target));
+//   const rootNode = nodes.find((n) => !targetIds.has(n.id));
 
-  if (!rootNode) return {};
+//   if (!rootNode) return {};
 
-  function buildNode(currentNode) {
-    const isFunction = currentNode.type === "functionNode";
+//   function buildNode(currentNode) {
+//     const isFunction = currentNode.type === "functionNode";
 
-    if (isFunction) {
-      // Trouver TOUS les liens sortants depuis ce nœud vers des enfants
-      const edgesToChildren = edges.filter((e) => e.source === currentNode.id);
+//     if (isFunction) {
+//       // Trouver TOUS les liens sortants depuis ce nœud vers des enfants
+//       const edgesToChildren = edges.filter((e) => e.source === currentNode.id);
 
-      const childrenNodes = edgesToChildren
-        .map((edge) => nodes.find((n) => n.id === edge.target))
-        .filter(Boolean);
+//       const childrenNodes = edgesToChildren
+//         .map((edge) => nodes.find((n) => n.id === edge.target))
+//         .filter(Boolean);
 
-      // Nettoyage des callbacks UI avant de générer le JSON
-      const { onNodeDataChange, onDeleteNode, children, ...pureData } =
-        currentNode.data;
+//       // Nettoyage des callbacks UI avant de générer le JSON
+//       const { onNodeDataChange, onDeleteNode, children, ...pureData } =
+//         currentNode.data;
 
-      return {
-        function: {
-          ...pureData,
-          // Reconstitution récursive du tableau d'enfants
-          children: childrenNodes.map((childNode) => buildNode(childNode)),
-        },
-      };
-    } else {
-      const { onNodeDataChange, onDeleteNode, ...pureData } = currentNode.data;
-      return {
-        var: {
-          name: pureData.name || "",
-          type: pureData.type || "string",
-          "default value": pureData["default value"] || "",
-        },
-      };
-    }
-  }
+//       return {
+//         function: {
+//           ...pureData,
+//           // Reconstitution récursive du tableau d'enfants
+//           children: childrenNodes.map((childNode) => buildNode(childNode)),
+//         },
+//       };
+//     } else {
+//       const { onNodeDataChange, onDeleteNode, ...pureData } = currentNode.data;
+//       return {
+//         var: {
+//           name: pureData.name || "",
+//           type: pureData.type || "string",
+//           "default value": pureData["default value"] || "",
+//         },
+//       };
+//     }
+//   }
 
-  return buildNode(rootNode);
-}
+//   return buildNode(rootNode);
+// }
 
 // ==========================================
 // COMPOSANT LOGIQUE DE TURBOSTACK
@@ -285,12 +285,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
         if (otherData.sourceHandle) {
           setEdges((currentEdges) => [
             ...currentEdges,
-            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle, style: {stroke: "red"} },
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle, style: { stroke: "red" } },
           ]);
         } else {
           setEdges((currentEdges) => [
             ...currentEdges,
-            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, style: {stroke: "red"} },
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, style: { stroke: "red" } },
           ]);
         }
 
@@ -301,20 +301,38 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
   );
   // Charger la structure de données de l'API
   useEffect(() => {
-    if (endpoint?.logic?.node) {
-      const { initialNodes, initialEdges } = flattenLogicTree(
-        endpoint.logic.node,
-        onNodeDataChange,
-        onDeleteNode,
-        addChildAutomatically,
-      );
-      setNodes(initialNodes);
-      setEdges(initialEdges);
+
+    if (endpoint != null && project.rest_api.endpoints[endpoint].logic != null) {
+      // const { initialNodes, initialEdges } = flattenLogicTree(
+      //   endpoint.logic.node,
+      //   onNodeDataChange,
+      //   onDeleteNode,
+      //   addChildAutomatically,
+      // );
+      // setNodes(initialNodes);
+      // setEdges(initialEdges);
+      let initialNodes = [];
+      // let initialEdges = [];
+      JSON.parse(project.rest_api.endpoints[endpoint].logic.node).map((node) => {
+        initialNodes.push({
+          ...node,
+          data: {
+            ...node.data,
+            onNodeDataChange,
+            onDeleteNode,
+            addChildAutomatically
+          }
+        })
+      })
+      console.log("teste")
+      setNodes(initialNodes)
+      setEdges(JSON.parse(project.rest_api.endpoints[endpoint].logic.edge))
+      console.log(JSON.parse(project.rest_api.endpoints[endpoint].logic.node))
     } else {
       setNodes([]);
       setEdges([]);
     }
-  }, [endpoint, onNodeDataChange, onDeleteNode, addChildAutomatically]);
+  }, [endpoint, onNodeDataChange, onDeleteNode, addChildAutomatically, project]);
 
   // FONCTION : Ajouter un nouveau bloc d'API depuis la barre latérale
   const addNewBlock = (type) => {
@@ -340,6 +358,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
   };
 
   const addModelBlock = (name, modelInfo) => {
+    // eslint-disable-next-line react-hooks/purity
     const uniqueId = `modelNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -376,45 +395,46 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
     setNodes((nds) => [...nds, rootBlock]);
   }
 
-  const addSelectBlock = () => {
-    const uniqueId = `selectNode_${Math.random().toString(36).substr(2, 5)}`;
-    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+  // const addSelectBlock = () => {
+  //   const uniqueId = `selectNode_${Math.random().toString(36).substr(2, 5)}`;
+  //   const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
-    const selectBlock = {
-      id: uniqueId,
-      type: "selectNode",
-      position: basePosition,
-      data: {
-        field: [],
-        onNodeDataChange,
-        onDeleteNode,
-        addChildAutomatically,
-      },
-    };
+  //   const selectBlock = {
+  //     id: uniqueId,
+  //     type: "selectNode",
+  //     position: basePosition,
+  //     data: {
+  //       field: [],
+  //       onNodeDataChange,
+  //       onDeleteNode,
+  //       addChildAutomatically,
+  //     },
+  //   };
 
-    setNodes((nds) => [...nds, selectBlock]);
-  };
+  //   setNodes((nds) => [...nds, selectBlock]);
+  // };
 
-  const addWhereBlock = () => {
-    const uniqueId = `whereNode_${Math.random().toString(36).substr(2, 5)}`;
-    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+  // const addWhereBlock = () => {
+  //   const uniqueId = `whereNode_${Math.random().toString(36).substr(2, 5)}`;
+  //   const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
-    const selectBlock = {
-      id: uniqueId,
-      type: "whereNode",
-      position: basePosition,
-      data: {
-        condition: "",
-        onNodeDataChange,
-        onDeleteNode,
-        addChildAutomatically,
-      },
-    };
+  //   const selectBlock = {
+  //     id: uniqueId,
+  //     type: "whereNode",
+  //     position: basePosition,
+  //     data: {
+  //       condition: "",
+  //       onNodeDataChange,
+  //       onDeleteNode,
+  //       addChildAutomatically,
+  //     },
+  //   };
 
-    setNodes((nds) => [...nds, selectBlock]);
-  };
+  //   setNodes((nds) => [...nds, selectBlock]);
+  // };
 
   const addBodyParamsBlock = (bodyParams) => {
+    // eslint-disable-next-line react-hooks/purity
     const uniqueId = `bodyParams_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -450,6 +470,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
 
     setNodes((nds) => [...nds, block]);
   }
+
   const addResponseBlock = () => {
     const uniqueId = `responseNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
@@ -558,15 +579,16 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
     setNodes((nds) => [...nds, block]);
   }
   const handleSave = useCallback(() => {
-    const rebuiltTree = rebuildLogicTree(nodes, edges);
-
+    // const rebuiltTree = rebuildLogicTree(nodes, edges);
+    console.log("tay")
     setProjet((prev) => {
       if (prev != null) {
         const updatedEndpoints = prev.rest_api.endpoints;
         if (updatedEndpoints[endpoint]) {
           updatedEndpoints[endpoint].logic = {
-            ...updatedEndpoints[endpoint].logic,
-            node: rebuiltTree,
+            // ...updatedEndpoints[endpoint].logic,
+            node: JSON.stringify(nodes),
+            edge: JSON.stringify(edges)
           };
         }
         console.log(updatedEndpoints);
@@ -608,7 +630,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
           onClick={handleSave}
           className="w-fit bg-green-500 p-2 rounded"
         >
-          <Save size={30}/>
+          <Save size={30} />
         </button>
         <button
           className=" p-2  text-center rounded bg-red-500"
@@ -616,7 +638,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             setToggleVisualScriptModal("none");
           }}
         >
-          <LogOut size={30}/>
+          <LogOut size={30} />
         </button>
       </div>
       <div className="flex flex-1 overflow-hidden" >

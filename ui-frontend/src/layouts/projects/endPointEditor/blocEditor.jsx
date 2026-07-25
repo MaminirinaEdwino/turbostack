@@ -763,7 +763,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             fitView
             colorMode={colorMode}
           >
-            <Background gap={16} variant="lines" />
+            <Background gap={30} variant="lines" />
             <Controls />
           </ReactFlow>
         </div>

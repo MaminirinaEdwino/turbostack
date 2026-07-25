@@ -1,7 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
 
 export function EqualNode({ id, data, isConnectable }) {
-    return <div className="bg-gray-900 border border-couleur2 rounded-md min-w-40 font-mono">
+    return <div className="blocNode2">
         <div className="relative">
             <Handle
                 type="target"
@@ -35,7 +35,7 @@ export function EqualNode({ id, data, isConnectable }) {
 }
 
 export function DifferentNode({ id, data, isConnectable }) {
-    return <div className="bg-gray-900 border border-couleur2 rounded-md min-w-40 font-mono">
+    return <div className="blocNode2">
         <div className="relative">
             <Handle
                 type="target"
@@ -69,7 +69,7 @@ export function DifferentNode({ id, data, isConnectable }) {
 }
 
 export function InferiorNode({ id, data, isConnectable }) {
-    return <div className="bg-gray-900 border border-couleur2 rounded-md min-w-40 font-mono">
+    return <div className="blocNode2">
         <div className="relative">
             <Handle
                 type="target"
@@ -102,7 +102,7 @@ export function InferiorNode({ id, data, isConnectable }) {
     </div>
 }
 export function SuperiorNode({ id, data, isConnectable }) {
-    return <div className="bg-gray-900 border border-couleur2 rounded-md min-w-40 font-mono">
+    return <div className="blocNode2">
         <div className="relative">
             <Handle
                 type="target"

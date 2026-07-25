@@ -13,7 +13,7 @@ export default function IfNode({ id, data, isConnectable }) {
         </div>
         <div >
             <h3 >condition</h3>
-            <div >
+            <div className="flex w-full text-couleur2 justify-evenly">
                 <button onClick={() => data.addChildAutomatically(id, "superiorNode", {})}>{'>'}</button>
                 <button onClick={() => data.addChildAutomatically(id, "inferiorNode", {})}>{'<'}</button>
                 <button onClick={() => data.addChildAutomatically(id, "equalNode", {})}>{'=='}</button>

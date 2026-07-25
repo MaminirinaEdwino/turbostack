@@ -1,4 +1,4 @@
-import { Handle,Position } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 // import {nodestyle} from "../nodeStyle";
 
 export default function VarNode({ id, data, isConnectable }) {
@@ -9,31 +9,27 @@ export default function VarNode({ id, data, isConnectable }) {
   };
 
   return (
-    <div
-      className="shadow-lg bg-gray-900 p-2 border border-couleur2 rounded-md"
-    >
-      <Handle
-      id={"var_"+id}
-        type="target"
-        position={Position.Left}
-        isConnectable={isConnectable}
-      />
-
+    <div className="blocNode2">
       <div
-        className="flex justify-between items-center"
-
+        className=""
       >
-        <span style={{ color: "#fab387", fontWeight: "bold" }}>
+        <h2 >
           Variable
-        </span>
+        </h2>
         {/* <button
           onClick={() => data.onDeleteNode(id)}
         >
           ✕
         </button>*/}
+        <Handle
+          id={"var_" + id}
+          type="target"
+          position={Position.Left}
+          isConnectable={isConnectable}
+        />
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-5 p-2">
         <input
           type="text"
           placeholder="Nom"
@@ -45,7 +41,7 @@ export default function VarNode({ id, data, isConnectable }) {
         <select
           value={data.type || "string"}
           onChange={(e) => onChange("type", e.target.value)}
-          className="nodrag"
+          className="nodrag appearance-none px-2 border-b"
         >
           <option value="string">String</option>
           <option value="int">Integer</option>
@@ -59,14 +55,7 @@ export default function VarNode({ id, data, isConnectable }) {
           placeholder="Default Value"
           value={data["default value"] || ""}
           onChange={(e) => onChange("default value", e.target.value)}
-          className="nodrag"
-          style={{
-            background: "#313244",
-            color: "#cdd6f4",
-            border: "1px solid #45475a",
-            borderRadius: "4px",
-            padding: "2px 4px",
-          }}
+          className="nodrag border-b px-2"
         />
         <Handle
           type="source"

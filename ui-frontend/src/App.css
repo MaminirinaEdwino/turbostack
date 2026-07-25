@@ -62,13 +62,26 @@
 }
 
 .dbModelStyle {
-  @apply px-8 py-2 dark:bg-couleur1 rounded-sm cursor-pointer font-bold dark:border-none border border-couleur1 bg-couleur3 text-couleur1 flex justify-start gap-2 text-left items-center;
+  @apply px-8 py-2 dark:bg-couleur1 rounded-sm cursor-pointer font-bold dark:border-none border border-couleur1 bg-couleur3 text-couleur1 flex justify-start gap-2 text-left items-center dark:text-couleur3;
 }
 
 .epBlocNode {
-  @apply dark:bg-gray-900 p-2 border-[0.5px] shadow-2xl  border-couleur2/50 rounded-md dark:text-couleur2 bg-white/5 text-couleur1 ;
+  @apply dark:bg-gray-900 p-2 border-[0.5px] shadow-2xl  border-couleur2/50 rounded-md dark:text-couleur2 bg-white text-couleur1 ;
 
   &>.header {
     @apply text-[10px] border-b border-couleur2 mb-2;
+  }
+}
+
+.blocNode2 {
+  @apply dark:bg-gray-900 dark:border border-couleur2 rounded-md min-w-40 font-mono bg-white shadow-2xl;
+  &>div {
+    @apply relative;
+  }
+  h2 {
+    @apply p-2 border-b dark:border-couleur2 mx-2 text-center text-couleur1 dark:text-white/50;
+  }
+  h3 {
+    @apply dark:text-couleur2 p-4 flex justify-between text-couleur1;
   }
 }

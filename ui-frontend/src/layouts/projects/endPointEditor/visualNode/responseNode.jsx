@@ -10,17 +10,19 @@ export default function ResponseNode({ id, data, isConnectable }) {
       data.onNodeDataChange(id, { ...data, [field]: value });
     }
   };
-  return <div className=" text-couleur2 border border-couleur2 rounded-md bg-gray-900 min-w-40">
+  return <div className="blocNode2">
 
-    <Handle
+   <div>
+     <Handle
       type="target"
-      position={Position.Top}
+      position={Position.Left}
       isConnectable={isConnectable}
       id={"connect_from_parent"}
     />
-    <h3 className="text-white/50 border-b border-couleur2 m-2 flex justify-between">Response
-      <button onClick={()=>setAddResponse(!addResponse)}><Plus/></button>
-    </h3>
+    <h2 className="text-white/50 border-b border-couleur2 m-2 flex justify-between">Response
+      <button onClick={()=>setAddResponse(!addResponse)}> <div className={`${addResponse && "rotate-45"} transition-all duration-500`}><Plus/></div></button>
+    </h2>
+   </div>
     <div className="relative flex mb-2">
       <span className="px-2 text-[12px]">Status Code</span>
       <Handle
@@ -29,7 +31,7 @@ export default function ResponseNode({ id, data, isConnectable }) {
         position={Position.Left}
       />
     </div>
-    {data.response && data.response.map((res) => <div className="relative flex ">
+    {data.response && data.response.map((res) => <div className="relative flex py-2">
       <Handle
         type="target"
         id={"response_value"}

@@ -180,12 +180,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
         if (otherData.sourceHandle) {
           setEdges((currentEdges) => [
             ...currentEdges,
-            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle, style: { stroke: "red" } },
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle, style: { stroke: "#4ecdc4" } },
           ]);
         } else {
           setEdges((currentEdges) => [
             ...currentEdges,
-            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, style: { stroke: "red" } },
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, style: { stroke: "#4ecdc4" } },
           ]);
         }
 

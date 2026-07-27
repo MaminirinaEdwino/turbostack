@@ -523,33 +523,22 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
       <div className="text-white flex gap-2 fixed z-20 right-0 p-2">
         <button
           onClick={handleSave}
-          className="w-fit bg-green-500 p-2 rounded"
+          className="w-fit  p-2 rounded flex text-couleur1 dark:text-couleur2 items-center gap-1 dark:bg-couleur1"
         >
-          <Save size={30} />
+          <Save size={14} /> Save
         </button>
         <button
-          className=" p-2  text-center rounded bg-red-500"
+          className=" p-2  text-center rounded text-couleur1 flex items-center gap-1 dark:text-couleur2 dark:bg-couleur1"
           onClick={() => {
             setToggleVisualScriptModal("none");
           }}
         >
-          <LogOut size={30} />
+          <Plus size={15} style={{ rotate: "45deg" }} /> Close
         </button>
       </div>
       <div className="flex flex-1 overflow-hidden" >
         {/* BARRE LATÉRALE D'INSTRUCTIONS D'API */}
         <div
-          // style={{
-          //   width: "200px",
-          //   background: "#24283b",
-          //   padding: "15px",
-          //   display: "flex",
-          //   flexDirection: "column",
-          //   gap: "10px",
-          //   borderRight: "1px solid #45475a",
-          //   height: "100%",
-          //   overflowY: "scroll"
-          // }}
           className="bg-couleur3  dark:bg-gray-900 flex flex-col gap-1 p-1 w-50"
         >
           <h4
@@ -591,7 +580,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
 
           <button
             onClick={() => addConditionBlock()}
-           className="dbModelStyle"
+            className="dbModelStyle"
           >
             <Plus size={14} /> Condition Node
           </button>
@@ -607,7 +596,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
           >
             + Var locale
           </button>
-          <button className="dbModelStyle" onClick={() => addResponseBlock()}> <GrReturn size={14}/> Response</button>
+          <button className="dbModelStyle" onClick={() => addResponseBlock()}> <GrReturn size={14} /> Response</button>
           {
             model.map((mdl) => (
               <>
@@ -645,7 +634,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
         </div>
 
         {/* CANVAS DE VISUAL SCRIPTING */}
-        <div className="bg-couleur3" style={{ flex: 1, position: "relative" }}>
+        <div className="bg-couleur3 " style={{ flex: 1, position: "relative" }}>
           <ReactFlow
             nodes={nodes}
             edges={edges}

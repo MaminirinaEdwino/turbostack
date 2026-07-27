@@ -1,7 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
 
 export default function WhileNode({id,data, isConnectable}){
-    return <div className="bg-gray-900 border border-couleur2 rounded-md min-w-40 font-mono">
+    return <div className="blocNode2">
         <div className="relative">
             <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">While</h2>
             <Handle

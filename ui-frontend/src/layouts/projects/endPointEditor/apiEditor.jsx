@@ -185,7 +185,7 @@ export default function ApiEditor({ projectName }) {
   // const isDarkMode = useSelector((state)=>state.app.darkMode)
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
-      <div className="p-2 pb-4 h-fit flex items-center justify-between fixed z-20 w-screen border border-couleur2 -top-12 hover:top-0 transition-all ease-out bg-white-50 dark:bg-couleur6 rounded-b-xl box-border bg-couleur3">
+      <div className="p-2 pb-4 h-fit flex items-center justify-between fixed z-20 w-screen border border-couleur2 -top-15 hover:top-0 transition-all ease-out bg-white-50 dark:bg-couleur6 rounded-b-xl box-border bg-couleur3">
         <div>
           <h1 className="text-couleur1 dark:text-gray-100 text-3xl font-semibold flex items-center gap-2">
             <button

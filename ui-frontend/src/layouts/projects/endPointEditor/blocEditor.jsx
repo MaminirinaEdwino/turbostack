@@ -9,7 +9,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Database, LogOut, Plus, Puzzle, Save } from "lucide-react";
+import { Database, LogOut, PanelLeft, Plus, Puzzle, Save } from "lucide-react";
 import RootNode from "./visualNode/rootNode";
 import FunctionNode from "./visualNode/functionNode";
 import VarNode from "./visualNode/varNode";
@@ -34,6 +34,7 @@ import WhileNode from "./visualNode/whileNode";
 import ForNode from "./visualNode/forNode";
 import { GrReturn } from "react-icons/gr";
 import { ReactFlowProvider } from "@xyflow/react";
+import Toast from "../../../components/controllerEditor/toast";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -89,6 +90,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
       )
     })
   }, [fitBounds])
+  const [openTab, setOpenTab] = useState(false)
   useEffect(() => {
     if (typeof (project) == "object" && endpoint != null) {
       let modelList = [];
@@ -492,9 +494,13 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
 
     setNodes((nds) => [...nds, block]);
   }
+  const [toast, setToast] = useState(null)
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    if (type !== "loading") setTimeout(() => setToast(null), 3000);
+  };
   const handleSave = useCallback(() => {
     // const rebuiltTree = rebuildLogicTree(nodes, edges);
-    console.log("tay")
     setProjet((prev) => {
       if (prev != null) {
         const updatedEndpoints = prev.rest_api.endpoints;
@@ -505,7 +511,6 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
             edge: JSON.stringify(edges)
           };
         }
-        console.log(updatedEndpoints);
         return {
           ...prev,
           rest_api: { ...prev.rest_api, endpoints: updatedEndpoints },
@@ -514,6 +519,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
         return { ...prev };
       }
     });
+    showToast("Script Saved ! ", "success")
   }, [nodes, edges, endpoint, setProjet]);
 
   const onNodesChange = useCallback(
@@ -571,16 +577,23 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
           <Plus size={15} style={{ rotate: "45deg" }} /> Close
         </button>
       </div>
-      <div className="flex flex-1 overflow-hidden" >
+      <div className="flex flex-1 overflow-hidden " >
         {/* BARRE LATÉRALE D'INSTRUCTIONS D'API */}
+        {!openTab && <button className="fixed -left-4 hover:left-1 transition-all duration-150 z-50 top-10 text-couleur1 dark:text-couleur2 bg-white rounded shadow-2xl p-2" onClick={() => setOpenTab(true)} title="Open side panel">
+          <PanelLeft />
+        </button>}
         <div
-          className="bg-couleur3  dark:bg-gray-900 flex flex-col gap-1 p-1 w-50"
+          style={{
+            scrollbarWidth: "none"
+          }}
+          className={"bg-couleur3/10 backdrop-blur-xl  dark:bg-gray-900 flex flex-col gap-1 p-2 w-60 h-screen overflow-scroll fixed z-40 transition-all duration-300 scrollbar-width-none border-r border-couleur2 " + (openTab ? "left-0" : "-left-60")}
         >
+
           <h4
-            className="text-couleur1 "
+            className="text-couleur1 px-2 py-4 text-xl flex justify-between items-center"
           // style={{ color: "#a9b1d6", margin: "0 0 10px 0", fontSize: "14px" }}
           >
-            Blocks
+            <span>Base Blocks</span> <button onClick={() => setOpenTab(false)}><Plus style={{ rotate: "45deg" }} /></button>
           </h4>
           <button
             onClick={() => addRootBlock()}
@@ -598,38 +611,38 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
             onClick={() => addTryCatchBlock()}
             className="dbModelStyle"
           >
-            <Plus size={14} /> Try Catch Node
+            <Plus size={14} /> Try Catch
           </button>
           <button
             onClick={() => addWhileBlock()}
             className="dbModelStyle"
           >
-            <Plus size={14} /> While Node
+            <Plus size={14} /> While
           </button>
           <button
             onClick={() => addForBlock()}
             className="dbModelStyle"
           >
-            <Plus size={14} /> For Node
+            <Plus size={14} /> For
           </button>
 
           <button
             onClick={() => addConditionBlock()}
             className="dbModelStyle"
           >
-            <Plus size={14} /> Condition Node
+            <Plus size={14} /> If/Else
           </button>
           <button
             onClick={() => addNewBlock("function")}
             className="dbModelStyle"
           >
-            + Fonction
+            + Function
           </button>
           <button
             className="dbModelStyle"
             onClick={() => addNewBlock("var")}
           >
-            + Var locale
+            + Var
           </button>
           <button className="dbModelStyle" onClick={() => addResponseBlock()}> <GrReturn size={14} /> Response</button>
           {
@@ -648,7 +661,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
           }
           {
             endPointModel.map((mdl) => <div className="p-2 flex flex-col items-start">
-              <div className="border-b">{mdl.nom} body params</div>
+              <div className="text-couleur1 px-2 py-4 text-xl">{mdl.nom} body params</div>
               {mdl.champs && mdl.champs.map((field) => <button
                 className="dbModelStyle w-full"
                 onClick={() => addBodyParamsBlock({ field: field })}>
@@ -657,7 +670,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
             </div>)
           }
           <div className="p-2">
-            <div className="border-b mb-2">Request Params</div>
+            <div className="text-couleur1 px-2 py-4 text-xl">Request Params</div>
             <div>
               {
                 typeof (project) == "object" && project != null && endpoint != undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="dbModelStyle w-full" onClick={() => addRequestParamsBlock(`${p}`)}>
@@ -667,7 +680,9 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
             </div>
           </div>
         </div>
-
+        {toast && (
+          <Toast toast={toast}></Toast>
+        )}
         {/* CANVAS DE VISUAL SCRIPTING */}
         <div className="bg-couleur3 " style={{ flex: 1, position: "relative" }}>
           <ReactFlow

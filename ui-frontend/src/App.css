@@ -23,6 +23,10 @@
   scrollbar-width: none;
 }
 
+.scrollbar-width-none {
+  scrollbar-width: none
+}
+
 .newProjectForm {
   @apply w-2/3 flex flex-col p-4 border rounded border-couleur1 m-2 box-border;
 

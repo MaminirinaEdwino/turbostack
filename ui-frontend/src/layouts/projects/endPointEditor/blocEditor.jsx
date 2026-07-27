@@ -6,6 +6,7 @@ import {
   Background,
   ReactFlow,
   Controls,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Database, LogOut, Plus, Puzzle, Save } from "lucide-react";
@@ -32,6 +33,7 @@ import { DifferentNode, EqualNode, InferiorNode, SuperiorNode } from "./visualNo
 import WhileNode from "./visualNode/whileNode";
 import ForNode from "./visualNode/forNode";
 import { GrReturn } from "react-icons/gr";
+import { ReactFlowProvider } from "@xyflow/react";
 
 // Déclaration des types de nœuds sur mesure
 const nodeTypes = {
@@ -66,12 +68,27 @@ const nodeTypes = {
 // ==========================================
 // COMPOSANT LOGIQUE DE TURBOSTACK
 // ==========================================
-export default function TurboStackScripting({ setProjet, endpoint, project, setToggleVisualScriptModal, colorMode }) {
+export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScriptModal, colorMode }) {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [model, setModel] = useState([]);
   const [endPointModel, setEndPointModel] = useState([]);
-
+  const { fitBounds } = useReactFlow()
+  const focusOnNode = useCallback((nodePosition) => {
+    requestAnimationFrame(() => {
+      fitBounds({
+        x: nodePosition.x,
+        y: nodePosition.y,
+        width: 250,
+        height: 180,
+      },
+        {
+          duration: 800,
+          padding: 1.2
+        }
+      )
+    })
+  }, [fitBounds])
   useEffect(() => {
     if (typeof (project) == "object" && endpoint != null) {
       let modelList = [];
@@ -188,7 +205,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             { id: `e-${parentId}-${childId}`, source: parentId, target: childId, style: { stroke: "#4ecdc4" } },
           ]);
         }
-
+        focusOnNode(childPosition)
         return [...currentNodes, newChildNode];
       });
     },
@@ -363,6 +380,8 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
       }
     }
 
+    focusOnNode(basePosition)
+
     setNodes((nds) => [...nds, block]);
   }
 
@@ -509,6 +528,22 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
     (params) => setEdges((eds) => addEdge(params, eds)),
     [],
   );
+  const onNodeClick = useCallback((event, node) => {
+    fitBounds(
+      {
+        x: node.position.x,
+        y: node.position.y,
+        width: node.measured?.width || 350,   // Utilise la largeur réelle si mesurée, sinon 250
+        height: node.measured?.height || 300, // Utilise la hauteur réelle si mesurée, sinon 180
+      },
+      {
+        duration: 600, // Animation rapide et fluide (0.6 seconde)
+        padding: 3,  // Garde une marge agréable autour du nœud cliqué
+      }
+    );
+  }, [fitBounds]);
+
+
 
   return (
     <div
@@ -523,12 +558,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
       <div className="text-white flex gap-2 fixed z-20 right-0 p-2">
         <button
           onClick={handleSave}
-          className="w-fit  p-2 rounded flex text-couleur1 dark:text-couleur2 items-center gap-1 dark:bg-couleur1"
+          className="w-fit  p-2 rounded flex text-couleur1 dark:text-couleur2 items-center gap-1 dark:bg-couleur1 bg-white hover:border border-couleur2 box-border"
         >
           <Save size={14} /> Save
         </button>
         <button
-          className=" p-2  text-center rounded text-couleur1 flex items-center gap-1 dark:text-couleur2 dark:bg-couleur1"
+          className=" p-2  text-center rounded text-couleur1 flex items-center gap-1 dark:text-couleur2 dark:bg-couleur1 bg-white hover:border border-red-500 hover:text-red-500"
           onClick={() => {
             setToggleVisualScriptModal("none");
           }}
@@ -615,7 +650,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             endPointModel.map((mdl) => <div className="p-2 flex flex-col items-start">
               <div className="border-b">{mdl.nom} body params</div>
               {mdl.champs && mdl.champs.map((field) => <button
-                className="bodyparamsStyle"
+                className="dbModelStyle w-full"
                 onClick={() => addBodyParamsBlock({ field: field })}>
                 <Puzzle size={14} /> {field.nom}
               </button>)}
@@ -625,7 +660,7 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             <div className="border-b mb-2">Request Params</div>
             <div>
               {
-                typeof (project) == "object" && project != null && endpoint != undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="bodyparamsStyle" onClick={() => addRequestParamsBlock(`${p}`)}>
+                typeof (project) == "object" && project != null && endpoint != undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="dbModelStyle w-full" onClick={() => addRequestParamsBlock(`${p}`)}>
                   :{p}
                 </button>)
               }
@@ -645,6 +680,8 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
             isValidConnection={isValidConnection}
             fitView
             colorMode={colorMode}
+            proOptions={{ hideAttribution: true }}
+            onNodeDoubleClick={onNodeClick}
           >
             <Background gap={30} variant="lines" />
             <Controls />
@@ -653,4 +690,12 @@ export default function TurboStackScripting({ setProjet, endpoint, project, setT
       </div>
     </div>
   );
+}
+
+export default function TurboStackScripting(props) {
+  return (
+    <ReactFlowProvider>
+      <FlowCanvas {...props} />
+    </ReactFlowProvider>
+  )
 }

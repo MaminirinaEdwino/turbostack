@@ -6,15 +6,17 @@ export default function RequestParams({ id, data, isConnectable }) {
   //     data.onNodeDataChange(id, { ...data, [field]: value });
   //   }
   // };
-  return <div key={id} className="bg-gray-900 p-2 border border-couleur2 rounded-md text-couleur2">
-    <Handle
+  return <div key={id} className="blocNode2">
+   <div>
+     <Handle
       position={Position.Right}
       type="source"
       isConnectable={isConnectable}
       contextMenu="teste"
       nodeId={id}
     />
-    <div className="text-[10px] border-b border-couleur2 mb-2">Request params</div>
-    <div className="text-[10px]">{data.requestParams} </div>
+    <h2 className="">Request params</h2>
+   </div>
+    <h3 className="text-[10px]">{data.requestParams} </h3>
   </div>
 }

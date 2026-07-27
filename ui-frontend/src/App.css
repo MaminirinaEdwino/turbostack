@@ -62,8 +62,11 @@
 }
 
 .dbModelStyle {
-  @apply px-8 py-2 dark:bg-couleur1 rounded-sm cursor-pointer font-bold dark:border-none border border-couleur1 bg-couleur3 text-couleur1 flex justify-start gap-2 text-left items-center dark:text-couleur3;
+  @apply px-8 py-2 dark:bg-couleur1 rounded-sm cursor-pointer font-bold dark:border-none hover:border  border-couleur2 bg-white shadow-xl text-couleur1 flex justify-start gap-2 text-left items-center dark:text-couleur3;
 }
+/* .dbModelStyle {
+  @apply px-8 py-2 dark:bg-couleur1 rounded-sm cursor-pointer font-bold dark:border-none border border-couleur1 bg-couleur3 text-couleur1 flex justify-start gap-2 text-left items-center dark:text-couleur3;
+} */
 
 .epBlocNode {
   @apply dark:bg-gray-900 p-2 border-[0.5px] shadow-2xl  border-couleur2/50 rounded-md dark:text-couleur2 bg-white text-couleur1 ;

@@ -6,13 +6,15 @@ export default function BodyParamsNode({ id, data, isConnectable }) {
   //     data.onNodeDataChange(id, { ...data, [field]: value });
   //   }
   // };
-  return <div key={id} className="epBlocNode">
-    <Handle
-      position={Position.Right}
-      type="source"
-      isConnectable={isConnectable}
-    />
-    <div className="header">Request Body params</div>
-    <div className="text-[10px]">{data.bodyParams.field.nom}: {data.bodyParams.field.type} {data.bodyParams.field.default_value}</div>
+  return <div key={id} className="blocNode2">
+    <div>
+      <Handle
+        position={Position.Right}
+        type="source"
+        isConnectable={isConnectable}
+      />
+      <h2 className="header">Request Body params</h2>
+    </div>
+    <h3 className="text-[10px]">{data.bodyParams.field.nom}: {data.bodyParams.field.type} {data.bodyParams.field.default_value}</h3>
   </div>
 }

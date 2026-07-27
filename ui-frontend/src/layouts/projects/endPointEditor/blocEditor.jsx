@@ -211,6 +211,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
         return [...currentNodes, newChildNode];
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onDeleteNode, onNodeDataChange],
   );
   // Charger la structure de données de l'API
@@ -272,7 +273,6 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
   };
 
   const addModelBlock = (name, modelInfo) => {
-    // eslint-disable-next-line react-hooks/purity
     const uniqueId = `modelNode_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 
@@ -308,47 +308,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
     }
     setNodes((nds) => [...nds, rootBlock]);
   }
-
-  // const addSelectBlock = () => {
-  //   const uniqueId = `selectNode_${Math.random().toString(36).substr(2, 5)}`;
-  //   const basePosition = { x: nodes.length * 50 + 100, y: 200 };
-
-  //   const selectBlock = {
-  //     id: uniqueId,
-  //     type: "selectNode",
-  //     position: basePosition,
-  //     data: {
-  //       field: [],
-  //       onNodeDataChange,
-  //       onDeleteNode,
-  //       addChildAutomatically,
-  //     },
-  //   };
-
-  //   setNodes((nds) => [...nds, selectBlock]);
-  // };
-
-  // const addWhereBlock = () => {
-  //   const uniqueId = `whereNode_${Math.random().toString(36).substr(2, 5)}`;
-  //   const basePosition = { x: nodes.length * 50 + 100, y: 200 };
-
-  //   const selectBlock = {
-  //     id: uniqueId,
-  //     type: "whereNode",
-  //     position: basePosition,
-  //     data: {
-  //       condition: "",
-  //       onNodeDataChange,
-  //       onDeleteNode,
-  //       addChildAutomatically,
-  //     },
-  //   };
-
-  //   setNodes((nds) => [...nds, selectBlock]);
-  // };
-
   const addBodyParamsBlock = (bodyParams) => {
-    // eslint-disable-next-line react-hooks/purity
     const uniqueId = `bodyParams_${Math.random().toString(36).substr(2, 5)}`;
     const basePosition = { x: nodes.length * 50 + 100, y: 200 };
 

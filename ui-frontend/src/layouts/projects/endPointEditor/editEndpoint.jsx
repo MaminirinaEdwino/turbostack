@@ -214,7 +214,7 @@ export default function EditEndpoint({
   };
 
   const toggleResponseBody = (modelName, field) => {
-    console.log("d")
+    console.log(modelName, field)
     const updatedModels = endpoint.return_content.map((m) => {
       if (m.nom === modelName) {
         const hasField = m.champs.some((f) => f.nom === field.nom);
@@ -226,10 +226,11 @@ export default function EditEndpoint({
       }
       return m;
     });
+    console.log(updatedModels)
     setEndpoint({ ...endpoint, return_content: updatedModels });
   };
   return (
-    <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-137.5 max-h-[85vh] overflow-y-auto">
+    <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col  max-h-[85vh] overflow-y-auto w-[90vw]">
       <h3 className="font-bold text-2xl text-couleur1 mb-4">Edit Endpoint</h3>
 
       <div className="grid grid-cols-3 gap-4 mb-4">
@@ -582,7 +583,7 @@ export default function EditEndpoint({
                         </td>
                       </tr>
                     ))}
-                    {manualField.champs && manualField?.champs.map((f) => (
+                    {endpoint.manual_fields.length > 0 && endpoint.manual_fields?.map((f) => (
                       <tr
                         key={f.nom}
                         className="border-t border-couleur1/5 hover:bg-white/40 transition-colors"

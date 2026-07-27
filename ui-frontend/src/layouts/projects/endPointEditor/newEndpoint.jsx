@@ -1,4 +1,3 @@
-import { useReactFlow } from "@xyflow/react";
 import { Check, X, Plus, Trash2, Database } from "lucide-react";
 import { useState } from "react";
 
@@ -181,7 +180,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
 
 
     return (
-        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-137.5 max-h-[85vh] overflow-y-auto">
+        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-[90vw] max-h-[85vh] overflow-y-auto">
             <h3 className="font-bold text-2xl text-couleur1 mb-4">New Endpoint</h3>
 
             <div className="grid grid-cols-3 gap-4 mb-4">
@@ -191,7 +190,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold opacity-50 uppercase">Method</label>
-                    <select className="border border-couleur1 p-2 rounded-lg bg-white" value={endpoint.method} onChange={(e) => setEndpoint({ ...endpoint, method: e.target.value })}>
+                    <select className="border border-couleur1 p-2 rounded-lg bg-white appearance-none" value={endpoint.method} onChange={(e) => setEndpoint({ ...endpoint, method: e.target.value })}>
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
                         {project?.type != "web_app" && <>
@@ -202,7 +201,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold opacity-50 uppercase">Access Role</label>
-                    <select className="border border-couleur1 p-2 rounded-lg bg-white capitalize" value={endpoint.role} onChange={(e) => setEndpoint({ ...endpoint, role: e.target.value })}>
+                    <select className="border border-couleur1 p-2 rounded-lg bg-white capitalize appearance-none" value={endpoint.role} onChange={(e) => setEndpoint({ ...endpoint, role: e.target.value })}>
                         {availableRoles.map(role => (
                             <option key={role} value={role}>{role}</option>
                         ))}

@@ -44,6 +44,7 @@ const HomePage = () => {
 
     const handleCloseProject = () => {
         dispatch(setActualProject(''));
+        window.location.reload()
     };
 
     return (

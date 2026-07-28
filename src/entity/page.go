@@ -4,6 +4,7 @@ type Page struct {
 	nom     string
 	contenu []pageContent
 	uri     string
+	styles  string
 }
 
 func (p *Page) ToJSON() PageJSON {
@@ -15,7 +16,8 @@ func (p *Page) ToJSON() PageJSON {
 	return PageJSON{
 		Nom:     p.nom,
 		Contenu: pcontent,
-		Uri: p.uri,
+		Uri:     p.uri,
+		Styles:  p.styles,
 	}
 }
 

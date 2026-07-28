@@ -74,6 +74,7 @@ func (pj *PageJSON) ToModel() Page {
 		nom:     pj.Nom,
 		contenu: pcontent,
 		uri:     pj.Uri,
+		styles: pj.Styles,
 	}
 }
 

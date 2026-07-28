@@ -44,10 +44,17 @@ export default function VisualEditor({
     };
 
     const handlePasteStyle = (id) => {
+        console.log(copiedStyle)
         if (!copiedStyle) return;
         updateBlock(id, { styles: copiedStyle });
         if (showToast) showToast("Style appliqué !");
     };
+    const pasteStyleToTablet = (id)=> {
+        let styles = JSON.parse(currentActiveBlock.styles)
+        styles.tablet = styles[activeViewport]
+        updateBlock(id, {styles: JSON.stringify(styles)})
+        console.log(currentActiveBlock, activeViewport)
+    }
 
     const availableSelectors = useMemo(() => {
         const tags = new Set(["body"]);
@@ -506,6 +513,7 @@ export default function VisualEditor({
                     onCopyStyle={() => handleCopyStyle(currentActiveBlock?.styles)}
                     onPasteStyle={() => handlePasteStyle(currentActiveBlock?.id)}
                     hasCopiedStyle={!!copiedStyle}
+                    styleToTablet={()=> pasteStyleToTablet(currentActiveBlock?.id)}
                 />
             ) : allowedTabs.includes("pseudo classes") && activeTab === "pseudo classes" ?
                 <>

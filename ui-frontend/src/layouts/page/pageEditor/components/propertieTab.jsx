@@ -1,4 +1,4 @@
-import { MousePointer2, Copy, ClipboardPaste, LoaderCircle } from "lucide-react";
+import { MousePointer2, Copy, ClipboardPaste, LoaderCircle, Tablet, Computer, Smartphone } from "lucide-react";
 import { BLOCK_TYPES, GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
 import { useState } from "react";
@@ -6,7 +6,7 @@ import { BiReset } from "react-icons/bi";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
-    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle
+    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet
 }) {
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
 
@@ -87,6 +87,15 @@ export default function PropertiesTab({
                                     </button>
                                     <button onClick={onPasteStyle} disabled={!hasCopiedStyle} className={`p-1 transition-all ${hasCopiedStyle ? 'text-couleur1/40 hover:text-couleur1' : 'opacity-10 cursor-not-allowed'}`} title="Coller le style">
                                         <ClipboardPaste size={14} />
+                                    </button>
+                                    <button onClick={styleToTablet} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to tablet version">
+                                        <Tablet size={14} />
+                                    </button>
+                                    <button onClick={styleToTablet} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to desktop version">
+                                        <Computer size={14} />
+                                    </button>
+                                    <button onClick={styleToTablet} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to mobile version">
+                                        <Smartphone size={14} />
                                     </button>
                                 </div>
                             </div>

@@ -1,7 +1,8 @@
-import { MousePointer2, Copy, ClipboardPaste } from "lucide-react";
+import { MousePointer2, Copy, ClipboardPaste, LoaderCircle } from "lucide-react";
 import { BLOCK_TYPES, GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
 import { useState } from "react";
+import { BiReset } from "react-icons/bi";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
@@ -93,6 +94,7 @@ export default function PropertiesTab({
                                 {GROUP_LIST.map(group => <div className="mb-2">
                                     <h3 className={"text-couleur6 my-1 transition-all  duration-200 ease-in-out " + (activeGroup != group && "text-xs")} onClick={() => setActiveGroup(group)}>{group}</h3>
                                     <div className={"grid grid-cols-2 transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
+
                                         {STYLE_CONTROLS.filter((ctrl) => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.group)).map((ctrl) => {
                                             if (group == ctrl.group) {
                                                 let currentValue = currentStyles[ctrl.prop] || "";
@@ -100,7 +102,9 @@ export default function PropertiesTab({
                                                 if (ctrl.conditions && ctrl.conditions.length > 0 && ctrl.conditions[1] == currentStyles[ctrl.conditions[0]]) {
                                                     return (
                                                         <div key={ctrl.prop} className="flex flex-col gap-1 justify-between my-1">
-                                                            <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
+                                                            <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label} {ctrl.reset && <>
+                                                                <button onClick={() => handleStyleChange(ctrl.prop, ctrl.reset)}><LoaderCircle size={10} /></button>
+                                                            </>} </span>
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
@@ -134,7 +138,9 @@ export default function PropertiesTab({
                                                                         {ctrl.unite && <>
                                                                             {ctrl.unite.map(unite => <option value={unite}>{unite}</option>)}
                                                                         </>}
+
                                                                     </select>}
+
                                                                 </div>
                                                             ) : ctrl.type === "select" ? (
                                                                 <select
@@ -155,13 +161,14 @@ export default function PropertiesTab({
                                                                     onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
                                                                 />)
                                                             }
+
                                                         </div>
                                                     )
-                                                }if (ctrl.conditions.length == 0) {
+                                                } if (ctrl.conditions.length == 0) {
                                                     return (
-                                                        <div key={ctrl.prop} className="flex flex-col gap-1 justify-between my-1">
+                                                        <div>
 
-                                                            <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label}</span>
+                                                            <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label} {ctrl.reset && <button onClick={() => handleStyleChange(ctrl.prop, ctrl.reset)}><BiReset size={10} /></button>} </span>
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}

@@ -1,13 +1,15 @@
 package entity
 
 type pageContent struct {
-	id        string
-	tag       string
-	content   string
-	className string
-	href      string
-	styles    string
-	children  []pageContent
+	id          string
+	tag         string
+	content     string
+	className   string
+	href        string
+	styles      string
+	children    []pageContent
+	inputType   string
+	placeholder string
 }
 
 func (p *pageContent) GetId() string {

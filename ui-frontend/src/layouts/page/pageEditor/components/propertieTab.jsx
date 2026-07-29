@@ -247,10 +247,26 @@ export default function PropertiesTab({
 
                         </div>
                     </div>
-
+                    {currentActiveBlock.tag === "input" && (
+                        <div className="flex flex-col gap-5">
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="placeholder" className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Placeholder</label>
+                                <input className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all" type="text" name="" id="placeholder" placeholder="placeholder" onChange={(e) => updateBlock(currentActiveBlock.id, { placeholder: e.target.value })} value={currentActiveBlock.placeholder || ""} />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="inputType" className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Input Type</label>
+                                <select  className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all" name="" id="inputType" onChange={(e)=>updateBlock(currentActiveBlock.id, {inputType : e.target.value})} value={currentActiveBlock.inputType}>
+                                    <option value="text">text</option>
+                                    <option value="number">number</option>
+                                    <option value="email">email</option>
+                                    <option value="password">password</option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
                     {currentActiveBlock.tag === 'a' && (
                         <div className="flex flex-col gap-2">
-                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Destination du lien</label>
+                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Link target</label>
                             <select
                                 className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
                                 value={availablePages.some(p => p.uri === currentActiveBlock.href) ? currentActiveBlock.href : "custom"}
@@ -260,7 +276,7 @@ export default function PropertiesTab({
                                     }
                                 }}
                             >
-                                <option value="custom">-- Lien personnalisé --</option>
+                                <option value="custom">-- Custom Link --</option>
                                 {availablePages.map(page => (
                                     <option key={page.uri} value={page.uri}>Page: {page.nom} ({page.uri})</option>
                                 ))}
@@ -268,7 +284,7 @@ export default function PropertiesTab({
                             <input
                                 className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
                                 type="text"
-                                placeholder="URL externe ou chemin..."
+                                placeholder="URL ..."
                                 value={currentActiveBlock.href || ""}
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { href: e.target.value })}
                             />

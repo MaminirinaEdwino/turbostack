@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
     Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
     MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle,
-    ChevronDown
+    ChevronDown,
+    ChevronUp,
+    Clock
 } from "lucide-react";
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
 import { parseStyles } from './utilsFunc';
@@ -171,10 +173,10 @@ export default function VisualEditor({
         }
         return null;
     };
-    const indentAsChild = (list, id) =>{
+    const indentAsChild = (list, id) => {
         let targetindex = 0
-        const sourceIndex = list.findIndex((b)=>b.id == id)
-        if (list.length >0 && sourceIndex >0) {
+        const sourceIndex = list.findIndex((b) => b.id == id)
+        if (list.length > 0 && sourceIndex > 0) {
             targetindex = sourceIndex - 1
         }
         const findAndRemove = (list) => {
@@ -494,6 +496,7 @@ export default function VisualEditor({
     };
 
     const renderBlocksList = (blocksList, level = 0) => {
+
         return blocksList.map((block, index) => (
             <React.Fragment key={block.id}>
                 <div
@@ -506,19 +509,26 @@ export default function VisualEditor({
                     className={`group p-3 rounded-2xl border transition-all cursor-pointer mb-2 ${draggedId === block.id ? "opacity-20 border-dashed border-couleur1 scale-95" : ""
                         } ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-md ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
                     onClick={() => selectBlock(block.id)}
-                    onDoubleClick={()=>indentAsChild(blocks, block.id)}
+                    onDoubleClick={() => indentAsChild(blocks, block.id)}
                 >
                     <div className="flex justify-between items-center">
                         {/* <ChevronDown style={{color: "#1a535c"}} onClick={()=>alert()}/> */}
                         <Block index={index} getIconForTag={getIconForTag} block={block} />
                         <div className="flex items-center gap-1">
-
                             {block.tag != "input" && <AddChild block={block} addChild={addChild} />}
+                           {block.children && block.children.length >0 &&  <button onClick={() => {
+                                if (document.getElementById(block.id + "_child_div").style.display == "none") {
+                                    document.getElementById(block.id + "_child_div").style.display = "block"
+                                } else {
+                                    document.getElementById(block.id + "_child_div").style.display = "none"
+                                }
+                            }}>{document.getElementById(block.id + "_child_div") && document.getElementById(block.id + "_child_div").style.display == "none" ? <ChevronDown size={15}></ChevronDown> : <ChevronUp size={15}></ChevronUp>}</button>}
                             <DeleteBlock block={block} removeBlock={removeBlock} />
                         </div>
                     </div>
                 </div>
-                <div>
+                {/* <button onClick={()=>handleShowChild()}>d</button> */}
+                <div id={block.id + "_child_div"}>
                     {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
                 </div>
             </React.Fragment>

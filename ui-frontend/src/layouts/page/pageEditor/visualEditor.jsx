@@ -376,8 +376,9 @@ export default function VisualEditor({
                     className: "",
                     styles: "",
                     children: [],
-                    inputType: (type.inputType || "")
+                    inputType: (type?.inputType || "")
                 };
+                console.log(",",type.inputType)
             }
         }
 
@@ -399,20 +400,80 @@ export default function VisualEditor({
                 content: "",
                 className: `component-${type.nom?.toLowerCase().replace(/\s+/g, '-')}`,
                 styles: "",
-                htmlId: "",
                 children: type.content ? JSON.parse(JSON.stringify(type.content)) : []
             };
         } else {
-            newBlock = {
-                id,
-                tag: type.tag,
-                content: type.defaultContent,
-                href: type.defaultHref || "",
-                className: "",
-                styles: "",
-                htmlId: "",
-                children: []
-            };
+            if (type.isFormPost) {
+                let childBlock = []
+                type.models.map(mdl => {
+                    mdl.champs.map(field => {
+                        childBlock.push({
+                            id: Math.random().toString(36).substr(2, 9),
+                            tag: "div",
+                            href: type.defaultHref || "",
+                            className: "",
+                            styles: "",
+                            children: [
+                                {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    tag: "div",
+                                    content: field.nom,
+                                    className: "",
+                                    styles: "",
+                                    children: [],
+                                    inputType: (type.inputType || "")
+                                }, {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    tag: (field.type == "int" || field.type == "string") && "input",
+                                    // content: field.nom,
+                                    placeholder: field.nom,
+                                    className: "",
+                                    styles: "",
+                                    // children: [],
+                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text")
+                                }
+                            ]
+                        })
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        content: "send",
+                        className: "",
+                        styles: "",
+                        inputType: "submit"
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        content: "clear",
+                        className: "",
+                        styles: "",
+                        inputType: "reset"
+                    })
+                })
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    styles: "",
+                    children: childBlock,
+                    method: "post",
+                    action: type.uri
+                }
+            } else {
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    href: type.defaultHref || "",
+                    className: "",
+                    styles: "",
+                    children: [],
+                    inputType: (type?.inputType || "")
+                };
+                console.log(",",type.inputType)
+            }
         }
 
         const updateTree = (list) => {

@@ -276,7 +276,7 @@ export default function PropertiesTab({
                     )}
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Content Content</label>
+                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Content</label>
                         <textarea
                             className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-37.5 focus:ring-2 ring-couleur1/20 transition-all"
                             value={currentActiveBlock.content}

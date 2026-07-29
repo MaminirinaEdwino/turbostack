@@ -174,6 +174,7 @@ export default function VisualEditor({
         return null;
     };
     const indentAsChild = (list, id) => {
+        console.log(list, id)
         let targetindex = 0
         const sourceIndex = list.findIndex((b) => b.id == id)
         if (list.length > 0 && sourceIndex > 0) {
@@ -199,7 +200,13 @@ export default function VisualEditor({
         };
 
         const [listWithoutSource, blockToMove] = findAndRemove(blocks);
-        listWithoutSource[targetindex].children.push(blockToMove)
+        console.log(listWithoutSource, targetindex)
+        if (listWithoutSource[targetindex].children == null) {
+            listWithoutSource[targetindex].children = []
+            listWithoutSource[targetindex].children.push(blockToMove)
+        }else{
+            listWithoutSource[targetindex].children.push(blockToMove)
+        }
         setBlocks(listWithoutSource)
         sync(listWithoutSource)
     }
@@ -516,13 +523,18 @@ export default function VisualEditor({
                         <Block index={index} getIconForTag={getIconForTag} block={block} />
                         <div className="flex items-center gap-1">
                             {block.tag != "input" && <AddChild block={block} addChild={addChild} />}
-                           {block.children && block.children.length >0 &&  <button onClick={() => {
+                            {block.children && block.children.length > 0 && <button onClick={() => {
                                 if (document.getElementById(block.id + "_child_div").style.display == "none") {
                                     document.getElementById(block.id + "_child_div").style.display = "block"
+
                                 } else {
                                     document.getElementById(block.id + "_child_div").style.display = "none"
                                 }
-                            }}>{document.getElementById(block.id + "_child_div") && document.getElementById(block.id + "_child_div").style.display == "none" ? <ChevronDown size={15}></ChevronDown> : <ChevronUp size={15}></ChevronUp>}</button>}
+                            }}>
+                                <div id={block.id + "_child_div_chevron"}>
+                                    <ChevronDown size={15}></ChevronDown>
+                                </div>
+                            </button>}
                             <DeleteBlock block={block} removeBlock={removeBlock} />
                         </div>
                     </div>

@@ -6,7 +6,7 @@ import { BiReset } from "react-icons/bi";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
-    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet
+    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet, styleToModbile, styleToDesktop
 }) {
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
 
@@ -88,15 +88,17 @@ export default function PropertiesTab({
                                     <button onClick={onPasteStyle} disabled={!hasCopiedStyle} className={`p-1 transition-all ${hasCopiedStyle ? 'text-couleur1/40 hover:text-couleur1' : 'opacity-10 cursor-not-allowed'}`} title="Coller le style">
                                         <ClipboardPaste size={14} />
                                     </button>
-                                    <button onClick={styleToTablet} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to tablet version">
-                                        <Tablet size={14} />
-                                    </button>
-                                    <button onClick={styleToTablet} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to desktop version">
+                                    {
+                                        activeViewport != "tablet" && <button onClick={styleToTablet} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to tablet version">
+                                            <Tablet size={14} />
+                                        </button>
+                                    }
+                                    {activeViewport != "desktop" && <button onClick={styleToDesktop} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to desktop version">
                                         <Computer size={14} />
-                                    </button>
-                                    <button onClick={styleToTablet} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to mobile version">
+                                    </button>}
+                                    {activeViewport != "mobile" && <button onClick={styleToModbile} className={`p-1 transition-all text-couleur1/40 hover:text-couleur1`} title="Copy style to mobile version">
                                         <Smartphone size={14} />
-                                    </button>
+                                    </button>}
                                 </div>
                             </div>
                             <div className=" gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">

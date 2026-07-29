@@ -49,10 +49,25 @@ export default function VisualEditor({
         updateBlock(id, { styles: copiedStyle });
         if (showToast) showToast("Style appliqué !");
     };
-    const pasteStyleToTablet = (id)=> {
+    const pasteStyleToTablet = (id) => {
         let styles = JSON.parse(currentActiveBlock.styles)
         styles.tablet = styles[activeViewport]
-        updateBlock(id, {styles: JSON.stringify(styles)})
+        updateBlock(id, { styles: JSON.stringify(styles) })
+        if (showToast) showToast("Style applied to Tablet version !");
+        console.log(currentActiveBlock, activeViewport)
+    }
+    const pasteStyleToDeskTop = (id) => {
+        let styles = JSON.parse(currentActiveBlock.styles)
+        styles.desktop = styles[activeViewport]
+        updateBlock(id, { styles: JSON.stringify(styles) })
+        if (showToast) showToast("Style applied to Tablet version !");
+        console.log(currentActiveBlock, activeViewport)
+    }
+    const pasteStyleToMobile = (id) => {
+        let styles = JSON.parse(currentActiveBlock.styles)
+        styles.mobile = styles[activeViewport]
+        updateBlock(id, { styles: JSON.stringify(styles) })
+        if (showToast) showToast("Style applied to Tablet version !");
         console.log(currentActiveBlock, activeViewport)
     }
 
@@ -156,6 +171,36 @@ export default function VisualEditor({
         }
         return null;
     };
+    const indentAsChild = (list, id) =>{
+        let targetindex = 0
+        const sourceIndex = list.findIndex((b)=>b.id == id)
+        if (list.length >0 && sourceIndex >0) {
+            targetindex = sourceIndex - 1
+        }
+        const findAndRemove = (list) => {
+            let foundBlock = null;
+            const newList = list.filter(b => {
+                if (b.id === id) {
+                    foundBlock = b;
+                    return false;
+                }
+                return true;
+            }).map(b => {
+                if (b.children && b.children.length > 0) {
+                    const [subList, subFound] = findAndRemove(b.children);
+                    if (subFound) foundBlock = subFound;
+                    return { ...b, children: subList };
+                }
+                return b;
+            });
+            return [newList, foundBlock];
+        };
+
+        const [listWithoutSource, blockToMove] = findAndRemove(blocks);
+        listWithoutSource[targetindex].children.push(blockToMove)
+        setBlocks(listWithoutSource)
+        sync(listWithoutSource)
+    }
 
     const handleDrop = (e, targetId) => {
         e.preventDefault();
@@ -282,7 +327,7 @@ export default function VisualEditor({
                                     className: "",
                                     styles: "",
                                     // children: [],
-                                    inputType: (field.type =="int" ? "number": field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text")
+                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text")
                                 }
                             ]
                         })
@@ -461,6 +506,7 @@ export default function VisualEditor({
                     className={`group p-3 rounded-2xl border transition-all cursor-pointer mb-2 ${draggedId === block.id ? "opacity-20 border-dashed border-couleur1 scale-95" : ""
                         } ${activeBlock === block.id ? "bg-white dark:bg-gray-900 border-couleur1 shadow-md ring-4 ring-couleur1/5" : "bg-white/50 dark:bg-gray-900/40 border-transparent hover:border-couleur1/20"}`}
                     onClick={() => selectBlock(block.id)}
+                    onDoubleClick={()=>indentAsChild(blocks, block.id)}
                 >
                     <div className="flex justify-between items-center">
                         {/* <ChevronDown style={{color: "#1a535c"}} onClick={()=>alert()}/> */}
@@ -513,7 +559,9 @@ export default function VisualEditor({
                     onCopyStyle={() => handleCopyStyle(currentActiveBlock?.styles)}
                     onPasteStyle={() => handlePasteStyle(currentActiveBlock?.id)}
                     hasCopiedStyle={!!copiedStyle}
-                    styleToTablet={()=> pasteStyleToTablet(currentActiveBlock?.id)}
+                    styleToTablet={() => pasteStyleToTablet(currentActiveBlock?.id)}
+                    styleToDesktop={() => pasteStyleToDeskTop(currentActiveBlock?.id)}
+                    styleToModbile={() => pasteStyleToMobile(currentActiveBlock?.id)}
                 />
             ) : allowedTabs.includes("pseudo classes") && activeTab === "pseudo classes" ?
                 <>

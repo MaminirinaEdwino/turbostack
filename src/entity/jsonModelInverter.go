@@ -175,5 +175,7 @@ func (pc *PageContentJSON) ToModel() pageContent {
 		href:      pc.Href,
 		styles:    pc.Styles,
 		children:  children,
+		inputType: pc.InputType,
+		placeholder: pc.Placeholder,
 	}
 }

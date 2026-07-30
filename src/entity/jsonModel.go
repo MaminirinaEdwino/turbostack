@@ -97,11 +97,13 @@ type WebAppJSON struct {
 }
 
 type PageContentJSON struct {
-	Id        string            `json:"id"`
-	Tag       string            `json:"tag"`
-	Content   string            `json:"content"`
-	ClassName string            `json:"className"`
-	Href      string            `json:"href"`
-	Styles    string            `json:"styles"`
-	Children  []PageContentJSON `json:"children"`
+	Id          string            `json:"id"`
+	Tag         string            `json:"tag"`
+	Content     string            `json:"content"`
+	ClassName   string            `json:"className"`
+	Href        string            `json:"href"`
+	Styles      string            `json:"styles"`
+	Children    []PageContentJSON `json:"children"`
+	InputType   string            `json:"input_type"`
+	Placeholder string            `json:"placeholder"`
 }

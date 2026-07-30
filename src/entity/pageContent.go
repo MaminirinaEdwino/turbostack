@@ -82,5 +82,7 @@ func (p *pageContent) ToJSON() PageContentJSON {
 		Href:      p.href,
 		Styles:    p.styles,
 		Children:  children,
+		InputType: p.inputType,
+		Placeholder: p.placeholder,
 	}
 }

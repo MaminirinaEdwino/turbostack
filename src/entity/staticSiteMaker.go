@@ -59,13 +59,12 @@ func startServer(mux *http.ServeMux, PORT int) {
 
 }
 
-func checkValueSb(sb *strings.Builder , key, value string) {
+func checkValueSb(sb *strings.Builder, key, value string) {
 	fmt.Println("value : ", value)
 	if value != "" {
 		fmt.Fprintf(sb, "\t%s:%s;\n", key, value)
 	}
 }
-
 
 func checkValueFile(sb *os.File, key, value string) {
 	if len(strings.Split(value, "")) > 0 {
@@ -74,15 +73,16 @@ func checkValueFile(sb *os.File, key, value string) {
 }
 
 func styleWriter(page Page, cssFile *os.File) {
-	
+
 	var desktopSb strings.Builder
 	var tabletSb strings.Builder
-	var cssVal map[string]map[string]map[string]string
+	var cssVal map[string]map[string]string
 	style := page.styles
+	fmt.Println(style)
 	if style != "" {
 		er := json.Unmarshal([]byte(style), &cssVal)
 		if er != nil {
-			fmt.Println("error", er)
+			fmt.Println("error df", er)
 		}
 	}
 
@@ -92,42 +92,49 @@ func styleWriter(page Page, cssFile *os.File) {
 	if len(tablet) > 0 {
 		for tag, val := range tablet {
 			fmt.Fprintf(&tabletSb, "%s {\n", tag)
-			for key, value := range val {
-				checkValueSb(&tabletSb, key, value)
-			}
-			fmt.Fprintf(&tabletSb, "\n}\n")
+			fmt.Fprint(&tabletSb, val)
+			fmt.Fprintf(&tabletSb, ";\n}\n")
 		}
 	}
 	if len(desktop) > 0 {
 		for tag, val := range desktop {
 			fmt.Fprintf(&desktopSb, "%s {\n", tag)
-			for key, value := range val {
-				checkValueSb(&desktopSb, key, value)
-			}
-			fmt.Fprintf(&desktopSb, "\n}\n")
+			fmt.Fprint(&desktopSb, val)
+			fmt.Fprintf(&desktopSb, ";\n}\n")
 		}
 	}
 
 	if len(mobile) > 0 {
-		for tag, val := range desktop {
+		for tag, val := range mobile {
 			fmt.Fprintf(cssFile, "%s {\n", tag)
-			for key, value := range val {
-				checkValueFile(cssFile, key, value)
-			}
-			fmt.Fprintf(cssFile, "\n}\n")
+			fmt.Fprint(cssFile, val)
+			fmt.Fprintf(cssFile, ";\n}\n")
 		}
+	}
+	if desktopSb.Len() > 0 {
+		cssFile.WriteString("\n\n@media screen and (min-width: 1024px) {\n")
+		cssFile.WriteString(desktopSb.String())
+		cssFile.WriteString("}\n")
+	}
+	if tabletSb.Len() > 0 {
+		cssFile.WriteString("@media screen and (min-width: 768px) {\n")
+		cssFile.WriteString(tabletSb.String())
+		cssFile.WriteString("}\n")
 	}
 }
 
 func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName string, pageName string) string {
 	cssPath := fmt.Sprintf("%s/%s/static/static/css/%s.css", config.PROJECT_DIR, projectName, pageName)
 	cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
-	defer cssFile.Close()
+
 	var sb strings.Builder
 
 	var desktopSb strings.Builder
+	desktopSb.Grow(4096)
 	var tabletSb strings.Builder
-
+	tabletSb.Grow(4096)
+	defer desktopSb.Reset()
+	defer tabletSb.Reset()
 	for _, b := range blocks {
 		block := b
 
@@ -141,13 +148,14 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 
 		// Gestion des balises auto-fermantes
 		if tag == "img" {
-			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-id=\"%s\" />", content, className, id)
+			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-block-id=\"%s\" />", content, className, id)
 			continue
 		} else if tag == "input" {
-			fmt.Fprintf(&sb, "<input type=\"%s\" class=\"%s\" data-id=\"%s\" placeholder=\"%s\"/>", inputType, className, id, placeholder)
+			fmt.Fprintf(&sb, "<input type=\"%s\" class=\"%s\" data-block-id=\"%s\" placeholder=\"%s\"/>", inputType, className, id, placeholder)
+			continue
 		}
 
-		fmt.Fprintf(&sb, "<%s class=\"%s\" data-id=\"%s\" > ", tag, className, id)
+		fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" > ", tag, className, id)
 		var cssVal map[string]map[string]string
 		if style != "" {
 			er := json.Unmarshal([]byte(style), &cssVal)
@@ -167,6 +175,7 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 			}
 			tabletSb.WriteString("}\n")
 		}
+
 		if len(desktop) > 0 {
 			fmt.Fprintf(&desktopSb, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range desktop {

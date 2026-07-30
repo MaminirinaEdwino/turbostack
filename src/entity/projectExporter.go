@@ -18,8 +18,6 @@ func (mgr *ProjectManager) ExporterDB(Project Project) {
 	fmt.Printf("Exportation des modèles terminée pour le projet : %s\n", projectName)
 }
 
-
-
 func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	apiMaker := GoApiMaker{}
 	projectName := Project.GetNom()
@@ -44,17 +42,18 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 	ssm.SetupStaticArch(projectName)
 
 	// 1. Génération du CSS global
-	cssPath := fmt.Sprintf("%s/%s/static/static/css/style.css",  config.PROJECT_DIR,projectName)
+	cssPath := fmt.Sprintf("%s/%s/static/static/css/style.css", config.PROJECT_DIR, projectName)
 	cssFile, _ := os.Create(cssPath)
 
-	
 	defer cssFile.Close()
 
 	// 2. Génération des pages HTML
 	for _, page := range site.GetPages() {
 		pageName := strings.ToLower(strings.ReplaceAll(page.GetNom(), " ", "_"))
-		filePath := fmt.Sprintf("%s/%s/static/views/%s.html", config.PROJECT_DIR,projectName, pageName)
-
+		filePath := fmt.Sprintf("%s/%s/static/views/%s.html", config.PROJECT_DIR, projectName, pageName)
+		cssPath := fmt.Sprintf("%s/%s/static/static/css/global_%s.css", config.PROJECT_DIR, projectName, pageName)
+		cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+		styleWriter(page, cssFile)
 		file, err := os.Create(filePath)
 		if err != nil {
 			continue
@@ -64,7 +63,9 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 		sb.WriteString("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n")
 		sb.WriteString("\t<meta charset=\"UTF-8\">\n")
 		fmt.Fprintf(&sb, "\t<title>%s</title>\n", page.GetNom())
+		fmt.Fprint(&sb, "\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n")
 		fmt.Fprintf(&sb, "\t<link rel=\"stylesheet\" href=\"/static/css/%s.css\">\n", pageName)
+		fmt.Fprintf(&sb, "\t<link rel=\"stylesheet\" href=\"/static/css/global_%s.css\">\n", pageName)
 		sb.WriteString("</head>\n<body>\n")
 
 		// Conversion du contenu JSON en HTML
@@ -79,13 +80,11 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 	}
 	techno := "golang"
 	if techno == "golang" {
-		mainPath := fmt.Sprintf("%s/%s/static/main.go", config.PROJECT_DIR,projectName)
+		mainPath := fmt.Sprintf("%s/%s/static/main.go", config.PROJECT_DIR, projectName)
 		ssm.SetupGoServerCode(site.GetPages(), mainPath)
 	}
 	fmt.Printf("Exportation du site statique terminée : %s\n", projectName)
 }
-
-
 
 func (mgr *ProjectManager) setupWebAppArch(name string) {
 	projectPath := fmt.Sprintf("%s/web-app/", name)
@@ -166,7 +165,7 @@ func (mgr *ProjectManager) ExporterWebApp(Project Project) {
 	pkgFile.Close()
 
 	// 2. Génération du Service API
-	svcPath := fmt.Sprintf("%s/web-app/src/services/api.js",  projectName)
+	svcPath := fmt.Sprintf("%s/web-app/src/services/api.js", projectName)
 	svcFile, _ := os.Create(svcPath)
 	svcFile.WriteString(`const API_URL = "http://localhost:8080";
 
@@ -192,7 +191,9 @@ export const apiRequest = async (endpoint, method = "GET", data = null) => {
 
 		content := comp.GetContenu()
 		anyBlocks := make([]any, len(content))
-		for i, v := range content { anyBlocks[i] = v }
+		for i, v := range content {
+			anyBlocks[i] = v
+		}
 		sb.WriteString(mgr.renderBlocksToJSX(anyBlocks))
 
 		sb.WriteString("\n\t\t</>\n\t);\n}")
@@ -212,7 +213,9 @@ export const apiRequest = async (endpoint, method = "GET", data = null) => {
 
 		content := page.GetContent()
 		anyBlocks := make([]any, len(content))
-		for i, v := range content { anyBlocks[i] = v }
+		for i, v := range content {
+			anyBlocks[i] = v
+		}
 		sb.WriteString(mgr.renderBlocksToJSX(anyBlocks))
 
 		sb.WriteString("\n\t\t</div>\n\t);\n}")
@@ -233,7 +236,9 @@ export const apiRequest = async (endpoint, method = "GET", data = null) => {
 	for _, page := range webApp.GetPages() {
 		pName := strings.ReplaceAll(page.GetNom(), " ", "")
 		uri := ""
-		if uri == "" { uri = "/" }
+		if uri == "" {
+			uri = "/"
+		}
 		fmt.Fprintf(&ab, "\t\t\t\t<Route path=\"%s\" element={<%s />} />\n", uri, pName)
 	}
 	ab.WriteString("\t\t\t</Routes>\n\t\t</Router>\n\t);\n}\n\nexport default App;")

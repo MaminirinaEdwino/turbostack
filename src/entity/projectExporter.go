@@ -44,16 +44,16 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 	ssm.SetupStaticArch(projectName)
 
 	// 1. Génération du CSS global
-	cssPath := fmt.Sprintf("%s/%s/static/css/style.css",  config.PROJECT_DIR,projectName)
+	cssPath := fmt.Sprintf("%s/%s/static/static/css/style.css",  config.PROJECT_DIR,projectName)
 	cssFile, _ := os.Create(cssPath)
 
-	// On pourrait ici itérer pour extraire tous les styles JSON des blocs
-	cssFile.Close()
+	
+	defer cssFile.Close()
 
 	// 2. Génération des pages HTML
 	for _, page := range site.GetPages() {
 		pageName := strings.ToLower(strings.ReplaceAll(page.GetNom(), " ", "_"))
-		filePath := fmt.Sprintf("%s/%s/static/%s.html", config.PROJECT_DIR,projectName, pageName)
+		filePath := fmt.Sprintf("%s/%s/static/views/%s.html", config.PROJECT_DIR,projectName, pageName)
 
 		file, err := os.Create(filePath)
 		if err != nil {
@@ -64,7 +64,7 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 		sb.WriteString("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n")
 		sb.WriteString("\t<meta charset=\"UTF-8\">\n")
 		fmt.Fprintf(&sb, "\t<title>%s</title>\n", page.GetNom())
-		fmt.Fprintf(&sb, "\t<link rel=\"stylesheet\" href=\"css/%s.css\">\n", pageName)
+		fmt.Fprintf(&sb, "\t<link rel=\"stylesheet\" href=\"/static/css/%s.css\">\n", pageName)
 		sb.WriteString("</head>\n<body>\n")
 
 		// Conversion du contenu JSON en HTML
@@ -77,8 +77,15 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 		file.WriteString(sb.String())
 		file.Close()
 	}
+	techno := "golang"
+	if techno == "golang" {
+		mainPath := fmt.Sprintf("%s/%s/static/main.go", config.PROJECT_DIR,projectName)
+		ssm.SetupGoServerCode(site.GetPages(), mainPath)
+	}
 	fmt.Printf("Exportation du site statique terminée : %s\n", projectName)
 }
+
+
 
 func (mgr *ProjectManager) setupWebAppArch(name string) {
 	projectPath := fmt.Sprintf("%s/web-app/", name)

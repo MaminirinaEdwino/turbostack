@@ -10,6 +10,7 @@ type pageContent struct {
 	children    []pageContent
 	inputType   string
 	placeholder string
+	formType    string
 }
 
 func (p *pageContent) GetId() string {
@@ -75,14 +76,15 @@ func (p *pageContent) ToJSON() PageContentJSON {
 	}
 
 	return PageContentJSON{
-		Id:        p.id,
-		Tag:       p.tag,
-		Content:   p.content,
-		ClassName: p.className,
-		Href:      p.href,
-		Styles:    p.styles,
-		Children:  children,
-		InputType: p.inputType,
+		Id:          p.id,
+		Tag:         p.tag,
+		Content:     p.content,
+		ClassName:   p.className,
+		Href:        p.href,
+		Styles:      p.styles,
+		Children:    children,
+		InputType:   p.inputType,
 		Placeholder: p.placeholder,
+		FormType:    p.formType,
 	}
 }

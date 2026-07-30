@@ -107,4 +107,5 @@ type PageContentJSON struct {
 	Children    []PageContentJSON `json:"children"`
 	InputType   string            `json:"input_type"`
 	Placeholder string            `json:"placeholder"`
+	FormType    string            `json:"form_type"`
 }

@@ -178,5 +178,6 @@ func (pc *PageContentJSON) ToModel() pageContent {
 		children:    children,
 		inputType:   pc.InputType,
 		placeholder: pc.Placeholder,
+		formType:    pc.FormType,
 	}
 }

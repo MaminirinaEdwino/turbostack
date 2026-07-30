@@ -74,7 +74,7 @@ func (pj *PageJSON) ToModel() Page {
 		nom:     pj.Nom,
 		contenu: pcontent,
 		uri:     pj.Uri,
-		styles: pj.Styles,
+		styles:  pj.Styles,
 	}
 }
 
@@ -84,8 +84,9 @@ func (bddjson *BDDJSON) ToModel() BDD {
 		dbModel = append(dbModel, val.ToModel())
 	}
 	return BDD{
-		sgbd:   bddjson.Sgbd,
-		models: dbModel,
+		sgbd:    bddjson.Sgbd,
+		models:  dbModel,
+		scripts: bddjson.Scripts,
 	}
 }
 
@@ -168,14 +169,14 @@ func (pc *PageContentJSON) ToModel() pageContent {
 	}
 
 	return pageContent{
-		id:        pc.Id,
-		tag:       pc.Tag,
-		content:   pc.Content,
-		className: pc.ClassName,
-		href:      pc.Href,
-		styles:    pc.Styles,
-		children:  children,
-		inputType: pc.InputType,
+		id:          pc.Id,
+		tag:         pc.Tag,
+		content:     pc.Content,
+		className:   pc.ClassName,
+		href:        pc.Href,
+		styles:      pc.Styles,
+		children:    children,
+		inputType:   pc.InputType,
 		placeholder: pc.Placeholder,
 	}
 }

@@ -9,8 +9,9 @@ type AbonnementJSON struct {
 }
 
 type BDDJSON struct {
-	Models []ModelJSON `json:"models"`
-	Sgbd   string      `json:"sgbd"`
+	Models  []ModelJSON         `json:"models"`
+	Sgbd    string              `json:"sgbd"`
+	Scripts []map[string]string `json:"scripts"`
 }
 
 type ChampsJSON struct {

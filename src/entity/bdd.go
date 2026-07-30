@@ -1,22 +1,22 @@
 package entity
 
 type BDD struct {
-	models []Model
-	sgbd   string
+	models  []Model
+	scripts []map[string]string
+	sgbd    string
 }
 
 func (db *BDD) ToJSON() BDDJSON {
 	var dbModel []ModelJSON
-	for _, val := range db.models{
+	for _, val := range db.models {
 		dbModel = append(dbModel, val.ToJSON())
 	}
 	return BDDJSON{
-		Models: dbModel,
-		Sgbd: db.sgbd,
+		Models:  dbModel,
+		Sgbd:    db.sgbd,
+		Scripts: db.scripts,
 	}
 }
-
-
 
 func (db *BDD) GetModels() []Model {
 	return db.models

@@ -1,6 +1,9 @@
 package entity
 
-type webAppMaker struct{}
+type webAppMaker struct {
+	ProjectName string
+	WebApp      WebApp
+}
 
 func (wap *webAppMaker) SetupArch() {
 	folderList := []string{

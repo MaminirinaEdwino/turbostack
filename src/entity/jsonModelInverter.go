@@ -66,8 +66,12 @@ func (mj *ModelJSON) ToModel() Model {
 
 func (pj *PageJSON) ToModel() Page {
 	var pcontent []pageContent
+	var assetLlist AssetList
 	for _, val := range pj.Contenu {
 		pcontent = append(pcontent, val.ToModel())
+	}
+	for _, val := range pj.Assets {
+		assetLlist = append(assetLlist, val.ToModel())
 	}
 
 	return Page{
@@ -75,6 +79,7 @@ func (pj *PageJSON) ToModel() Page {
 		contenu: pcontent,
 		uri:     pj.Uri,
 		styles:  pj.Styles,
+		asset:   assetLlist,
 	}
 }
 

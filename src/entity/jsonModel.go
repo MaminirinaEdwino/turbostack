@@ -64,6 +64,7 @@ type PageJSON struct {
 	Contenu []PageContentJSON `json:"content"`
 	Uri     string            `json:"uri"`
 	Styles  string            `json:"styles"`
+	Assets  []AssetJSON       `json:"assets"`
 }
 
 type ProjectJSON struct {

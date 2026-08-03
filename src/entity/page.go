@@ -5,10 +5,15 @@ type Page struct {
 	contenu []pageContent
 	uri     string
 	styles  string
+	asset   AssetList
 }
 
 func (p *Page) ToJSON() PageJSON {
 	var pcontent []PageContentJSON
+	var assetList []AssetJSON
+	for _, val := range p.asset {
+		assetList = append(assetList, val.ToJSON())
+	}
 	for _, val := range p.contenu {
 		pcontent = append(pcontent, val.ToJSON())
 	}
@@ -18,6 +23,7 @@ func (p *Page) ToJSON() PageJSON {
 		Contenu: pcontent,
 		Uri:     p.uri,
 		Styles:  p.styles,
+		Assets:  assetList,
 	}
 }
 

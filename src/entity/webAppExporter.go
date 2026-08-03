@@ -2,7 +2,6 @@ package entity
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 )

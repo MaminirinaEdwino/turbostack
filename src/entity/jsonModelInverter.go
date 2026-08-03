@@ -1,5 +1,7 @@
 package entity
 
+import "path/filepath"
+
 func (aj *AbonnementJSON) ToModel() Abonnement {
 	return Abonnement{
 		type_abonnement: aj.Type_abonnement,
@@ -179,5 +181,21 @@ func (pc *PageContentJSON) ToModel() pageContent {
 		inputType:   pc.InputType,
 		placeholder: pc.Placeholder,
 		formType:    pc.FormType,
+	}
+}
+
+type AssetJSON struct {
+	Filepath string `json:"filepath"`
+}
+
+func (assetJSON *AssetJSON) ToModel() Asset {
+	return Asset{
+		filePath: assetJSON.Filepath,
+	}
+}
+
+func (asset *Asset) ToJSON() AssetJSON {
+	return AssetJSON{
+		Filepath: asset.filePath,
 	}
 }

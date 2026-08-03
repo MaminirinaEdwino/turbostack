@@ -1,7 +1,5 @@
 package entity
 
-import "path/filepath"
-
 func (aj *AbonnementJSON) ToModel() Abonnement {
 	return Abonnement{
 		type_abonnement: aj.Type_abonnement,

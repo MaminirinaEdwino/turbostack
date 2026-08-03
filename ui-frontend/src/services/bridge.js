@@ -38,5 +38,8 @@ export const GoApp = {
     },
     checkToken: async ()=>{
         return await window.checkToken()
+    },
+    fetChFileForUpload: async (folder)=>{
+        return await window.getFolderForUpload(folder)
     }
 }

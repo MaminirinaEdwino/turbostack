@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
@@ -24,6 +25,7 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("exportProject", ps.ExportProject)
 	w.Bind("fetchProjectFiles", ps.FeychProjectFiles)
 	w.Bind("getFileContent", ps.GetFileContent)
+	w.Bind("getFolderForUpload", ps.FetchFolderForUpload)
 }
 
 func (s *ProjectService) ExportProject(name, typeProject string) string {
@@ -113,20 +115,38 @@ func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
 	return pJson
 }
 
-func (s *ProjectService) FetchFolderContent(folder string) []entity.FileNode {
+func (s *ProjectService) FetchFolderForUpload(folder string) []entity.FileNode {
 	var dirPath string
 	var nodes []entity.FileNode
 	if folder == "" {
 		dirPath, _ = os.UserHomeDir()
+	}else {
+		dirPath = folder
 	}
+	fmt.Println(dirPath)
 	dir, err := os.ReadDir(dirPath)
 	if os.IsNotExist(err) {
 		return []entity.FileNode{}
 	}
 	for _, entry := range dir {
 		info, err := entry.Info()
+
 		if err != nil {
 			continue
+		}
+
+		if entry.IsDir() && strings.Split(entry.Name(), "")[0] == "." && entry.Name() != ".turbostack" {
+			continue
+		}
+
+		if !entry.IsDir() && strings.Split(entry.Name(), "")[0] =="." {
+			continue
+		}
+
+		if !entry.IsDir() {
+			if strings.Contains(entry.Name(), ".pdf") || strings.Contains(entry.Name(), ".rar") || strings.Contains(entry.Name(), ".docx") || strings.Contains(entry.Name(), ".doc") || strings.Contains(entry.Name(), ".txt") || strings.Contains(entry.Name(), ".ase") || strings.Contains(entry.Name(), ".tmp") || strings.Contains(entry.Name(), ".pixi") || strings.Contains(entry.Name(), ".odt") || strings.Contains(entry.Name(), ".sh") || strings.Contains(entry.Name(), ".md") || strings.Contains(entry.Name(), ".db") || strings.Contains(entry.Name(), ".amgp") || strings.Contains(entry.Name(), ".zip") || strings.Contains(entry.Name(), ".json"){
+				continue
+			}
 		}
 		node := entity.FileNode{
 			Name:  entry.Name(),

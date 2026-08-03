@@ -15,6 +15,7 @@ import {
   Cpu,
   PanelsTopLeft,
   SendToBack,
+  ImageIcon,
 } from "lucide-react";
 import { useNavigate } from "../hooks/useNavigate";
 import { useDispatch, useSelector } from "react-redux";
@@ -72,8 +73,6 @@ export default function SideMenu() {
     { name: "Dashboard", icon: <LayoutDashboard size={18} /> },
     { name: "Project", icon: <Folder size={18} /> },
     // { name: 'Components', icon: <LucidePuzzle size={18} /> },
-    // { name: 'Assets', icon: <ImageIcon size={18} /> },
-
     { name: "Subscription", icon: <CreditCard size={18} /> },
   ];
 
@@ -139,6 +138,7 @@ export default function SideMenu() {
               // { name: "Api", icon: <Settings size={18} /> },
               { name: "Files", icon: <Folder size={18} /> },
               { name: "Export", icon: <SendToBack size={18} /> },
+              { name: 'Assets', icon: <ImageIcon size={18} /> },
             ])
           } else {
             setSubItems([
@@ -152,6 +152,7 @@ export default function SideMenu() {
               { name: "Static Site", icon: <Globe size={18} /> },
               { name: "Files", icon: <Folder size={18} /> },
               { name: "Export", icon: <SendToBack size={18} /> },
+              { name: 'Assets', icon: <ImageIcon size={18} /> },
             ])
           }
 

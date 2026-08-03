@@ -88,6 +88,7 @@ type RestApiJSON struct {
 type SiteStatiqueJSON struct {
 	Pages      []PageJSON      `json:"pages"`
 	Composants []ComposantJSON `json:"composants"`
+	Assets     AssetJSONList   `json:"assets"`
 }
 
 type WebAppJSON struct {

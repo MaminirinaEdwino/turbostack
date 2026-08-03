@@ -3,19 +3,22 @@ package entity
 type SiteStatique struct {
 	pages      []Page
 	composants []Composant
+	assets     AssetList
 }
+
+type AssetJSONList []AssetJSON
 
 func (s *SiteStatique) ToJSON() SiteStatiqueJSON {
 	var pages []PageJSON
 	var composants []ComposantJSON
-	for _, val := range s.pages{
+	for _, val := range s.pages {
 		pages = append(pages, val.ToJSON())
 	}
-	for _, val := range s.composants{
+	for _, val := range s.composants {
 		composants = append(composants, val.ToJSON())
 	}
 	return SiteStatiqueJSON{
-		Pages: pages,
+		Pages:      pages,
 		Composants: composants,
 	}
 }

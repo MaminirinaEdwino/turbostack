@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
@@ -110,4 +111,30 @@ func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
 	}
 	json.Unmarshal(file, &pJson)
 	return pJson
+}
+
+func (s *ProjectService) FetchFolderContent(folder string) []entity.FileNode {
+	var dirPath string
+	var nodes []entity.FileNode
+	if folder == "" {
+		dirPath, _ = os.UserHomeDir()
+	}
+	dir, err := os.ReadDir(dirPath)
+	if os.IsNotExist(err) {
+		return []entity.FileNode{}
+	}
+	for _, entry := range dir {
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+		node := entity.FileNode{
+			Name:  entry.Name(),
+			Path:  filepath.Join(dirPath, entry.Name()),
+			IsDir: entry.IsDir(),
+			Size:  info.Size(),
+		}
+		nodes = append(nodes, node)
+	}
+	return nodes
 }

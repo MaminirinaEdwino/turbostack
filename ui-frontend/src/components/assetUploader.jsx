@@ -9,6 +9,7 @@ export default function AssetUploaderModal() {
     useEffect(() => {
         const loadFile = async () => {
             const res = await GoApp.fetChFileForUpload(folder)
+            console.log(res)
             setFileList(res)
         }
         loadFile()
@@ -33,6 +34,19 @@ export default function AssetUploaderModal() {
         <div className="h-[90%] w-full overflow-scroll">
             {fileList.map((file, idx) => <FileNode key={file.name + idx} setFolder={setFolder} fileNode={file} setSelectedFile={setSelectedFile}/>)}
         </div>
-        <img src={"file:/"+selectedFile} alt="" />
+        <iframe src="" frameborder="0" srcDoc={`<!DOCTYPE html>
+                                    <html lang="en">
+                                        <head>
+                                            <meta charset="UTF-8">
+                                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+                                            <style>
+                                                body { margin: 0; padding: 0; min-height: 100vh; font-family: sans-serif; }
+                                                img { max-width: 100%; height: auto; }
+                                                
+                                            </style>
+                                        </head>
+                                        <body><img src="file:/${selectedFile}"/></body>
+                                    </html>`}></iframe>
     </div>
 }

@@ -86,13 +86,12 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 	fmt.Printf("Exportation du site statique terminée : %s\n", projectName)
 }
 
-
-
 func (mgr *ProjectManager) ExporterWebApp(Project Project) {
 	webAppMaker := webAppMaker{
 		ProjectName: Project.GetNom(),
-		WebApp: Project.GetWebApp(),
-		Techno: "go",
+		WebApp:      Project.GetWebApp(),
+		Techno:      "go",
+		Api:         Project.rest_api,
 	}
 	webAppMaker.WebAppGenerator()
 	fmt.Println("web app generated")

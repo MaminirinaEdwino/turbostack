@@ -7,7 +7,8 @@ import LayoutHeader from "../../components/layoutHeader";
 import { GoApp } from "../../services/bridge";
 import ProjectPageView from "../projects/projectPageContent";
 import { setActualProject } from "../../appSlice";
-import { X, FileText, Layout, LucidePuzzle, Globe } from "lucide-react";
+import { X, FileText, Layout, LucidePuzzle, Globe, MessageCircle } from "lucide-react";
+import AiChatModal from "../../components/modalAI";
 
 const HomePage = () => {
     const actualProject = useSelector((state) => state.app.actualProject);
@@ -15,6 +16,7 @@ const HomePage = () => {
     const [projectDetails, setProjectDetails] = useState(null);
     const [loading, setLoading] = useState(false);
     const [recentProjects, setRecentProjects] = useState([]);
+    const [isChatModalOpen, setChatModalOpen] = useState(true)
 
     useEffect(() => {
         const loadData = async () => {
@@ -50,6 +52,7 @@ const HomePage = () => {
     return (
         <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300" >
             <SideMenu />
+            <button className="fixed bottom-20 right-2 z-50 bg-couleur1 text-couleur3 p-3 rounded-lg" onClick={()=>setChatModalOpen(true)}><MessageCircle size={20}/></button>
             <main className="flex-1 p-8 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
                     <LayoutHeader layoutName={actualProject ? `Project Dashboard` : "Global Dashboard"} />
@@ -70,6 +73,7 @@ const HomePage = () => {
                     ) : (
                         projectDetails && (
                             <div className="space-y-8 flex flex-col">
+                            <AiChatModal isOpen={isChatModalOpen} onClose={()=>setChatModalOpen(!isChatModalOpen)}/>
                                 {projectDetails.type == "web_app" && <div className="flex items-center gap-3 mb-4 text-couleur1 dark:text-gray-200">
                                     <div className="p-2 bg-couleur1 text-white rounded-lg shadow-sm">
                                         <Layout size={20} />

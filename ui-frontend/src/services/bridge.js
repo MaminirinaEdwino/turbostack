@@ -41,5 +41,8 @@ export const GoApp = {
     },
     fetChFileForUpload: async (folder)=>{
         return await window.getFolderForUpload(folder)
+    },
+    getImageAsBase64: async (path)=>{
+        return await window.getImageAsBase64(path)
     }
 }

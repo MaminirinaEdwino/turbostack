@@ -1,8 +1,8 @@
 package entity
 
 type Asset struct {
-	filePath string
+	fileName    string
+	base64Image string
 }
 
 type AssetList []Asset
-

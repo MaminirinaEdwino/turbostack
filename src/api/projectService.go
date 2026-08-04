@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -26,6 +27,7 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("fetchProjectFiles", ps.FeychProjectFiles)
 	w.Bind("getFileContent", ps.GetFileContent)
 	w.Bind("getFolderForUpload", ps.FetchFolderForUpload)
+	w.Bind("getImageAsBase64", ps.GetImageAsBase64)
 }
 
 func (s *ProjectService) ExportProject(name, typeProject string) string {
@@ -157,4 +159,25 @@ func (s *ProjectService) FetchFolderForUpload(folder string) []entity.FileNode {
 		nodes = append(nodes, node)
 	}
 	return nodes
+}
+
+func (s *ProjectService) GetImageAsBase64(path string) (string, error) {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	var mimeType string
+	switch filepath.Ext(path) {
+	case ".jpg", ".jpeg":
+		mimeType = "image/jpeg"
+	case ".png":
+		mimeType = "image/png"
+	case ".mp4":
+		mimeType = "video/mp4"
+	default:
+		mimeType = "application/octet-stream"
+	}
+
+	encoded := base64.StdEncoding.EncodeToString(bytes)
+	return fmt.Sprintf("data:%s;base64,%s", mimeType, encoded), nil
 }

@@ -120,7 +120,7 @@ export default function AiChatModal({ isOpen, onClose }) {
                             disabled={!prompt.trim()}
                             className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-couleur1 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg shadow-md shadow-indigo-600/20 transition-all active:scale-95"
                         >
-                            <span>Envoyer</span>
+                            <span>Send</span>
                             <svg
                                 className="w-4 h-4 rotate-90"
                                 fill="none"

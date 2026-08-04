@@ -90,6 +90,10 @@ func (bddjson *BDDJSON) ToModel() BDD {
 }
 
 func (pj *ProjectJSON) ToModel() Project {
+	var assets AssetList
+	for _, asset := range pj.Assets {
+		assets = append(assets, asset.ToModel())
+	}
 	return Project{
 		nom:           pj.Nom,
 		type_project:  pj.Type,
@@ -100,7 +104,7 @@ func (pj *ProjectJSON) ToModel() Project {
 		site_statique: pj.SiteStatique.ToModel(),
 		updateAt:      pj.UpdateAt,
 		createdAt:     pj.CreatedAt,
-		assets:        pj.ToModel().assets,
+		assets:        assets,
 	}
 }
 

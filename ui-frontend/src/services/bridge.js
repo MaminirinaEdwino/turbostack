@@ -1,7 +1,7 @@
 export const GoApp = {
     sayHello: async (name) => {
         // console.log("hello")
-        console.log( await window.sayHello(name));
+        console.log(await window.sayHello(name));
     },
     getStats: async () => {
         if (window.GetStats) {
@@ -9,40 +9,43 @@ export const GoApp = {
         }
         return { os: "Browser", arch: "wasm" };
     },
-    createProject: async (name, description, type)=>{
+    createProject: async (name, description, type) => {
         return await window.createProject(name, description, type);
     },
-    fetchProjects: async ()=>{
+    fetchProjects: async () => {
         return await window.fetchProjects();
     },
-    fetchProjectByName: async (name)=>{
+    fetchProjectByName: async (name) => {
         return await window.fetchByProjectName(name)
     },
-    savedb: async (name, project)=>{
+    savedb: async (name, project) => {
         return await window.saveBdd(name, project)
-    }, 
-    saveProject: async(name, project)=>{
+    },
+    saveProject: async (name, project) => {
         return await window.saveProject(name, project)
     },
-    exportProject: async(name, type)=>{
+    exportProject: async (name, type) => {
         return await window.exportProject(name, type)
     },
-    fetchProjectFiles: async(name)=>{
+    fetchProjectFiles: async (name) => {
         return await window.fetchProjectFiles(name)
     },
-    getFileContent : async(name, path)=>{
+    getFileContent: async (name, path) => {
         return await window.getFileContent(name, path)
     },
-    saveToken: async (token)=>{
+    saveToken: async (token) => {
         return await window.saveToken(token)
     },
-    checkToken: async ()=>{
+    checkToken: async () => {
         return await window.checkToken()
     },
-    fetChFileForUpload: async (folder)=>{
+    fetChFileForUpload: async (folder) => {
         return await window.getFolderForUpload(folder)
     },
-    getImageAsBase64: async (path)=>{
+    getImageAsBase64: async (path) => {
         return await window.getImageAsBase64(path)
+    },
+    uploadAsset: async (projectName, fileName, base64file) => {
+        return await window.uploadAsset(projectName, fileName, base64file)
     }
 }

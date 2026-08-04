@@ -16,6 +16,10 @@ type Project struct {
 }
 
 func (p *Project) ToJSON() ProjectJSON {
+	var assets AssetJSONList
+	for _, val := range p.assets {
+		assets = append(assets, val.ToJSON())
+	}
 	return ProjectJSON{
 		Nom:          p.nom,
 		Type:         p.type_project,
@@ -26,7 +30,7 @@ func (p *Project) ToJSON() ProjectJSON {
 		SiteStatique: p.site_statique.ToJSON(),
 		UpdateAt:     p.updateAt,
 		CreatedAt:    p.createdAt,
-		Assets:       p.ToJSON().Assets,
+		Assets:       assets,
 	}
 }
 

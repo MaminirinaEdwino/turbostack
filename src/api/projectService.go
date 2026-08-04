@@ -28,6 +28,17 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("getFileContent", ps.GetFileContent)
 	w.Bind("getFolderForUpload", ps.FetchFolderForUpload)
 	w.Bind("getImageAsBase64", ps.GetImageAsBase64)
+	w.Bind("uploadAsset", ps.UploadAsset)
+}
+
+func (s *ProjectService) UploadAsset(projectName, fileName, base64file string) string {
+	project := s.FetchProjectByName(projectName)
+	project.Assets = append(project.Assets, entity.AssetJSON{
+		FileName:    fileName,
+		Base64Image: base64file,
+	})
+	s.Manager.SaveProject(project)
+	return "success"
 }
 
 func (s *ProjectService) ExportProject(name, typeProject string) string {
@@ -122,7 +133,7 @@ func (s *ProjectService) FetchFolderForUpload(folder string) []entity.FileNode {
 	var nodes []entity.FileNode
 	if folder == "" {
 		dirPath, _ = os.UserHomeDir()
-	}else {
+	} else {
 		dirPath = folder
 	}
 	fmt.Println(dirPath)
@@ -141,12 +152,12 @@ func (s *ProjectService) FetchFolderForUpload(folder string) []entity.FileNode {
 			continue
 		}
 
-		if !entry.IsDir() && strings.Split(entry.Name(), "")[0] =="." {
+		if !entry.IsDir() && strings.Split(entry.Name(), "")[0] == "." {
 			continue
 		}
 
 		if !entry.IsDir() {
-			if strings.Contains(entry.Name(), ".pdf") || strings.Contains(entry.Name(), ".rar") || strings.Contains(entry.Name(), ".docx") || strings.Contains(entry.Name(), ".doc") || strings.Contains(entry.Name(), ".txt") || strings.Contains(entry.Name(), ".ase") || strings.Contains(entry.Name(), ".tmp") || strings.Contains(entry.Name(), ".pixi") || strings.Contains(entry.Name(), ".odt") || strings.Contains(entry.Name(), ".sh") || strings.Contains(entry.Name(), ".md") || strings.Contains(entry.Name(), ".db") || strings.Contains(entry.Name(), ".amgp") || strings.Contains(entry.Name(), ".zip") || strings.Contains(entry.Name(), ".json"){
+			if strings.Contains(entry.Name(), ".pdf") || strings.Contains(entry.Name(), ".rar") || strings.Contains(entry.Name(), ".docx") || strings.Contains(entry.Name(), ".doc") || strings.Contains(entry.Name(), ".txt") || strings.Contains(entry.Name(), ".ase") || strings.Contains(entry.Name(), ".tmp") || strings.Contains(entry.Name(), ".pixi") || strings.Contains(entry.Name(), ".odt") || strings.Contains(entry.Name(), ".sh") || strings.Contains(entry.Name(), ".md") || strings.Contains(entry.Name(), ".db") || strings.Contains(entry.Name(), ".amgp") || strings.Contains(entry.Name(), ".zip") || strings.Contains(entry.Name(), ".json") {
 				continue
 			}
 		}

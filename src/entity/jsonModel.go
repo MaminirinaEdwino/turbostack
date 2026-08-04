@@ -77,6 +77,7 @@ type ProjectJSON struct {
 	Description  string           `json:"description"`
 	UpdateAt     time.Time        `json:"update_at"`
 	CreatedAt    time.Time        `json:"created_at"`
+	Assets       AssetJSONList    `json:"assets"`
 }
 
 type RestApiJSON struct {
@@ -88,7 +89,6 @@ type RestApiJSON struct {
 type SiteStatiqueJSON struct {
 	Pages      []PageJSON      `json:"pages"`
 	Composants []ComposantJSON `json:"composants"`
-	Assets     AssetJSONList   `json:"assets"`
 }
 
 type WebAppJSON struct {

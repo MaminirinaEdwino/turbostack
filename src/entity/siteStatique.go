@@ -3,7 +3,6 @@ package entity
 type SiteStatique struct {
 	pages      []Page
 	composants []Composant
-	assets     AssetList
 }
 
 type AssetJSONList []AssetJSON

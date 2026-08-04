@@ -12,6 +12,7 @@ type Project struct {
 	site_statique SiteStatique
 	updateAt      time.Time
 	createdAt     time.Time
+	assets        AssetList
 }
 
 func (p *Project) ToJSON() ProjectJSON {
@@ -25,6 +26,7 @@ func (p *Project) ToJSON() ProjectJSON {
 		SiteStatique: p.site_statique.ToJSON(),
 		UpdateAt:     p.updateAt,
 		CreatedAt:    p.createdAt,
+		Assets:       p.ToJSON().Assets,
 	}
 }
 

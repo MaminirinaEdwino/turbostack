@@ -100,6 +100,7 @@ func (pj *ProjectJSON) ToModel() Project {
 		site_statique: pj.SiteStatique.ToModel(),
 		updateAt:      pj.UpdateAt,
 		createdAt:     pj.CreatedAt,
+		assets:        pj.ToModel().assets,
 	}
 }
 
@@ -182,17 +183,20 @@ func (pc *PageContentJSON) ToModel() pageContent {
 }
 
 type AssetJSON struct {
-	Filepath string `json:"filepath"`
+	FileName    string `json:"file_name"`
+	Base64Image string `json:"base_64_image"`
 }
 
 func (assetJSON *AssetJSON) ToModel() Asset {
 	return Asset{
-		filePath: assetJSON.Filepath,
+		fileName:    assetJSON.FileName,
+		base64Image: assetJSON.Base64Image,
 	}
 }
 
 func (asset *Asset) ToJSON() AssetJSON {
 	return AssetJSON{
-		Filepath: asset.filePath,
+		FileName:    asset.fileName,
+		Base64Image: asset.base64Image,
 	}
 }

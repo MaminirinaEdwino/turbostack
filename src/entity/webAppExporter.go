@@ -258,28 +258,53 @@ func (wap *webAppMaker) WriteScanValue(endpoint Endpoint) string {
 	return strings.Join(strBuilder, ", ")
 }
 
+func (wap *webAppMaker) WriteContentExtraction(endpoint Endpoint) string {
+	var str []string
+	for _, val := range endpoint.model[0].attributs {
+		str = append(str, fmt.Sprintf("%s := r.FormValue(\"%s\")", val.nom, val.nom))
+	}
+	return strings.Join(str, "")
+}
+
+func (wap *webAppMaker) WriteParamsChecker(endpoint Endpoint) string {
+	var str []string
+	for _, val := range endpoint.model[0].attributs {
+		str = append(str, fmt.Sprintf("%s == \"\"", val.nom))
+	}
+	return strings.Join(str, " || ")
+}
+
 func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint) string {
 	var strBuilder strings.Builder
 
 	fmt.Fprintf(&strBuilder, "mux.HandleFunc(\"%s %s\",", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
 	switch endpoint.method {
 	case "GET":
-		if len(endpoint.params) > 0 {
-			var attrTab []string
-			for _, val := range endpoint.model[0].attributs {
-				attrTab = append(attrTab, val.nom)
-			}
-			fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", ""), endpoint.params[0]))
+		if len(endpoint.model) > 0 {
+			if len(endpoint.params) > 0 {
+				var attrTab []string
+				for _, val := range endpoint.model[0].attributs {
+					attrTab = append(attrTab, val.nom)
+				}
+				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", ""), endpoint.params[0]))
 
-		} else {
-			var attrTab []string
-			for _, val := range endpoint.model[0].attributs {
-				attrTab = append(attrTab, val.nom)
-			}
-			fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", "")))
+			} else {
+				var attrTab []string
+				for _, val := range endpoint.model[0].attributs {
+					attrTab = append(attrTab, val.nom)
+				}
+				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", "")))
 
+			}
+		}else{
+			fmt.Fprintf(&strBuilder, WebAppPostViewtemplate(strings.ReplaceAll(endpoint.returnPage.nom, " ", "_")))
 		}
-	case "POST": 
+	case "POST":
+		var attr []string
+		for _, val := range endpoint.model[0].attributs {
+			attr = append(attr, val.nom)
+		}
+		fmt.Fprintf(&strBuilder, WebAppPostActionTemplate(goapimaker.DbCallerPG(), endpoint.redirectUri, wap.WriteContentExtraction(endpoint), wap.WriteParamsChecker(endpoint), goapimaker.Insert(endpoint.model[0].nom, attr), strings.Join(attr, ", ")))
 	case "PUT":
 	case "DELETE":
 	}

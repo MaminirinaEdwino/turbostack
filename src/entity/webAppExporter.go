@@ -69,7 +69,13 @@ func (wap *webAppMaker) WriteBodyType(endpoint Endpoint) string {
 	return strBuilder.String()
 }
 
-
+func (wap *webAppMaker) WriteParamsGetter(endpoint Endpoint) string {
+	var strBuilder strings.Builder
+	for _, val := range endpoint.params{
+		fmt.Fprintf(&strBuilder, "%s := r.PathValue(\"%s\")", val, val)
+	}
+	return  strBuilder.String()
+}
 
 func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint) string {
 	var strBuilder strings.Builder

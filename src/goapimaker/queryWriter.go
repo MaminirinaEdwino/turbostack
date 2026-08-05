@@ -16,8 +16,14 @@ func Update(ep_name string, attrs []string, params string) string {
 func Select(tableName string) string {
 	return fmt.Sprintf("select * from %s", tableName)
 }
+func SelectWithAttr(tableName string, attr string) string {
+	return fmt.Sprintf("select %s from %s", attr, tableName)
+}
 func SelectBy(tableName string, params string) string {
-	return fmt.Sprintf("select * from %s where %s = $1", tableName, params)
+	return fmt.Sprintf("select * from %s where %s = $1", params, tableName)
+}
+func SelectByWithAttr(tableName string, params string, paramsGet string) string {
+	return fmt.Sprintf("select %s from %s where %s = $1", params, tableName, paramsGet)
 }
 
 func Insert(tableName string, attr []string) string {

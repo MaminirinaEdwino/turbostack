@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
+	"github.com/MaminirinaEdwino/turbostack/src/goapimaker"
 	"github.com/MaminirinaEdwino/turbostack/src/utils"
 )
 
@@ -34,6 +35,7 @@ func (wap *webAppMaker) SetupArch() {
 
 func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName string) string {
 	return fmt.Sprintf(`
+func (w http.ResponseWriter, r *http.Request){
 	%s
 	%s
 	rows, err := db.Query("SELECT %s")
@@ -55,6 +57,7 @@ func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName strin
 	renderTemplate(w, "%s.html", map[string]interface{
 		"ReturnContent": returnValue
 	})
+}
 	`, returnType, dbCaller, query, scanValue, pageName)
 }
 
@@ -225,6 +228,17 @@ func (wap *webAppMaker) WriteBodyType(endpoint Endpoint) string {
 	fmt.Fprint(&strBuilder, "}\n")
 	return strBuilder.String()
 }
+func (wap *webAppMaker) WriteReturnType(endpoint Endpoint) string {
+	var strBuilder strings.Builder
+	fmt.Fprint(&strBuilder, "type returnType struct{\n")
+	for _, val := range endpoint.returnContent {
+		for _, field := range val.attributs {
+			fmt.Fprintf(&strBuilder, "%s %s `json:\"%s\"`", utils.ToUpperFirstLetter(field.nom), field.type_champs, field.nom)
+		}
+	}
+	fmt.Fprint(&strBuilder, "}\n")
+	return strBuilder.String()
+}
 
 func (wap *webAppMaker) WriteParamsGetter(endpoint Endpoint) string {
 	var strBuilder strings.Builder
@@ -234,28 +248,41 @@ func (wap *webAppMaker) WriteParamsGetter(endpoint Endpoint) string {
 	return strBuilder.String()
 }
 
+func (wap *webAppMaker) WriteScanValue(endpoint Endpoint) string {
+	var strBuilder []string
+	for _, val := range endpoint.returnContent {
+		for _, mod := range val.attributs {
+			strBuilder = append(strBuilder, fmt.Sprintf("&returnValue.%s", mod.nom))
+		}
+	}
+	return strings.Join(strBuilder, ", ")
+}
+
 func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint) string {
 	var strBuilder strings.Builder
 
-	fmt.Fprintf(&strBuilder, "mux.HandleFunc(\"%s %s\", func(w http.ResponseWriter, r *http.Request) {\n", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
-	fmt.Fprint(&strBuilder, wap.WriteParamsGetter(endpoint))
-	if endpoint.method != "GET" && endpoint.method != "DELETE" {
-		strBuilder.WriteString(wap.WriteBodyType(endpoint))
-		strBuilder.WriteString("var reqBody bodyType\n")
-	}
+	fmt.Fprintf(&strBuilder, "mux.HandleFunc(\"%s %s\",", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	switch endpoint.method {
+	case "GET":
+		if len(endpoint.params) > 0 {
+			var attrTab []string
+			for _, val := range endpoint.model[0].attributs {
+				attrTab = append(attrTab, val.nom)
+			}
+			fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", ""), endpoint.params[0]))
 
-	strBuilder.WriteString("r.ParseForm()")
-	for _, val := range endpoint.model {
-		for _, mod := range val.attributs {
-			fmt.Fprintf(&strBuilder, "reqBody.%s = r.FormValue(\"%s\")\n", utils.ToUpperFirstLetter(mod.nom), mod.nom)
+		} else {
+			var attrTab []string
+			for _, val := range endpoint.model[0].attributs {
+				attrTab = append(attrTab, val.nom)
+			}
+			fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", "")))
+
 		}
+	case "POST": 
+	case "PUT":
+	case "DELETE":
 	}
-
-	if endpoint.redirectUri != "" {
-
-	}
-
-	fmt.Fprint(&strBuilder, "})\n")
 	return strBuilder.String()
 }
 
@@ -290,4 +317,5 @@ func (wap *webAppMaker) WebAppGenerator() {
 	wap.SetupArch()
 	wap.CreateConfigFile()
 	wap.CreateModelFile()
+	wap.CreateControllerFile()
 }

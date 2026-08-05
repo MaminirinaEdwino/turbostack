@@ -6,7 +6,6 @@ import (
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/utils"
-	"golang.org/x/text/unicode/rangetable"
 )
 
 type webAppMaker struct {
@@ -62,7 +61,7 @@ func (wap *webAppMaker) WriteBodyType(endpoint Endpoint) string {
 	fmt.Fprint(&strBuilder, "type bodyType struct{\n")
 	for _, val := range endpoint.model {
 		for _, field := range val.attributs {
-			fmt.Fprintf(&strBuilder, "%s %s \"json:`%s`\"", utils.ToUpperFirstLetter(field.nom), field.type_champs, field.nom)
+			fmt.Fprintf(&strBuilder, "%s %s `json:\"%s\"`", utils.ToUpperFirstLetter(field.nom), field.type_champs, field.nom)
 		}
 	}
 	fmt.Fprint(&strBuilder, "}\n")
@@ -81,6 +80,7 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 	var strBuilder strings.Builder
 
 	fmt.Fprintf(&strBuilder, "mux.HandleFunc(\"%s %s\", func(w http.ResponseWriter, r *http.Request) {\n", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	fmt.Fprint(&strBuilder, wap.WriteParamsGetter(endpoint))
 	if endpoint.method != "GET" && endpoint.method != "DELETE" {
 		strBuilder.WriteString(wap.WriteBodyType(endpoint))
 	}

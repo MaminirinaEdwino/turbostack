@@ -50,6 +50,7 @@ func (ej *EndpointJSON) ToModel() Endpoint {
 		returnContentType: ej.ReturnContentType,
 		returnPage:        ej.ReturnPage.ToModel(),
 		redirectUri:       ej.RedirectUri,
+		bodyType:          ej.BodyType,
 	}
 }
 

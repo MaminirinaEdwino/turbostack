@@ -16,7 +16,7 @@ const HomePage = () => {
     const [projectDetails, setProjectDetails] = useState(null);
     const [loading, setLoading] = useState(false);
     const [recentProjects, setRecentProjects] = useState([]);
-    const [isChatModalOpen, setChatModalOpen] = useState(true)
+    const [isChatModalOpen, setChatModalOpen] = useState(false)
 
     useEffect(() => {
         const loadData = async () => {

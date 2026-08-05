@@ -24,8 +24,10 @@ import {
   LayoutGrid,
   User,
   MoreVertical,
+  Code2,
 } from "lucide-react";
 import DarkModeToggle from "../../../components/darkModeToggle";
+import QueryBuilder from "./queryBuilder";
 
 const initialNodes = [];
 const nodeType = { model: DbModel };
@@ -241,10 +243,17 @@ export default function DbEditor({ projectName }) {
     reorganizeNodes,
     navigateTo,
   ]);
+  const [showQueryBuilder, setShowQueryBuilder] = useState(false)
 
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-couleur6 ">
       <DarkModeToggle></DarkModeToggle>
+      <button className="z-50 fixed bottom-20 right-2 dark:bg-couleur1 p-2 rounded-lg dark:text-couleur3 " onClick={() => setShowQueryBuilder(!showQueryBuilder)}><Code2 /></button>
+      {
+        showQueryBuilder && <div className="z-50 fixed mx-auto">
+          <QueryBuilder tables={project.models} />
+        </div>
+      }
       <div className=" p-2 m-2 h-fit flex items-center justify-between fixed w-screen z-20">
         <div>
           <h1 className="text-couleur1 text-3xl font-semibold dark:text-couleur3/50">
@@ -353,13 +362,12 @@ export default function DbEditor({ projectName }) {
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${
-            toast.type === "error"
+          className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${toast.type === "error"
               ? "bg-red-50 border-red-200 text-red-700"
               : toast.type === "loading"
                 ? "bg-blue-50 border-blue-200 text-blue-700"
                 : "bg-green-50 border-green-200 text-green-700"
-          }`}
+            }`}
         >
           {toast.type === "loading" ? (
             <Loader2 size={18} className="animate-spin" />

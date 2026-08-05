@@ -70,10 +70,10 @@ func (wap *webAppMaker) WriteBodyType(endpoint Endpoint) string {
 
 func (wap *webAppMaker) WriteParamsGetter(endpoint Endpoint) string {
 	var strBuilder strings.Builder
-	for _, val := range endpoint.params{
+	for _, val := range endpoint.params {
 		fmt.Fprintf(&strBuilder, "%s := r.PathValue(\"%s\")", val, val)
 	}
-	return  strBuilder.String()
+	return strBuilder.String()
 }
 
 func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint) string {
@@ -83,6 +83,12 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 	fmt.Fprint(&strBuilder, wap.WriteParamsGetter(endpoint))
 	if endpoint.method != "GET" && endpoint.method != "DELETE" {
 		strBuilder.WriteString(wap.WriteBodyType(endpoint))
+		strBuilder.WriteString("var reqBody bodyType\n")
+	}
+	if endpoint.bodyType == "application/json" {
+		strBuilder.WriteString("")
+	} else {
+
 	}
 	fmt.Fprint(&strBuilder, "})\n")
 	return strBuilder.String()

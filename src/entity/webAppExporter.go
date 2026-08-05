@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
+	"github.com/MaminirinaEdwino/turbostack/src/utils"
+	"golang.org/x/text/unicode/rangetable"
 )
 
 type webAppMaker struct {
@@ -35,7 +37,6 @@ func (wap *webAppMaker) CreateModelFile() {
 	if wap.Techno == "go" {
 		modelMaker := GoApiMaker{}
 		modelMaker.modelAPIExporter(wap.WebApp.bdd.models, wap.ProjectName)
-		modelMaker.configAPIExporter(wap.ProjectName)
 	}
 }
 
@@ -56,14 +57,29 @@ func (wap *webAppMaker) HandleURIParamsSyntaxeForGo(uri string) string {
 	return strings.Join(uriTab, "/")
 }
 
+func (wap *webAppMaker) WriteBodyType(endpoint Endpoint) string {
+	var strBuilder strings.Builder
+	fmt.Fprint(&strBuilder, "type bodyType struct{\n")
+	for _, val := range endpoint.model {
+		for _, field := range val.attributs {
+			fmt.Fprintf(&strBuilder, "%s %s \"json:`%s`\"", utils.ToUpperFirstLetter(field.nom), field.type_champs, field.nom)
+		}
+	}
+	fmt.Fprint(&strBuilder, "}\n")
+	return strBuilder.String()
+}
+
+
+
 func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint) string {
 	var strBuilder strings.Builder
 
-	strBuilder.WriteString(fmt.Sprintf(`
-mux.HandleFunc("%s %s", func(w http.ResponseWriter, r *http.Request) {
-	
-})`, endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri)))
-	return ""
+	fmt.Fprintf(&strBuilder, "mux.HandleFunc(\"%s %s\", func(w http.ResponseWriter, r *http.Request) {\n", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	if endpoint.method != "GET" && endpoint.method != "DELETE" {
+		strBuilder.WriteString(wap.WriteBodyType(endpoint))
+	}
+	fmt.Fprint(&strBuilder, "})\n")
+	return strBuilder.String()
 }
 
 func (wap *webAppMaker) CreateControllerFile() {
@@ -79,5 +95,6 @@ func (wap *webAppMaker) GenerateView() {}
 
 func (wap *webAppMaker) WebAppGenerator() {
 	wap.SetupArch()
-
+	wap.CreateConfigFile()
+	wap.CreateModelFile()
 }

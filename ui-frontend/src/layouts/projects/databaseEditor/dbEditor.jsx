@@ -250,8 +250,8 @@ export default function DbEditor({ projectName }) {
       <DarkModeToggle></DarkModeToggle>
       <button className="z-50 fixed bottom-20 right-2 dark:bg-couleur1 p-2 rounded-lg dark:text-couleur3 " onClick={() => setShowQueryBuilder(!showQueryBuilder)}><Code2 /></button>
       {
-        showQueryBuilder && <div className="z-50 fixed mx-auto">
-          <QueryBuilder tables={project.models} />
+        showQueryBuilder && <div className="z-50 fixed mx-auto h-screen w-screen overflow-scroll py-5">
+          <QueryBuilder tables={project.models} onClose={()=>setShowQueryBuilder(false)}/>
         </div>
       }
       <div className=" p-2 m-2 h-fit flex items-center justify-between fixed w-screen z-20">

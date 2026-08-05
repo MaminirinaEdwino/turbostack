@@ -19,6 +19,7 @@ import { Loader2 } from "lucide-react";
 import logo from "./assets/logotransparent.png";
 import FileExplorer from "./layouts/projects/fileExplorer";
 import UnifiedEditor from "./layouts/projects/unifiedEditor";
+import HelpDocumentation from "./helpComponent";
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
@@ -82,7 +83,7 @@ function App() {
         return <HomePage />; // Fallback
     }
   };
-
+  const [isDocOpen, setIsDocOpen] = useState(false);
   if (!isAppReady) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
@@ -98,6 +99,18 @@ function App() {
 
   return (
     <>
+      <button 
+        onClick={() => setIsDocOpen(true)}
+        className="px-4 z-50 py-2 bg-couleur1 text-white rounded-lg fixed right-2 bottom-35"
+      >
+        ?
+      </button>
+
+      {/* Le composant Documentation qui s'affiche par-dessus l'interface */}
+      <HelpDocumentation 
+        isOpen={isDocOpen} 
+        onClose={() => setIsDocOpen(false)} 
+      />
       <main className="transition-colors duration-300">{renderContent()}</main>
     </>
   );

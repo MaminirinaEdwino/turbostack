@@ -296,17 +296,23 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", "")))
 
 			}
-		}else{
-			fmt.Fprintf(&strBuilder, WebAppPostViewtemplate(strings.ReplaceAll(endpoint.returnPage.nom, " ", "_")))
+		} else {
+			fmt.Fprint(&strBuilder, WebAppPostViewtemplate(strings.ReplaceAll(endpoint.returnPage.nom, " ", "_")))
 		}
 	case "POST":
 		var attr []string
 		for _, val := range endpoint.model[0].attributs {
 			attr = append(attr, val.nom)
 		}
-		fmt.Fprintf(&strBuilder, WebAppPostActionTemplate(goapimaker.DbCallerPG(), endpoint.redirectUri, wap.WriteContentExtraction(endpoint), wap.WriteParamsChecker(endpoint), goapimaker.Insert(endpoint.model[0].nom, attr), strings.Join(attr, ", ")))
+		fmt.Fprint(&strBuilder, WebAppPostActionTemplate(goapimaker.DbCallerPG(), endpoint.redirectUri, wap.WriteContentExtraction(endpoint), wap.WriteParamsChecker(endpoint), goapimaker.Insert(endpoint.model[0].nom, attr), strings.Join(attr, ", ")))
 	case "PUT":
+		var attr []string
+		for _, val := range endpoint.model[0].attributs {
+			attr = append(attr, val.nom)
+		}
+		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPG(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.nom, attr, endpoint.params[0]), strings.Join(attr, ", "), endpoint.redirectUri))
 	case "DELETE":
+		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPG(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
 	}
 	return strBuilder.String()
 }

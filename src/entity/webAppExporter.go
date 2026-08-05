@@ -314,6 +314,7 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 	case "DELETE":
 		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPG(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
 	}
+	strBuilder.WriteString(")")
 	return strBuilder.String()
 }
 

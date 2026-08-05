@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
@@ -34,8 +35,7 @@ func (wap *webAppMaker) SetupArch() {
 }
 
 func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName string) string {
-	return fmt.Sprintf(`
-func (w http.ResponseWriter, r *http.Request){
+	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request){
 	%s
 	%s
 	rows, err := db.Query("SELECT %s")
@@ -47,33 +47,29 @@ func (w http.ResponseWriter, r *http.Request){
 
 	var returnValue []returnType
 	for rows.Next() {
-		var u User
+		var u returnType
 		if err := rows.Scan(%s); err != nil {
 			continue
 		}
-		returnValue = returnValue(returnValue, u)
+		returnValue = append(returnValue, u)
 	}
 
-	renderTemplate(w, "%s.html", map[string]interface{
-		"ReturnContent": returnValue
+	renderTemplate(w, "%s.html", map[string]interface{}{
+		"ReturnContent": returnValue,
 	})
-}
-	`, returnType, dbCaller, query, scanValue, pageName)
+}`, returnType, dbCaller, query, scanValue, pageName)
 }
 
 func WebAppPostViewtemplate(pageName string) string {
-	return fmt.Sprintf(`
-func (w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"Title": "Create",
 	})
-}
-	`, pageName)
+}`, pageName)
 }
 
 func WebAppPostActionTemplate(dbCaller, redirectUri, paramsExtraction, paramsChecker, query, paramsExec string) string {
-	return fmt.Sprintf(`
-func (w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
 	// Parsing de la Form Data
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
@@ -97,13 +93,11 @@ func (w http.ResponseWriter, r *http.Request) {
 
 	// Redirection Post-Redirect-Get vers la liste
 	http.Redirect(w, r, "%s", http.StatusSeeOther)
-}
-	`, dbCaller, paramsExtraction, paramsChecker, query, paramsExec, redirectUri)
+}`, dbCaller, paramsExtraction, paramsChecker, query, paramsExec, redirectUri)
 }
 
 func WebAppEditTemplate(dbCaller, params, returnType, query, scanValue, pageName string) string {
-	return fmt.Sprintf(`
-func HandleUserEdit(w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`func HandleUserEdit(w http.ResponseWriter, r *http.Request) {
 	%s
 	%s := r.PathValue("%s")
 	%s
@@ -118,13 +112,11 @@ func HandleUserEdit(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"ReturnValue": returnValue,
 	})
-}
-	`, dbCaller, params, params, returnType, query, params, scanValue, pageName)
+}`, dbCaller, params, params, returnType, query, params, scanValue, pageName)
 }
 
 func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryValue, redirectUri string) string {
-	return fmt.Sprintf(`
-func (w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		r.ParseForm()
@@ -142,13 +134,11 @@ func (w http.ResponseWriter, r *http.Request) {
 
 	// Redirection vers la page de détails de l'utilisateur
 	http.Redirect(w, r, "%s"+%s, http.StatusSeeOther)
-}
-	`, dbCaller, params, params, contentExtraction, query, queryValue, redirectUri, params)
+}`, dbCaller, params, params, contentExtraction, query, queryValue, redirectUri, params)
 }
 
 func WebAppDeleteActionTemplate(dbCaller, params, query, redirectUri string) string {
-	return fmt.Sprintf(`
-func HandleUserDelete(w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`func HandleUserDelete(w http.ResponseWriter, r *http.Request) {
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		r.ParseForm()
@@ -164,8 +154,7 @@ func HandleUserDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "%s", http.StatusSeeOther)
-}
-	`, dbCaller, params, params, query, params, redirectUri)
+}`, dbCaller, params, params, query, params, redirectUri)
 }
 
 func DBCallerTemplate() string {
@@ -202,9 +191,41 @@ func (wap *webAppMaker) CreateModelFile() {
 
 func (wap *webAppMaker) CreateConfigFile() {
 	if wap.Techno == "go" {
-		modelMaker := GoApiMaker{}
-		modelMaker.configAPIExporter(wap.ProjectName)
+		wap.configAPIExporter(wap.ProjectName)
 	}
+}
+
+func (mgr *webAppMaker) configAPIExporter(projectName string) {
+	filePath := fmt.Sprintf("%s/%s/web-app/src/config/db.go", config.PROJECT_DIR, projectName)
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating config file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	sb.WriteString("package config\n\n")
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"database/sql\"\n")
+	sb.WriteString("\t\"fmt\"\n")
+	sb.WriteString("\t\"log\"\n")
+	sb.WriteString("\t_ \"github.com/lib/pq\"\n")
+	sb.WriteString(")\n\n")
+
+	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
+	sb.WriteString("func InitDB() {\n")
+	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
+	sb.WriteString("\tconnStr := \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
+	sb.WriteString("\tvar err error\n")
+	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\tfmt.Println(\"Successfully connected to database\")\n")
+	sb.WriteString("}\n")
+
+	file.WriteString(sb.String())
 }
 
 func (wap *webAppMaker) HandleURIParamsSyntaxeForGo(uri string) string {
@@ -233,7 +254,7 @@ func (wap *webAppMaker) WriteReturnType(endpoint Endpoint) string {
 	fmt.Fprint(&strBuilder, "type returnType struct{\n")
 	for _, val := range endpoint.returnContent {
 		for _, field := range val.attributs {
-			fmt.Fprintf(&strBuilder, "%s %s `json:\"%s\"`", utils.ToUpperFirstLetter(field.nom), field.type_champs, field.nom)
+			fmt.Fprintf(&strBuilder, "%s %s `json:\"%s\"`\n", utils.ToUpperFirstLetter(field.nom), field.type_champs, field.nom)
 		}
 	}
 	fmt.Fprint(&strBuilder, "}\n")
@@ -243,7 +264,7 @@ func (wap *webAppMaker) WriteReturnType(endpoint Endpoint) string {
 func (wap *webAppMaker) WriteParamsGetter(endpoint Endpoint) string {
 	var strBuilder strings.Builder
 	for _, val := range endpoint.params {
-		fmt.Fprintf(&strBuilder, "%s := r.PathValue(\"%s\")", val, val)
+		fmt.Fprintf(&strBuilder, "%s := r.PathValue(\"%s\")\n", val, val)
 	}
 	return strBuilder.String()
 }
@@ -252,7 +273,7 @@ func (wap *webAppMaker) WriteScanValue(endpoint Endpoint) string {
 	var strBuilder []string
 	for _, val := range endpoint.returnContent {
 		for _, mod := range val.attributs {
-			strBuilder = append(strBuilder, fmt.Sprintf("&returnValue.%s", mod.nom))
+			strBuilder = append(strBuilder, fmt.Sprintf("&u.%s", utils.ToUpperFirstLetter(mod.nom)))
 		}
 	}
 	return strings.Join(strBuilder, ", ")
@@ -261,7 +282,7 @@ func (wap *webAppMaker) WriteScanValue(endpoint Endpoint) string {
 func (wap *webAppMaker) WriteContentExtraction(endpoint Endpoint) string {
 	var str []string
 	for _, val := range endpoint.model[0].attributs {
-		str = append(str, fmt.Sprintf("%s := r.FormValue(\"%s\")", val.nom, val.nom))
+		str = append(str, fmt.Sprintf("%s := r.FormValue(\"%s\")\n", val.nom, val.nom))
 	}
 	return strings.Join(str, "")
 }
@@ -277,7 +298,7 @@ func (wap *webAppMaker) WriteParamsChecker(endpoint Endpoint) string {
 func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint) string {
 	var strBuilder strings.Builder
 
-	fmt.Fprintf(&strBuilder, "mux.HandleFunc(\"%s %s\",", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	fmt.Fprintf(&strBuilder, "\nmux.HandleFunc(\"%s %s\",", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
 	switch endpoint.method {
 	case "GET":
 		if len(endpoint.model) > 0 {
@@ -333,13 +354,34 @@ func renderTemplate(w http.ResponseWriter, pageName string, data interface{}) {
 }	
 	`
 }
+
+func (mgr *webAppMaker) writeModSumFile() {
+	projectName := strings.ReplaceAll(mgr.ProjectName, " ", "_") 
+	modfilepath := fmt.Sprintf("%s/%s/web-app/go.mod", config.PROJECT_DIR, projectName)
+	sumfilepath := fmt.Sprintf("%s/%s/web-app/go.sum", config.PROJECT_DIR, projectName)
+	modfile, _ := os.Create(modfilepath)
+	modfile.WriteString(goapimaker.WriteGoMod(strings.ReplaceAll(projectName, " ", "_")))
+	sumfile, _ := os.Create(sumfilepath)
+	sumfile.WriteString(goapimaker.WriteSum())
+}
+
 func (wap *webAppMaker) CreateControllerFile() {
 	if wap.Techno == "go" {
 		var strBuilder strings.Builder
+		filePath := config.PROJECT_DIR+"/"+wap.ProjectName+"/web-app/src/controller/controller.go"
+		controllerFile, _ := os.Create(filePath)
+		
+		strBuilder.WriteString("package controller\n")
+		fmt.Fprintf(&strBuilder, "import (\n\"net/http\"\n\"text/template\"\n\"%s/src/config\"\n)", strings.ReplaceAll(wap.ProjectName, " ", "_"))
+
 		strBuilder.WriteString(wap.PageRenderer())
+
+		strBuilder.WriteString("func RegisterRoutes(mux *http.ServeMux){\n")
 		for _, val := range wap.Api.endpoints {
-			wap.WriteControllerForObjectOrArrayReturn(val)
+			strBuilder.WriteString(wap.WriteControllerForObjectOrArrayReturn(val))
 		}
+		strBuilder.WriteString("}\n")
+		controllerFile.WriteString(strBuilder.String())
 	}
 }
 
@@ -347,7 +389,9 @@ func (wap *webAppMaker) GenerateView() {}
 
 func (wap *webAppMaker) WebAppGenerator() {
 	wap.SetupArch()
+	wap.writeModSumFile()
 	wap.CreateConfigFile()
-	wap.CreateModelFile()
+	// wap.CreateModelFile()
+
 	wap.CreateControllerFile()
 }

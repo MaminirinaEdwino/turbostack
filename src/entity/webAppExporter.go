@@ -32,6 +32,164 @@ func (wap *webAppMaker) SetupArch() {
 	}
 }
 
+func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName string) string {
+	return fmt.Sprintf(`
+	%s
+	%s
+	rows, err := db.Query("SELECT %s")
+	if err != nil {
+		http.Error(w, "Erreur BDD: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var returnValue []returnType
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(%s); err != nil {
+			continue
+		}
+		returnValue = returnValue(returnValue, u)
+	}
+
+	renderTemplate(w, "%s.html", map[string]interface{
+		"ReturnContent": returnValue
+	})
+	`, returnType, dbCaller, query, scanValue, pageName)
+}
+
+func WebAppPostViewtemplate(pageName string) string {
+	return fmt.Sprintf(`
+func (w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "%s.html", map[string]interface{}{
+		"Title": "Create",
+	})
+}
+	`, pageName)
+}
+
+func WebAppPostActionTemplate(dbCaller, redirectUri, paramsExtraction, paramsChecker, query, paramsExec string) string {
+	return fmt.Sprintf(`
+func (w http.ResponseWriter, r *http.Request) {
+	// Parsing de la Form Data
+	%s
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		r.ParseForm()
+	}
+
+	%s
+
+	if %s {
+		http.Error(w, "Les champs 'name' et 'email' sont requis", http.StatusBadRequest)
+		return
+	}
+
+	// Insertion PostgreSQL via driver pq
+	query := "%s"
+	_, err := db.Exec(query, %s)
+	if err != nil {
+		http.Error(w, "Erreur lors de la création: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Redirection Post-Redirect-Get vers la liste
+	http.Redirect(w, r, "%s", http.StatusSeeOther)
+}
+	`, dbCaller, paramsExtraction, paramsChecker, query, paramsExec, redirectUri)
+}
+
+func WebAppEditTemplate(dbCaller, params, returnType, query, scanValue, pageName string) string {
+	return fmt.Sprintf(`
+func HandleUserEdit(w http.ResponseWriter, r *http.Request) {
+	%s
+	%s := r.PathValue("%s")
+	%s
+	var returnValue ReturnType
+	query := "%s"
+	err := db.QueryRow(query, %s).Scan(%s)
+	if err != nil {
+		http.Error(w, "Utilisateur introuvable", http.StatusNotFound)
+		return
+	}
+
+	renderTemplate(w, "%s.html", map[string]interface{}{
+		"ReturnValue": returnValue,
+	})
+}
+	`, dbCaller, params, params, returnType, query, params, scanValue, pageName)
+}
+
+func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryValue, redirectUri string) string {
+	return fmt.Sprintf(`
+func (w http.ResponseWriter, r *http.Request) {
+	%s
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		r.ParseForm()
+	}
+
+	%s := r.PathValue("%s")
+	%s
+
+	query := "%s"
+	_, err := db.Exec(query, %s)
+	if err != nil {
+		http.Error(w, "Erreur lors de la mise à jour: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Redirection vers la page de détails de l'utilisateur
+	http.Redirect(w, r, "%s"+%s, http.StatusSeeOther)
+}
+	`, dbCaller, params, params, contentExtraction, query, queryValue, redirectUri, params)
+}
+
+func WebAppDeleteActionTemplate(dbCaller, params, query, redirectUri string) string {
+	return fmt.Sprintf(`
+func HandleUserDelete(w http.ResponseWriter, r *http.Request) {
+	%s
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		r.ParseForm()
+	}
+
+	%s := r.FormValue("%s")
+
+	query := "%s"
+	_, err := db.Exec(query, %s)
+	if err != nil {
+		http.Error(w, "Erreur suppression: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "%s", http.StatusSeeOther)
+}
+	`, dbCaller, params, params, query, params, redirectUri)
+}
+
+func DBCallerTemplate() string {
+	return `
+db := config.DB
+defer db.Close()
+	`
+}
+
+func WebAppSelectByParamsTemplate(query, dbCaller, returnType, scanValue, pageName, uriParams string) string {
+	return fmt.Sprintf(`
+	%s := r.PathValue("%s")
+	%s
+	var returnValue returnType
+	query := "SELECT id, name, email FROM users WHERE %s = $1"
+	err := db.QueryRow(query, %s).Scan(%s)
+	if err != nil {
+		http.Error(w, "model introuvable", http.StatusNotFound)
+		return
+	}
+
+	renderTemplate(w, "%s.html", map[string]interface{}{
+		"ReturnContent": returnValue,
+	})
+	`, uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName)
+}
+
 func (wap *webAppMaker) CreateModelFile() {
 	if wap.Techno == "go" {
 		modelMaker := GoApiMaker{}
@@ -100,7 +258,8 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 	fmt.Fprint(&strBuilder, "})\n")
 	return strBuilder.String()
 }
-func (wap *webAppMaker) PageRenderer()string {
+
+func (wap *webAppMaker) PageRenderer() string {
 	return `
 func renderTemplate(w http.ResponseWriter, pageName string, data interface{}) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

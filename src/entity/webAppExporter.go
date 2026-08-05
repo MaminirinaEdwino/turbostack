@@ -85,18 +85,40 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 		strBuilder.WriteString(wap.WriteBodyType(endpoint))
 		strBuilder.WriteString("var reqBody bodyType\n")
 	}
-	if endpoint.bodyType == "application/json" {
-		strBuilder.WriteString("")
-	} else {
+
+	strBuilder.WriteString("r.ParseForm()")
+	for _, val := range endpoint.model {
+		for _, mod := range val.attributs {
+			fmt.Fprintf(&strBuilder, "reqBody.%s = r.FormValue(\"%s\")\n", utils.ToUpperFirstLetter(mod.nom), mod.nom)
+		}
+	}
+
+	if endpoint.redirectUri != "" {
 
 	}
+
 	fmt.Fprint(&strBuilder, "})\n")
 	return strBuilder.String()
 }
-
+func (wap *webAppMaker) PageRenderer()string {
+	return `
+func renderTemplate(w http.ResponseWriter, pageName string, data interface{}) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tpl, err := template.ParseFiles("src/views/" + pageName)
+	if err != nil {
+		http.Error(w, "Erreur de chargement du template: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tpl.Execute(w, data); err != nil {
+		http.Error(w, "Erreur de rendu du template: "+err.Error(), http.StatusInternalServerError)
+	}
+}	
+	`
+}
 func (wap *webAppMaker) CreateControllerFile() {
 	if wap.Techno == "go" {
-
+		var strBuilder strings.Builder
+		strBuilder.WriteString(wap.PageRenderer())
 		for _, val := range wap.Api.endpoints {
 			wap.WriteControllerForObjectOrArrayReturn(val)
 		}

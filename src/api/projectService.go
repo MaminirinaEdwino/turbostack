@@ -62,6 +62,14 @@ func (s *ProjectService) StartProject(projectName string) map[string]interface{}
 		projectDir = fmt.Sprintf("%s/%s/web_app", config.PROJECT_DIR, projectName)
 	}
 
+	switch project.Type {
+	case "static":
+		s.Manager.ExporterStaticSite(project.ToModel())
+	case "api":
+		s.Manager.ExporterAPI(project.ToModel())
+	case "web_app":
+		s.Manager.ExporterWebApp(project.ToModel())
+	}
 	return handleStartProject(projectDir, s.WV)
 }
 
@@ -120,7 +128,7 @@ func handleStartProject(projectDir string, w webview.WebView) map[string]interfa
 				"logs":      pm.logs,
 				"pid":       pm.pid,
 			})
-			fmt.Println("dfdf",string(data))
+			fmt.Println("dfdf", string(data))
 			Dispatch(w, "get-status-event", string(data))
 			pm.mu.Unlock()
 		}
@@ -261,6 +269,16 @@ func (s *ProjectService) SaveProject(name, project string) string {
 	var pJson entity.ProjectJSON
 	json.Unmarshal([]byte(project), &pJson)
 	s.Manager.SaveProject(pJson)
+	switch pJson.Type {
+	case "bdd":
+		s.Manager.ExporterDB(pJson.ToModel())
+	case "static":
+		s.Manager.ExporterStaticSite(pJson.ToModel())
+	case "api":
+		s.Manager.ExporterAPI(pJson.ToModel())
+	case "web_app":
+		s.Manager.ExporterWebApp(pJson.ToModel())
+	}
 	return "Success"
 }
 

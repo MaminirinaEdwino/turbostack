@@ -249,8 +249,9 @@ func (mgr *GoApiMaker) writeModSumFile(projectName string) {
 	sumfile.WriteString(goapimaker.WriteSum())
 }
 
-func (mgr *GoApiMaker) configAPIExporter(projectName string) {
+func (mgr *GoApiMaker) configAPIExporter(projectName string, model []Model) {
 	filePath := fmt.Sprintf("%s/%s/api/src/config/db.go", config.PROJECT_DIR, projectName)
+	
 	file, err := os.Create(filePath)
 	if err != nil {
 		fmt.Printf("Error creating config file %s : %v\n", filePath, err)
@@ -259,6 +260,7 @@ func (mgr *GoApiMaker) configAPIExporter(projectName string) {
 	defer file.Close()
 
 	var sb strings.Builder
+	var sqlgen Sqlgenerator
 	sb.WriteString("package config\n\n")
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"database/sql\"\n")
@@ -271,11 +273,13 @@ func (mgr *GoApiMaker) configAPIExporter(projectName string) {
 	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
-	sb.WriteString("\tconnStr := \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
+	sb.WriteString(fmt.Sprintf("\tconnStr := \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", strings.ReplaceAll(strings.ToLower(projectName), " ", "_")))
 	sb.WriteString("\tvar err error\n")
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
 	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString(fmt.Sprintf("\tquery := `%s`\n", sqlgen.GenerateDBAndTableInit(model, projectName)))
+	sb.WriteString("\t_, err = DB.Exec(query)\n\tif err != nil {\n\t\tfmt.Errorf(\"échec lors de l'initialisation des tables: %w\", err)\n\t}\n")
 	sb.WriteString("\tfmt.Println(\"Successfully connected to database\")\n")
 	sb.WriteString("}\n")
 

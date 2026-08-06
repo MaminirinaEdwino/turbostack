@@ -28,7 +28,7 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	apiMaker.modelAPIExporter(models, projectName)
 	apiMaker.controllerAPIExporter(api.GetEndpoints(), projectName)
 	apiMaker.routesAPIExporter(api.GetEndpoints(), projectName)
-	apiMaker.configAPIExporter(projectName)
+	apiMaker.configAPIExporter(projectName, Project.bdd.models)
 	apiMaker.middlewareAPIExporter(projectName)
 	apiMaker.mainAPIExporter(api.GetEndpoints(), projectName)
 	apiMaker.writeModSumFile(projectName)

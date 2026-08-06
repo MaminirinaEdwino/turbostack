@@ -34,6 +34,9 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("getImageAsBase64", ps.GetImageAsBase64)
 	w.Bind("uploadAsset", ps.UploadAsset)
 	w.Bind("saveScript", ps.SaveScript)
+	w.Bind("startProject", ps.StartProject)
+	w.Bind("stopProject", ps.Stopproject)
+	w.Bind("getStatus", ps.StatusProject)
 }
 
 type ProcessManager struct {
@@ -45,6 +48,29 @@ type ProcessManager struct {
 
 var pm = &ProcessManager{}
 
+func (s *ProjectService) StartProject(projectName string) string {
+	project := s.FetchProjectByName(projectName)
+	var projectDir string
+	switch project.Type {
+	case "static":
+		projectDir = fmt.Sprintf("%s/%s/static", config.PROJECT_DIR, projectName)
+	case "api":
+		projectDir = fmt.Sprintf("%s/%s/api", config.PROJECT_DIR, projectName)
+	case "web_app":
+		projectDir = fmt.Sprintf("%s/%s/web_app", config.PROJECT_DIR, projectName)
+	}
+
+	return handleStartProject(projectDir)
+}
+
+func (s *ProjectService) Stopproject() string {
+	return handleStopProject()
+}
+
+func (s *ProjectService) StatusProject() string {
+	return handleGetStatus()
+}
+
 // 1. Démarrer le projet Go
 func handleStartProject(projectDir string) string {
 	pm.mu.Lock()
@@ -53,11 +79,11 @@ func handleStartProject(projectDir string) string {
 	if pm.isRunning {
 		return "Project Already Runnig"
 	}
-	pm.cmd.Dir = projectDir
+	
 
 	// Commande pour exécuter votre projet Go (ex: 'go run main.go' dans le dossier cible)
-	pm.cmd = exec.Command("go", "run", "main.go")
-
+	pm.cmd = exec.Command("go", "run", ".")
+	pm.cmd.Dir = projectDir
 	// Optionnel : Définir le répertoire de travail du projet
 	// pm.cmd.Dir = "./generated_project"
 

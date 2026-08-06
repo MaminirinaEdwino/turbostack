@@ -24,6 +24,13 @@ func (ssm *Staticsitemaker) SetupStaticArch(name string) {
 		config.CheckCreateDir(projectPath + val)
 	}
 }
+func (ssm *Staticsitemaker) WriteGoMod(projectName string) string {
+	return fmt.Sprintf(`
+module %s
+
+go 1.25.6
+	`, strings.ReplaceAll(projectName, " ", "_"))
+}
 
 func (ssm *Staticsitemaker) SetupGoServerCode(pages []Page, filePath string) {
 	mainFile, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, os.ModePerm)

@@ -7,7 +7,7 @@ import LayoutHeader from "../../components/layoutHeader";
 import { GoApp } from "../../services/bridge";
 import ProjectPageView from "../projects/projectPageContent";
 import { setActualProject } from "../../appSlice";
-import { X, FileText, Layout, LucidePuzzle, Globe, MessageCircle } from "lucide-react";
+import { X, FileText, Layout, LucidePuzzle, Globe, MessageCircle, Command, Logs } from "lucide-react";
 import AiChatModal from "../../components/modalAI";
 
 const HomePage = () => {
@@ -49,10 +49,17 @@ const HomePage = () => {
         window.location.reload()
     };
 
+    const [logs, setLogs] = useState("")
+    const handleStart = async () => {
+        console.log(projectDetails.nom)
+        const res = await GoApp.runProject(projectDetails.nom)
+        
+        setLogs(res)
+    }
     return (
         <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300" >
             <SideMenu />
-            <button className="fixed bottom-20 right-2 z-50 bg-couleur1 text-couleur3 p-3 rounded-lg" onClick={()=>setChatModalOpen(true)}><MessageCircle size={20}/></button>
+            <button className="fixed bottom-20 right-2 z-50 bg-couleur1 text-couleur3 p-3 rounded-lg" onClick={() => setChatModalOpen(true)}><MessageCircle size={20} /></button>
             <main className="flex-1 p-8 overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
                     <LayoutHeader layoutName={actualProject ? `Project Dashboard` : "Global Dashboard"} />
@@ -73,15 +80,44 @@ const HomePage = () => {
                     ) : (
                         projectDetails && (
                             <div className="space-y-8 flex flex-col">
-                            <AiChatModal isOpen={isChatModalOpen} onClose={()=>setChatModalOpen(!isChatModalOpen)}/>
+                                <AiChatModal isOpen={isChatModalOpen} onClose={() => setChatModalOpen(!isChatModalOpen)} />
                                 {projectDetails.type == "web_app" && <div className="flex items-center gap-3 mb-4 text-couleur1 dark:text-gray-200">
                                     <div className="p-2 bg-couleur1 text-white rounded-lg shadow-sm">
                                         <Layout size={20} />
                                     </div>
                                     <h2 className="text-2xl font-bold">{projectDetails.nom} Workspace</h2>
                                 </div>}
-                                <ProjectPageView project={projectDetails} />
 
+                                <ProjectPageView project={projectDetails} />
+                                {projectDetails.type != "bdd" && <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+                                            <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
+                                                <Command size={18} /> Commands
+                                            </h3>
+                                            <div className="space-y-2 flex gap-2">
+                                                <button onClick={() => handleStart()}>Start</button>
+                                                <button onClick={async ()=>{
+                                                    const res = await GoApp.stopProject()
+                                                    setLogs(res)
+                                                }}>Stop</button>
+                                                <button onClick={async ()=>{
+                                                    const res = await GoApp.getStatus()
+                                                    setLogs(JSON.stringify(res))
+                                                }}>Get Status</button>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+                                            <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
+                                                <Logs size={18} /> Logs
+                                            </h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {logs}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>}
                                 {/* Web App Overview Section */}
                                 {projectDetails.type === "web_app" && (
                                     <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">

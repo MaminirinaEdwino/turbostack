@@ -81,7 +81,11 @@ func (mgr *ProjectManager) ExporterStaticSite(Project Project) {
 	techno := "golang"
 	if techno == "golang" {
 		mainPath := fmt.Sprintf("%s/%s/static/main.go", config.PROJECT_DIR, projectName)
+		modPath := fmt.Sprintf("%s/%s/static/go.mod", config.PROJECT_DIR, projectName)
 		ssm.SetupGoServerCode(site.GetPages(), mainPath)
+		file, _ := os.Create(modPath)
+		defer file.Close()
+		file.WriteString(ssm.WriteGoMod(projectName))
 	}
 	fmt.Printf("Exportation du site statique terminée : %s\n", projectName)
 }

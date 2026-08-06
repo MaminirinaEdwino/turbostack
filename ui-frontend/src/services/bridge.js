@@ -50,5 +50,14 @@ export const GoApp = {
     },
     saveScript: async (projectName, scriptName, script)=>{
         return await window.saveScript(projectName, scriptName, script)
+    },
+    runProject: async (projectName)=>{
+        return await window.startProject(projectName)
+    },
+    stopProject: async ()=>{
+        return await window.stopProject()
+    },
+    getStatus: async ()=>{
+        return await window.getStatus()
     }
 }

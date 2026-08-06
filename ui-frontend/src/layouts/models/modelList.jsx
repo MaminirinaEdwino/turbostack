@@ -154,7 +154,7 @@ export default function BDDModelList() {
                 Scripts List
             </h2>
             <div>
-                {project.bdd.scripts.map(sc=><div className="flex flex-col bg-white p-4 rounded-lg shadow-sm border border-couleur1/10">
+                {project.bdd?.scripts.map(sc=><div className="flex flex-col bg-white p-4 rounded-lg shadow-sm border border-couleur1/10">
                     <span className="flex items-center gap-2 mb-3 border-b border-couleur1/10 pb-2">
                         {sc.scriptName}
                     </span>

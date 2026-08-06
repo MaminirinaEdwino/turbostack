@@ -262,6 +262,16 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 	}
 	s.Manager.Create(pJson.ToModel())
 	s.Manager.SaveProject(pJson)
+	switch pJson.Type {
+	case "bdd":
+		s.Manager.ExporterDB(pJson.ToModel())
+	case "static":
+		s.Manager.ExporterStaticSite(pJson.ToModel())
+	case "api":
+		s.Manager.ExporterAPI(pJson.ToModel())
+	case "web_app":
+		s.Manager.ExporterWebApp(pJson.ToModel())
+	}
 	return "Success"
 }
 

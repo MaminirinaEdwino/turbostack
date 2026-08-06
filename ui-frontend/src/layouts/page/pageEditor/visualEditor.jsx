@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
     MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle,

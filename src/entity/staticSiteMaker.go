@@ -81,7 +81,7 @@ func checkValueFile(sb *os.File, key, value string) {
 
 func styleWriter(page Page, cssFile *os.File) {
 
-	var desktopSb strings.Builder
+	var mobileSb strings.Builder
 	var tabletSb strings.Builder
 	var cssVal map[string]map[string]string
 	style := page.styles
@@ -103,28 +103,28 @@ func styleWriter(page Page, cssFile *os.File) {
 			fmt.Fprintf(&tabletSb, ";\n}\n")
 		}
 	}
-	if len(desktop) > 0 {
-		for tag, val := range desktop {
-			fmt.Fprintf(&desktopSb, "%s {\n", tag)
-			fmt.Fprint(&desktopSb, val)
-			fmt.Fprintf(&desktopSb, ";\n}\n")
+	if len(mobile) > 0 {
+		for tag, val := range mobile {
+			fmt.Fprintf(&mobileSb, "%s {\n", tag)
+			fmt.Fprint(&mobileSb, val)
+			fmt.Fprintf(&mobileSb, ";\n}\n")
 		}
 	}
 
-	if len(mobile) > 0 {
-		for tag, val := range mobile {
+	if len(desktop) > 0 {
+		for tag, val := range desktop {
 			fmt.Fprintf(cssFile, "%s {\n", tag)
 			fmt.Fprint(cssFile, val)
 			fmt.Fprintf(cssFile, ";\n}\n")
 		}
 	}
-	if desktopSb.Len() > 0 {
-		cssFile.WriteString("\n\n@media screen and (min-width: 1024px) {\n")
-		cssFile.WriteString(desktopSb.String())
+	if mobileSb.Len() > 0 {
+		cssFile.WriteString("\n\n@media (max-width: 375px) {\n")
+		cssFile.WriteString(mobileSb.String())
 		cssFile.WriteString("}\n")
 	}
 	if tabletSb.Len() > 0 {
-		cssFile.WriteString("@media screen and (min-width: 768px) {\n")
+		cssFile.WriteString("@media (min-width: 376px) and (max-width: 1024px) {\n")
 		cssFile.WriteString(tabletSb.String())
 		cssFile.WriteString("}\n")
 	}
@@ -183,17 +183,17 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 			tabletSb.WriteString("}\n")
 		}
 
-		if len(desktop) > 0 {
+		if len(mobile) > 0 {
 			fmt.Fprintf(&desktopSb, "[data-block-id=\"%s\"]{\n", id)
-			for key, val := range desktop {
+			for key, val := range mobile {
 				checkValueSb(&desktopSb, key, val)
 			}
 			desktopSb.WriteString("}\n")
 		}
 
-		if len(mobile) > 0 {
+		if len(desktop) > 0 {
 			fmt.Fprintf(cssFile, "[data-block-id=\"%s\"]{\n", id)
-			for key, val := range mobile {
+			for key, val := range desktop {
 				checkValueFile(cssFile, key, val)
 			}
 			fmt.Fprint(cssFile, "}\n")
@@ -207,12 +207,12 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 		fmt.Fprintf(&sb, "</%s>", tag)
 	}
 	if desktopSb.Len() > 0 {
-		cssFile.WriteString("@media screen and (min-width: 1024px) {\n")
+		cssFile.WriteString("@media (max-width: 375px) {\n")
 		cssFile.WriteString(desktopSb.String())
 		cssFile.WriteString("}\n")
 	}
 	if tabletSb.Len() > 0 {
-		cssFile.WriteString("@media screen and (min-width: 768px) {\n")
+		cssFile.WriteString("@media (min-width: 376px) and (max-width: 1024px) {\n")
 		cssFile.WriteString(tabletSb.String())
 		cssFile.WriteString("}\n")
 	}

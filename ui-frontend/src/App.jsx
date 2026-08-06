@@ -15,7 +15,6 @@ import DbEditor from "./layouts/projects/databaseEditor/dbEditor";
 import ApiEditor from "./layouts/projects/endPointEditor/apiEditor";
 import PageEditor from "./layouts/page/pageEditor/pageEditor";
 import ControllerEditor from "./components/controllerEditor";
-import { Loader2 } from "lucide-react";
 import logo from "./assets/logotransparent.png";
 import FileExplorer from "./layouts/projects/fileExplorer";
 import UnifiedEditor from "./layouts/projects/unifiedEditor";

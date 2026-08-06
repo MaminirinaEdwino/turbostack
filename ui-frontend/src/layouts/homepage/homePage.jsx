@@ -110,7 +110,7 @@ const HomePage = () => {
                                 <ProjectPageView project={projectDetails} />
                                 {projectDetails.type != "bdd" && <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="flex w-full flex-col gap-2">
                                         <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
                                             <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
                                                 <Command size={18} /> Commands
@@ -134,9 +134,9 @@ const HomePage = () => {
                                                 <Logs size={18} /> Logs
                                             </h3>
                                             <div className="flex flex-wrap flex-col gap-2 ">
-                                                {logs?.isRunning ? "Running" : "Stop"}
+                                                {/* {logs?.isRunning ? "Running" : "Stop"} */}
                                                 {/* {logs?.isRunning && "PID "+logs.pid} */}
-                                                <div className="bg-gray-950 text-white text-xs min-h-20 max-h-20 p-2 rounded-md flex flex-col overflow-scroll">
+                                                <div className="bg-gray-950 text-white text-xs min-h-40 max-h-40 p-2 rounded-md flex flex-col overflow-scroll">
                                                     {logs.logs && logs.logs.map(log => <code>{log}</code>)}
                                                 </div>
                                             </div>

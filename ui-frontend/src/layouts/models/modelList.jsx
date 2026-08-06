@@ -3,7 +3,7 @@ import { useNavigate } from "../../hooks/useNavigate";
 import { GoApp } from "../../services/bridge";
 import SideMenu from "../../components/sideMenu";
 import { useSelector } from "react-redux";
-import { Database, Table, List, ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { Database, Table, List, ChevronLeft, ChevronRight, Settings, Code } from "lucide-react";
 
 export default function BDDModelList() {
     const navigateTo = useNavigate();
@@ -149,6 +149,20 @@ export default function BDDModelList() {
                     )}
                 </>
             )}
+            <h2 className="text-2xl font-bold text-couleur1 mb-4 flex items-center gap-2 mt-5">
+                <Code size={30}/>
+                Scripts List
+            </h2>
+            <div>
+                {project.bdd.scripts.map(sc=><div className="flex flex-col bg-white p-4 rounded-lg shadow-sm border border-couleur1/10">
+                    <span className="flex items-center gap-2 mb-3 border-b border-couleur1/10 pb-2">
+                        {sc.scriptName}
+                    </span>
+                    <code className="">
+                    {sc.script}
+                </code>
+                </div>)}
+            </div>
         </div>
     </div>;
 }

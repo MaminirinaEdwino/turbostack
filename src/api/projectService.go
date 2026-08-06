@@ -1,12 +1,16 @@
 package api
 
 import (
+	"bufio"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
@@ -29,6 +33,92 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("getFolderForUpload", ps.FetchFolderForUpload)
 	w.Bind("getImageAsBase64", ps.GetImageAsBase64)
 	w.Bind("uploadAsset", ps.UploadAsset)
+	w.Bind("saveScript", ps.SaveScript)
+}
+
+type ProcessManager struct {
+	mu        sync.Mutex
+	cmd       *exec.Cmd
+	isRunning bool
+	logs      []string
+}
+
+var pm = &ProcessManager{}
+
+// 1. Démarrer le projet Go
+func handleStartProject(projectDir string) string {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	if pm.isRunning {
+		return "Project Already Runnig"
+	}
+	pm.cmd.Dir = projectDir
+
+	// Commande pour exécuter votre projet Go (ex: 'go run main.go' dans le dossier cible)
+	pm.cmd = exec.Command("go", "run", "main.go")
+
+	// Optionnel : Définir le répertoire de travail du projet
+	// pm.cmd.Dir = "./generated_project"
+
+	// Capturer les sorties standard et d'erreur pour le dashboard
+	stdout, _ := pm.cmd.StdoutPipe()
+	stderr, _ := pm.cmd.StderrPipe()
+
+	if err := pm.cmd.Start(); err != nil {
+
+		return "Failed to start project"
+	}
+
+	pm.isRunning = true
+	pm.logs = []string{"Projet started"}
+
+	// Goroutine pour lire les logs en continu sans bloquer l'application
+	go func() {
+		scanner := bufio.NewScanner(io.MultiReader(stdout, stderr))
+		for scanner.Scan() {
+			pm.mu.Lock()
+			pm.logs = append(pm.logs, scanner.Text())
+			pm.mu.Unlock()
+		}
+
+		// Attendre la fin du processus
+		_ = pm.cmd.Wait()
+		pm.mu.Lock()
+		pm.isRunning = false
+		pm.logs = append(pm.logs, "The  project has stopped")
+		pm.mu.Unlock()
+	}()
+
+	return strings.Join(pm.logs, "\n")
+}
+
+// 2. Arrêter le projet Go
+func handleStopProject() string {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	if !pm.isRunning || pm.cmd == nil || pm.cmd.Process == nil {
+
+		return "No Project Running"
+	}
+
+	// Tuer le processus
+	if err := pm.cmd.Process.Kill(); err != nil {
+
+		return "Failed to stop project"
+	}
+
+	pm.isRunning = false
+	return "Project Stopped"
+}
+
+// 3. Récupérer le statut et les logs
+func handleGetStatus() string {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	return fmt.Sprintf(`{"isRunning": %t, "logs": %q}`, pm.isRunning, pm.logs)
 }
 
 func (s *ProjectService) UploadAsset(projectName, fileName, base64file string) string {
@@ -37,6 +127,15 @@ func (s *ProjectService) UploadAsset(projectName, fileName, base64file string) s
 		FileName:    fileName,
 		Base64Image: base64file,
 	})
+	s.Manager.SaveProject(project)
+	return "success"
+}
+
+func (s *ProjectService) SaveScript(projectName, scriptName, script string) string {
+	fmt.Println("save script", scriptName, script)
+	project := s.FetchProjectByName(projectName)
+	project.BDD.AddScript(scriptName, script)
+	fmt.Println(len(project.BDD.Scripts))
 	s.Manager.SaveProject(project)
 	return "success"
 }

@@ -47,5 +47,8 @@ export const GoApp = {
     },
     uploadAsset: async (projectName, fileName, base64file) => {
         return await window.uploadAsset(projectName, fileName, base64file)
+    },
+    saveScript: async (projectName, scriptName, script)=>{
+        return await window.saveScript(projectName, scriptName, script)
     }
 }

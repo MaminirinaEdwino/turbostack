@@ -1,6 +1,8 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type AbonnementJSON struct {
 	Type_abonnement string    `json:"type_abonnement"`
@@ -12,6 +14,14 @@ type BDDJSON struct {
 	Models  []ModelJSON         `json:"models"`
 	Sgbd    string              `json:"sgbd"`
 	Scripts []map[string]string `json:"scripts"`
+}
+
+func (bdd *BDDJSON) AddScript(scriptName, script string) string {
+	bdd.Scripts = append(bdd.Scripts, map[string]string{
+		"scriptName": scriptName,
+		"script":     script,
+	})
+	return "success"
 }
 
 type ChampsJSON struct {

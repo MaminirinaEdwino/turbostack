@@ -1,13 +1,16 @@
 import React, { useState, useMemo } from "react";
+import { GoApp } from "../../../services/bridge";
+import { useSelector } from "react-redux";
 
 export default function QueryBuilder({ tables = [], onClose }) {
     // 1. États pour la construction de la requête
     const [selectedTable, setSelectedTable] = useState(tables[0]?.nom || "");
     const [action, setAction] = useState("SELECT");
     const [selectedFields, setSelectedFields] = useState([]);
-
+    const [scriptName, setScriptName] = useState("")
     // NOUVEAU : État pour gérer la liste des jointures
     const [joins, setJoins] = useState([]);
+    const projectName = useSelector(state => state.app.actualProject)
 
     const [whereClause, setWhereClause] = useState({ field: "", operator: "=", value: "" });
     const [orderBy, setOrderBy] = useState({ field: "", direction: "ASC font-mono" });
@@ -159,7 +162,12 @@ export default function QueryBuilder({ tables = [], onClose }) {
                     </div>
                 </div>
             </div>
-
+            <div className="flex flex-col">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Script Name
+                </label>
+                <input className="text-slate-900 dark:text-slate-100 border border-slate-200/20 rounded-lg px-5 py-2" type="text" value={scriptName} onChange={(e) => setScriptName(e.target.value)} id="scriptName" placeholder="Script Name"/>
+            </div>
             {/* Configuration Table & Action */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
@@ -190,8 +198,8 @@ export default function QueryBuilder({ tables = [], onClose }) {
                                 type="button"
                                 onClick={() => setAction(act)}
                                 className={`py-2 text-xs font-bold rounded-lg border transition-all ${action === act
-                                        ? "bg-couleur1 border-couleur1 text-white shadow-md shadow-indigo-500/20"
-                                        : "bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    ? "bg-couleur1 border-couleur1 text-white shadow-md shadow-indigo-500/20"
+                                    : "bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                                     }`}
                             >
                                 {act}
@@ -218,7 +226,7 @@ export default function QueryBuilder({ tables = [], onClose }) {
 
                     {joins.length === 0 ? (
                         <p className="text-xs text-slate-400 dark:text-slate-500 italic bg-slate-50/50 dark:bg-slate-950/30 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-center">
-                            Aucune jointure définie. Cliquez sur "+ Ajouter une jointure" pour lier deux tables.
+                            + Add table Join
                         </p>
                     ) : (
                         <div className="space-y-2">
@@ -315,8 +323,8 @@ export default function QueryBuilder({ tables = [], onClose }) {
                                 key={fullFieldName}
                                 onClick={() => toggleField(fullFieldName)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border transition-all ${isSelected
-                                        ? "bg-indigo-50 dark:bg-couleur1 border-couleur2 text-couleur2 dark:text-couleur2 font-semibold"
-                                        : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                                    ? "bg-indigo-50 dark:bg-couleur1 border-couleur2 text-couleur2 dark:text-couleur2 font-semibold"
+                                    : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
                                     }`}
                             >
                                 <span>{isSelected ? "✓" : "+"}</span>
@@ -416,12 +424,18 @@ export default function QueryBuilder({ tables = [], onClose }) {
                         {/* <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> */}
                         SQL Query
                     </span>
-                    <button
-                        onClick={copyToClipboard}
-                        className="px-3 py-1 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                    >
-                        {copied ? "✓ Copied !" : "Copy SQL"}
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={copyToClipboard}
+                            className="px-3 py-1 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                        >
+                            {copied ? "✓ Copied !" : "Copy SQL"}
+                        </button >
+                        <button className="text-white px-3 py-1 bg-couleur1 rounded-md text-xs font-medium" onClick={() => GoApp.saveScript(projectName, scriptName, generatedQuery)}>
+                            Save
+                        </button>
+
+                    </div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-sm leading-relaxed overflow-x-auto shadow-inner">

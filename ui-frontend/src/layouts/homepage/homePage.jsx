@@ -7,7 +7,7 @@ import LayoutHeader from "../../components/layoutHeader";
 import { GoApp } from "../../services/bridge";
 import ProjectPageView from "../projects/projectPageContent";
 import { setActualProject } from "../../appSlice";
-import { X, FileText, Layout, LucidePuzzle, Globe, MessageCircle, Command, Logs } from "lucide-react";
+import { X, FileText, Layout, LucidePuzzle, Globe, MessageCircle, Command, Logs, Play, StopCircle, RefreshCcw } from "lucide-react";
 import AiChatModal from "../../components/modalAI";
 
 const HomePage = () => {
@@ -49,13 +49,32 @@ const HomePage = () => {
         window.location.reload()
     };
 
-    const [logs, setLogs] = useState("")
+    const [logs, setLogs] = useState({
+        isRunning: false,
+        logs: [],
+        pid: 0,
+    })
     const handleStart = async () => {
         console.log(projectDetails.nom)
         const res = await GoApp.runProject(projectDetails.nom)
-        
+
         setLogs(res)
     }
+    useEffect(() => {
+        // Handler pour intercepter les données envoyées par Go
+        const handleGoMessage = (event) => {
+            console.log("Données reçues de Go :", event);
+            setLogs(event.detail);
+        };
+
+        // Attacher l'écouteur d'événement
+        window.addEventListener('get-status-event', handleGoMessage);
+
+        // Nettoyer l'écouteur au démontage du composant
+        return () => {
+            window.removeEventListener('get-status-event', handleGoMessage);
+        };
+    }, []);
     return (
         <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300" >
             <SideMenu />
@@ -96,24 +115,30 @@ const HomePage = () => {
                                             <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
                                                 <Command size={18} /> Commands
                                             </h3>
-                                            <div className="space-y-2 flex gap-2">
-                                                <button onClick={() => handleStart()}>Start</button>
-                                                <button onClick={async ()=>{
-                                                    const res = await GoApp.stopProject()
+                                            <div className=" flex gap-2">
+                                                {
+                                                    !logs.isRunning && <button onClick={() => handleStart()} className="px-3 py-1 rounded-md bg-green-500 text-couleur3 flex gap-2 items-center cursor-pointer"><Play size={15} /> Start</button>
+                                                }
+                                                <button className="px-3 py-1 rounded-md bg-red-500 text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
+                                                    const res = await GoApp.stopProject(projectDetails.nom)
                                                     setLogs(res)
-                                                }}>Stop</button>
-                                                <button onClick={async ()=>{
-                                                    const res = await GoApp.getStatus()
-                                                    setLogs(JSON.stringify(res))
-                                                }}>Get Status</button>
+                                                }}> <StopCircle /> Stop</button>
+                                                <button className="px-3 py-1 rounded-md bg-yellow-500 text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
+                                                    await GoApp.stopProject(projectDetails.nom)
+                                                    await handleStart()
+                                                }}> <RefreshCcw size={15} /> Restart</button>
                                             </div>
                                         </div>
                                         <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
                                             <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
                                                 <Logs size={18} /> Logs
                                             </h3>
-                                            <div className="flex flex-wrap gap-2">
-                                                {logs}
+                                            <div className="flex flex-wrap flex-col gap-2 ">
+                                                {logs?.isRunning ? "Running" : "Stop"}
+                                                {/* {logs?.isRunning && "PID "+logs.pid} */}
+                                                <div className="bg-gray-950 text-white text-xs min-h-20 max-h-20 p-2 rounded-md flex flex-col overflow-scroll">
+                                                    {logs.logs && logs.logs.map(log => <code>{log}</code>)}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

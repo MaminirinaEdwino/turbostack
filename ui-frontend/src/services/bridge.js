@@ -54,8 +54,8 @@ export const GoApp = {
     runProject: async (projectName)=>{
         return await window.startProject(projectName)
     },
-    stopProject: async ()=>{
-        return await window.stopProject()
+    stopProject: async (projectName)=>{
+        return await window.stopProject(projectName)
     },
     getStatus: async ()=>{
         return await window.getStatus()

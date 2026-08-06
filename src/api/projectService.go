@@ -19,6 +19,7 @@ import (
 
 type ProjectService struct {
 	Manager *entity.ProjectManager
+	WV      webview.WebView
 }
 
 func (ps *ProjectService) Bind(w webview.WebView) {
@@ -44,11 +45,12 @@ type ProcessManager struct {
 	cmd       *exec.Cmd
 	isRunning bool
 	logs      []string
+	pid       int
 }
 
 var pm = &ProcessManager{}
 
-func (s *ProjectService) StartProject(projectName string) string {
+func (s *ProjectService) StartProject(projectName string) map[string]interface{} {
 	project := s.FetchProjectByName(projectName)
 	var projectDir string
 	switch project.Type {
@@ -60,26 +62,29 @@ func (s *ProjectService) StartProject(projectName string) string {
 		projectDir = fmt.Sprintf("%s/%s/web_app", config.PROJECT_DIR, projectName)
 	}
 
-	return handleStartProject(projectDir)
+	return handleStartProject(projectDir, s.WV)
 }
 
-func (s *ProjectService) Stopproject() string {
-	return handleStopProject()
+func (s *ProjectService) Stopproject(projectName string) map[string]interface{} {
+	return handleStopProject(projectName)
 }
 
-func (s *ProjectService) StatusProject() string {
+func (s *ProjectService) StatusProject() map[string]interface{} {
 	return handleGetStatus()
 }
 
 // 1. Démarrer le projet Go
-func handleStartProject(projectDir string) string {
+func handleStartProject(projectDir string, w webview.WebView) map[string]interface{} {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
 	if pm.isRunning {
-		return "Project Already Runnig"
+		return map[string]interface{}{
+			"isRunning": pm.isRunning,
+			"logs":      pm.logs,
+			"pid":       pm.pid,
+		}
 	}
-	
 
 	// Commande pour exécuter votre projet Go (ex: 'go run main.go' dans le dossier cible)
 	pm.cmd = exec.Command("go", "run", ".")
@@ -93,10 +98,15 @@ func handleStartProject(projectDir string) string {
 
 	if err := pm.cmd.Start(); err != nil {
 
-		return "Failed to start project"
+		return map[string]interface{}{
+			"isRunning": pm.isRunning,
+			"logs":      pm.logs,
+			"pid":       pm.pid,
+		}
 	}
 
 	pm.isRunning = true
+	pm.pid = pm.cmd.Process.Pid
 	pm.logs = []string{"Projet started"}
 
 	// Goroutine pour lire les logs en continu sans bloquer l'application
@@ -105,6 +115,13 @@ func handleStartProject(projectDir string) string {
 		for scanner.Scan() {
 			pm.mu.Lock()
 			pm.logs = append(pm.logs, scanner.Text())
+			data, _ := json.Marshal(map[string]interface{}{
+				"isRunning": pm.isRunning,
+				"logs":      pm.logs,
+				"pid":       pm.pid,
+			})
+			fmt.Println("dfdf",string(data))
+			Dispatch(w, "get-status-event", string(data))
 			pm.mu.Unlock()
 		}
 
@@ -116,35 +133,72 @@ func handleStartProject(projectDir string) string {
 		pm.mu.Unlock()
 	}()
 
-	return strings.Join(pm.logs, "\n")
+	// return fmt.Sprintf(`{"isRunning": %t, "logs": %q}`, pm.isRunning, pm.logs)
+	return map[string]interface{}{
+		"isRunning": pm.isRunning,
+		"logs":      pm.logs,
+		"pid":       pm.pid,
+	}
+}
+
+func PkillByName(processName string) error {
+	// 'pkill' accepte le nom exact ou partiel de l'exécutable
+	cmd := exec.Command("pkill", "-9", processName)
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("échec de pkill sur '%s' (%v): %s", processName, err, string(output))
+	}
+	return nil
 }
 
 // 2. Arrêter le projet Go
-func handleStopProject() string {
+func handleStopProject(projectName string) map[string]interface{} {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
 	if !pm.isRunning || pm.cmd == nil || pm.cmd.Process == nil {
 
-		return "No Project Running"
+		return map[string]interface{}{
+			"isRunning": pm.isRunning,
+			"logs":      pm.logs,
+			"pid":       pm.pid,
+		}
 	}
 
 	// Tuer le processus
-	if err := pm.cmd.Process.Kill(); err != nil {
+	fmt.Println(pm.cmd.Process.Pid)
 
-		return "Failed to stop project"
+	// err := syscall.Kill(pm.cmd.Process.Pid, syscall.SIGTERM)
+	err := PkillByName(strings.ReplaceAll(projectName, " ", "_"))
+	if err != nil {
+		pm.logs = append(pm.logs, err.Error())
+		return map[string]interface{}{
+			"isRunning": pm.isRunning,
+			"logs":      pm.logs,
+			"pid":       pm.pid,
+		}
 	}
 
 	pm.isRunning = false
-	return "Project Stopped"
+	pm.logs = append(pm.logs, "Server Stopped")
+	return map[string]interface{}{
+		"isRunning": pm.isRunning,
+		"logs":      pm.logs,
+		"pid":       pm.pid,
+	}
 }
 
 // 3. Récupérer le statut et les logs
-func handleGetStatus() string {
+func handleGetStatus() map[string]interface{} {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
-	return fmt.Sprintf(`{"isRunning": %t, "logs": %q}`, pm.isRunning, pm.logs)
+	return map[string]interface{}{
+		"isRunning": pm.isRunning,
+		"logs":      pm.logs,
+		"pid":       pm.pid,
+	}
 }
 
 func (s *ProjectService) UploadAsset(projectName, fileName, base64file string) string {

@@ -30,7 +30,7 @@ func main() {
 	mgr := api.NewManager()
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})
-	mgr.Add(&api.ProjectService{Manager: projectMgr})
+	mgr.Add(&api.ProjectService{Manager: projectMgr, WV: w})
 	if !config.CheckIfExist(config.PROJECT_DIR) {
 		os.Mkdir(config.PROJECT_DIR, 0644)
 	}

@@ -23,3 +23,4 @@ func (m *Manager) RegisterAll(w webview.WebView) {
 		b.Bind(w)
 	}
 }
+

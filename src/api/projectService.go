@@ -275,6 +275,8 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 	return "Success"
 }
 
+func (s *ProjectService) OpenInNavigator(uri string) {}
+
 func (s *ProjectService) SaveProject(name, project string) string {
 	var pJson entity.ProjectJSON
 	json.Unmarshal([]byte(project), &pJson)

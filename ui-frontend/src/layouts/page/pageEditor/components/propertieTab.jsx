@@ -1,15 +1,26 @@
 import { MousePointer2, Copy, ClipboardPaste, LoaderCircle, Tablet, Computer, Smartphone } from "lucide-react";
 import { BLOCK_TYPES, GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiReset } from "react-icons/bi";
+import { useSelector } from "react-redux";
+import { GoApp } from "../../../../services/bridge";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
     activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet, styleToModbile, styleToDesktop
 }) {
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
-
+    const projectName = useSelector(state => state.app.actualProject)
+    const [asset, setAsset] = useState([])
+    useEffect(() => {
+        const loadAsset = async () => {
+            const res = await GoApp.fetchProjectByName(projectName)
+            console.log(res)
+            setAsset(res.assets)
+        }
+        loadAsset()
+    }, [projectName])
     // Extraction intelligente des styles selon le viewport
     const getStylesForViewport = () => {
         if (!currentActiveBlock?.styles) return {};
@@ -255,7 +266,7 @@ export default function PropertiesTab({
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label htmlFor="inputType" className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Input Type</label>
-                                <select  className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all" name="" id="inputType" onChange={(e)=>updateBlock(currentActiveBlock.id, {inputType : e.target.value})} value={currentActiveBlock.inputType}>
+                                <select className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all" name="" id="inputType" onChange={(e) => updateBlock(currentActiveBlock.id, { inputType: e.target.value })} value={currentActiveBlock.inputType}>
                                     <option value="text">text</option>
                                     <option value="number">number</option>
                                     <option value="email">email</option>
@@ -292,13 +303,21 @@ export default function PropertiesTab({
                     )}
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Content</label>
-                        <textarea
+                        <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">
+                            {currentActiveBlock.tag != "img" ? "Content" : "image"}
+                        </label>
+                        {currentActiveBlock.tag != "img" && <textarea
                             className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-37.5 focus:ring-2 ring-couleur1/20 transition-all"
                             value={currentActiveBlock.content}
                             onChange={(e) => updateBlock(currentActiveBlock.id, { content: e.target.value })}
                             placeholder="Type your content here..."
-                        />
+                        />}
+                        <div className="grid grid-cols-2 justify-center overflow-y-scroll max-h-50">
+                            {currentActiveBlock.tag == "img" && asset.map(image => <div>
+                                <img src={image.base_64_image} alt={image.file_name} title={image.file_name} className=" h-20" onClick={(e) => updateBlock(currentActiveBlock.id, { content: e.target.src })} />
+                                <span className="text-xs">{image.file_name}</span>
+                            </div>)}
+                        </div>
                     </div>
                 </div>
 

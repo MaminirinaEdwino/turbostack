@@ -16,6 +16,7 @@ import {
   Smartphone,
   Tablet,
   Monitor,
+  MonitorUp,
 } from "lucide-react";
 import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
@@ -62,7 +63,126 @@ export default function PageEditor({ projectName }) {
   const handleResetZoom = () => {
     setZoomLevel(1); // Reset to 100%
   };
+  const siteData =
+    project?.type === "static" ? project?.site_statique : project?.web_app;
+  const activeItem =
+    editingType === "page"
+      ? (selectedPageIndex != null)
+        ? siteData?.pages[(selectedPageIndex != null && selectedPageIndex)]
+        : null
+      : selectedComponentIndex !== null
+        ? siteData?.[compKey]?.[selectedComponentIndex]
+        : null;
 
+  const previewHtml = useMemo(() => {
+    if (!activeItem?.content || !Array.isArray(activeItem.content)) return ""; // Utilise activeItem
+    const renderBlocks = (blocks) => {
+      return blocks
+        .map((b) => {
+          const className = b.className || "";
+          const styles = b.styles || "";
+          const content = b.content || "";
+          const href = b.href || "#";
+          const htmlId = b.htmlId ? `id="${b.htmlId}"` : ""; // Ajout de l'attribut id si htmlId est défini
+          const isJsonStyle =
+            typeof styles === "string" && styles.trim().startsWith("{");
+          const inlineStyleAttr = isJsonStyle ? "" : `style="${styles}"`;
+          const childrenHtml = b.children ? renderBlocks(b.children) : "";
+          if (b.tag === "img")
+            return `<img src="${content}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} />`;
+          if (b.tag === "button")
+            return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
+          if (b.tag === "a")
+            return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
+          if (b.tag === "form")
+            return `<form action="${b.action}" class="${className}" method="${b.method}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</form>`;
+          if (b.tag == "input")
+            return `<input type="${b.inputType}" placeholder="${b.placeholder}" class="${className}" data-block-id="${b.id}" ${htmlId} ${inlineStyleAttr} />`
+
+          return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
+        })
+        .join("\n");
+    };
+    return renderBlocks(activeItem.content);
+  }, [activeItem?.content]);
+
+  // Génère le CSS spécifique aux blocs pour chaque viewport
+  const blocksCss = useMemo(() => {
+    if (!activeItem?.content) return "";
+    let css = "";
+    const process = (blocks) => {
+      blocks.forEach((b) => {
+        if (
+          b.styles &&
+          typeof b.styles === "string" &&
+          b.styles.trim().startsWith("{")
+        ) {
+          try {
+            const obj = JSON.parse(b.styles);
+            const format = (s) =>
+              Object.entries(s || {})
+                .map(([p, v]) => `${p}: ${v};`)
+                .join(" ");
+            if (obj.desktop)
+              css += `[data-block-id="${b.id}"] { ${format(obj.desktop)} }\n`;
+            if (obj.tablet)
+              css += `@media (max-width: 1024px) { [data-block-id="${b.id}"] { ${format(obj.tablet)} } }\n`;
+            if (obj.mobile)
+              css += `@media (max-width: 375px) { [data-block-id="${b.id}"] { ${format(obj.mobile)} } }\n`;
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        if (b.children) process(b.children);
+      });
+    };
+    process(activeItem.content);
+    return css;
+  }, [activeItem?.content]);
+
+  //mila modifiena am farany
+  const globalCss = useMemo(() => {
+    if (!activeItem?.styles) return ""; // Utilise activeItem
+    try {
+      const stylesObj = JSON.parse(activeItem.styles);
+      const format = (s) =>
+        Object.entries(s || {})
+          .map(([tag, style]) => `${tag} { ${style} }`)
+          .join("\n");
+      if (stylesObj.desktop || stylesObj.tablet || stylesObj.mobile) {
+        let css = format(stylesObj.mobile);
+        if (stylesObj.tablet)
+          css += `\n@media screen and (min-width: 768px) {\n${format(stylesObj.tablet)}\n}`;
+        if (stylesObj.desktop)
+          css += `\n@media screen and (min-width: 1024px) {\n${format(stylesObj.desktop)}\n}`;
+        return css;
+      }
+      return format(stylesObj);
+    } catch (e) {
+      console.log(e);
+      return `body { ${activeItem.styles} }`; // Utilise activeItem
+    }
+  }, [activeItem?.styles]);
+  const channel = new BroadcastChannel('turbostack_preview_channel');
+
+  // Envoie le code au preview à chaque changement
+
+
+  useEffect(() => {
+    const channel = new BroadcastChannel('turbostack_preview_channel');
+    channel.onmessage = (event) => {
+      if (event.data && event.data.type == "SET_VIEWPORT") {
+        setViewport(event.data.viewport)
+      }
+      if (event.data && event.data.type == "PREVIEW_READY") {
+        channel.postMessage({ type: 'UPDATE_RENDER', blockCss: blocksCss, globalCss: globalCss, previewHtml: previewHtml, viewport: viewport })
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  const handleDetachPreview = async () => {
+    await GoApp.openPreviewWindow()
+  };
   useEffect(() => {
     const loadProject = async () => {
       setLoading(true);
@@ -108,6 +228,10 @@ export default function PageEditor({ projectName }) {
       return { ...prev, [typeKey]: updatedTypeData };
     });
   };
+  useEffect(() => {
+    channel.postMessage({ type: 'UPDATE_RENDER', blocksCss: blocksCss, globalCss: globalCss, previewHtml: previewHtml, viewport: viewport });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blocksCss, globalCss, previewHtml, viewport, updateActiveItemField]);
 
   const addPage = () => {
     setProject((prev) => {
@@ -188,111 +312,14 @@ export default function PageEditor({ projectName }) {
     });
   };
 
-  const siteData =
-    project?.type === "static" ? project?.site_statique : project?.web_app;
+
 
   // Détection de la clé de composant pour l'affichage (priorité au pluriel comme dans pagelist.jsx)
   const compKey = siteData?.composants ? "composants" : "composant";
 
-  const activeItem =
-    editingType === "page"
-      ? selectedPageIndex !== null
-        ? siteData?.pages[selectedPageIndex]
-        : null
-      : selectedComponentIndex !== null
-        ? siteData?.[compKey]?.[selectedComponentIndex]
-        : null;
 
   // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
-  const previewHtml = useMemo(() => {
-    if (!activeItem?.content || !Array.isArray(activeItem.content)) return ""; // Utilise activeItem
-    const renderBlocks = (blocks) => {
-      return blocks
-        .map((b) => {
-          const className = b.className || "";
-          const styles = b.styles || "";
-          const content = b.content || "";
-          const href = b.href || "#";
-          const htmlId = b.htmlId ? `id="${b.htmlId}"` : ""; // Ajout de l'attribut id si htmlId est défini
-          const isJsonStyle =
-            typeof styles === "string" && styles.trim().startsWith("{");
-          const inlineStyleAttr = isJsonStyle ? "" : `style="${styles}"`;
-          const childrenHtml = b.children ? renderBlocks(b.children) : "";
-          if (b.tag === "img")
-            return `<img src="${content}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} />`;
-          if (b.tag === "button")
-            return `<button class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</button>`;
-          if (b.tag === "a")
-            return `<a href="${href}" class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</a>`;
-          if (b.tag === "form")
-            return `<form action="${b.action}" class="${className}" method="${b.method}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</form>`;
-          if (b.tag == "input")
-            return `<input type="${b.inputType}" placeholder="${b.placeholder}" class="${className}" data-block-id="${b.id}" ${htmlId} ${inlineStyleAttr} />`
-          
-          return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
-        })
-        .join("\n");
-    };
-    return renderBlocks(activeItem.content);
-  }, [activeItem?.content]);
 
-  // Génère le CSS spécifique aux blocs pour chaque viewport
-  const blocksCss = useMemo(() => {
-    if (!activeItem?.content) return "";
-    let css = "";
-    const process = (blocks) => {
-      blocks.forEach((b) => {
-        if (
-          b.styles &&
-          typeof b.styles === "string" &&
-          b.styles.trim().startsWith("{")
-        ) {
-          try {
-            const obj = JSON.parse(b.styles);
-            const format = (s) =>
-              Object.entries(s || {})
-                .map(([p, v]) => `${p}: ${v};`)
-                .join(" ");
-            if (obj.desktop)
-              css += `[data-block-id="${b.id}"] { ${format(obj.desktop)} }\n`;
-            if (obj.tablet)
-              css += `@media (max-width: 1024px) { [data-block-id="${b.id}"] { ${format(obj.tablet)} } }\n`;
-            if (obj.mobile)
-              css += `@media (max-width: 375px) { [data-block-id="${b.id}"] { ${format(obj.mobile)} } }\n`;
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        if (b.children) process(b.children);
-      });
-    };
-    process(activeItem.content);
-    return css;
-  }, [activeItem?.content]);
-
-  //mila modifiena am farany
-  const globalCss = useMemo(() => {
-    if (!activeItem?.styles) return ""; // Utilise activeItem
-    try {
-      const stylesObj = JSON.parse(activeItem.styles);
-      const format = (s) =>
-        Object.entries(s || {})
-          .map(([tag, style]) => `${tag} { ${style} }`)
-          .join("\n");
-      if (stylesObj.desktop || stylesObj.tablet || stylesObj.mobile) {
-        let css = format(stylesObj.mobile);
-        if (stylesObj.tablet)
-          css += `\n@media screen and (min-width: 768px) {\n${format(stylesObj.tablet)}\n}`;
-        if (stylesObj.desktop)
-          css += `\n@media screen and (min-width: 1024px) {\n${format(stylesObj.desktop)}\n}`;
-        return css;
-      }
-      return format(stylesObj);
-    } catch (e) {
-      console.log(e);
-      return `body { ${activeItem.styles} }`; // Utilise activeItem
-    }
-  }, [activeItem?.styles]);
 
   const handleSave = async () => {
     showToast("Saving project...", "loading");
@@ -342,7 +369,7 @@ export default function PageEditor({ projectName }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editMode, project, zoomLevel]);
 
   if (loading)
@@ -538,7 +565,14 @@ export default function PageEditor({ projectName }) {
                     </div>
                   </div>
 
-                  <div className="w-12"></div>
+                  <div className="w-12 flex items-center px-2">
+                    <div>
+                      <button title="separete the preview" onClick={handleDetachPreview}>
+                        <MonitorUp size={15} />
+                      </button>
+
+                    </div>
+                  </div>
                 </div>
                 <div className="overflow-scroll flex justify-center items-start bg-gray-100 dark:bg-gray-800/30  custom-scrollbar h-full" >
                   <iframe
@@ -548,7 +582,7 @@ export default function PageEditor({ projectName }) {
                       // height: viewport.height,
                       transform: `scale(${zoomLevel})`, // Correction ici
                       transformOrigin: "top center", // Correction ici
-                      overflow:"scroll"
+                      overflow: "scroll"
                     }}
                     className="bg-white shadow-2xl transition-all duration-500 ease-in-out rounded-sm h-full "
                     srcDoc={`

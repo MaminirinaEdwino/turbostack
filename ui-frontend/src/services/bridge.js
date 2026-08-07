@@ -48,16 +48,19 @@ export const GoApp = {
     uploadAsset: async (projectName, fileName, base64file) => {
         return await window.uploadAsset(projectName, fileName, base64file)
     },
-    saveScript: async (projectName, scriptName, script)=>{
+    saveScript: async (projectName, scriptName, script) => {
         return await window.saveScript(projectName, scriptName, script)
     },
-    runProject: async (projectName)=>{
+    runProject: async (projectName) => {
         return await window.startProject(projectName)
     },
-    stopProject: async (projectName)=>{
+    stopProject: async (projectName) => {
         return await window.stopProject(projectName)
     },
-    getStatus: async ()=>{
+    getStatus: async () => {
         return await window.getStatus()
+    },
+    openPreviewWindow: async () => {
+        return await window.openPreviewWindow()
     }
 }

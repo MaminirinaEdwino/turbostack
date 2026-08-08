@@ -20,7 +20,7 @@ func OpenDetachedPreviewWindow() {
 	// Créer une nouvelle fenêtre WebView séparée
 	
 	prevWv := webview.New(true)
-	prevWv.SetTitle("TurboStack - Standalone Preview")
+	prevWv.SetTitle("TurboStack - Preview")
 	prevWv.SetSize(1024, 768, webview.HintNone)
 	// Naviguer directement vers l'UI dédiée au preview
 	prevWv.Navigate("http://localhost:5173/?mode=preview")

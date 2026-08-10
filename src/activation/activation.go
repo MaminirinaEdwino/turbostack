@@ -14,12 +14,12 @@ func CheckActivationToken() map[string]interface{} {
 	userDir, err := os.UserHomeDir()
 	utils.ErrorChecker(err)
 
-	tokenFile, err := os.ReadFile(userDir + "/.turbostack/token")
+	tokenFile, err := os.ReadFile(userDir + "/.turbo_stack/token")
 
 	if err != nil && os.IsNotExist(err) {
 		fmt.Println(err)
-		os.MkdirAll(userDir+"/.turbostack", os.ModePerm)
-		file, _ := os.Create(userDir + "/.turbostack/token")
+		os.MkdirAll(userDir+"/.turbo_stack", os.ModePerm)
+		file, _ := os.Create(userDir + "/.turbo_stack/token")
 		defer file.Close()
 		token, _ := turbojwt.Encode("secret", map[string]any{
 			"subscription": "free",

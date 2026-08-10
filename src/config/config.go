@@ -6,7 +6,10 @@ import (
 	"os"
 )
 
-const PROJECT_DIR = "turbo_projects"
+var UserHomeDir, _ = os.UserHomeDir()
+
+var TURBO_STACK_DIR = UserHomeDir + "/.turbo_stack"
+var PROJECT_DIR = TURBO_STACK_DIR+"/turbo_projects"
 
 func CheckIfExist(chemin string) bool {
 	info, err := os.Stat(chemin)
@@ -19,7 +22,7 @@ func CheckIfExist(chemin string) bool {
 	return info.IsDir()
 }
 
-func CheckCreateDir(path string){
+func CheckCreateDir(path string) {
 	fmt.Println("check dir", path)
 	filePath := fmt.Sprintf("%s/%s", PROJECT_DIR, path)
 	if !CheckIfExist(filePath) {

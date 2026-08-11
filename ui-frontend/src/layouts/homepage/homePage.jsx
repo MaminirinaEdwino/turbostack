@@ -24,8 +24,17 @@ const HomePage = () => {
                 setLoading(true);
                 try {
                     const res = await GoApp.fetchProjectByName(actualProject);
-                    setProjectDetails(res);
-                    // console.log("res",JSON.stringify(res))
+                    
+                    console.log("res", res);
+                    if (res.nom != "") {
+                        setProjectDetails(res);
+                    
+                    }
+                    else{
+                        dispatch(setActualProject(''))
+                    }
+                    
+                    
                 } catch (err) {
                     console.error("Error loading project details:", err);
                 }

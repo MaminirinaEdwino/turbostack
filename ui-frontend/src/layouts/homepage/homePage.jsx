@@ -120,22 +120,22 @@ const HomePage = () => {
                                 {projectDetails.type != "bdd" && <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
 
                                     <div className="flex w-full flex-col gap-2">
-                                        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
-                                            <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
+                                        <div className="fixed bg-couleur1  dark:bg-gray-900 p-1 px-2.5 gap-2 bottom-1 rounded-3xl border border-couleur1/10 dark:border-white/5 shadow-sm flex items-center w-10 hover:w-75 transition-all duration-500 mx-auto delay-300">
+                                            <h3 className="text-lg font-bold  dark:text-gray-200  flex items-center gap-3 text-couleur3">
                                                 <Command size={18} /> Commands
                                             </h3>
                                             <div className=" flex gap-2">
                                                 {
-                                                    !logs.isRunning && <button onClick={() => handleStart()} className="px-3 py-1 rounded-md bg-green-500 text-couleur3 flex gap-2 items-center cursor-pointer"><Play size={15} /> Start</button>
+                                                    !logs.isRunning && <button onClick={() => handleStart()} className="px-3 py-1 rounded-md text-couleur3 flex gap-2 items-center cursor-pointer"><Play size={15} /> </button>
                                                 }
-                                                <button className="px-3 py-1 rounded-md bg-red-500 text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
+                                                <button className="px-3 py-1 rounded-md  text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
                                                     const res = await GoApp.stopProject(projectDetails.nom)
                                                     setLogs(res)
-                                                }}> <StopCircle /> Stop</button>
-                                                <button className="px-3 py-1 rounded-md bg-yellow-500 text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
+                                                }}> <StopCircle /> </button>
+                                                <button className="px-3 py-1 rounded-md  text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
                                                     await GoApp.stopProject(projectDetails.nom)
                                                     await handleStart()
-                                                }}> <RefreshCcw size={15} /> Restart</button>
+                                                }}> <RefreshCcw size={15} /></button>
                                             </div>
                                         </div>
                                         <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">

@@ -62,5 +62,8 @@ export const GoApp = {
     },
     openPreviewWindow: async () => {
         return await window.openPreviewWindow()
+    },
+    loadLibrairie: async ()=>{
+        return await window.loadLibrairie()
     }
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"log"
 	"os"
 
@@ -39,13 +40,18 @@ func main() {
 		log.Printf("Erreur lors du chargement des projets : %v", err)
 	}
 	activation.CheckActivationToken()
-	// fmt.Println(projectMgr.Projects)
 	mgr := api.NewManager()
 	mgr.Add(&api.UserService{})
 	mgr.Add(&api.SystemService{})
 	mgr.Add(&api.ProjectService{Manager: projectMgr, WV: w})
 	if !config.CheckIfExist(config.PROJECT_DIR) {
 		os.Mkdir(config.PROJECT_DIR, 0644)
+	}
+	if !config.CheckIfExist(config.LIBRAIRIE_PATH) {
+		var librairie entity.LibrairieList
+		file, _ := os.Create(config.LIBRAIRIE_PATH)
+		content, _ := json.MarshalIndent(librairie, "", "    ")
+		file.WriteString(string(content))
 	}
 	mgr.RegisterAll(w)
 

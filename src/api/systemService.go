@@ -1,8 +1,10 @@
 package api
 
 import (
-	webview "github.com/webview/webview_go"
 	"runtime"
+
+	"github.com/MaminirinaEdwino/turbostack/src/entity"
+	webview "github.com/webview/webview_go"
 )
 
 type SystemService struct{}
@@ -13,9 +15,12 @@ func (s *SystemService) GetStats() map[string]string {
 		"arch": runtime.GOARCH,
 	}
 }
+
+func (s *SystemService) LoadLibrairie() entity.LibrairieList {
+	librairie := entity.LoadLibrairie()
+	return librairie
+}
 func (s *SystemService) Bind(w webview.WebView) {
 	w.Bind("getStats", s.GetStats)
+	w.Bind("loadLibrairie", s.LoadLibrairie)
 }
-
-
-

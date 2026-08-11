@@ -1,7 +1,12 @@
 package entity
 
 import (
+	"encoding/json"
+	"os"
 	"time"
+
+	"github.com/MaminirinaEdwino/turbostack/src/config"
+	"github.com/MaminirinaEdwino/turbostack/src/utils"
 )
 
 type AbonnementJSON struct {
@@ -35,6 +40,21 @@ type ComposantJSON struct {
 	Nom     string            `json:"nom"`
 	Contenu []PageContentJSON `json:"content"`
 	Params  []any             `json:"params"`
+}
+
+type FrontLibrairie struct {
+	Name    string          `json:"name"`
+	Content PageContentJSON `json:"content"`
+}
+
+type LibrairieList []FrontLibrairie
+
+func LoadLibrairie() LibrairieList {
+	var librairie LibrairieList
+	librairieFile, err := os.ReadFile(config.LIBRAIRIE_PATH)
+	utils.ErrorChecker(err)
+	json.Unmarshal(librairieFile, &librairie)
+	return librairie
 }
 
 type EndpointJSON struct {

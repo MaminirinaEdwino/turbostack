@@ -19,6 +19,7 @@ import logo from "./assets/logotransparent.png";
 import FileExplorer from "./layouts/projects/fileExplorer";
 import UnifiedEditor from "./layouts/projects/unifiedEditor";
 import HelpDocumentation from "./helpComponent";
+import { GoApp } from "./services/bridge";
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
@@ -32,7 +33,13 @@ function App() {
       document.documentElement.classList.remove("dark");
     }
   }, [isDarkMode]);
-
+  useEffect(()=>{
+    const loadLibrairie = async ()=>{
+      const res = await GoApp.loadLibrairie()
+      console.log(res)
+    }
+    loadLibrairie()
+  }, [])
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAppReady(true);

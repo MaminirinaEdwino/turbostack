@@ -63,14 +63,17 @@ export default function PageEditor({ projectName }) {
   const handleResetZoom = () => {
     setZoomLevel(1); // Reset to 100%
   };
+
   const siteData =
     project?.type === "static" ? project?.site_statique : project?.web_app;
+
+  const compKey = siteData?.composants ? "composants" : "composant";
   const activeItem =
     editingType === "page"
       ? (selectedPageIndex != null)
         ? siteData?.pages[(selectedPageIndex != null && selectedPageIndex)]
         : null
-      : selectedComponentIndex !== null
+      : selectedComponentIndex != null
         ? siteData?.[compKey]?.[selectedComponentIndex]
         : null;
 
@@ -315,7 +318,7 @@ export default function PageEditor({ projectName }) {
 
 
   // Détection de la clé de composant pour l'affichage (priorité au pluriel comme dans pagelist.jsx)
-  const compKey = siteData?.composants ? "composants" : "composant";
+
 
 
   // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
@@ -733,6 +736,7 @@ export default function PageEditor({ projectName }) {
                         }}
                         className="p-2 bg-couleur1/5 text-couleur1 rounded-lg hover:bg-couleur1 hover:text-white transition-all"
                       >
+                       
                         <Edit3 size={18} />
                       </button>
                       <button

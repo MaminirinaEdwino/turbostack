@@ -137,8 +137,8 @@ const HomePage = () => {
                                         <div className="flex w-full flex-col gap-4">
 
                                             {/* Command Bar Floating */}
-                                            <div className="fixed bg-couleur1 dark:bg-gray-900/90 backdrop-blur-md p-1.5 px-3 gap-3 bottom-4 left-1/2 -translate-x-1/2 z-40 rounded-full border border-couleur1/10 dark:border-white/10 shadow-xl flex items-center w-12 hover:w-80 transition-all duration-500 ease-in-out group overflow-hidden">
-                                                <h3 className="text-sm font-semibold dark:text-gray-200 flex items-center gap-2 text-couleur3 whitespace-nowrap min-w-max">
+                                            <div className="fixed bg-couleur1 dark:bg-gray-900/90 backdrop-blur-md p-1.5 px-3 gap-4 bottom-4 left-1/2 -translate-x-1/2 z-40 rounded-full border border-couleur1/10 dark:border-white/10 shadow-xl flex items-center w-11 hover:w-60 transition-all duration-500 ease-in-out group overflow-hidden">
+                                                <h3 className="text-sm font-semibold dark:text-gray-200 flex items-center gap-4 text-couleur3 whitespace-nowrap min-w-max">
                                                     <Command size={18} /> Commands
                                                 </h3>
                                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">

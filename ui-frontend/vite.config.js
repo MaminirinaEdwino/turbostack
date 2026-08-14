@@ -9,5 +9,8 @@ export default defineConfig({
   base: "./",
   build: {
     outDir: "../ui-dist"
+  },
+  server: {
+    host: true
   }
 })

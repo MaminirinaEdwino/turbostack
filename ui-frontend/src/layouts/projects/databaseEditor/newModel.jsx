@@ -104,41 +104,44 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
         })
         setToggle("none")
     }
-    return (<form className="bg-couleur5 border border-couleur1 m-2 p-4 rounded-lg flex flex-col">
-        <h3 className="font-semibold text-2xl text-couleur1">New Table</h3>
-        <div className=" p-2 flex flex-col">
-            <label className="text-couleur1" htmlFor="modelName">Table Name</label>
-            <input className="border border-couleur1  my-1 px-2 py-1 rounded-lg" type="text" id="modelName" onInput={(e) => setModelName(e.target.value)} value={modelName} placeholder="Table name" />
+    return (<form className="bg-white dark:bg-gray-900 border border-couleur1/10 dark:border-white/10 m-4 p-6 rounded-2xl shadow-xl flex flex-col gap-4 transition-all">
+        <h3 className="font-bold text-2xl text-couleur1 dark:text-gray-100 tracking-tight">New Table</h3>
+
+        <div className="p-2 flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-couleur1/80 dark:text-gray-300" htmlFor="modelName">Table Name</label>
+            <input className="border border-couleur1/20 dark:border-white/20 bg-couleur3/20 dark:bg-gray-800 text-couleur1 dark:text-gray-100 my-1 px-3.5 py-2 rounded-xl outline-none focus:ring-2 focus:ring-couleur1/50 transition-all font-medium text-sm" type="text" id="modelName" onInput={(e) => setModelName(e.target.value)} value={modelName} placeholder="Table name" />
         </div>
+
         <div>
-            <div className="flex justify-between items-center p-2">
-                <h4 className="font-semibold">Model Fields</h4>
-                <button className="border-couleur1 text-couleur1 flex gap-1 items-center border px-4 py-1 rounded" onClick={(e) => {
+            <div className="flex justify-between items-center p-3 bg-couleur3/30 dark:bg-gray-800/50 rounded-xl border border-couleur1/5 dark:border-white/5 mb-3">
+                <h4 className="font-semibold text-couleur1 dark:text-gray-200">Model Fields</h4>
+                <button className="bg-couleur1 hover:bg-couleur1/90 text-white font-medium flex gap-2 items-center px-4 py-1.5 rounded-xl transition-all duration-200 text-xs shadow-xs active:scale-95 cursor-pointer" onClick={(e) => {
                     e.preventDefault()
-                    setAddfield(true)
-                }}> <Plus></Plus> Add Field</button>
+                    setAddfield(!addField)
+                }}> <Plus size={16}></Plus> Add Field</button>
             </div>
-            <div className="w-full p-2 text-left">
-                <table className="w-full rounded p-2 m-1 box-border">
-                    <thead className="">
-                        <tr>
-                            <th className="min-w-40">Name</th>
-                            <th className="min-w-30">Type</th>
-                            <th className="min-w-40">Default Value</th>
-                            <th className="min-w-30">Constraint</th>
-                            <th className="min-w-30">Action</th>
+
+            <div className="w-full overflow-x-auto rounded-xl border border-couleur1/10 dark:border-white/10 bg-white dark:bg-gray-900 shadow-xs">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="border-b border-couleur1/10 dark:border-white/10 bg-couleur3/20 dark:bg-gray-800/80 text-[11px] font-bold tracking-wider text-couleur1/70 dark:text-gray-400 uppercase">
+                            <th className="py-3 px-4 min-w-40">Name</th>
+                            <th className="py-3 px-4 min-w-30">Type</th>
+                            <th className="py-3 px-4 min-w-40">Default Value</th>
+                            <th className="py-3 px-4 min-w-30">Constraint</th>
+                            <th className="py-3 px-4 min-w-30 text-right">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-couleur1/5 dark:divide-white/5 text-sm">
                         {fields.map((item, idx) => (
                             editingIndex === idx ? (
-                                <tr key={idx} className="p-1 border-b border-couleur1/10">
-                                    <td className="min-w-20">
-                                        <input type="text" onInput={(e) => setEditField({ ...editField, nom: e.target.value })} value={editField.nom} className="w-full p-2 border-b border-couleur1 outline-0 bg-white" />
+                                <tr key={idx} className="bg-couleur1/5 dark:bg-gray-800/50">
+                                    <td className="p-3 min-w-20">
+                                        <input type="text" onInput={(e) => setEditField({ ...editField, nom: e.target.value })} value={editField.nom} className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium" />
                                     </td>
-                                    <td>
+                                    <td className="p-3">
                                         <select
-                                            className="bg-white w-full p-2 border-b border-couleur1 outline-0 text-xs"
+                                            className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium cursor-pointer"
                                             onInput={(e) => setEditField({ ...editField, type: e.target.value })}
                                             value={editField.type}
                                         >
@@ -148,10 +151,10 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                             <option value="text">TEXT</option>
                                         </select>
                                     </td>
-                                    <td>
-                                        <input list="default-value-list" className="w-full p-2 border-b border-couleur1 outline-0 bg-white " type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} />
+                                    <td className="p-3">
+                                        <input list="default-value-list" className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium" type="text" onInput={(e) => setEditField({ ...editField, default_value: e.target.value })} value={editField.default_value} />
                                     </td>
-                                    <td>
+                                    <td className="p-3">
                                         <div className="flex flex-wrap gap-1 min-w-30">
                                             {["primary key", "unique", "not null", "relation", ...(editField.type === "int" ? ["autoincrement"] : [])].map(c => {
                                                 const isRel = c === "relation";
@@ -172,9 +175,9 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                                                 toggleConstraint(editField, setEditField, c);
                                                             }
                                                         }}
-                                                        className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${isActive
-                                                            ? "bg-couleur1 text-white border-couleur1"
-                                                            : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
+                                                        className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all cursor-pointer border ${isActive
+                                                            ? "bg-couleur1 text-white border-couleur1 shadow-xs"
+                                                            : "bg-white dark:bg-gray-800 text-couleur1 dark:text-gray-300 border-couleur1/20 dark:border-white/20 hover:bg-couleur1/10"
                                                             }`}
                                                     >
                                                         {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
@@ -183,41 +186,45 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                             })}
                                         </div>
                                     </td>
-                                    <td className="flex gap-2 py-2">
-                                        <button onClick={saveEdit} className="p-1.5 bg-green-500 text-white rounded shadow-sm hover:bg-green-600 transition-colors"><Check size={16} /></button>
-                                        <button onClick={(e) => { e.preventDefault(); setEditingIndex(-1); }} className="p-1.5 bg-gray-400 text-white rounded shadow-sm hover:bg-gray-500 transition-colors"><X size={16} /></button>
+                                    <td className="p-3">
+                                        <div className="flex justify-end gap-1.5">
+                                            <button onClick={saveEdit} className="p-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"><Check size={16} /></button>
+                                            <button onClick={(e) => { e.preventDefault(); setEditingIndex(-1); }} className="p-1.5 bg-gray-400 hover:bg-gray-500 text-white rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"><X size={16} /></button>
+                                        </div>
                                     </td>
                                 </tr>
                             ) : (
-                                <tr key={idx} className="p-1 border-b border-couleur1/5 hover:bg-couleur3/50 transition-colors">
-                                    <td className="py-2">{item.nom}</td>
-                                    <td className="py-2 text-xs font-mono opacity-70 uppercase">{item.type}</td>
-                                    <td className="py-2">{item.default_value || "-"}</td>
-                                    <td className="py-2 text-xs italic opacity-60">{Array.isArray(item.constraint) ? item.constraint.join(", ") : (item.constraint || "-")}</td>
-                                    <td className="flex gap-2 py-2">
-                                        <button
-                                            className="p-1.5 bg-amber-400 text-white rounded shadow-sm hover:bg-amber-500 transition-colors"
-                                            onClick={(e) => { e.preventDefault(); startEditing(idx, item); }}
-                                        >
-                                            <Edit size={16}></Edit>
-                                        </button>
-                                        <button
-                                            className="p-1.5 bg-red-500 text-white rounded shadow-sm hover:bg-red-600 transition-colors"
-                                            onClick={(e) => { e.preventDefault(); setFields(fields.filter((_, i) => i !== idx)) }}
-                                        >
-                                            <Trash2 size={16}></Trash2>
-                                        </button>
+                                <tr key={idx} className="hover:bg-couleur3/30 dark:hover:bg-gray-800/40 transition-colors">
+                                    <td className="py-3 px-4 font-semibold text-couleur1 dark:text-gray-200">{item.nom}</td>
+                                    <td className="py-3 px-4 text-xs font-mono opacity-70 uppercase">{item.type}</td>
+                                    <td className="py-3 px-4 text-xs font-mono text-gray-600 dark:text-gray-400">{item.default_value || "-"}</td>
+                                    <td className="py-3 px-4 text-xs italic opacity-60">{Array.isArray(item.constraint) ? item.constraint.join(", ") : (item.constraint || "-")}</td>
+                                    <td className="py-3 px-4">
+                                        <div className="flex justify-end gap-1.5">
+                                            <button
+                                                className="p-1.5 bg-amber-400/90 hover:bg-amber-500 text-white rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
+                                                onClick={(e) => { e.preventDefault(); startEditing(idx, item); }}
+                                            >
+                                                <Edit size={16}></Edit>
+                                            </button>
+                                            <button
+                                                className="p-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
+                                                onClick={(e) => { e.preventDefault(); setFields(fields.filter((_, i) => i !== idx)) }}
+                                            >
+                                                <Trash2 size={16}></Trash2>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             )
                         ))}
-                        {addField && <tr className="p-1">
-                            <td>
-                                <input type="text" placeholder="Field Name" onInput={(e) => setNewField({ ...newField, nom: e.target.value })} value={newField.nom} className="m-2 p-2 border-b border-couleur1 outline-0 " />
+                        {addField && <tr className="bg-couleur1/5 dark:bg-gray-800/60 border-t-2 border-couleur1/20">
+                            <td className="p-3">
+                                <input type="text" placeholder="Field Name" onInput={(e) => setNewField({ ...newField, nom: e.target.value })} value={newField.nom} className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium" />
                             </td>
-                            <td>
+                            <td className="p-3">
                                 <select
-                                    className="bg-white m-2 p-2 border-b border-couleur1 outline-0  appearance-none"
+                                    className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium cursor-pointer"
                                     onInput={(e) => setNewField({ ...newField, type: e.target.value })}
                                     value={newField.type}
                                 >
@@ -227,9 +234,9 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                     <option value="text">TEXT</option>
                                 </select>
                             </td>
-                            <td><input list="default-value-list" className="m-2 p-2 border-b border-couleur1 outline-0 " type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
-                            <td>
-                                <div className="flex flex-wrap gap-1 min-w-30 p-1">
+                            <td className="p-3"><input list="default-value-list" className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium" type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
+                            <td className="p-3">
+                                <div className="flex flex-wrap gap-1 min-w-30">
                                     {["primary key", "unique", "not null", "relation", ...(newField.type === "int" ? ["autoincrement"] : [])].map(c => {
                                         const isRel = c === "relation";
                                         const isActive = isRel
@@ -249,9 +256,9 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                                         toggleConstraint(newField, setNewField, c);
                                                     }
                                                 }}
-                                                className={`px-1.5 py-0.5 rounded text-[10px] border transition-all ${isActive
-                                                    ? "bg-couleur1 text-white border-couleur1"
-                                                    : "bg-white text-couleur1 border-couleur1/30 hover:bg-couleur1/10"
+                                                className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all cursor-pointer border ${isActive
+                                                    ? "bg-couleur1 text-white border-couleur1 shadow-xs"
+                                                    : "bg-white dark:bg-gray-800 text-couleur1 dark:text-gray-300 border-couleur1/20 dark:border-white/20 hover:bg-couleur1/10"
                                                     }`}
                                             >
                                                 {isRel ? (displayValue.includes(':') ? `🔗 ${displayValue.split(':')[1]}` : "relation") : c}
@@ -260,23 +267,27 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                     })}
                                 </div>
                             </td>
-                            <td className="flex justify-center items-center gap-2">
-                                {
-                                    newField.type != "" && newField.nom != "" && <>
-                                        <button type="button" onClick={handleNewField} className="bg-couleur1 text-white font-semibold p-2 rounded"><Check></Check></button>
-                                        <button type="button" onClick={()=>setAddfield(false)} className="bg-red-600 text-white font-semibold p-2 rounded"><MdCancel size={24}></MdCancel></button>
-                                    </>
-                                }
+                            <td className="p-3 text-right">
+                                <div className="flex justify-end items-center gap-1.5">
+                                    {
+                                        newField.type != "" && newField.nom != "" && <>
+                                            <button type="button" onClick={handleNewField} className="p-1.5 bg-couleur1 hover:bg-couleur1/90 text-white rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"><Check size={18}></Check></button>
+                                            <button type="button" onClick={() => setAddfield(false)} className="p-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"><MdCancel size={18}></MdCancel></button>
+                                        </>
+                                    }
+                                </div>
                             </td>
                         </tr>}
                     </tbody>
                 </table>
             </div>
-            <div className="flex justify-end gap-2">
-                <button onClick={handleNewModel} className="px-6 py-2 bg-couleur1 rounded text-couleur3">Save</button>
-                <button className="px-6 py-2 bg-couleur3 rounded text-couleur1 border border-couleur1" onClick={handleCancel}>Cancel</button>
+
+            <div className="flex justify-end gap-3 pt-4">
+                <button onClick={handleNewModel} className="px-6 py-2.5 bg-couleur1 hover:bg-couleur1/90 text-white font-semibold text-sm rounded-xl shadow-md transition-all cursor-pointer active:scale-95">Save</button>
+                <button className="px-6 py-2.5 bg-couleur3 dark:bg-gray-800 hover:bg-couleur3/80 dark:hover:bg-gray-700 text-couleur1 dark:text-gray-200 font-semibold text-sm rounded-xl border border-couleur1/20 dark:border-white/20 transition-all cursor-pointer active:scale-95" onClick={handleCancel}>Cancel</button>
             </div>
         </div>
+
         <datalist id="default-value-list">
             <option value="autoincrement" />
             <option value="current_timestamp" />
@@ -286,6 +297,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
             <option value="false" />
             <option value="''" />
         </datalist>
+
         {showRelationModal && (
             <RelationModal
                 models={modelList?.models || []}

@@ -24,17 +24,17 @@ const HomePage = () => {
                 setLoading(true);
                 try {
                     const res = await GoApp.fetchProjectByName(actualProject);
-                    
+
                     console.log("res", res);
                     if (res.nom != "") {
                         setProjectDetails(res);
-                    
+
                     }
-                    else{
+                    else {
                         dispatch(setActualProject(''))
                     }
-                    
-                    
+
+
                 } catch (err) {
                     console.error("Error loading project details:", err);
                 }
@@ -85,105 +85,148 @@ const HomePage = () => {
         };
     }, []);
     return (
-        <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300" >
+        <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
             <SideMenu />
-            <button className="fixed bottom-20 right-2 z-50 bg-couleur1 text-couleur3 p-3 rounded-lg" onClick={() => setChatModalOpen(true)}><MessageCircle size={20} /></button>
-            <main className="flex-1 p-8 overflow-y-auto">
-                <div className="flex justify-between items-center mb-6">
+
+            {/* Bouton Floating Action Chat */}
+            <button
+                className="fixed bottom-6 right-6 z-50 bg-couleur1 text-couleur3 p-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 active:scale-95"
+                onClick={() => setChatModalOpen(true)}
+            >
+                <MessageCircle size={22} />
+            </button>
+
+            <main className="flex-1 p-6 md:p-10 overflow-y-auto">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-8 pb-4 border-b border-couleur1/10 dark:border-white/5">
                     <LayoutHeader layoutName={actualProject ? `Project Dashboard` : "Global Dashboard"} />
                     {actualProject && (
                         <button
                             onClick={handleCloseProject}
                             title="Close project view"
-                            className="p-2 hover:bg-couleur1 hover:text-white rounded transition-colors text-couleur1 border border-couleur1 dark:border-white/20 dark:text-gray-300"
+                            className="p-2.5 hover:bg-couleur1 hover:text-white rounded-xl transition-all duration-200 text-couleur1 border border-couleur1/20 dark:border-white/20 dark:text-gray-300 shadow-sm hover:shadow-md active:scale-95"
                         >
-                            <X size={20} />
+                            <X size={18} />
                         </button>
                     )}
                 </div>
 
                 {actualProject ? (
                     loading ? (
-                        <div className="text-couleur1 dark:text-gray-400 py-10 text-center animate-pulse font-semibold">Fetching project details...</div>
+                        <div className="flex flex-col items-center justify-center py-20 text-couleur1 dark:text-gray-400 animate-pulse font-semibold">
+                            <span>Fetching project details...</span>
+                        </div>
                     ) : (
                         projectDetails && (
                             <div className="space-y-8 flex flex-col">
                                 <AiChatModal isOpen={isChatModalOpen} onClose={() => setChatModalOpen(!isChatModalOpen)} />
-                                {projectDetails.type == "web_app" && <div className="flex items-center gap-3 mb-4 text-couleur1 dark:text-gray-200">
-                                    <div className="p-2 bg-couleur1 text-white rounded-lg shadow-sm">
-                                        <Layout size={20} />
+
+                                {projectDetails.type === "web_app" && (
+                                    <div className="flex items-center gap-3.5 mb-2 text-couleur1 dark:text-gray-200">
+                                        <div className="p-2.5 bg-couleur1 text-white rounded-xl shadow-md">
+                                            <Layout size={22} />
+                                        </div>
+                                        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">{projectDetails.nom} Workspace</h2>
                                     </div>
-                                    <h2 className="text-2xl font-bold">{projectDetails.nom} Workspace</h2>
-                                </div>}
+                                )}
 
                                 <ProjectPageView project={projectDetails} />
-                                {projectDetails.type != "bdd" && <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-                                    <div className="flex w-full flex-col gap-2">
-                                        <div className="fixed bg-couleur1  dark:bg-gray-900 p-1 px-2.5 gap-2 bottom-1 rounded-3xl border border-couleur1/10 dark:border-white/5 shadow-sm flex items-center w-10 hover:w-75 transition-all duration-500 mx-auto delay-300">
-                                            <h3 className="text-lg font-bold  dark:text-gray-200  flex items-center gap-3 text-couleur3">
-                                                <Command size={18} /> Commands
-                                            </h3>
-                                            <div className=" flex gap-2">
-                                                {
-                                                    !logs.isRunning && <button onClick={() => handleStart()} className="px-3 py-1 rounded-md text-couleur3 flex gap-2 items-center cursor-pointer"><Play size={15} /> </button>
-                                                }
-                                                <button className="px-3 py-1 rounded-md  text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
-                                                    const res = await GoApp.stopProject(projectDetails.nom)
-                                                    setLogs(res)
-                                                }}> <StopCircle /> </button>
-                                                <button className="px-3 py-1 rounded-md  text-couleur3 flex gap-2 items-center cursor-pointer" onClick={async () => {
-                                                    await GoApp.stopProject(projectDetails.nom)
-                                                    await handleStart()
-                                                }}> <RefreshCcw size={15} /></button>
+                                {projectDetails.type !== "bdd" && (
+                                    <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                        <div className="flex w-full flex-col gap-4">
+
+                                            {/* Command Bar Floating */}
+                                            <div className="fixed bg-couleur1 dark:bg-gray-900/90 backdrop-blur-md p-1.5 px-3 gap-3 bottom-4 left-1/2 -translate-x-1/2 z-40 rounded-full border border-couleur1/10 dark:border-white/10 shadow-xl flex items-center w-12 hover:w-80 transition-all duration-500 ease-in-out group overflow-hidden">
+                                                <h3 className="text-sm font-semibold dark:text-gray-200 flex items-center gap-2 text-couleur3 whitespace-nowrap min-w-max">
+                                                    <Command size={18} /> Commands
+                                                </h3>
+                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                                                    {!logs.isRunning && (
+                                                        <button
+                                                            onClick={() => handleStart()}
+                                                            className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
+                                                            title="Start"
+                                                        >
+                                                            <Play size={16} />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
+                                                        onClick={async () => {
+                                                            const res = await GoApp.stopProject(projectDetails.nom)
+                                                            setLogs(res)
+                                                        }}
+                                                        title="Stop"
+                                                    >
+                                                        <StopCircle size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
+                                                        onClick={async () => {
+                                                            await GoApp.stopProject(projectDetails.nom)
+                                                            await handleStart()
+                                                        }}
+                                                        title="Restart"
+                                                    >
+                                                        <RefreshCcw size={16} />
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
-                                            <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
-                                                <Logs size={18} /> Logs
-                                            </h3>
-                                            <div className="flex flex-wrap flex-col gap-2 ">
-                                                {/* {logs?.isRunning ? "Running" : "Stop"} */}
-                                                {/* {logs?.isRunning && "PID "+logs.pid} */}
-                                                <div className="bg-gray-950 text-white text-xs min-h-40 max-h-40 p-2 rounded-md flex flex-col overflow-scroll">
-                                                    {logs.logs && logs.logs.map(log => <code>{log}</code>)}
+
+                                            {/* Terminal / Logs Card */}
+                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+                                                <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
+                                                    <Logs size={18} /> Logs
+                                                </h3>
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="bg-gray-950 text-emerald-400 font-mono text-xs min-h-44 max-h-56 p-4 rounded-xl flex flex-col overflow-y-auto shadow-inner space-y-1 border border-gray-800">
+                                                        {logs.logs && logs.logs.length > 0 ? (
+                                                            logs.logs.map((log, index) => (
+                                                                <code key={index} className="leading-relaxed opacity-90">{log}</code>
+                                                            ))
+                                                        ) : (
+                                                            <span className="text-gray-600 italic">No logs available...</span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </section>}
+                                    </section>
+                                )}
+
                                 {/* Web App Overview Section */}
                                 {projectDetails.type === "web_app" && (
                                     <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
                                                 <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
                                                     <FileText size={18} /> Recent Pages
                                                 </h3>
-                                                <div className="space-y-2">
+                                                <div className="space-y-2.5">
                                                     {projectDetails.web_app?.pages?.length > 0 ? (
                                                         projectDetails.web_app.pages.slice(0, 3).map((page, i) => (
-                                                            <div key={i} className="flex justify-between items-center p-3 bg-couleur3/30 dark:bg-gray-800 rounded-xl text-sm border border-couleur1/5 dark:border-white/5">
-                                                                <span className="font-medium text-couleur1 dark:text-gray-300">{page.nom}</span>
-                                                                <span className="text-xs opacity-50 font-mono text-couleur1 dark:text-gray-400">{page.uri || '/'}</span>
+                                                            <div key={i} className="flex justify-between items-center p-3 bg-couleur3/30 dark:bg-gray-800/60 rounded-xl text-sm border border-couleur1/5 dark:border-white/5 hover:bg-couleur3/50 transition-colors">
+                                                                <span className="font-semibold text-couleur1 dark:text-gray-200">{page.nom}</span>
+                                                                <span className="text-xs opacity-60 font-mono px-2 py-0.5 rounded bg-couleur1/5 dark:bg-gray-900 text-couleur1 dark:text-gray-400">{page.uri || '/'}</span>
                                                             </div>
                                                         ))
-                                                    ) : <p className="text-sm text-gray-400 italic">No pages created yet.</p>}
+                                                    ) : <p className="text-sm text-gray-400 italic py-2">No pages created yet.</p>}
                                                 </div>
                                             </div>
-                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+
+                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
                                                 <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
                                                     <LucidePuzzle size={18} /> Components
                                                 </h3>
                                                 <div className="flex flex-wrap gap-2">
                                                     {projectDetails.web_app?.composant?.length > 0 ? (
                                                         projectDetails.web_app.composant.map((comp, i) => (
-                                                            <span key={i} className="px-3 py-1.5 bg-couleur1/10 dark:bg-gray-800 text-couleur1 dark:text-gray-300 rounded-lg text-xs font-semibold border border-couleur1/20 dark:border-white/10">
+                                                            <span key={i} className="px-3 py-1.5 bg-couleur1/10 dark:bg-gray-800 text-couleur1 dark:text-gray-300 rounded-lg text-xs font-semibold border border-couleur1/20 dark:border-white/10 shadow-xs">
                                                                 {comp.nom || comp}
                                                             </span>
                                                         ))
-                                                    ) : <p className="text-sm text-gray-400 italic">No components available.</p>}
+                                                    ) : <p className="text-sm text-gray-400 italic py-2">No components available.</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -193,40 +236,41 @@ const HomePage = () => {
                                 {/* Static Site Overview Section */}
                                 {projectDetails.type === "static" && (
                                     <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <div className="flex items-center gap-3 mb-4 text-couleur1 dark:text-gray-200">
-                                            <div className="p-2 bg-couleur1 text-white rounded-lg shadow-sm">
-                                                <Globe size={20} />
+                                        <div className="flex items-center gap-3.5 mb-6 text-couleur1 dark:text-gray-200">
+                                            <div className="p-2.5 bg-couleur1 text-white rounded-xl shadow-md">
+                                                <Globe size={22} />
                                             </div>
                                             <h2 className="text-2xl font-bold">Static Site Workspace</h2>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
                                                 <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
                                                     <FileText size={18} /> Content Pages
                                                 </h3>
-                                                <div className="space-y-2">
+                                                <div className="space-y-2.5">
                                                     {projectDetails.site_statique?.pages?.length > 0 ? (
                                                         projectDetails.site_statique.pages.slice(0, 3).map((page, i) => (
-                                                            <div key={i} className="flex justify-between items-center p-3 bg-couleur3/30 dark:bg-gray-800 rounded-xl text-sm border border-couleur1/5 dark:border-white/5">
-                                                                <span className="font-medium text-couleur1 dark:text-gray-300">{page.nom}</span>
-                                                                <span className="text-xs opacity-50 font-mono text-couleur1 dark:text-gray-400">{page.uri || `/${page.nom.toLowerCase()}`}</span>
+                                                            <div key={i} className="flex justify-between items-center p-3 bg-couleur3/30 dark:bg-gray-800/60 rounded-xl text-sm border border-couleur1/5 dark:border-white/5 hover:bg-couleur3/50 transition-colors">
+                                                                <span className="font-semibold text-couleur1 dark:text-gray-200">{page.nom}</span>
+                                                                <span className="text-xs opacity-60 font-mono px-2 py-0.5 rounded bg-couleur1/5 dark:bg-gray-900 text-couleur1 dark:text-gray-400">{page.uri || `/${page.nom.toLowerCase()}`}</span>
                                                             </div>
                                                         ))
-                                                    ) : <p className="text-sm text-gray-400 italic">No pages created yet.</p>}
+                                                    ) : <p className="text-sm text-gray-400 italic py-2">No pages created yet.</p>}
                                                 </div>
                                             </div>
-                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+
+                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
                                                 <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
                                                     <LucidePuzzle size={18} /> UI Components
                                                 </h3>
                                                 <div className="flex flex-wrap gap-2">
                                                     {projectDetails.site_statique?.composants?.length > 0 ? (
                                                         projectDetails.site_statique.composants.map((comp, i) => (
-                                                            <span key={i} className="px-3 py-1.5 bg-couleur1/10 dark:bg-gray-800 text-couleur1 dark:text-gray-300 rounded-lg text-xs font-semibold border border-couleur1/20 dark:border-white/10">
+                                                            <span key={i} className="px-3 py-1.5 bg-couleur1/10 dark:bg-gray-800 text-couleur1 dark:text-gray-300 rounded-lg text-xs font-semibold border border-couleur1/20 dark:border-white/10 shadow-xs">
                                                                 {comp.nom || comp}
                                                             </span>
                                                         ))
-                                                    ) : <p className="text-sm text-gray-400 italic">No components available.</p>}
+                                                    ) : <p className="text-sm text-gray-400 italic py-2">No components available.</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -237,16 +281,22 @@ const HomePage = () => {
                     )
                 ) : (
                     <section className="mb-10">
-                        <h2 className="text-xl mb-4 opacity-60 text-couleur6 dark:text-gray-400" >Recent Projects</h2>
+                        <h2 className="text-lg font-semibold mb-5 opacity-70 text-couleur6 dark:text-gray-400 tracking-wide uppercase text-xs">Recent Projects</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {recentProjects.length > 0 ? (
                                 recentProjects.map((projectName, index) => (
-                                    <div key={index} onClick={() => dispatch(setActualProject(projectName.nom))} className="cursor-pointer">
+                                    <div
+                                        key={index}
+                                        onClick={() => dispatch(setActualProject(projectName.nom))}
+                                        className="cursor-pointer transform hover:-translate-y-1 transition-transform duration-200"
+                                    >
                                         <ProjectCard name={projectName.nom} type={projectName.type} updateAt={projectName.update_at} />
                                     </div>
                                 ))
                             ) : (
-                                <div className="text-couleur1 opacity-50 italic py-4">No projects available.</div>
+                                <div className="text-couleur1 dark:text-gray-400 opacity-60 italic py-8 text-center bg-white/40 dark:bg-gray-900/40 rounded-2xl border border-dashed border-couleur1/20 dark:border-white/10">
+                                    No projects available.
+                                </div>
                             )}
                         </div>
                     </section>

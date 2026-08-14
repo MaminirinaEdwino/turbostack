@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "../../../hooks/useNavigate";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { GoApp } from "../../../services/bridge";
 import {
   applyNodeChanges,
@@ -59,7 +59,7 @@ export default function ApiEditor({ projectName }) {
       }
     };
     if (!project) loadProject();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectName]);
 
   const deleteEndpoint = useCallback((index) => {
@@ -109,7 +109,7 @@ export default function ApiEditor({ projectName }) {
       setter(updatedNodes);
     }
     console.log("api ", JSON.stringify(project));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project]); // Added nodes to dependency array
 
   const showToast = (message, type = "success") => {
@@ -185,69 +185,91 @@ export default function ApiEditor({ projectName }) {
   // const isDarkMode = useSelector((state)=>state.app.darkMode)
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
-      <div className="p-2 pb-4 h-fit flex items-center justify-between fixed z-20 w-screen border border-couleur2 -top-15 hover:top-0 transition-all ease-out bg-white-50 dark:bg-couleur6 rounded-b-xl box-border bg-couleur3">
-        <div>
-          <h1 className="text-couleur1 dark:text-gray-100 text-3xl font-semibold flex items-center gap-2">
-            <button
-              className="mx-2 px-2 py-2 rounded border cursor-pointer border-couleur1 dark:border-white/20 bg-couleur5 dark:bg-gray-800 text-couleur1 dark:text-gray-100"
-              onClick={() => navigateTo("Dashboard")}
-            >
-              <FcPrevious size={20} />
-            </button>
-            API Editor : {projectName}
+      <div className="p-3 pb-4 h-fit flex items-center justify-between fixed z-30 w-full border-b border-couleur1/10 dark:border-white/10 -top-16 hover:top-0 transition-all duration-300 ease-in-out bg-couleur3/90 dark:bg-couleur6/90 backdrop-blur-md rounded-b-2xl shadow-xl box-border group">
+
+        {/* Petit indicateur visuel au survol en bas de la barre */}
+        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-couleur1 dark:bg-gray-700 text-couleur3 dark:text-gray-200 text-[10px] px-3 py-0.5 rounded-b-md opacity-70 group-hover:opacity-0 transition-opacity pointer-events-none font-mono">
+          Hover to expand editor bar
+        </div>
+
+        {/* Titre & Navigation */}
+        <div className="flex items-center gap-3">
+          <button
+            className="p-2.5 rounded-xl border border-couleur1/20 dark:border-white/20 bg-couleur5 dark:bg-gray-800 text-couleur1 dark:text-gray-100 hover:bg-couleur1/10 dark:hover:bg-gray-700 transition-all duration-200 active:scale-95 shadow-xs cursor-pointer"
+            onClick={() => navigateTo("Dashboard")}
+            title="Return to Dashboard"
+          >
+            <FcPrevious size={18} />
+          </button>
+
+          <h1 className="text-couleur1 dark:text-gray-100 text-2xl font-bold tracking-tight flex items-center gap-2">
+            <span className="opacity-60 text-lg font-medium">API Editor :</span>
+            <span>{projectName}</span>
           </h1>
         </div>
-        <div className="flex items-center gap-2 relative">
+
+        {/* Actions & Menu */}
+        <div className="flex items-center gap-3 relative">
           <button
-            className="flex gap-2 text-white bg-couleur1 rounded px-6 py-2 font-bold hover:bg-opacity-90 transition-all shadow-sm items-center"
+            className="flex gap-2 text-white bg-couleur1 hover:bg-couleur1/90 rounded-xl px-5 py-2.5 font-semibold transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 items-center cursor-pointer text-sm"
             onClick={saveApi}
           >
-            <Save size={18} /> Save API
+            <Save size={18} />
+            <span>Save API</span>
           </button>
 
           <div className="relative">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-couleur1 dark:text-gray-200 border border-couleur1 dark:border-white/20 rounded-lg hover:bg-couleur1/5 transition-all"
+              className="p-2.5 text-couleur1 dark:text-gray-200 border border-couleur1/20 dark:border-white/20 rounded-xl hover:bg-couleur1/10 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95 cursor-pointer"
+              title="More options"
             >
-              <MoreVertical size={20} />
+              <MoreVertical size={18} />
             </button>
 
             {isMenuOpen && (
               <>
+                {/* Backdrop */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setIsMenuOpen(false)}
                 ></div>
-                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-couleur1/10 dark:border-white/10 z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+
+                {/* Menu Dropdown */}
+                <div className="absolute right-0 mt-3 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-couleur1/10 dark:border-white/10 z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
                   <button
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 transition-all"
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
                     onClick={() => {
                       reorganizeNodes();
                       setIsMenuOpen(false);
                     }}
                   >
-                    <LayoutGrid size={18} className="text-couleur1" />{" "}
-                    Reorganize Layout
+                    <LayoutGrid size={18} className="text-couleur1 dark:text-gray-300" />
+                    <span>Reorganize Layout</span>
                   </button>
+
                   <button
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 transition-all"
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
                     onClick={() => {
                       setToggleCrudModal("block");
                       setIsMenuOpen(false);
                     }}
                   >
-                    <Layers size={18} className="text-couleur1" /> Auto CRUD
+                    <Layers size={18} className="text-couleur1 dark:text-gray-300" />
+                    <span>Auto CRUD</span>
                   </button>
+
                   <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-2"></div>
+
                   <button
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-couleur1 hover:bg-couleur1/10 transition-all"
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-bold text-couleur1 dark:text-white hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
                     onClick={() => {
                       setToggleModal("block");
                       setIsMenuOpen(false);
                     }}
                   >
-                    <Plus size={18} /> Add Endpoint
+                    <Plus size={18} />
+                    <span>Add Endpoint</span>
                   </button>
                 </div>
               </>

@@ -178,7 +178,7 @@ export default function PageEditor({ projectName }) {
         channel.postMessage({ type: 'UPDATE_RENDER', blockCss: blocksCss, globalCss: globalCss, previewHtml: previewHtml, viewport: viewport })
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const handleDetachPreview = async () => {
     await GoApp.openPreviewWindow()
@@ -230,7 +230,7 @@ export default function PageEditor({ projectName }) {
   };
   useEffect(() => {
     channel.postMessage({ type: 'UPDATE_RENDER', blocksCss: blocksCss, globalCss: globalCss, previewHtml: previewHtml, viewport: viewport });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocksCss, globalCss, previewHtml, viewport, updateActiveItemField]);
 
   const addPage = () => {
@@ -382,50 +382,60 @@ export default function PageEditor({ projectName }) {
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
       {/* Header Commun */}
-      <div className="p-4 flex items-center justify-between border-b border-couleur1/10 bg-white/50 dark:bg-couleur1/50 backdrop-blur-md sticky top-0 z-10">
+      <div className="p-4 px-6 flex items-center justify-between border-b border-couleur1/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-20 shadow-xs transition-colors duration-300">
+        {/* Section Gauche : Navigation & Titre / Édition */}
         <div className="flex items-center gap-4">
           <button
             onClick={() =>
               editMode ? setEditMode(false) : navigateTo("Dashboard")
             }
-            className="p-2 rounded-xl border hover:bg-white transition-all border-couleur1 dark:hover:bg-couleur1"
+            className="p-2.5 rounded-xl border border-couleur1/20 dark:border-white/20 bg-white dark:bg-gray-800 text-couleur1 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700 transition-all duration-200 active:scale-95 shadow-xs cursor-pointer"
+            title={editMode ? "Exit edit mode" : "Return to Dashboard"}
           >
-            <div className="flex items-center gap-1 pr-1 text-couleur1">
+            <div className="flex items-center gap-1 text-couleur1 dark:text-gray-200">
               <FcPrevious size={18} />
             </div>
           </button>
-          <h1 className="text-xl font-bold text-couleur1">
+
+          <h1 className="text-xl font-bold text-couleur1 dark:text-gray-100 tracking-tight">
             {editMode ? (
-              <div className="flex items-start gap-2 flex-col w-fit">
-                <div className="flex gap-5 justify-between items-center  w-full">
-                  <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
+              <div className="flex items-start gap-2.5 flex-col w-fit">
+                <div className="flex gap-4 justify-between items-center w-full">
+                  <span className="opacity-60 text-xs font-semibold uppercase tracking-wider text-couleur1 dark:text-gray-400">
                     {editingType} name :
                   </span>
                   <input
                     value={activeItem?.nom}
                     onChange={(e) => updateActiveItemField("nom", e.target.value)}
-                    className="bg-transparent border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50 text-sm"
+                    className="bg-transparent border-b border-couleur1/30 dark:border-white/20 focus:border-couleur1 dark:focus:border-white outline-none px-2 py-0.5 text-couleur1 dark:text-gray-100 text-sm font-semibold transition-colors"
                   />
                 </div>
-                {project?.type != "web_app" && <div className="flex justify-between items-center w-full">
-                  <span className="opacity-50 text-xs uppercase dark:text-white/50 ">
-                    {editingType} uri :
-                  </span>
-                  <input
-                    value={activeItem?.uri}
-                    onChange={(e) => updateActiveItemField("uri", e.target.value)}
-                    className="bg-transparent text-sm border-b border-couleur1/20 focus:border-couleur1 outline-none px-1 dark:text-white/50"
-                  />
-                </div>}
+                {project?.type != "web_app" && (
+                  <div className="flex gap-4 justify-between items-center w-full">
+                    <span className="opacity-60 text-xs font-semibold uppercase tracking-wider text-couleur1 dark:text-gray-400">
+                      {editingType} uri :
+                    </span>
+                    <input
+                      value={activeItem?.uri}
+                      onChange={(e) => updateActiveItemField("uri", e.target.value)}
+                      className="bg-transparent text-sm font-mono border-b border-couleur1/30 dark:border-white/20 focus:border-couleur1 dark:focus:border-white outline-none px-2 py-0.5 text-couleur1 dark:text-gray-100 transition-colors"
+                    />
+                  </div>
+                )}
               </div>
             ) : (
-              `Project : ${projectName}`
+              <span className="flex items-center gap-2">
+                <span className="opacity-60 font-medium text-base">Project :</span>
+                <span>{projectName}</span>
+              </span>
             )}
           </h1>
         </div>
+
+        {/* Section Droite : Action de Sauvegarde */}
         <button
           onClick={handleSave}
-          className="bg-couleur1 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2"
+          className="bg-couleur1 hover:bg-couleur1/90 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-sm shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
         >
           <Save size={18} /> Save Project
         </button>

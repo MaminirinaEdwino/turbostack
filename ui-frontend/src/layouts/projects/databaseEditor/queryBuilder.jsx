@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 export default function QueryBuilder({ tables = [], onClose }) {
     // 1. États pour la construction de la requête
-    const [selectedTable, setSelectedTable] = useState(tables[0]?.nom || "");
+    const [selectedTable, setSelectedTable] = useState(tables != null && tables.length >0 ? tables[0]?.nom : "");
     const [action, setAction] = useState("SELECT");
     const [selectedFields, setSelectedFields] = useState([]);
     const [scriptName, setScriptName] = useState("")

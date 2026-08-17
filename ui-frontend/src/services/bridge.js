@@ -1,3 +1,5 @@
+import { WindIcon } from "lucide-react";
+
 export const GoApp = {
     sayHello: async (name) => {
         // console.log("hello")
@@ -65,5 +67,8 @@ export const GoApp = {
     },
     loadLibrairie: async ()=>{
         return await window.loadLibrairie()
+    },
+    loadPageLibrairie: async ()=>{
+        return await window.loadPageLibrairie()
     }
 }

@@ -7,7 +7,16 @@ import { GoApp } from '../../../../services/bridge';
 export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents }) {
     const projectName = useSelector((state) => state.app.actualProject)
     const [project, setProject] = useState("")
-
+    const [pageLib, setPageLib] = useState([])
+   
+    useEffect(() => {
+        const loadPageLib = async () => {
+            const res = await GoApp.loadPageLibrairie()
+            // console.log(res)
+            setPageLib(res)
+        }
+        loadPageLib()
+    }, [])
     useEffect(() => {
         const loadProject = async () => {
             let res = await GoApp.fetchProjectByName(projectName)
@@ -54,15 +63,24 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                     </div>
                 </div>
             )}
-
+            {
+                pageLib?.length > 0 && (
+                    <div className='flex flex-col gap-3 mt-6'>
+                        <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2">
+                            <Puzzle size={14} /> Components
+                        </h3>
+                        {pageLib?.length} form
+                    </div>
+                )
+            }
             {/* Liste des endpoints form */}
             <div>
-                <h3 className='text-xs font-black uppercase text-couleur1/40 mb-3'>Forms</h3>
+                <h3 className='text-xs font-black uppercase text-couleur1/40 mb-3'>Forms </h3>
                 <div className='grid grid-cols-2'>
                     {typeof (project) != "string" && project.rest_api.endpoints != null && <>
                         {((project.rest_api.endpoints).filter(ep => ep.method === "POST")).map(ep => <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1'
-                        onClick={ ()=>addBlock({isFormPost: true, tag: "form", uri: ep.uri, defaultContent: ep.nom+" post form", models: ep.model})}
-                    > <Form size={14}></Form> {ep.nom}</button>)}
+                            onClick={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: ep.nom + " post form", models: ep.model })}
+                        > <Form size={14}></Form> {ep.nom}</button>)}
                     </>}
                 </div>
             </div>

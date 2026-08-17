@@ -131,6 +131,7 @@ export default function PropertiesTab({
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
                                                                     <input
+                                                                        key={ctrl.prop}
                                                                         type="number"
                                                                         className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0"
                                                                         placeholder="e.g. 10"
@@ -145,6 +146,7 @@ export default function PropertiesTab({
                                                                     />
                                                                     {/* Sélecteur d'unité */}
                                                                     {ctrl.unite && <select
+                                                                        key={ctrl.prop+ctrl.unit.concat()}
                                                                         className="bg-white dark:bg-gray-900 px-2 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-10 outline-0"
                                                                         value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
                                                                         onChange={(e) => {
@@ -166,6 +168,7 @@ export default function PropertiesTab({
                                                                 </div>
                                                             ) : ctrl.type === "select" ? (
                                                                 <select
+                                                                
                                                                     className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  text-xs outline-none focus:ring-0 ring-couleur1/20 transition-all border-b  border-couleur2  appearance-none"
                                                                     value={currentValue}
                                                                     onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
@@ -175,6 +178,7 @@ export default function PropertiesTab({
                                                                 </select>
                                                             ) : (
                                                                 <input
+                                                                    key={ctrl.type+ctrl.prop}
                                                                     type={ctrl.type}
                                                                     className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
                                                                     placeholder={ctrl.placeholder}
@@ -195,6 +199,7 @@ export default function PropertiesTab({
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
                                                                     <input
+                                                                        key={"condition"+ctrl.prop+ctrl.conditions}
                                                                         type="number"
                                                                         className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0"
                                                                         placeholder="e.g. 10"

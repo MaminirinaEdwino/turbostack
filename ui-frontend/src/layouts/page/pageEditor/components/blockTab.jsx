@@ -67,7 +67,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                 pageLib?.length > 0 && (
                     <div className='flex flex-col gap-3 mt-6'>
                         <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2">
-                            <Puzzle size={14} /> Components
+                            <Puzzle size={14} /> default page Libs
                         </h3>
                         {pageLib?.length} form
                     </div>

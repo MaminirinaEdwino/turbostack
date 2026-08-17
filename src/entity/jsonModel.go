@@ -42,10 +42,7 @@ type ComposantJSON struct {
 	Params  []any             `json:"params"`
 }
 
-type FrontLibrairie struct {
-	Name    string          `json:"name"`
-	Content PageContentJSON `json:"content"`
-}
+type FrontLibrairie map[string]any
 
 type LibrairieList []FrontLibrairie
 

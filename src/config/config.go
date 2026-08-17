@@ -4,17 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"os"
-
 )
 
 var UserHomeDir, _ = os.UserHomeDir()
 
 var TURBO_STACK_DIR = UserHomeDir + "/.turbo_stack"
-var PROJECT_DIR = TURBO_STACK_DIR+"/turbo_projects"
-var LIBRAIRIE_PATH = TURBO_STACK_DIR+"/librairie.json"
-var PAGE_LIB_DIR = TURBO_STACK_DIR+"/librairies/page"
-var COMPONENT_LIB_DIR = TURBO_STACK_DIR+"/style"
-
+var PROJECT_DIR = TURBO_STACK_DIR + "/turbo_projects"
+var LIBRAIRIE_PATH = TURBO_STACK_DIR + "/librairie.json"
+var PAGE_LIB_DIR = TURBO_STACK_DIR + "/librairies/page"
+var COMPONENT_LIB_DIR = TURBO_STACK_DIR + "/component"
+var STYLE_LIB_DIR = TURBO_STACK_DIR + "/style"
 
 func CheckIfExist(chemin string) bool {
 	info, err := os.Stat(chemin)
@@ -26,7 +25,6 @@ func CheckIfExist(chemin string) bool {
 	}
 	return info.IsDir()
 }
-
 
 func CheckCreateDir(path string) {
 	fmt.Println("check dir", path)

@@ -5,15 +5,16 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/MaminirinaEdwino/turbostack/src/config"
-	"github.com/MaminirinaEdwino/turbostack/src/entity"
-	webview "github.com/webview/webview_go"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/MaminirinaEdwino/turbostack/src/config"
+	"github.com/MaminirinaEdwino/turbostack/src/entity"
+	webview "github.com/webview/webview_go"
 )
 
 type ProjectService struct {
@@ -38,6 +39,8 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("stopProject", ps.Stopproject)
 	w.Bind("getStatus", ps.StatusProject)
 	w.Bind("loadPageLibrairie", ps.LoadPageLib)
+	w.Bind("loadStyleLib", ps.LoadStyleLib)
+	w.Bind("loadCompLib", ps.LoadComponentLib)
 }
 
 type ProcessManager struct {
@@ -83,7 +86,6 @@ func (s *ProjectService) StatusProject() map[string]interface{} {
 
 func (s *ProjectService) LoadPageLib() []string {
 	var res []string
-	fmt.Println("loadPageLib")
 	dirContent, _ := os.ReadDir(config.PAGE_LIB_DIR)
 	for _, val := range dirContent {
 		fileContent, _ := os.ReadFile(config.PAGE_LIB_DIR + "/" + val.Name())
@@ -92,12 +94,24 @@ func (s *ProjectService) LoadPageLib() []string {
 	return res
 }
 
-func (s *ProjectService) LoadComponentLib() {
-
+func (s *ProjectService) LoadComponentLib() []string {
+	var res []string
+	dirContent, _ := os.ReadDir(config.COMPONENT_LIB_DIR)
+	for _, val := range dirContent {
+		fileContent, _ := os.ReadFile(config.COMPONENT_LIB_DIR + "/" + val.Name())
+		res = append(res, string(fileContent))
+	}
+	return res
 }
 
-func (s *ProjectService) LoadStyleLib() {
-
+func (s *ProjectService) LoadStyleLib() []string {
+	var res []string
+	dirContent, _ := os.ReadDir(config.STYLE_LIB_DIR)
+	for _, val := range dirContent {
+		fileContent, _ := os.ReadFile(config.STYLE_LIB_DIR + "/" + val.Name())
+		res = append(res, string(fileContent))
+	}
+	return res
 }
 
 // 1. Démarrer le projet Go

@@ -8,14 +8,19 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
     const projectName = useSelector((state) => state.app.actualProject)
     const [project, setProject] = useState("")
     const [pageLib, setPageLib] = useState([])
-   
+    const [compLib, setCompLib] = useState([])
+    const [styleLib, setStyleLib] = useState([])
     useEffect(() => {
-        const loadPageLib = async () => {
+        const loadLib = async () => {
             const res = await GoApp.loadPageLibrairie()
+            const res2 = await GoApp.loadCompLib()
+            const res3 = await GoApp.loadStyleLib()
             // console.log(res)
             setPageLib(res)
+            setCompLib(res2)
+            setStyleLib(res3)
         }
-        loadPageLib()
+        loadLib()
     }, [])
     useEffect(() => {
         const loadProject = async () => {
@@ -72,6 +77,16 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                         {pageLib?.length} form
                     </div>
                 )
+            }
+            {
+                styleLib?.length > 0 && <>
+                    style lib
+                </>
+            }
+            {
+                compLib?.length > 0 && <>
+                    comp lib
+                </>
             }
             {/* Liste des endpoints form */}
             <div>

@@ -70,5 +70,11 @@ export const GoApp = {
     },
     loadPageLibrairie: async ()=>{
         return await window.loadPageLibrairie()
+    },
+    loadCompLib: async ()=>{
+        return await window.loadCompLib()
+    },
+    loadStyleLib: async ()=>{
+        return await window.loadStyleLib()
     }
 }

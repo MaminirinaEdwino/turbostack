@@ -132,7 +132,7 @@ func styleWriter(page Page, cssFile *os.File) {
 
 func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName string, pageName string) string {
 	cssPath := fmt.Sprintf("%s/%s/static/static/css/%s.css", config.PROJECT_DIR, projectName, pageName)
-	cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+	cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
 
 	var sb strings.Builder
 
@@ -179,22 +179,26 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 			fmt.Fprintf(&tabletSb, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range tablet {
 				checkValueSb(&tabletSb, key, val)
+				// fmt.Fprint(&tabletSb, key, val)
 			}
-			tabletSb.WriteString("}\n")
+			fmt.Fprint(&tabletSb, "}\n")
 		}
 
 		if len(mobile) > 0 {
 			fmt.Fprintf(&desktopSb, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range mobile {
 				checkValueSb(&desktopSb, key, val)
+				// fmt.Fprint(&desktopSb, key, val)
 			}
-			desktopSb.WriteString("}\n")
+			fmt.Fprint(&desktopSb, "}\n")
 		}
 
 		if len(desktop) > 0 {
 			fmt.Fprintf(cssFile, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range desktop {
 				checkValueFile(cssFile, key, val)
+				// cssFile.WriteString(key)
+				// cssFile.WriteString(val)
 			}
 			fmt.Fprint(cssFile, "}\n")
 		}

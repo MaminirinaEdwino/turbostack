@@ -127,6 +127,7 @@ export const TAG_STYLE_GROUPS = {
     main: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
     aside: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
     p: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    span: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
     a: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
     button: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
     label: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],

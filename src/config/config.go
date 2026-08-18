@@ -12,8 +12,8 @@ var TURBO_STACK_DIR = UserHomeDir + "/.turbo_stack"
 var PROJECT_DIR = TURBO_STACK_DIR + "/turbo_projects"
 var LIBRAIRIE_PATH = TURBO_STACK_DIR + "/librairie.json"
 var PAGE_LIB_DIR = TURBO_STACK_DIR + "/librairies/page"
-var COMPONENT_LIB_DIR = TURBO_STACK_DIR + "/component"
-var STYLE_LIB_DIR = TURBO_STACK_DIR + "/style"
+var COMPONENT_LIB_DIR = TURBO_STACK_DIR + "/librairies/component"
+var STYLE_LIB_DIR = TURBO_STACK_DIR + "/librairies/style"
 
 func CheckIfExist(chemin string) bool {
 	info, err := os.Stat(chemin)

@@ -15,10 +15,19 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
             const res = await GoApp.loadPageLibrairie()
             const res2 = await GoApp.loadCompLib()
             const res3 = await GoApp.loadStyleLib()
-            // console.log(res)
-            setPageLib(res)
-            setCompLib(res2)
-            setStyleLib(res3)
+            let tmpres = []
+            let tmpres2 = []
+            res.map(el => {
+                let e = JSON.parse(el)
+                tmpres.push(e)
+            })
+            res2.map(el => {
+                let e = JSON.parse(el)
+                tmpres2.push(e)
+            })
+            setPageLib(tmpres)
+            setCompLib(tmpres2)
+            // setStyleLib(res3)
         }
         loadLib()
     }, [])
@@ -62,9 +71,23 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                                 className="flex items-center gap-2 p-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1"
                             >
                                 <Puzzle size={14} /> {/* Icône Puzzle pour les composants */}
-                                <span className="text-sm font-medium">{comp.nom}</span>
+                                <span className="text-sm font-medium max-w-full overflow-clip">{comp.nom}</span>
                             </button>
                         ))}
+                        {
+                            compLib?.length > 0 && <>
+                                {compLib.map((comp, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => addBlock(comp, true)}
+                                        className="flex items-center gap-2 p-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1"
+                                    >
+                                        <Puzzle size={14} /> {/* Icône Puzzle pour les composants */}
+                                        <span className="text-sm font-medium max-w-full overflow-clip text-clip ">{comp?.nom}</span>
+                                    </button>
+                                ))}
+                            </>
+                        }
                     </div>
                 </div>
             )}
@@ -72,22 +95,31 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                 pageLib?.length > 0 && (
                     <div className='flex flex-col gap-3 mt-6'>
                         <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2">
-                            <Puzzle size={14} /> default page Libs
+                            <Puzzle size={14} /> Page Content Libs
                         </h3>
-                        {pageLib?.length} form
+
+                        {pageLib?.map((comp, index) => (
+                            <>
+                                {
+                                    comp?.nom != "" && <button
+                                        key={index}
+                                        onClick={() => addBlock(comp, true)}
+                                        className="flex items-center gap-2 p-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1"
+                                    >
+                                        <Puzzle size={14} /> {/* Icône Puzzle pour les composants */}
+                                        <span className="text-sm font-medium">{comp?.nom}</span>
+                                    </button>
+                                }</>
+                        ))}
                     </div>
                 )
             }
-            {
+            {/* {
                 styleLib?.length > 0 && <>
                     style lib
                 </>
-            }
-            {
-                compLib?.length > 0 && <>
-                    comp lib
-                </>
-            }
+            } */}
+
             {/* Liste des endpoints form */}
             <div>
                 <h3 className='text-xs font-black uppercase text-couleur1/40 mb-3'>Forms </h3>

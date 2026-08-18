@@ -34,8 +34,8 @@ export default function PageEditor({ projectName }) {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [viewport, setViewport] = useState({
-    width: "100%",
-    height: "100%",
+    width: "1280px",
+    height: "720px",
     name: "desktop",
   });
   const [zoomLevel, setZoomLevel] = useState(1); // New state for zoom

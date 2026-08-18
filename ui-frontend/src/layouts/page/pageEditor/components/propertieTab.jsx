@@ -8,7 +8,7 @@ import { GoApp } from "../../../../services/bridge";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
-    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet, styleToModbile, styleToDesktop
+    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet, styleToModbile, styleToDesktop, setCurrentActiveBlock
 }) {
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
     const projectName = useSelector(state => state.app.actualProject)
@@ -68,6 +68,25 @@ export default function PropertiesTab({
                         </div>
 
                         <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">
+                                Element data id
+                            </label>
+
+                            <div className="grid grid-cols-1 justify-center overflow-y-scroll max-h-50">
+                                <input
+                                    className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                    type="text"
+                                    placeholder="Element ID"
+                                    value={currentActiveBlock.id || ""}
+                                    onInput={(e) => {
+                                        setCurrentActiveBlock(e.target.value)
+                                        updateBlock(currentActiveBlock.id, {id: e.target.value})
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">CSS Classes</label>
                             <input
                                 className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
@@ -88,6 +107,7 @@ export default function PropertiesTab({
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { htmlId: e.target.value })}
                             />
                         </div>
+
 
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between">
@@ -146,7 +166,7 @@ export default function PropertiesTab({
                                                                     />
                                                                     {/* Sélecteur d'unité */}
                                                                     {ctrl.unite && <select
-                                                                        key={ctrl.prop+ctrl.unit.concat()}
+                                                                        key={ctrl.prop + ctrl.unit}
                                                                         className="bg-white dark:bg-gray-900 px-2 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-10 outline-0"
                                                                         value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
                                                                         onChange={(e) => {
@@ -168,7 +188,7 @@ export default function PropertiesTab({
                                                                 </div>
                                                             ) : ctrl.type === "select" ? (
                                                                 <select
-                                                                
+
                                                                     className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  text-xs outline-none focus:ring-0 ring-couleur1/20 transition-all border-b  border-couleur2  appearance-none"
                                                                     value={currentValue}
                                                                     onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
@@ -178,7 +198,7 @@ export default function PropertiesTab({
                                                                 </select>
                                                             ) : (
                                                                 <input
-                                                                    key={ctrl.type+ctrl.prop}
+                                                                    key={ctrl.type + ctrl.prop}
                                                                     type={ctrl.type}
                                                                     className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
                                                                     placeholder={ctrl.placeholder}
@@ -199,7 +219,7 @@ export default function PropertiesTab({
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
                                                                     <input
-                                                                        key={"condition"+ctrl.prop+ctrl.conditions}
+                                                                        key={"condition" + ctrl.prop + ctrl.conditions}
                                                                         type="number"
                                                                         className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0"
                                                                         placeholder="e.g. 10"
@@ -307,6 +327,7 @@ export default function PropertiesTab({
                         </div>
                     )}
 
+
                     <div className="flex flex-col gap-2">
                         <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">
                             {currentActiveBlock.tag != "img" ? "Content" : "image"}
@@ -314,7 +335,9 @@ export default function PropertiesTab({
                         {currentActiveBlock.tag != "img" && <textarea
                             className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-37.5 focus:ring-2 ring-couleur1/20 transition-all"
                             value={currentActiveBlock.content}
-                            onChange={(e) => updateBlock(currentActiveBlock.id, { content: e.target.value })}
+                            onChange={(e) => {
+                                updateBlock(currentActiveBlock.id, { content: e.target.value })
+                            }}
                             placeholder="Type your content here..."
                         />}
                         <div className="grid grid-cols-2 justify-center overflow-y-scroll max-h-50">

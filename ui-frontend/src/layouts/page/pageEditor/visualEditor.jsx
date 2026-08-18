@@ -646,6 +646,7 @@ export default function VisualEditor({
                     styleToTablet={() => pasteStyleToTablet(currentActiveBlock?.id)}
                     styleToDesktop={() => pasteStyleToDeskTop(currentActiveBlock?.id)}
                     styleToModbile={() => pasteStyleToMobile(currentActiveBlock?.id)}
+                    setCurrentActiveBlock={setActiveBlock}
                 />
             ) : allowedTabs.includes("pseudo classes") && activeTab === "pseudo classes" ?
                 <>

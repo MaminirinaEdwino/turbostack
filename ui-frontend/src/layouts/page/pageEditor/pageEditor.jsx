@@ -453,7 +453,7 @@ export default function PageEditor({ projectName }) {
               className={`fixed top-0 h-full z-50 transition-transform duration-300 ease-in-out ${isLeftSidebarOpen ? "left-0" : "-left-100"} w-80 bg-couleur3 dark:bg-gray-950 border-r border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto  `}
             >
               <div className="flex justify-between items-center mb-6 sticky -top-6 bg-couleur3">
-                <h2 className="text-xs font-black uppercase text-couleur1/40">
+                <h2 className="text-sm font-black uppercase text-couleur1/80">
                   Structure
                 </h2>
                 <button

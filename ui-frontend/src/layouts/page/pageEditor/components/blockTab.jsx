@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BLOCK_TYPES } from '../defaultVar';
-import { Form, Puzzle } from 'lucide-react';
+import { Form, Pen, Pencil, Puzzle } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { GoApp } from '../../../../services/bridge';
 
-export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents }) {
+export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents, setGlobalStyle, editingtype }) {
     const projectName = useSelector((state) => state.app.actualProject)
     const [project, setProject] = useState("")
     const [pageLib, setPageLib] = useState([])
@@ -17,6 +17,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
             const res3 = await GoApp.loadStyleLib()
             let tmpres = []
             let tmpres2 = []
+            let tmpres3 = []
             res.map(el => {
                 let e = JSON.parse(el)
                 tmpres.push(e)
@@ -25,8 +26,12 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                 let e = JSON.parse(el)
                 tmpres2.push(e)
             })
+            res3.map(el => {
+                tmpres3.push(el)
+            })
             setPageLib(tmpres)
             setCompLib(tmpres2)
+            setStyleLib(tmpres3)
             // setStyleLib(res3)
         }
         loadLib()
@@ -42,7 +47,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
         <div className="flex flex-col gap-6 ">
             {/* Types de Blocs Standard */}
             <div className="flex flex-col gap-3">
-                <h3 className="text-xs font-black uppercase text-couleur1/40">Standard Blocks</h3>
+                <h3 className="text-xs font-black uppercase text-couleur1/40">Standard Blocks  {editingtype}</h3>
                 <div className="grid grid-cols-2 gap-3">
                     {BLOCK_TYPES.map((type, index) => (
                         <button
@@ -111,6 +116,31 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                                     </button>
                                 }</>
                         ))}
+                    </div>
+                )
+            }
+           
+            {
+                styleLib?.length > 0  && (
+                    <div className='flex flex-col gap-3 mt-6'>
+                        <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2">
+                            <Puzzle size={14} /> Style Libs
+                        </h3>
+
+                        <div className='grid grid-cols-2 gap-3'>
+                            {styleLib?.map((comp, index) => (
+                            <>
+                                <button
+                                    key={index}
+                                    onClick={() => setGlobalStyle(comp)}
+                                    className="flex items-center gap-2 p-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1"
+                                >
+                                    <Pencil size={14} /> {/* Icône Puzzle pour les composants */}
+                                    <span className="text-sm font-medium">Style {index}</span>
+                                </button>
+                            </>
+                        ))}
+                        </div>
                     </div>
                 )
             }

@@ -475,6 +475,12 @@ export default function PageEditor({ projectName }) {
                 allowedTabs={["blocks"]}
                 onChange={(blocks) => updateActiveItemField("content", blocks)}
                 showToast={showToast}
+                onPageStylesChange={(styles) =>
+                  updateActiveItemField("styles", styles)
+                }
+
+                editingtype={editingType}
+                updateBlockStyle={updateActiveItemField}
               />
             </aside>
 
@@ -657,6 +663,9 @@ export default function PageEditor({ projectName }) {
                   updateActiveItemField("styles", styles)
                 }
                 showToast={showToast}
+
+                editingtype={editingType}
+                updateBlockStyle={updateActiveItemField}
               />
             </aside>
           </div>

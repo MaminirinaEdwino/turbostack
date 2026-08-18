@@ -14,6 +14,7 @@ type Staticsitemaker struct{}
 
 func (ssm *Staticsitemaker) SetupStaticArch(name string) {
 	projectPath := fmt.Sprintf("%s/static/", name)
+	os.RemoveAll(config.PROJECT_DIR+"/"+projectPath)
 	dirList := []string{
 		"static/css",
 		"static/js",

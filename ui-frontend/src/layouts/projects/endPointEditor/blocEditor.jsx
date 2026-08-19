@@ -547,8 +547,17 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
       </div>
       <div className="flex flex-1 overflow-hidden " >
         {/* BARRE LATÉRALE D'INSTRUCTIONS D'API */}
-        {!openTab && <button className="fixed -left-4 hover:left-1 transition-all duration-150 z-50 top-10 text-couleur1 dark:text-couleur2 bg-white rounded shadow-2xl p-2" onClick={() => setOpenTab(true)} title="Open side panel">
-          <PanelLeft />
+        {!openTab && <button
+          onClick={() => setOpenTab(true)}
+          title="Open side panel"
+          className="group fixed left-0 -translate-x-3 hover:translate-x-0 transition-transform duration-200 ease-out z-50 top-10 flex items-center gap-2 pl-4 pr-3 py-2.5 rounded-r-xl shadow-xl shadow-black/10 bg-white dark:bg-couleur1 text-couleur1 dark:text-couleur2 border border-l-0 border-slate-200/60 dark:border-slate-800/60 backdrop-blur-md cursor-pointer hover:border-couleur2"
+        >
+          <PanelLeft className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
+
+          {/* Indicateur visuel d'ouverture subtil au survol */}
+          <span className="text-xs font-semibold max-w-0 opacity-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs group-hover:opacity-100 transition-all duration-200 ease-out">
+            Panel
+          </span>
         </button>}
         <div
           style={{

@@ -521,20 +521,28 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
       }}
 
     >
-      <div className="text-white flex gap-2 fixed z-20 right-0 p-2">
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2.5 p-1.5 rounded-2xl bg-white/70 dark:bg-gray-900/80 border border-slate-200/50 dark:border-slate-800/60 shadow-xl shadow-black/10 backdrop-blur-md transition-all">
+        {/* Bouton Sauvegarder */}
         <button
           onClick={handleSave}
-          className="w-fit  p-2 rounded flex text-couleur1 dark:text-couleur2 items-center gap-1 dark:bg-couleur1 bg-white hover:border border-couleur2 box-border"
+          className="px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 flex items-center gap-1.5 cursor-pointer text-couleur1 dark:text-couleur2 bg-white dark:bg-couleur1 border border-transparent hover:border-couleur2 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Save size={14} /> Save
+          <Save size={14} className="transition-transform duration-200 group-hover:scale-110" />
+          <span>Save</span>
         </button>
+
+        {/* Separateur visuel subtil */}
+        <div className="h-4 w-px bg-slate-300/50 dark:bg-slate-700/50" />
+
+        {/* Bouton Fermer */}
         <button
-          className=" p-2  text-center rounded text-couleur1 flex items-center gap-1 dark:text-couleur2 dark:bg-couleur1 bg-white hover:border border-red-500 hover:text-red-500"
           onClick={() => {
             setToggleVisualScriptModal("none");
           }}
+          className="group px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 flex items-center gap-1.5 cursor-pointer text-couleur1 dark:text-couleur2 bg-white dark:bg-couleur1 border border-transparent hover:border-red-500/50 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/5 dark:hover:bg-red-500/10 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Plus size={15} style={{ rotate: "45deg" }} /> Close
+          <Plus size={15} className="rotate-45 transition-transform duration-200 group-hover:rotate-185" />
+          <span>Close</span>
         </button>
       </div>
       <div className="flex flex-1 overflow-hidden " >

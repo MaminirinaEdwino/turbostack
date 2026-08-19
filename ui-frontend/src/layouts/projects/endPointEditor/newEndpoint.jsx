@@ -458,7 +458,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                     }
                 }} className={`${endpoint.return_page == p && "border-b border-couleur2"}`}>{p.nom}</button>)}
             </div>}
-            {project.type == "web_app" && endpoint.method == "POST" && <div >
+            {project.type == "webapp" && endpoint.method != "GET" && <div >
                 <label className="text-xs font-bold opacity-50 uppercase">
                     Redirect to
                 </label>

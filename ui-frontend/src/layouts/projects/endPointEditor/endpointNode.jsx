@@ -111,7 +111,7 @@ export default function EndpointNode({ data }) {
             <p>{data.return_page.nom}</p>
           </div>
         </div>}
-        {data.method == "POST" && <div className="p-3 space-y-1 box-border text-[10px]">
+        {data.method != "GET" && <div className="p-3 space-y-1 box-border text-[10px]">
           <label className="dark:text-white/50">
             Redirect to {data.redirect_uri}
           </label>

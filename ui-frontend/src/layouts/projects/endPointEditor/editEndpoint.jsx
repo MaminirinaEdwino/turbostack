@@ -623,7 +623,7 @@ export default function EditEndpoint({
           </div>}
         </div>
       )}
-      {project.type == "web_app" && endpoint.method == "POST" && <div >
+      {project.type == "webapp" && endpoint.method != "GET" && <div >
         <label className="text-xs font-bold opacity-50 uppercase">
           Redirect to
         </label>

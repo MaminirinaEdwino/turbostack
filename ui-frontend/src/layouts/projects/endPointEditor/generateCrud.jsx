@@ -31,11 +31,11 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
         const baseUri = `/${selectedModel.nom.toLowerCase()}`;
         const selectedChamps = selectedModel.champs.filter(c => bodyFields.includes(c.nom));
         
-        const newEndpoints = [
+        let newEndpoints = [
             {
                 nom: `List ${selectedModel.nom}`,
                 uri: baseUri, method: "GET", role: "public",
-                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{selectedModel}]
+                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{...selectedModel}]
             },
             {
                 nom: `Get ${selectedModel.nom} by ID`,
@@ -60,6 +60,18 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
                 model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: []
             }
         ];
+        if (project.type == "webapp") {
+            newEndpoints.push({
+                nom: `create ${selectedModel.nom}`,
+                uri: baseUri+"/create", method: "GET", role: "public",
+                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{...selectedModel}]
+            })
+            newEndpoints.push({
+                nom: `update ${selectedModel.nom}`,
+                uri: baseUri+"/update/:id", method: "GET", role: "public",
+                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{...selectedModel}]
+            })
+        }
 
         const currentEndpoints = project.rest_api?.endpoints || [];
         setProject({
@@ -73,7 +85,7 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
     };
 
     return (
-        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-[500px] max-h-[80vh] overflow-y-auto">
+        <form className="bg-white border border-couleur1 p-6 rounded-xl shadow-2xl flex flex-col w-125 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center gap-2 mb-4">
                 <Layers className="text-couleur1" />
                 <h3 className="font-bold text-2xl text-couleur1">Auto-Generate CRUD</h3>

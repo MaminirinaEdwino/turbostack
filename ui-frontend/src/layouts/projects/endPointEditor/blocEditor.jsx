@@ -560,102 +560,117 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
           </span>
         </button>}
         <div
-          style={{
-            scrollbarWidth: "none"
-          }}
-          className={"bg-couleur3/10 backdrop-blur-xl  dark:bg-gray-900 flex flex-col gap-1 p-2 w-60 h-screen overflow-scroll fixed z-40 transition-all duration-300 scrollbar-width-none border-r border-couleur2 " + (openTab ? "left-0" : "-left-60")}
+          style={{ scrollbarWidth: "none" }}
+          className={`fixed top-0 bottom-0 z-40 w-64 h-screen flex flex-col gap-3 p-3 bg-white/80 dark:bg-gray-900/90 backdrop-blur-2xl border-r border-couleur2/40 shadow-2xl overflow-y-auto transition-all duration-300 ease-out scrollbar-none ${openTab ? "left-0" : "-left-64"
+            }`}
         >
+          {/* En-tête du Panneau */}
+          <div className="flex items-center justify-between px-2 pt-2 pb-3 border-b border-gray-200/50 dark:border-gray-800/60">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-couleur2 animate-pulse" />
+              <h4 className="text-couleur1 text-base font-bold tracking-wide">
+                Base Blocks
+              </h4>
+            </div>
+            <button
+              onClick={() => setOpenTab(false)}
+              className="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+              title="Fermer le panneau"
+            >
+              <Plus size={18} className="rotate-45" />
+            </button>
+          </div>
 
-          <h4
-            className="text-couleur1 px-2 py-4 text-xl flex justify-between items-center"
-          // style={{ color: "#a9b1d6", margin: "0 0 10px 0", fontSize: "14px" }}
-          >
-            <span>Base Blocks</span> <button onClick={() => setOpenTab(false)}><Plus style={{ rotate: "45deg" }} /></button>
-          </h4>
-          <button
-            onClick={() => addRootBlock()}
-            className="dbModelStyle"
-          >
-            <Plus size={14} /> RootNode
-          </button>
-          <button
-            onClick={() => addStatusCodeBlock()}
-            className="dbModelStyle"
-          >
-            <Plus size={14} /> Status Code
-          </button>
-          <button
-            onClick={() => addTryCatchBlock()}
-            className="dbModelStyle"
-          >
-            <Plus size={14} /> Try Catch
-          </button>
-          <button
-            onClick={() => addWhileBlock()}
-            className="dbModelStyle"
-          >
-            <Plus size={14} /> While
-          </button>
-          <button
-            onClick={() => addForBlock()}
-            className="dbModelStyle"
-          >
-            <Plus size={14} /> For
-          </button>
+          {/* Section : Bloc de Contrôle de Flux */}
+          <div className="flex flex-col gap-1.5">
+            <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+              Control Flow
+            </span>
+            <button onClick={() => addRootBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> RootNode
+            </button>
+            <button onClick={() => addStatusCodeBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Status Code
+            </button>
+            <button onClick={() => addTryCatchBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Try Catch
+            </button>
+            <button onClick={() => addWhileBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> While
+            </button>
+            <button onClick={() => addForBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> For
+            </button>
+            <button onClick={() => addConditionBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> If/Else
+            </button>
+            <button onClick={() => addNewBlock("function")} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Function
+            </button>
+            <button onClick={() => addNewBlock("var")} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Var
+            </button>
+            <button onClick={() => addResponseBlock()} className="dbModelStyle flex items-center gap-2">
+              <GrReturn size={14} /> Response
+            </button>
+          </div>
 
-          <button
-            onClick={() => addConditionBlock()}
-            className="dbModelStyle"
-          >
-            <Plus size={14} /> If/Else
-          </button>
-          <button
-            onClick={() => addNewBlock("function")}
-            className="dbModelStyle"
-          >
-            + Function
-          </button>
-          <button
-            className="dbModelStyle"
-            onClick={() => addNewBlock("var")}
-          >
-            + Var
-          </button>
-          <button className="dbModelStyle" onClick={() => addResponseBlock()}> <GrReturn size={14} /> Response</button>
-          {
-            model.map((mdl) => (
-              <>
+          {/* Section : Modèles de données */}
+          {model && model.length > 0 && (
+            <div className="flex flex-col gap-1.5 pt-2 border-t border-gray-200/50 dark:border-gray-800/60">
+              <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                Database Models
+              </span>
+              {model.map((mdl, index) => (
                 <button
-                  className="dbModelStyle"
-                  onClick={() => {
-                    addModelBlock(mdl.nom, mdl);
-                  }}
+                  key={`model-${mdl.nom}-${index}`}
+                  className="dbModelStyle flex items-center gap-2"
+                  onClick={() => addModelBlock(mdl.nom, mdl)}
                 >
                   <Database size={14} /> {mdl.nom} Model
                 </button>
-              </>
-            ))
-          }
-          {
-            endPointModel.map((mdl) => <div className="p-2 flex flex-col items-start">
-              <div className="text-couleur1 px-2 py-4 text-xl">{mdl.nom} body params</div>
-              {mdl.champs && mdl.champs.map((field) => <button
-                className="dbModelStyle w-full"
-                onClick={() => addBodyParamsBlock({ field: field })}>
-                <Puzzle size={14} /> {field.nom}
-              </button>)}
-            </div>)
-          }
-          <div className="p-2">
-            <div className="text-couleur1 px-2 py-4 text-xl">Request Params</div>
-            <div>
-              {
-                typeof (project) == "object" && project != null && endpoint != undefined && project.rest_api.endpoints[endpoint].params.map((p) => <button className="dbModelStyle w-full" onClick={() => addRequestParamsBlock(`${p}`)}>
-                  :{p}
-                </button>)
-              }
+              ))}
             </div>
-          </div>
+          )}
+
+          {/* Section : Params du Body */}
+          {endPointModel &&
+            endPointModel.map((mdl, index) => (
+              <div key={`endpoint-${mdl.nom}-${index}`} className="flex flex-col gap-1.5 pt-2 border-t border-gray-200/50 dark:border-gray-800/60">
+                <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                  {mdl.nom} Body Params
+                </span>
+                {mdl.champs &&
+                  mdl.champs.map((field, fieldIdx) => (
+                    <button
+                      key={`field-${field.nom}-${fieldIdx}`}
+                      className="dbModelStyle w-full flex items-center gap-2"
+                      onClick={() => addBodyParamsBlock({ field: field })}
+                    >
+                      <Puzzle size={14} /> {field.nom}
+                    </button>
+                  ))}
+              </div>
+            ))}
+
+          {/* Section : Request Params */}
+          {typeof project === "object" && project != null && endpoint !== undefined && (
+            <div className="flex flex-col gap-1.5 pt-2 border-t border-gray-200/50 dark:border-gray-800/60 pb-6">
+              <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                Request Params
+              </span>
+              {project.rest_api?.endpoints?.[endpoint]?.params?.map((p, idx) => (
+                <button
+                  key={`param-${p}-${idx}`}
+                  className="dbModelStyle w-full flex items-center gap-2 font-mono text-xs"
+                  onClick={() => addRequestParamsBlock(`${p}`)}
+                >
+                  <span className="text-couleur2 font-bold">:</span>
+                  {p}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         {toast && (
           <Toast toast={toast}></Toast>

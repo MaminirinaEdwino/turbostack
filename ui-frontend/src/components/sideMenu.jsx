@@ -33,11 +33,11 @@ export default function SideMenu() {
   const isDarkMode = useSelector((state) => state.app.darkMode);
   const [editorExpanded, setEditorExpanded] = useState(false);
   const [subItems, setSubItems] = useState([
-    {
-      name: "unified_editor",
-      icon: <PanelsTopLeft size={18} />,
-      label: "Global view",
-    },
+    // {
+    //   name: "unified_editor",
+    //   icon: <PanelsTopLeft size={18} />,
+    //   label: "Global view",
+    // },
     {
       name: "db_editor",
       icon: <Database size={18} />,

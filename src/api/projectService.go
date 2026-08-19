@@ -41,6 +41,7 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("loadPageLibrairie", ps.LoadPageLib)
 	w.Bind("loadStyleLib", ps.LoadStyleLib)
 	w.Bind("loadCompLib", ps.LoadComponentLib)
+	w.Bind("getProjectType", ps.GetProjectType)
 }
 
 type ProcessManager struct {
@@ -52,6 +53,11 @@ type ProcessManager struct {
 }
 
 var pm = &ProcessManager{}
+
+func (s *ProjectService) GetProjectType(projectName string) string {
+	project := s.FetchProjectByName(projectName)
+	return project.Type
+}
 
 func (s *ProjectService) StartProject(projectName string) map[string]interface{} {
 	project := s.FetchProjectByName(projectName)

@@ -20,12 +20,19 @@ import FileExplorer from "./layouts/projects/fileExplorer";
 import UnifiedEditor from "./layouts/projects/unifiedEditor";
 import HelpDocumentation from "./helpComponent";
 import { GoApp } from "./services/bridge";
+import WorkspaceNavigationBar from "./components/workspaceNavigation";
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
   const isDarkMode = useSelector((state) => state.app.darkMode);
   const [isAppReady, setIsAppReady] = useState(false);
-
+  const windowList = [
+    "api_editor",
+    "page_editor",
+    "db_editor",
+    "Files",
+    "Export"
+  ]
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
@@ -33,8 +40,8 @@ function App() {
       document.documentElement.classList.remove("dark");
     }
   }, [isDarkMode]);
-  useEffect(()=>{
-    const loadLibrairie = async ()=>{
+  useEffect(() => {
+    const loadLibrairie = async () => {
       const res = await GoApp.loadLibrairie()
       console.log(res)
     }
@@ -105,7 +112,7 @@ function App() {
 
   return (
     <>
-      <button 
+      <button
         onClick={() => setIsDocOpen(true)}
         className="px-4 z-50 py-2 bg-couleur1 text-white rounded-lg fixed right-2 bottom-35"
       >
@@ -113,10 +120,13 @@ function App() {
       </button>
 
       {/* Le composant Documentation qui s'affiche par-dessus l'interface */}
-      <HelpDocumentation 
-        isOpen={isDocOpen} 
-        onClose={() => setIsDocOpen(false)} 
+      <HelpDocumentation
+        isOpen={isDocOpen}
+        onClose={() => setIsDocOpen(false)}
       />
+      {
+        windowList.includes(actualWindow) && <WorkspaceNavigationBar />
+      }
       <main className="transition-colors duration-300">{renderContent()}</main>
     </>
   );

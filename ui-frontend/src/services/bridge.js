@@ -76,5 +76,8 @@ export const GoApp = {
     },
     loadStyleLib: async ()=>{
         return await window.loadStyleLib()
+    },
+    getProjectType: async (projectName)=>{
+        return await window.getProjectType(projectName)
     }
 }

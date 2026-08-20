@@ -17,6 +17,7 @@ type pageContent struct {
 	checked             bool
 	passwordViewToggler bool
 	targetedPassword    string
+	htmlId              string
 }
 
 func (p *pageContent) GetId() string {
@@ -98,5 +99,6 @@ func (p *pageContent) ToJSON() PageContentJSON {
 		Name:                p.name,
 		PasswordViewToggler: p.passwordViewToggler,
 		TargetedPassword:    p.targetedPassword,
+		HtmlId:              p.htmlId,
 	}
 }

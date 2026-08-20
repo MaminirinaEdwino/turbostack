@@ -144,4 +144,5 @@ type PageContentJSON struct {
 	Checked             bool              `json:"checked"`
 	PasswordViewToggler bool              `json:"passwordViewToggler"`
 	TargetedPassword    string            `json:"targetedPassword"`
+	HtmlId              string            `json:"htmlId"`
 }

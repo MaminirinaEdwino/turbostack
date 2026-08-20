@@ -190,6 +190,7 @@ func (pc *PageContentJSON) ToModel() pageContent {
 		formAction:          pc.FormAction,
 		passwordViewToggler: pc.PasswordViewToggler,
 		targetedPassword:    pc.TargetedPassword,
+		htmlId:              pc.HtmlId,
 	}
 }
 

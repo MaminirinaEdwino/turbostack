@@ -326,6 +326,7 @@ export default function VisualEditor({
                                     id: Math.random().toString(36).substr(2, 9),
                                     tag: "label",
                                     content: field.nom,
+                                    for: "id_"+field.nom,
                                     className: "",
                                     styles: "",
                                     children: [],
@@ -337,6 +338,7 @@ export default function VisualEditor({
                                     placeholder: field.nom,
                                     className: "",
                                     styles: "",
+                                    htmlId: "id_"+field.nom,
                                     // children: [],
                                     inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text"),
                                     value: ""

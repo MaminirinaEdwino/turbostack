@@ -18,7 +18,12 @@
   --color-couleur7: #95a5a6;
   /* Bordures et texte secondaire */
 }
-
+* {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  scroll-margin-top: 50px;
+  /* scroll-timeline: ; */
+}
 .sidemenu {
   scrollbar-width: none;
 }

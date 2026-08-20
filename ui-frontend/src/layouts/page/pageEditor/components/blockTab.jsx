@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BLOCK_TYPES } from '../defaultVar';
-import { Form, Pen, Pencil, Puzzle } from 'lucide-react';
+import { Blocks, File, Form, FormIcon, ListTree, Palette, Pen, Pencil, Puzzle } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { GoApp } from '../../../../services/bridge';
 
@@ -47,7 +47,28 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
     return (
         <div className="flex flex-col gap-6 ">
             {/* Types de Blocs Standard */}
-            <div className="flex flex-col gap-3">
+            <div className='sticky flex gap-2 text-couleur1 top-0 w-full justify-between p-1 '>
+                <a href="#sb" onClick={() => setActualTab("sb")} className={`${actualTab == "sb" ? "bg-couleur1 text-couleur3 p-1 rounded" : "bg-transparent"} transition-all duration-500`}>
+                    <Blocks size={16} /> 
+                </a>
+                <a href="#components" onClick={() => setActualTab("components")} className={`${actualTab == "components" ? "bg-couleur1 text-couleur3 p-1 rounded " : "bg-transparent"} transition-all duration-500`}>
+                    <Puzzle size={16} />
+                </a>
+                <a href="#pagelib" onClick={() => { setActualTab("pagelib") }} className={`${actualTab == "pagelib" ? "bg-couleur1 text-couleur3 p-1 rounded" : "bg-transparent"} transition-all duration-500`}>
+                    <File size={16} />
+                </a>
+                <a href="#stylelib" onClick={() => { setActualTab("stylelib") }} className={`${actualTab == "stylelib" ? "bg-couleur1 text-couleur3 p-1 rounded" : "bg-transparent"} transition-all duration-500`}>
+                    <Palette size={16} />
+                </a>
+                <a href="#apiform" onClick={() => { setActualTab("apiform") }} className={`${actualTab == "apiform" ? "bg-couleur1 text-couleur3 p-1 rounded" : "bg-transparent"} transition-all duration-500`}>
+                    <FormIcon size={16} />
+                </a>
+                <a href="#structure" onClick={() => { setActualTab("structure") }} className={`${actualTab == "structure" ? "bg-couleur1 text-couleur3 p-1 rounded" : "bg-transparent"} transition-all duration-500`}>
+                    <ListTree size={16} />
+                </a>
+            </div>
+            <div className="flex flex-col gap-3" id='sb'>
+
                 <h3 className="text-xs font-black uppercase text-couleur1/40" onClick={() => setActualTab("sb")}>Standard Blocks</h3>
                 {
                     actualTab == "sb" && <div className="grid grid-cols-2 gap-3">
@@ -67,7 +88,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
 
             {/* Composants Disponibles */}
 
-            <div className="flex flex-col gap-3 ">
+            <div className="flex flex-col gap-3 " id='components'>
                 <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2" onClick={() => setActualTab("components")}>
                     Components
                 </h3>
@@ -104,7 +125,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
 
             {
                 pageLib?.length > 0 && (
-                    <div className='flex flex-col gap-3'>
+                    <div className='flex flex-col gap-3' id='pagelib'>
                         <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2" onClick={() => setActualTab("pagelib")}>
                             Page Content Libs
                         </h3>
@@ -132,7 +153,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
 
             {
                 editingtype == "page" && styleLib?.length > 0 && (
-                    <div className='flex flex-col gap-3'>
+                    <div className='flex flex-col gap-3' id='stylelib'>
                         <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2" onClick={() => setActualTab("stylelib")}>
                             Style Libs
                         </h3>
@@ -146,7 +167,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                                             onClick={() => setGlobalStyle(comp)}
                                             className="flex items-center gap-2 p-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1"
                                         >
-                                            <Pencil size={14} /> {/* Icône Puzzle pour les composants */}
+                                            <Palette size={14} /> {/* Icône Puzzle pour les composants */}
                                             <span className="text-sm font-medium">Style {index}</span>
                                         </button>
                                     </>
@@ -157,7 +178,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                 )
             }
             {/* Liste des endpoints form */}
-            <div>
+            <div id='apiform'>
                 <h3 className='text-xs font-black uppercase text-couleur1/40 ' onClick={() => setActualTab("apiform")}>API Forms </h3>
                 {actualTab == "apiform" && <div className='grid grid-cols-2'>
                     {typeof (project) != "string" && project.rest_api.endpoints != null && <>
@@ -168,8 +189,9 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                 </div>}
             </div>
 
+
             {/* Structure de la Page */}
-            <div className="flex flex-col gap-3 ">
+            <div className="flex flex-col gap-3 " id='structure'>
                 <h3 className="text-xs font-black uppercase text-couleur1/40" onClick={() => setActualTab("structure")}>Page Structure</h3>
                 {actualTab == "structure" && <div className="bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 rounded-xl p-3">
                     {blocks.length === 0 ? (

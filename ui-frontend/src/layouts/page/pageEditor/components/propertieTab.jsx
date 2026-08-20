@@ -379,6 +379,26 @@ export default function PropertiesTab({
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { name: e.target.value })}
                             />
                         </div>}
+                        {currentActiveBlock.tag == "input" && currentActiveBlock.inputType =="checkbox" && <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">password toggle</label>
+                            <input
+                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                type="checkbox"
+                                placeholder="Name . . ."
+                                checked={currentActiveBlock.passwordViewToggler ? true : false}
+                                onChange={(e) => updateBlock(currentActiveBlock.id, { passwordViewToggler: e.target.checked })}
+                            />
+                        </div>}
+                        {currentActiveBlock.tag == "input" && currentActiveBlock.passwordViewToggler && <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Targeted Password</label>
+                            <input
+                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                type="text"
+                                placeholder="id"
+                                value={currentActiveBlock.targetedPassword || ""}
+                                onChange={(e) => updateBlock(currentActiveBlock.id, { targetedPassword: e.target.value })}
+                            />
+                        </div>}
                         {currentActiveBlock.tag == "form" && <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Form target</label>
                             <input

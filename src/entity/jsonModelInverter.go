@@ -174,20 +174,22 @@ func (pc *PageContentJSON) ToModel() pageContent {
 	}
 
 	return pageContent{
-		id:          pc.Id,
-		tag:         pc.Tag,
-		content:     pc.Content,
-		className:   pc.ClassName,
-		href:        pc.Href,
-		styles:      pc.Styles,
-		children:    children,
-		inputType:   pc.InputType,
-		placeholder: pc.Placeholder,
-		formType:    pc.FormType,
-		value:       pc.Value,
-		name:        pc.Name,
-		checked:     pc.Checked,
-		formAction:  pc.FormAction,
+		id:                  pc.Id,
+		tag:                 pc.Tag,
+		content:             pc.Content,
+		className:           pc.ClassName,
+		href:                pc.Href,
+		styles:              pc.Styles,
+		children:            children,
+		inputType:           pc.InputType,
+		placeholder:         pc.Placeholder,
+		formType:            pc.FormType,
+		value:               pc.Value,
+		name:                pc.Name,
+		checked:             pc.Checked,
+		formAction:          pc.FormAction,
+		passwordViewToggler: pc.PasswordViewToggler,
+		targetedPassword:    pc.TargetedPassword,
 	}
 }
 

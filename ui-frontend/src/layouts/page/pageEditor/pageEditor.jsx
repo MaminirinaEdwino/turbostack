@@ -100,7 +100,7 @@ export default function PageEditor({ projectName }) {
           if (b.tag === "form")
             return `<form action="${b.action}" class="${className}" method="${b.method}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</form>`;
           if (b.tag == "input")
-            return `<input type="${b.inputType}" placeholder="${b.placeholder}" class="${className}" data-block-id="${b.id}" ${htmlId} ${inlineStyleAttr} name="${b.name}" ${b.inputType == "radio" || b.inputType == "checkbox" && b.checked == true && b.checked} value="${b.value}" />`
+            return `<input type="${b.inputType}" placeholder="${b.placeholder}" class="${className}" data-block-id="${b.id}" ${htmlId} ${inlineStyleAttr} name="${b.name}" ${b.inputType == "radio" || b.inputType == "checkbox" && b.checked == true && "checked"} value="${b.value}" ${b.passwordViewToggler && `onclick="${b.targetedPassword}.type = this.checked ? 'text' : 'password' "`}/>`
 
           return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} ${b.tag == "label" && `for="${b.for}"`}>${content}${childrenHtml}</${b.tag}>`;
         })

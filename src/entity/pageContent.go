@@ -1,20 +1,22 @@
 package entity
 
 type pageContent struct {
-	id          string
-	tag         string
-	content     string
-	className   string
-	href        string
-	styles      string
-	children    []pageContent
-	inputType   string
-	placeholder string
-	formType    string
-	formAction  string
-	value       string
-	name        string
-	checked     bool
+	id                  string
+	tag                 string
+	content             string
+	className           string
+	href                string
+	styles              string
+	children            []pageContent
+	inputType           string
+	placeholder         string
+	formType            string
+	formAction          string
+	value               string
+	name                string
+	checked             bool
+	passwordViewToggler bool
+	targetedPassword    string
 }
 
 func (p *pageContent) GetId() string {
@@ -80,19 +82,21 @@ func (p *pageContent) ToJSON() PageContentJSON {
 	}
 
 	return PageContentJSON{
-		Id:          p.id,
-		Tag:         p.tag,
-		Content:     p.content,
-		ClassName:   p.className,
-		Href:        p.href,
-		Styles:      p.styles,
-		Children:    children,
-		InputType:   p.inputType,
-		Placeholder: p.placeholder,
-		FormType:    p.formType,
-		FormAction:  p.formAction,
-		Value:       p.value,
-		Checked:     p.checked,
-		Name:        p.name,
+		Id:                  p.id,
+		Tag:                 p.tag,
+		Content:             p.content,
+		ClassName:           p.className,
+		Href:                p.href,
+		Styles:              p.styles,
+		Children:            children,
+		InputType:           p.inputType,
+		Placeholder:         p.placeholder,
+		FormType:            p.formType,
+		FormAction:          p.formAction,
+		Value:               p.value,
+		Checked:             p.checked,
+		Name:                p.name,
+		PasswordViewToggler: p.passwordViewToggler,
+		TargetedPassword:    p.targetedPassword,
 	}
 }

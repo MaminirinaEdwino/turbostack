@@ -110,7 +110,7 @@ export const BLOCK_TYPES = [
     { label: "Label", tag: "label", icon: <Text size={14} />, defaultContent: "label", group: "text", attr: [{ name: "for", type: "text", defaultContent: "text" }] },
     { label: "Form", tag: "form", icon: <Form size={14} />, defaultContent: "Post form", group: "form", for: "id" },
     { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
-    { label: "Input", tag: "input", icon: <FormInput size={14} />, inputType: "text", group: "form", value: "" },
+    { label: "Input", tag: "input", icon: <FormInput size={14} />, inputType: "text", group: "form", value: "", passwordViewToggler: false, targetedPassword: "" },
     { label: "Progress", tag: "progress", icon: <GrInProgress size={14} />, group: "form" },
 ];
 export const GROUP_LIST = ["background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"]

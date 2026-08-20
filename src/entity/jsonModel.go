@@ -128,18 +128,20 @@ type WebAppJSON struct {
 }
 
 type PageContentJSON struct {
-	Id          string            `json:"id"`
-	Tag         string            `json:"tag"`
-	Content     string            `json:"content"`
-	ClassName   string            `json:"className"`
-	Href        string            `json:"href"`
-	Styles      string            `json:"styles"`
-	Children    []PageContentJSON `json:"children"`
-	InputType   string            `json:"inputType"`
-	Placeholder string            `json:"placeholder"`
-	FormType    string            `json:"form_type"`
-	Value       string            `json:"value"`
-	FormAction  string            `json:"action"`
-	Name        string            `json:"name"`
-	Checked     bool              `json:"checked"`
+	Id                  string            `json:"id"`
+	Tag                 string            `json:"tag"`
+	Content             string            `json:"content"`
+	ClassName           string            `json:"className"`
+	Href                string            `json:"href"`
+	Styles              string            `json:"styles"`
+	Children            []PageContentJSON `json:"children"`
+	InputType           string            `json:"inputType"`
+	Placeholder         string            `json:"placeholder"`
+	FormType            string            `json:"form_type"`
+	Value               string            `json:"value"`
+	FormAction          string            `json:"action"`
+	Name                string            `json:"name"`
+	Checked             bool              `json:"checked"`
+	PasswordViewToggler bool              `json:"passwordViewToggler"`
+	TargetedPassword    string            `json:"targetedPassword"`
 }

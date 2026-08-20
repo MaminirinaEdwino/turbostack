@@ -613,11 +613,11 @@ export default function VisualEditor({
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
             {/* <>{activeTab}</> */}
             {allowedTabs.length > 1 && (
-                <div className="flex bg-white/50 dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
+                <div className="flex bg-white/50 justify-between dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
                     {allowedTabs.includes("blocks") && <ChangeTabBtn icon={<Layers size={14} />} value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'} />}
                     {allowedTabs.includes("global") && <ChangeTabBtn icon={<Globe size={14} />} value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"} />}
                     {allowedTabs.includes("properties") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"} />}
-                    {allowedTabs.includes("pseudo classes") && <ChangeTabBtn icon={<Settings2 size={14} />} value={""} setter={setActiveTab} activeTab={activeTab} newVal={"pseudo classes"} />}
+                    {allowedTabs.includes("pseudo classes") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Pseudo class"} setter={setActiveTab} activeTab={activeTab} newVal={"pseudo classes"} />}
                 </div>
             )}
 

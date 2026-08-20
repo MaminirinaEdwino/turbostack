@@ -413,7 +413,7 @@ export default function PageEditor({ projectName }) {
                     className="bg-transparent border-b border-couleur1/30 dark:border-white/20 focus:border-couleur1 dark:focus:border-white outline-none px-2 py-0.5 text-couleur1 dark:text-gray-100 text-sm font-semibold transition-colors"
                   />
                 </div>
-                {project?.type != "web_app" && (
+                {project?.type != "webapp" && (
                   <div className="flex gap-4 justify-between items-center w-full">
                     <span className="opacity-60 text-xs font-semibold uppercase tracking-wider text-couleur1 dark:text-gray-400">
                       {editingType} uri :
@@ -632,7 +632,7 @@ export default function PageEditor({ projectName }) {
               className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? "translate-x-0" : "translate-x-full"} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}
             >
               <div className="flex justify-between items-center mb-6 sticky -top-6 bg-couleur3">
-                <h2 className="text-xs font-black uppercase text-couleur1/40">
+                <h2 className="text-sm font-black uppercase text-couleur1/80">
                   Configuration
                 </h2>
                 <button

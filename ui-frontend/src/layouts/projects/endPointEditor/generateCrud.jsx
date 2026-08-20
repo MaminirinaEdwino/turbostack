@@ -17,9 +17,9 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
     };
 
     const toggleBodyField = (fieldName) => {
-        setBodyFields(prev => 
-            prev.includes(fieldName) 
-                ? prev.filter(f => f !== fieldName) 
+        setBodyFields(prev =>
+            prev.includes(fieldName)
+                ? prev.filter(f => f !== fieldName)
                 : [...prev, fieldName]
         );
     };
@@ -30,46 +30,65 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
 
         const baseUri = `/${selectedModel.nom.toLowerCase()}`;
         const selectedChamps = selectedModel.champs.filter(c => bodyFields.includes(c.nom));
-        
+
         let newEndpoints = [
             {
                 nom: `List ${selectedModel.nom}`,
                 uri: baseUri, method: "GET", role: "public",
-                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{...selectedModel}]
+                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{ ...selectedModel }]
             },
             {
                 nom: `Get ${selectedModel.nom} by ID`,
                 uri: `${baseUri}/:id`, method: "GET", role: "public",
                 model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: []
             },
-            {
+        ];
+
+        if (project.type == "webapp") {
+            newEndpoints.push({
+                nom: `create ${selectedModel.nom}`,
+                uri: baseUri + "/create", method: "GET", role: "public",
+                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{ ...selectedModel }]
+            })
+            newEndpoints.push({
+                nom: `update ${selectedModel.nom}`,
+                uri: baseUri + "/edit/:id", method: "GET", role: "public",
+                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{ ...selectedModel }]
+            })
+            newEndpoints.push({
+                nom: `Create ${selectedModel.nom}`,
+                uri: baseUri+"/create", method: "POST", role: "public",
+                model: [{ ...selectedModel, champs: selectedChamps }],
+                params: [], manual_fields: []
+            })
+            newEndpoints.push({
+                nom: `Update ${selectedModel.nom}`,
+                uri: `${baseUri}/edit/:id`, method: "PUT", role: "public",
+                model: [{ ...selectedModel, champs: selectedChamps }],
+                params: ["id"], manual_fields: []
+            })
+            newEndpoints.push({
+                nom: `Delete ${selectedModel.nom}`,
+                uri: `${baseUri}/delete/:id`, method: "DELETE", role: "public",
+                model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: []
+            })
+        } else {
+            newEndpoints.push({
                 nom: `Create ${selectedModel.nom}`,
                 uri: baseUri, method: "POST", role: "public",
                 model: [{ ...selectedModel, champs: selectedChamps }],
                 params: [], manual_fields: []
-            },
-            {
+            })
+            newEndpoints.push({
                 nom: `Update ${selectedModel.nom}`,
                 uri: `${baseUri}/:id`, method: "PUT", role: "public",
                 model: [{ ...selectedModel, champs: selectedChamps }],
                 params: ["id"], manual_fields: []
-            },
-            {
+            })
+            newEndpoints.push({
                 nom: `Delete ${selectedModel.nom}`,
                 uri: `${baseUri}/:id`, method: "DELETE", role: "public",
                 model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: []
-            }
-        ];
-        if (project.type == "webapp") {
-            newEndpoints.push({
-                nom: `create ${selectedModel.nom}`,
-                uri: baseUri+"/create", method: "GET", role: "public",
-                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{...selectedModel}]
-            })
-            newEndpoints.push({
-                nom: `update ${selectedModel.nom}`,
-                uri: baseUri+"/update/:id", method: "GET", role: "public",
-                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{...selectedModel}]
             })
         }
 
@@ -128,7 +147,7 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1">Cancel</button>
                 <button onClick={handleGenerate} disabled={!selectedModel} className={`px-5 py-2 rounded-lg bg-couleur1 text-white font-semibold flex items-center gap-2 ${!selectedModel ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}>
-                    <Check size={18}/> Generate 5 Endpoints
+                    <Check size={18} /> Generate 5 Endpoints
                 </button>
             </div>
         </form>

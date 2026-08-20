@@ -49,7 +49,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
             {/* Types de Blocs Standard */}
             <div className='sticky flex gap-2 text-couleur1 top-0 w-full justify-between p-1 '>
                 <a href="#sb" onClick={() => setActualTab("sb")} className={`${actualTab == "sb" ? "bg-couleur1 text-couleur3 p-1 rounded" : "bg-transparent"} transition-all duration-500`}>
-                    <Blocks size={16} /> 
+                    <Blocks size={16} />
                 </a>
                 <a href="#components" onClick={() => setActualTab("components")} className={`${actualTab == "components" ? "bg-couleur1 text-couleur3 p-1 rounded " : "bg-transparent"} transition-all duration-500`}>
                     <Puzzle size={16} />

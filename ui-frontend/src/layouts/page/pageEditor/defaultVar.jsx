@@ -108,12 +108,9 @@ export const BLOCK_TYPES = [
     { label: "Video", tag: "video", icon: <VideoIcon size={14} />, defaultContent: "https://via.placeholder.com/800x400", group: "media" },
     { label: "Button", tag: "button", icon: <Square size={14} />, defaultContent: "Click here", group: "button" },
     { label: "Label", tag: "label", icon: <Text size={14} />, defaultContent: "label", group: "text", attr: [{ name: "for", type: "text", defaultContent: "text" }] },
-    { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
     { label: "Form", tag: "form", icon: <Form size={14} />, defaultContent: "Post form", group: "form" },
-    { label: "Input (text)", tag: "input", icon: <FormInput size={14} />, inputType: "text", group: "form" },
-    { label: "Input (int)", tag: "input", icon: <FormInput size={14} />, inputType: "number", group: "form" },
-    { label: "Input (email)", tag: "input", icon: <FormInput size={14} />, inputType: "email", group: "form" },
-    { label: "Input (password)", tag: "input", icon: <FormInput size={14} />, inputType: "password", group: "form" },
+    { label: "Textarea", tag: "textarea", icon: <BsTextarea size={14} />, defaultContent: "textarea", group: "text" },
+    { label: "Input", tag: "input", icon: <FormInput size={14} />, inputType: "text", group: "form", value: "" },
     { label: "Progress", tag: "progress", icon: <GrInProgress size={14} />, group: "form" },
 ];
 export const GROUP_LIST = ["background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"]

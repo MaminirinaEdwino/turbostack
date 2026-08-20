@@ -11,6 +11,10 @@ type pageContent struct {
 	inputType   string
 	placeholder string
 	formType    string
+	formAction  string
+	value       string
+	name        string
+	checked     bool
 }
 
 func (p *pageContent) GetId() string {
@@ -86,5 +90,9 @@ func (p *pageContent) ToJSON() PageContentJSON {
 		InputType:   p.inputType,
 		Placeholder: p.placeholder,
 		FormType:    p.formType,
+		FormAction:  p.formAction,
+		Value:       p.value,
+		Checked:     p.checked,
+		Name:        p.name,
 	}
 }

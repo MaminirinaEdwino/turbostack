@@ -80,7 +80,7 @@ export default function PropertiesTab({
                                     value={currentActiveBlock.id || ""}
                                     onInput={(e) => {
                                         setCurrentActiveBlock(e.target.value)
-                                        updateBlock(currentActiveBlock.id, {id: e.target.value})
+                                        updateBlock(currentActiveBlock.id, { id: e.target.value })
                                     }}
                                 />
                             </div>
@@ -107,6 +107,7 @@ export default function PropertiesTab({
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { htmlId: e.target.value })}
                             />
                         </div>
+                        
 
 
                         <div className="flex flex-col gap-2">
@@ -296,6 +297,10 @@ export default function PropertiesTab({
                                     <option value="number">number</option>
                                     <option value="email">email</option>
                                     <option value="password">password</option>
+                                    <option value="reset">reset</option>
+                                    <option value="submit">submit</option>
+                                    <option value="radio">radio</option>
+                                    <option value="checkbox">checkbox</option>
                                 </select>
                             </div>
                         </div>
@@ -330,9 +335,9 @@ export default function PropertiesTab({
 
                     <div className="flex flex-col gap-2">
                         <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">
-                            {currentActiveBlock.tag != "img" ? "Content" : "image"}
+                            {currentActiveBlock.tag == "img" ? "image" : currentActiveBlock.tag == "input" ? "value" : "content"}
                         </label>
-                        {currentActiveBlock.tag != "img" && <textarea
+                        {!["img", "input"].includes(currentActiveBlock.tag) && <textarea
                             className="w-full bg-couleur3/30 dark:bg-gray-800 p-4 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans leading-relaxed min-h-37.5 focus:ring-2 ring-couleur1/20 transition-all"
                             value={currentActiveBlock.content}
                             onChange={(e) => {
@@ -346,6 +351,35 @@ export default function PropertiesTab({
                                 <span className="text-xs">{image.file_name}</span>
                             </div>)}
                         </div>
+                        {currentActiveBlock.tag == "input" && <>
+                            <input
+                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                type="text"
+                                placeholder="Value . . ."
+                                value={currentActiveBlock.value || ""}
+                                onChange={(e) => updateBlock(currentActiveBlock.id, { value: e.target.value })}
+                            />
+                        </>}
+                        {currentActiveBlock.tag == "input" && <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Input name</label>
+                            <input
+                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                type="text"
+                                placeholder="Name . . ."
+                                value={currentActiveBlock.name || ""}
+                                onChange={(e) => updateBlock(currentActiveBlock.id, { name: e.target.value })}
+                            />
+                        </div>}
+                        {currentActiveBlock.tag == "form" && <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Form target</label>
+                            <input
+                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                type="text"
+                                placeholder="URI . . ."
+                                value={currentActiveBlock.action || ""}
+                                onChange={(e) => updateBlock(currentActiveBlock.id, { action: e.target.value })}
+                            />
+                        </div>}
                     </div>
                 </div>
 

@@ -135,7 +135,11 @@ type PageContentJSON struct {
 	Href        string            `json:"href"`
 	Styles      string            `json:"styles"`
 	Children    []PageContentJSON `json:"children"`
-	InputType   string            `json:"input_type"`
+	InputType   string            `json:"inputType"`
 	Placeholder string            `json:"placeholder"`
 	FormType    string            `json:"form_type"`
+	Value       string            `json:"value"`
+	FormAction  string            `json:"action"`
+	Name        string            `json:"name"`
+	Checked     bool              `json:"checked"`
 }

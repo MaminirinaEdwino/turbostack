@@ -100,7 +100,7 @@ export default function PageEditor({ projectName }) {
           if (b.tag === "form")
             return `<form action="${b.action}" class="${className}" method="${b.method}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</form>`;
           if (b.tag == "input")
-            return `<input type="${b.inputType}" placeholder="${b.placeholder}" class="${className}" data-block-id="${b.id}" ${htmlId} ${inlineStyleAttr} />`
+            return `<input type="${b.inputType}" placeholder="${b.placeholder}" class="${className}" data-block-id="${b.id}" ${htmlId} ${inlineStyleAttr} name="${b.name}" ${b.inputType == "radio" || b.inputType == "checkbox" && b.checked == true && b.checked} value="${b.value}" />`
 
           return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
         })
@@ -745,7 +745,7 @@ export default function PageEditor({ projectName }) {
                         }}
                         className="p-2 bg-couleur1/5 text-couleur1 rounded-lg hover:bg-couleur1 hover:text-white transition-all"
                       >
-                       
+
                         <Edit3 size={18} />
                       </button>
                       <button

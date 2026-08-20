@@ -184,6 +184,10 @@ func (pc *PageContentJSON) ToModel() pageContent {
 		inputType:   pc.InputType,
 		placeholder: pc.Placeholder,
 		formType:    pc.FormType,
+		value:       pc.Value,
+		name:        pc.Name,
+		checked:     pc.Checked,
+		formAction:  pc.FormAction,
 	}
 }
 

@@ -323,7 +323,7 @@ export default function VisualEditor({
                             children: [
                                 {
                                     id: Math.random().toString(36).substr(2, 9),
-                                    tag: "div",
+                                    tag: "label",
                                     content: field.nom,
                                     className: "",
                                     styles: "",
@@ -337,7 +337,8 @@ export default function VisualEditor({
                                     className: "",
                                     styles: "",
                                     // children: [],
-                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text")
+                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text"),
+                                    value: ""
                                 }
                             ]
                         })
@@ -345,7 +346,7 @@ export default function VisualEditor({
                     childBlock.push({
                         id: Math.random().toString(36).substr(2, 9),
                         tag: "input",
-                        content: "send",
+                        value: "send",
                         className: "",
                         styles: "",
                         inputType: "submit"
@@ -353,7 +354,7 @@ export default function VisualEditor({
                     childBlock.push({
                         id: Math.random().toString(36).substr(2, 9),
                         tag: "input",
-                        content: "clear",
+                        value: "clear",
                         className: "",
                         styles: "",
                         inputType: "reset"

@@ -61,7 +61,9 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 	sb.WriteString("package routes\n\n")
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/controllers\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
+	sb.WriteString("/src/controllers\"\n")
 	sb.WriteString(")\n\n")
 
 	// Groupement des endpoints par nom de modèle
@@ -153,7 +155,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 						ScanParams:      strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"),
 						ResponseWriter:  goapimaker.WriteResponseWriter(),
 						Params:          ep.params[0],
-						FuncName:        strings.ReplaceAll(funcName, " ","_"),
+						FuncName:        strings.ReplaceAll(funcName, " ", "_"),
 					}
 					err := goapimaker.SelectBytemplate().Execute(&tmpBuffer, data)
 					if err != nil {
@@ -200,9 +202,15 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 	sb.WriteString("\t\"fmt\"\n")
 	sb.WriteString("\t\"log\"\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/config\"\n")
-	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/routes\"\n")
-	sb.WriteString("\t\"" + strings.ReplaceAll(projectName, " ", "_") + "/src/middlewares\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
+	sb.WriteString("/src/config\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
+	sb.WriteString("/src/routes\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
+	sb.WriteString("/src/middlewares\"\n")
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("func main() {\n")
@@ -251,7 +259,7 @@ func (mgr *GoApiMaker) writeModSumFile(projectName string) {
 
 func (mgr *GoApiMaker) configAPIExporter(projectName string, model []Model) {
 	filePath := fmt.Sprintf("%s/%s/api/src/config/db.go", config.PROJECT_DIR, projectName)
-	
+
 	file, err := os.Create(filePath)
 	if err != nil {
 		fmt.Printf("Error creating config file %s : %v\n", filePath, err)

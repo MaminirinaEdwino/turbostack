@@ -313,6 +313,7 @@ export default function VisualEditor({
             if (type.isFormPost) {
                 let childBlock = []
                 type.models.map(mdl => {
+                    console.log(mdl)
                     mdl.champs.map(field => {
                         childBlock.push({
                             id: Math.random().toString(36).substr(2, 9),

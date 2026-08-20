@@ -102,7 +102,7 @@ export default function PageEditor({ projectName }) {
           if (b.tag == "input")
             return `<input type="${b.inputType}" placeholder="${b.placeholder}" class="${className}" data-block-id="${b.id}" ${htmlId} ${inlineStyleAttr} name="${b.name}" ${b.inputType == "radio" || b.inputType == "checkbox" && b.checked == true && b.checked} value="${b.value}" />`
 
-          return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId}>${content}${childrenHtml}</${b.tag}>`;
+          return `<${b.tag} class="${className}" ${inlineStyleAttr} data-block-id="${b.id}" ${htmlId} ${b.tag == "label" && `for="${b.for}"`}>${content}${childrenHtml}</${b.tag}>`;
         })
         .join("\n");
     };

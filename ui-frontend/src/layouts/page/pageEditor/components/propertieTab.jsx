@@ -107,7 +107,16 @@ export default function PropertiesTab({
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { htmlId: e.target.value })}
                             />
                         </div>
-                        
+                        {currentActiveBlock.tag == "label" && <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">For #id</label>
+                            <input
+                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                type="text"
+                                placeholder="id"
+                                value={currentActiveBlock.for || ""}
+                                onChange={(e) => updateBlock(currentActiveBlock.id, { for: e.target.value })}
+                            />
+                        </div>}
 
 
                         <div className="flex flex-col gap-2">

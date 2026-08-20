@@ -1,13 +1,14 @@
 import { Box, Form, FormInput, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon } from "lucide-react";
 import { BsTextarea } from "react-icons/bs";
+import { GrInProgress } from "react-icons/gr";
 
 const sizeDistUnit = ["px", "em", "rem", "cm", "vh", "vw", "%"]
 
 export const STYLE_CONTROLS = [
-    { label: "Text-color", prop: "color", type: "color", group: "typo", conditions: [] },
-    { conditions: [], label: "font-size", prop: "font-size", type: "number", placeholder: "e.g. 16", group: "typo", unite: ["px", "em", "rem", "cm", "%"] },
-    { conditions: [], label: "text-align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "typo" },
-    { conditions: [], label: "font-weight", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "typo" },
+    { label: "Text-color", prop: "color", type: "color", group: "text", conditions: [] },
+    { conditions: [], label: "font-size", prop: "font-size", type: "number", placeholder: "e.g. 16", group: "text", unite: ["px", "em", "rem", "cm", "%"] },
+    { conditions: [], label: "text-align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "text" },
+    { conditions: [], label: "font-weight", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "text" },
     { conditions: [], label: "background-color", prop: "background-color", type: "color", group: "background", reset: "none" },
     { conditions: [], group: "sizing", label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10", unite: ["px", "em", "rem", "cm", "%"] },
     { conditions: [], group: "sizing", label: "Margin", prop: "margin", type: "number", placeholder: "e.g. 0", unite: ["px", "em", "rem", "cm", "%"] },
@@ -27,10 +28,11 @@ export const STYLE_CONTROLS = [
     { conditions: [], group: "animation", label: "animation-name", prop: "animation-name", type: "text" },
     { conditions: [], group: "animation", label: "animation-play-state", prop: "animation-play-state", type: "select", options: ["running", "pause"] },
     { conditions: [], group: "animation", label: "animaiton-timing-function", prop: "animation-timing-function", type: "select", options: ["ease", "linear", "easy-in", "ease-out", "ease-in-out"] },
+    { conditions: [], group: "background", label: "backgroud-image", prop: "background-image", type: "text" },
     { conditions: [], group: "background", label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"] },
     { conditions: [], group: "background", label: "backgroud-break", prop: "background-break", type: "select", options: ["bounding-box", "each-box", "continuous"] },
     { conditions: [], group: "background", label: "backgroud-clip", prop: "background-clip", type: "select", options: ["border-box", "padding-box", "content-box", "no-clip"] },
-    { conditions: [], group: "background", label: "backgroud-image", prop: "background-image", type: "text" },
+    
     { conditions: [], group: "background", label: "backgroud-origin", prop: "background-origin", type: "select", options: ["border-box", "padding-box", "content-box"] },
     { conditions: [], group: "background", label: "backgroud-position", prop: "background-position", type: "select", options: ["top left", "top center", "top right", "center left", "center center", "center right", "bottom left", "bottom center", "bottom right"] },
     { conditions: [], group: "background", label: "backgroud-repeat", prop: "background-repeat", type: "select", options: ["repeat", "repeat-x", "repeat-y", "no-repeat"] },
@@ -112,34 +114,36 @@ export const BLOCK_TYPES = [
     { label: "Input (int)", tag: "input", icon: <FormInput size={14} />, inputType: "number", group: "form" },
     { label: "Input (email)", tag: "input", icon: <FormInput size={14} />, inputType: "email", group: "form" },
     { label: "Input (password)", tag: "input", icon: <FormInput size={14} />, inputType: "password", group: "form" },
+    { label: "Progress", tag: "progress", icon: <GrInProgress size={14} />, group: "form" },
 ];
-export const GROUP_LIST = ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"]
+export const GROUP_LIST = ["background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"]
 
 export const TAG_STYLE_GROUPS = {
-    form: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    h1: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    h2: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    h3: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    h4: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    h5: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    h6: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    section: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    main: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    aside: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    p: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    span: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    a: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    button: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    label: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    textarea: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    div: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    img: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    page: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    generic: ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    "textarea:hover": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    "div:hover": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    "button:hover": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
-    "input": ["typo", "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    form: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    h1: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    h2: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    h3: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    h4: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    h5: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    h6: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    section: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    main: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    aside: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    p: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    span: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    a: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    button: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    label: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    textarea: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    div: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    img: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    page: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    generic: [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    "textarea:hover": [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    "div:hover": [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    "button:hover": [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    "input": [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
+    "progress": [ "background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"],
 };
 // export const TAG_STYLE_GROUPS = {
 //     h1: ["color", "font-size", "text-align", "font-weight", "margin"],

@@ -34,6 +34,7 @@ export default function VisualEditor({
     allowedTabs = ["blocks", "global", "properties", "pseudo classes"],
     showToast,
     editingtype,
+    activePage
 }) {
     const [blocks, setBlocks] = useState([]);
     const [draggedId, setDraggedId] = useState(null);
@@ -626,7 +627,7 @@ export default function VisualEditor({
             )}
 
             {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
-                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents} setGlobalStyle={onPageStylesChange} editingtype={editingtype}/>
+                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents} setGlobalStyle={onPageStylesChange} editingtype={editingtype} activePage={activePage}/>
             ) : activeTab === "global" && allowedTabs.includes("global") ? (
                 <GlobalTab
                     availableSelectors={availableSelectors}

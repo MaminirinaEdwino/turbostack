@@ -4,7 +4,7 @@ import { Blocks, File, Form, FormIcon, ListTree, Palette, Pen, Pencil, Puzzle } 
 import { useSelector } from 'react-redux';
 import { GoApp } from '../../../../services/bridge';
 
-export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents, setGlobalStyle, editingtype }) {
+export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents, setGlobalStyle, editingtype, activePage }) {
     const projectName = useSelector((state) => state.app.actualProject)
     const [actualTab, setActualTab] = useState("structure")
     const [project, setProject] = useState("")
@@ -47,7 +47,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
     return (
         <div className="flex flex-col gap-6 ">
             {/* Types de Blocs Standard */}
-            <div className='sticky flex gap-2 text-couleur1 top-0 w-full justify-between p-1 '>
+            <div className='sticky flex gap-2 text-couleur1 top-1 w-full justify-between p-1.5 bg-white px-3 shadow-lg drop-shadow-white rounded items-center z-10'>
                 <a href="#sb" onClick={() => setActualTab("sb")} className={`${actualTab == "sb" ? "bg-couleur1 text-couleur3 p-1 rounded" : "bg-transparent"} transition-all duration-500`}>
                     <Blocks size={16} />
                 </a>
@@ -67,7 +67,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                     <ListTree size={16} />
                 </a>
             </div>
-            <div className="flex flex-col gap-3" id='sb'>
+            {actualTab == "sb" && <div className="flex flex-col gap-3" id='sb'>
 
                 <h3 className="text-xs font-black uppercase text-couleur1/40" onClick={() => setActualTab("sb")}>Standard Blocks</h3>
                 {
@@ -84,11 +84,11 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                         ))}
                     </div>
                 }
-            </div>
+            </div>}
 
             {/* Composants Disponibles */}
 
-            <div className="flex flex-col gap-3 " id='components'>
+            {actualTab == "components" && <div className="flex flex-col gap-3 " id='components'>
                 <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2" onClick={() => setActualTab("components")}>
                     Components
                 </h3>
@@ -121,10 +121,11 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                         }
                     </div>
                 }
-            </div>
+            </div>}
+
 
             {
-                pageLib?.length > 0 && (
+                pageLib?.length > 0 && actualTab == "pagelib" && (
                     <div className='flex flex-col gap-3' id='pagelib'>
                         <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2" onClick={() => setActualTab("pagelib")}>
                             Page Content Libs
@@ -152,7 +153,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
             }
 
             {
-                editingtype == "page" && styleLib?.length > 0 && (
+                editingtype == "page" && styleLib?.length > 0 && actualTab == "stylelib" && (
                     <div className='flex flex-col gap-3' id='stylelib'>
                         <h3 className="text-xs font-black uppercase text-couleur1/40 flex items-center gap-2" onClick={() => setActualTab("stylelib")}>
                             Style Libs
@@ -178,20 +179,41 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                 )
             }
             {/* Liste des endpoints form */}
-            <div id='apiform'>
-                <h3 className='text-xs font-black uppercase text-couleur1/40 ' onClick={() => setActualTab("apiform")}>API Forms </h3>
-                {actualTab == "apiform" && <div className='grid grid-cols-2'>
-                    {typeof (project) != "string" && project.rest_api.endpoints != null && <>
-                        {((project.rest_api.endpoints).filter(ep => ep.method === "POST")).map(ep => <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1'
-                            onClick={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: "", models: ep.model })}
-                        > <Form size={14}></Form> {ep.nom}</button>)}
-                    </>}
-                </div>}
-            </div>
+            {
+                actualTab == "apiform" && <div id='apiform'>
+                    <h3 className='text-xs font-black uppercase text-couleur1/40 ' onClick={() => setActualTab("apiform")}>API Forms and request element</h3>
+                    {actualTab == "apiform" && <div className='grid grid-cols-2 gap-2'>
+                        {typeof (project) != "string" && project.rest_api.endpoints != null && <>
+                            {((project.rest_api.endpoints).filter(ep => ep.method !== "GET")).map(ep => <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm'
+                                onClick={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: "", models: ep.model })}
+                            > <Form size={14}></Form> {ep.nom}</button>)}
+
+                            {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].model.map(mdl => <>
+                                {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].return_content_type == "array" && <>
+                                    <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ range .${mdl.nom[0].toUpperCase()}${[mdl.nom.split(mdl.nom[0])[1]]} }}` })}> <Form size={14}></Form>{mdl.nom} range .{mdl.nom[0].toUpperCase()}{[mdl.nom.split(mdl.nom[0])]}</button>
+                                    <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ else }}`, isTemplateElement: true })}> <Form size={14}></Form> else </button>
+                                    <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ end }}`, isTemplateElement: true })}> <Form size={14}></Form> end range</button>
+                                    {mdl.champs.map(champs => <>
+                                        <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm'
+                                            onClick={() => addBlock({ tag: "div", defaultContent: `{{ .${champs.nom[0].toUpperCase()}${champs.nom.split(champs.nom[0])[1]} }}`, isTemplateElement: true })}> <Form size={14}></Form> {mdl.nom}  {champs.nom[0].toUpperCase()}{champs.nom.split(champs.nom[0])[1]} </button>
+                                    </>)}
+                                </>}
+                                {/* <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm'
+
+                                > <Form size={14}></Form> {mdl.nom}</button> */}
+                                {/* {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].return_content_type} */}
+                            </>)}
+
+                        </>}
+
+                    </div>}
+
+                </div>
+            }
 
 
             {/* Structure de la Page */}
-            <div className="flex flex-col gap-3 " id='structure'>
+            {actualTab == "structure" && <div className="flex flex-col gap-3 " id='structure'>
                 <h3 className="text-xs font-black uppercase text-couleur1/40" onClick={() => setActualTab("structure")}>Page Structure</h3>
                 {actualTab == "structure" && <div className="bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 rounded-xl p-3">
                     {blocks.length === 0 ? (
@@ -200,7 +222,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                         renderBlocksList(blocks)
                     )}
                 </div>}
-            </div>
+            </div>}
         </div>
     );
 }

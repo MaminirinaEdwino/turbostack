@@ -17,4 +17,7 @@ export const stringifyStyles = (styleObj) => {
         .map(([k, v]) => `${k}: ${v}`)
         .join('; ');
 };
+export const touppertemplatevar = (champs)=>{
+    return `{{ .${champs[0].toUpperCase()}${champs.split(champs[0])[1]} }}`
+}
 

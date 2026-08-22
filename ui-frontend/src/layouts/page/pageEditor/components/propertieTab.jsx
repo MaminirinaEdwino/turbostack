@@ -1,6 +1,6 @@
 import { MousePointer2, Copy, ClipboardPaste, LoaderCircle, Tablet, Computer, Smartphone } from "lucide-react";
 import { BLOCK_TYPES, GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
-import { parseStyles } from "../utilsFunc";
+import { parseStyles, touppertemplatevar } from "../utilsFunc";
 import { useEffect, useState } from "react";
 import { BiReset } from "react-icons/bi";
 import { useSelector } from "react-redux";
@@ -8,10 +8,11 @@ import { GoApp } from "../../../../services/bridge";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
-    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet, styleToModbile, styleToDesktop, setCurrentActiveBlock
+    activeViewport = "desktop", onCopyStyle, onPasteStyle, hasCopiedStyle, styleToTablet, styleToModbile, styleToDesktop, setCurrentActiveBlock, activePage
 }) {
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
     const projectName = useSelector(state => state.app.actualProject)
+    const [model, setmodel] = useState([])
     const [asset, setAsset] = useState([])
     useEffect(() => {
         const loadAsset = async () => {
@@ -20,6 +21,18 @@ export default function PropertiesTab({
             setAsset(res.assets)
         }
         loadAsset()
+    }, [projectName])
+    useEffect(() => {
+        const loadProject = async () => {
+            const res = await GoApp.fetchProjectByName(projectName)
+            console.log(res)
+            res?.rest_api?.endpoints.map(ep => {
+                if (ep.return_page === activePage.nom) {
+                    setmodel([...model, ...ep.model])
+                }
+            })
+        }
+        loadProject()
     }, [projectName])
     // Extraction intelligente des styles selon le viewport
     const getStylesForViewport = () => {
@@ -41,8 +54,10 @@ export default function PropertiesTab({
 
     return <>
         <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+
             {currentActiveBlock ? (
                 <div className="space-y-6">
+
                     <div className="flex items-center gap-3 p-4 bg-couleur1/5 rounded-2xl border border-couleur1/10">
                         <div className="p-3 bg-couleur1 text-white rounded-xl shadow-sm">
                             {getIconForTag(currentActiveBlock.tag)}
@@ -362,6 +377,7 @@ export default function PropertiesTab({
                         </div>
                         {currentActiveBlock.tag == "input" && <>
                             <input
+                                list="model-element-list"
                                 className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
                                 type="text"
                                 placeholder="Value . . ."
@@ -369,6 +385,13 @@ export default function PropertiesTab({
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { value: e.target.value })}
                             />
                         </>}
+                        <datalist id="model-element-list">
+                            {model.map(mdl => <>
+                                <optgroup label={mdl.nom}>
+                                    {mdl.champs.map(field => <option>{touppertemplatevar(field.nom)}</option>)}
+                                </optgroup>
+                            </>)}
+                        </datalist>
                         {currentActiveBlock.tag == "input" && <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Input name</label>
                             <input
@@ -379,7 +402,7 @@ export default function PropertiesTab({
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { name: e.target.value })}
                             />
                         </div>}
-                        {currentActiveBlock.tag == "input" && currentActiveBlock.inputType =="checkbox" && <div className="flex flex-col gap-2">
+                        {currentActiveBlock.tag == "input" && currentActiveBlock.inputType == "checkbox" && <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">password toggle</label>
                             <input
                                 className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"

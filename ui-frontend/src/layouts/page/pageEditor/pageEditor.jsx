@@ -675,6 +675,7 @@ export default function PageEditor({ projectName }) {
 
                 editingtype={editingType}
                 updateBlockStyle={updateActiveItemField}
+                activePage={activeItem}
               />
             </aside>
           </div>

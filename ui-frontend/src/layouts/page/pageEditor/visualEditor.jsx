@@ -206,7 +206,7 @@ export default function VisualEditor({
         if (listWithoutSource[targetindex].children == null) {
             listWithoutSource[targetindex].children = []
             listWithoutSource[targetindex].children.push(blockToMove)
-        }else{
+        } else {
             listWithoutSource[targetindex].children.push(blockToMove)
         }
         setBlocks(listWithoutSource)
@@ -327,7 +327,7 @@ export default function VisualEditor({
                                     id: Math.random().toString(36).substr(2, 9),
                                     tag: "label",
                                     content: field.nom,
-                                    for: "id_"+field.nom,
+                                    for: "id_" + field.nom,
                                     className: "",
                                     styles: "",
                                     children: [],
@@ -339,7 +339,7 @@ export default function VisualEditor({
                                     placeholder: field.nom,
                                     className: "",
                                     styles: "",
-                                    htmlId: "id_"+field.nom,
+                                    htmlId: "id_" + field.nom,
                                     // children: [],
                                     inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text"),
                                     value: ""
@@ -384,7 +384,7 @@ export default function VisualEditor({
                     children: [],
                     inputType: (type?.inputType || "")
                 };
-                console.log(",",type.inputType)
+                console.log(",", type.inputType)
             }
         }
 
@@ -478,7 +478,7 @@ export default function VisualEditor({
                     children: [],
                     inputType: (type?.inputType || "")
                 };
-                console.log(",",type.inputType)
+                console.log(",", type.inputType)
             }
         }
 
@@ -586,7 +586,7 @@ export default function VisualEditor({
                     onDoubleClick={() => indentAsChild(blocks, block.id)}
                 >
                     <div className="flex justify-between items-center">
-                        <Block  getIconForTag={getIconForTag} block={block} />
+                        <Block getIconForTag={getIconForTag} block={block} />
                         <div className="flex items-center gap-1">
                             {block.tag != "input" && <AddChild block={block} addChild={addChild} />}
                             {block.children && block.children.length > 0 && <button onClick={() => {
@@ -625,7 +625,7 @@ export default function VisualEditor({
             )}
 
             {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
-                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents} setGlobalStyle={onPageStylesChange} editingtype={editingtype} activePage={activePage}/>
+                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents} setGlobalStyle={onPageStylesChange} editingtype={editingtype} activePage={activePage} />
             ) : activeTab === "global" && allowedTabs.includes("global") ? (
                 <GlobalTab
                     availableSelectors={availableSelectors}
@@ -650,6 +650,7 @@ export default function VisualEditor({
                     styleToDesktop={() => pasteStyleToDeskTop(currentActiveBlock?.id)}
                     styleToModbile={() => pasteStyleToMobile(currentActiveBlock?.id)}
                     setCurrentActiveBlock={setActiveBlock}
+                    activePage={activePage}
                 />
             ) : allowedTabs.includes("pseudo classes") && activeTab === "pseudo classes" ?
                 <>

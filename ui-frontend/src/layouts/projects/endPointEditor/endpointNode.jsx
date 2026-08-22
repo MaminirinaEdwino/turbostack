@@ -104,11 +104,11 @@ export default function EndpointNode({ data }) {
             {data.return_content_type == "array" && "]"}
           </code>}
         </div>
-        {data.return_page?.nom && <div className="p-3 space-y-1 box-border text-[10px]">
+        {data?.return_page && <div className="p-3 space-y-1 box-border text-[10px]">
           <h3 className="dark:text-white/50">View</h3>
           <div className="flex gap-2 items-center">
             <Globe2 size={10}></Globe2>
-            <p>{data.return_page.nom}</p>
+            <p>{data.return_page}</p>
           </div>
         </div>}
         {data.method != "GET" && <div className="p-3 space-y-1 box-border text-[10px]">

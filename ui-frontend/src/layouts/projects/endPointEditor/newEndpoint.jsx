@@ -350,32 +350,34 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                 </div>
             )}
 
-            <div>
-                <label className="text-xs font-bold opacity-50 uppercase">
-                    Response Body
-                </label>
-                <div className="text-xs border w-fit rounded-sm border-couleur1">
-                    <button className={`p-2 ${endpoint.return_content_type == "array" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
-                        e.preventDefault()
-                        setEndpoint({ ...endpoint, return_content_type: "array" })
-                    }}>
-                        ARRAY
-                    </button>
-                    <button className={`p-2 ${endpoint.return_content_type == "object" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
-                        e.preventDefault()
-                        setEndpoint({ ...endpoint, return_content_type: "object" })
-                    }}>
-                        OBJECT
-                    </button>
-                    {endpoint.method == "GET" && <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
+            {
+                endpoint.model.length > 0 && <div>
+                    <label className="text-xs font-bold opacity-50 uppercase">
+                        Response Body
+                    </label>
+                    <div className="text-xs border w-fit rounded-sm border-couleur1">
+                        <button className={`p-2 ${endpoint.return_content_type == "array" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
+                            e.preventDefault()
+                            setEndpoint({ ...endpoint, return_content_type: "array" })
+                        }}>
+                            ARRAY
+                        </button>
+                        <button className={`p-2 ${endpoint.return_content_type == "object" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
+                            e.preventDefault()
+                            setEndpoint({ ...endpoint, return_content_type: "object" })
+                        }}>
+                            OBJECT
+                        </button>
+                        {/* {endpoint.method == "GET" && <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
                         e.preventDefault()
                         setEndpoint({ ...endpoint, return_content_type: "page" })
                     }}>
                         PAGE
-                    </button>}
+                    </button>} */}
+                    </div>
                 </div>
-            </div>
-            {endpoint.return_content_type != "page" ? endpoint.return_content.map((m) => {
+            }
+            {endpoint.return_content_type != "page" && endpoint.return_content.map((m) => {
                 if (m.nom === "Manual") return null;
                 const originalModel = availableModels.find(
                     (om) => om.nom === m.nom,
@@ -447,16 +449,19 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                         </table>
                     </div>
                 );
-            }) : <div className="my-2">
+            })}
+            {endpoint.method == "GET" && <div className="my-2">
                 <p className="text-xs font-bold opacity-50 uppercase">Select a page</p>
-                {project != null && project?.web_app.pages.map((p) => <button onClick={(e) => {
-                    e.preventDefault()
-                    if (endpoint.return_page == p.nom) {
-                        setEndpoint({ ...endpoint, return_page: null })
-                    } else {
-                        setEndpoint({ ...endpoint, return_page: p.nom })
-                    }
-                }} className={`${endpoint.return_page == p.nom && "border-b border-couleur2"}`}>{p.nom}</button>)}
+                <div className="flex gap-2 text-xs">
+                    {project != null && project?.web_app.pages.map((p) => <button onClick={(e) => {
+                        e.preventDefault()
+                        if (endpoint.return_page == p.nom) {
+                            setEndpoint({ ...endpoint, return_page: null })
+                        } else {
+                            setEndpoint({ ...endpoint, return_page: p.nom })
+                        }
+                    }} className={`${endpoint.return_page == p.nom && "border-b border-couleur2"}`}>{p.nom}</button>)}
+                </div>
             </div>}
             {project.type == "webapp" && endpoint.method != "GET" && <div >
                 <label className="text-xs font-bold opacity-50 uppercase">

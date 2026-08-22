@@ -307,18 +307,19 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 				for _, val := range endpoint.model[0].attributs {
 					attrTab = append(attrTab, val.nom)
 				}
-				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", ""), endpoint.params[0]))
+
+				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage, " ", ""), endpoint.params[0]))
 
 			} else {
 				var attrTab []string
 				for _, val := range endpoint.model[0].attributs {
 					attrTab = append(attrTab, val.nom)
 				}
-				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage.nom, " ", "")))
+				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage, " ", "")))
 
 			}
 		} else {
-			fmt.Fprint(&strBuilder, WebAppPostViewtemplate(strings.ReplaceAll(endpoint.returnPage.nom, " ", "_")))
+			fmt.Fprint(&strBuilder, WebAppPostViewtemplate(strings.ReplaceAll(endpoint.returnPage, " ", "_")))
 		}
 	case "POST":
 		var attr []string
@@ -356,7 +357,7 @@ func renderTemplate(w http.ResponseWriter, pageName string, data interface{}) {
 }
 
 func (mgr *webAppMaker) writeModSumFile() {
-	projectName := strings.ReplaceAll(mgr.ProjectName, " ", "_") 
+	projectName := strings.ReplaceAll(mgr.ProjectName, " ", "_")
 	modfilepath := fmt.Sprintf("%s/%s/web-app/go.mod", config.PROJECT_DIR, projectName)
 	sumfilepath := fmt.Sprintf("%s/%s/web-app/go.sum", config.PROJECT_DIR, projectName)
 	modfile, _ := os.Create(modfilepath)
@@ -368,9 +369,9 @@ func (mgr *webAppMaker) writeModSumFile() {
 func (wap *webAppMaker) CreateControllerFile() {
 	if wap.Techno == "go" {
 		var strBuilder strings.Builder
-		filePath := config.PROJECT_DIR+"/"+wap.ProjectName+"/web-app/src/controller/controller.go"
+		filePath := config.PROJECT_DIR + "/" + wap.ProjectName + "/web-app/src/controller/controller.go"
 		controllerFile, _ := os.Create(filePath)
-		
+
 		strBuilder.WriteString("package controller\n")
 		fmt.Fprintf(&strBuilder, "import (\n\"net/http\"\n\"text/template\"\n\"%s/src/config\"\n)", strings.ReplaceAll(wap.ProjectName, " ", "_"))
 

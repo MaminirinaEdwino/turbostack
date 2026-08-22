@@ -451,12 +451,12 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                 <p className="text-xs font-bold opacity-50 uppercase">Select a page</p>
                 {project != null && project?.web_app.pages.map((p) => <button onClick={(e) => {
                     e.preventDefault()
-                    if (endpoint.return_page == p) {
+                    if (endpoint.return_page == p.id) {
                         setEndpoint({ ...endpoint, return_page: null })
                     } else {
-                        setEndpoint({ ...endpoint, return_page: p })
+                        setEndpoint({ ...endpoint, return_page: p.id })
                     }
-                }} className={`${endpoint.return_page == p && "border-b border-couleur2"}`}>{p.nom}</button>)}
+                }} className={`${endpoint.return_page == p.id && "border-b border-couleur2"}`}>{p.nom}</button>)}
             </div>}
             {project.type == "webapp" && endpoint.method != "GET" && <div >
                 <label className="text-xs font-bold opacity-50 uppercase">

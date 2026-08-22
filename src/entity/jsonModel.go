@@ -64,7 +64,7 @@ type EndpointJSON struct {
 	Logic             map[string]string `json:"logic"`
 	ReturnContent     []ModelJSON       `json:"return_content"`
 	ReturnContentType string            `json:"return_content_type"`
-	ReturnPage        PageJSON          `json:"return_page"`
+	ReturnPage        string            `json:"return_page"`
 	RedirectUri       string            `json:"redirect_uri"`
 	BodyType          string            `json:"body_type"`
 }

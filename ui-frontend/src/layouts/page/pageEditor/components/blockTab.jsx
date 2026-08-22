@@ -198,10 +198,6 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                                             onClick={() => addBlock({ tag: "div", defaultContent: `{{ .${champs.nom[0].toUpperCase()}${champs.nom.split(champs.nom[0])[1]} }}`, isTemplateElement: true })}> <Form size={14}></Form> {mdl.nom}  {champs.nom[0].toUpperCase()}{champs.nom.split(champs.nom[0])[1]} </button>
                                     </>)}
                                 </>}
-                                {/* <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm'
-
-                                > <Form size={14}></Form> {mdl.nom}</button> */}
-                                {/* {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].return_content_type} */}
                             </>)}
 
                         </>}

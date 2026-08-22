@@ -14,7 +14,8 @@ export default function Block({ block, getIconForTag }) {
             </p>
             <p className="text-[11px] opacity-40 font-mono truncate  w-15 ">
                 {block.tag != "input" && block.content != "" && block.content}
-                {block.tag =="input" && block.placeholder != "" && block.placeholder}
+                {block.tag =="input" && block.placeholder != "" && ( block.inputType && block.inputType  == "submit" || block.inputType =="reset" ? block.inputType : block.placeholder)}
+                {/* {block.tag =="input" && block.placeholder == "" && block.inpputType == "submit" || block.inputType == "reset" && block.inpputType} */}
             </p>
         </div>
     </div>

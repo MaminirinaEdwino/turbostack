@@ -570,7 +570,7 @@ export default function VisualEditor({
 
     const renderBlocksList = (blocksList, level = 0) => {
 
-        return blocksList.map((block, index) => (
+        return blocksList.map((block) => (
             <React.Fragment key={block.id}>
                 <div
                     draggable
@@ -586,7 +586,7 @@ export default function VisualEditor({
                 >
                     <div className="flex justify-between items-center">
                         {/* <ChevronDown style={{color: "#1a535c"}} onClick={()=>alert()}/> */}
-                        <Block index={index} getIconForTag={getIconForTag} block={block} />
+                        <Block  getIconForTag={getIconForTag} block={block} />
                         <div className="flex items-center gap-1">
                             {block.tag != "input" && <AddChild block={block} addChild={addChild} />}
                             {block.children && block.children.length > 0 && <button onClick={() => {

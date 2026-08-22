@@ -497,14 +497,6 @@ export default function EditEndpoint({
                             className="accent-couleur1 cursor-pointer w-4 h-4"
                           />
                         </td>}
-                        {/* <td className="py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={m.champs && m.champs.some((bc) => bc.nom === f.nom)}
-                            onChange={() => toggleBodyField(m.nom, f)}
-                            className="accent-couleur1 cursor-pointer w-4 h-4"
-                          />
-                        </td> */}
                       </tr>
                     ))}
                   </tbody>

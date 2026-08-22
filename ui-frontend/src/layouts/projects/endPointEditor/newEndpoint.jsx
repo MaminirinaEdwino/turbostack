@@ -368,12 +368,6 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                         }}>
                             OBJECT
                         </button>
-                        {/* {endpoint.method == "GET" && <button className={`p-2 ${endpoint.return_content_type == "page" ? "bg-couleur1 text-white" : "text-couleur1"}`} onClick={(e) => {
-                        e.preventDefault()
-                        setEndpoint({ ...endpoint, return_content_type: "page" })
-                    }}>
-                        PAGE
-                    </button>} */}
                     </div>
                 </div>
             }

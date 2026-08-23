@@ -108,7 +108,7 @@ export default function ApiEditor({ projectName }) {
       }));
       setter(updatedNodes);
     }
-    console.log("api ", JSON.stringify(project));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project]); // Added nodes to dependency array
 

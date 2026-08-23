@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo } from "react";
 import {
     Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
@@ -48,7 +49,6 @@ export default function VisualEditor({
     };
 
     const handlePasteStyle = (id) => {
-        console.log(copiedStyle)
         if (!copiedStyle) return;
         updateBlock(id, { styles: copiedStyle });
         if (showToast) showToast("Style appliqué !");
@@ -58,21 +58,18 @@ export default function VisualEditor({
         styles.tablet = styles[activeViewport]
         updateBlock(id, { styles: JSON.stringify(styles) })
         if (showToast) showToast("Style applied to Tablet version !");
-        console.log(currentActiveBlock, activeViewport)
     }
     const pasteStyleToDeskTop = (id) => {
         let styles = JSON.parse(currentActiveBlock.styles)
         styles.desktop = styles[activeViewport]
         updateBlock(id, { styles: JSON.stringify(styles) })
         if (showToast) showToast("Style applied to Tablet version !");
-        console.log(currentActiveBlock, activeViewport)
     }
     const pasteStyleToMobile = (id) => {
         let styles = JSON.parse(currentActiveBlock.styles)
         styles.mobile = styles[activeViewport]
         updateBlock(id, { styles: JSON.stringify(styles) })
         if (showToast) showToast("Style applied to Tablet version !");
-        console.log(currentActiveBlock, activeViewport)
     }
 
     const availableSelectors = useMemo(() => {
@@ -126,7 +123,6 @@ export default function VisualEditor({
                     };
                 };
                 extracted = Array.from(doc.body.children).map(parseRecursive);
-                console.log(e)
             }
         }
 
@@ -176,7 +172,6 @@ export default function VisualEditor({
         return null;
     };
     const indentAsChild = (list, id) => {
-        console.log(list, id)
         let targetindex = 0
         const sourceIndex = list.findIndex((b) => b.id == id)
         if (list.length > 0 && sourceIndex > 0) {
@@ -202,7 +197,6 @@ export default function VisualEditor({
         };
 
         const [listWithoutSource, blockToMove] = findAndRemove(blocks);
-        console.log(listWithoutSource, targetindex)
         if (listWithoutSource[targetindex].children == null) {
             listWithoutSource[targetindex].children = []
             listWithoutSource[targetindex].children.push(blockToMove)
@@ -314,7 +308,6 @@ export default function VisualEditor({
             if (type.isFormPost) {
                 let childBlock = []
                 type.models.map(mdl => {
-                    console.log(mdl)
                     mdl.champs.map(field => {
                         childBlock.push({
                             id: Math.random().toString(36).substr(2, 9),
@@ -384,7 +377,6 @@ export default function VisualEditor({
                     children: [],
                     inputType: (type?.inputType || "")
                 };
-                console.log(",", type.inputType)
             }
         }
 
@@ -478,7 +470,6 @@ export default function VisualEditor({
                     children: [],
                     inputType: (type?.inputType || "")
                 };
-                console.log(",", type.inputType)
             }
         }
 
@@ -513,10 +504,9 @@ export default function VisualEditor({
                 stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
             }
         } catch (e) {
-            console.log(e)
             stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
         }
-
+        
         const vp = activeViewport || "desktop";
         stylesObj[vp] = { ...(stylesObj[vp] || {}), [prop]: value };
         updateBlock(currentActiveBlock.id, { styles: JSON.stringify(stylesObj) });
@@ -532,7 +522,6 @@ export default function VisualEditor({
                 allStyles.desktop[selectedGlobalTag] = pageStyles;
             }
         } catch (e) {
-            console.log(e)
             allStyles.desktop[selectedGlobalTag] = pageStyles;
         }
 
@@ -555,7 +544,6 @@ export default function VisualEditor({
                 allStyles.desktop[selectedGlobalTag] = pageStyles;
             }
         } catch (e) {
-            console.log(e)
             allStyles.desktop[selectedGlobalTag] = pageStyles;
         }
 

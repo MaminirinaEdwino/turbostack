@@ -162,7 +162,6 @@ export default function PageEditor({ projectName }) {
       }
       return format(stylesObj);
     } catch (e) {
-      console.log(e);
       return `body { ${activeItem.styles} }`; // Utilise activeItem
     }
   }, [activeItem?.styles]);
@@ -329,7 +328,6 @@ export default function PageEditor({ projectName }) {
     try {
       await GoApp.saveProject(projectName, JSON.stringify(project));
       showToast("Project saved successfully!");
-      console.log(project);
     } catch (e) {
       console.error(e);
       showToast("Error saving project", "error");

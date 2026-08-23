@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Globe } from "lucide-react";
 import { GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles } from "../utilsFunc";
@@ -66,7 +67,6 @@ export default function GlobalTab({
                                     try {
                                         stylesObj = JSON.parse(pageStyles || "{}");
                                     } catch (e) {
-                                        console.log(e)
                                         stylesObj = { body: pageStyles };
                                     }
 

@@ -80,8 +80,6 @@ export default function SideMenu() {
     const loadProject = async () => {
       const res = await GoApp.fetchProjectByName(actualProject);
       if (res) {
-        // setProject(res);
-        // console.log(res.type)
         if (res.type == "api") {
           setSubItems([
             {

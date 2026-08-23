@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { MousePointer2, Copy, ClipboardPaste, LoaderCircle, Tablet, Computer, Smartphone } from "lucide-react";
 import { BLOCK_TYPES, GROUP_LIST, STYLE_CONTROLS, TAG_STYLE_GROUPS } from "../defaultVar";
 import { parseStyles, touppertemplatevar } from "../utilsFunc";
@@ -17,7 +18,6 @@ export default function PropertiesTab({
     useEffect(() => {
         const loadAsset = async () => {
             const res = await GoApp.fetchProjectByName(projectName)
-            console.log(res)
             setAsset(res.assets)
         }
         loadAsset()
@@ -25,10 +25,9 @@ export default function PropertiesTab({
     useEffect(() => {
         const loadProject = async () => {
             const res = await GoApp.fetchProjectByName(projectName)
-            console.log(res)
             res?.rest_api?.endpoints.map(ep => {
                 if (ep.return_page === activePage.nom) {
-                    setmodel([...model, ...ep.model])
+                    setmodel([...model, ...ep.return_content])
                 }
             })
         }
@@ -45,7 +44,6 @@ export default function PropertiesTab({
             // Fallback pour l'ancien format string
             return parseStyles(currentActiveBlock.styles);
         } catch (e) {
-            console.log(e)
             return {};
         }
     };

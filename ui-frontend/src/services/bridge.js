@@ -1,10 +1,6 @@
 import { WindIcon } from "lucide-react";
 
 export const GoApp = {
-    sayHello: async (name) => {
-        // console.log("hello")
-        console.log(await window.sayHello(name));
-    },
     getStats: async () => {
         if (window.GetStats) {
             return await window.getStats();

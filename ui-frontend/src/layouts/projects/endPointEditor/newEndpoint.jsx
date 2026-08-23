@@ -101,7 +101,6 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
     };
 
     const toggleResponseBody = (modelName, field) => {
-        console.log("d")
         const updatedModels = endpoint.return_content.map((m) => {
             if (m.nom === modelName) {
                 const hasField = m.champs.some((f) => f.nom === field.nom);

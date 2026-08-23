@@ -42,8 +42,7 @@ function App() {
   }, [isDarkMode]);
   useEffect(() => {
     const loadLibrairie = async () => {
-      const res = await GoApp.loadLibrairie()
-      console.log(res)
+      await GoApp.loadLibrairie()
     }
     loadLibrairie()
   }, [])

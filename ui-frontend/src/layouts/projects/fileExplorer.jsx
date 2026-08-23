@@ -44,7 +44,6 @@ const FileNode = ({ node, level, onFileClick, selectedPath }) => {
 };
 
 export default function FileExplorer({ projectName }) {
-  console.log("teste explorer");
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPath, setSelectedPath] = useState(null);

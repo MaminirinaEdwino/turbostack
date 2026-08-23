@@ -24,8 +24,6 @@ const HomePage = () => {
                 setLoading(true);
                 try {
                     const res = await GoApp.fetchProjectByName(actualProject);
-
-                    console.log("res", res);
                     if (res.nom != "") {
                         setProjectDetails(res);
 
@@ -64,7 +62,6 @@ const HomePage = () => {
         pid: 0,
     })
     const handleStart = async () => {
-        console.log(projectDetails.nom)
         const res = await GoApp.runProject(projectDetails.nom)
 
         setLogs(res)
@@ -72,7 +69,6 @@ const HomePage = () => {
     useEffect(() => {
         // Handler pour intercepter les données envoyées par Go
         const handleGoMessage = (event) => {
-            console.log("Données reçues de Go :", event);
             setLogs(event.detail);
         };
 

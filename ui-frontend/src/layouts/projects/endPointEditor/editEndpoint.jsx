@@ -214,7 +214,6 @@ export default function EditEndpoint({
   };
 
   const toggleResponseBody = (modelName, field) => {
-    console.log(modelName, field)
     const updatedModels = endpoint.return_content.map((m) => {
       if (m.nom === modelName) {
         const hasField = m.champs.some((f) => f.nom === field.nom);
@@ -226,7 +225,6 @@ export default function EditEndpoint({
       }
       return m;
     });
-    console.log(updatedModels)
     setEndpoint({ ...endpoint, return_content: updatedModels });
   };
   return (

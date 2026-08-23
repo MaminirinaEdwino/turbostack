@@ -457,10 +457,8 @@ export default function UnifiedEditor({ projectName }) {
 
         showToast("Sauvegarde du projet...", "loading");
         try {
-            console.log("save")
             // On utilise la même méthode que les autres éditeurs pour la cohérence
             const result = await GoApp.saveProject(projectName, JSON.stringify(project));
-            console.log(result)
             if (result === "Success" || !result || result === true) {
                 showToast("Projet sauvegardé avec succès !");
             }

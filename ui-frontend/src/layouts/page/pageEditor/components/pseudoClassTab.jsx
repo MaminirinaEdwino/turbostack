@@ -45,8 +45,8 @@ export default function PseudoClassTab({
                                     let stylesObj = {};
                                     try {
                                         stylesObj = JSON.parse(pageStyles || "{}");
+                                    // eslint-disable-next-line no-unused-vars
                                     } catch (e) {
-                                        console.log(e)
                                         stylesObj = { body: pageStyles };
                                     }
 

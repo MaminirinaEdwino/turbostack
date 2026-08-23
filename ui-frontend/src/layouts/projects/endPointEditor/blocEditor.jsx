@@ -98,7 +98,6 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
       project?.rest_api.endpoints[endpoint].model.map((mdl) => {
         project?.bdd.models.map((mdl2) => {
           if (mdl2.nom == mdl.nom) {
-            // console.log("same")
             modelList.push(mdl2);
             endPointModelList.push(mdl);
           }
@@ -113,7 +112,6 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
     (connection) => {
       const sourceNode = nodes.find((n) => n.id === connection.source);
       const targetNode = nodes.find((n) => n.id === connection.target);
-      // console.log(sourceNode, targetNode)
       if (!sourceNode || !targetNode) return false;
       if (sourceNode == targetNode) return false;
       if (connection.targetHandle && connection.targetHandle.startsWith("param-")) {
@@ -183,11 +181,6 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
           parentType: otherData.parentType && otherData.parentType
         };
 
-        // if (childType == "selectNode" && typeof(otherData) == "object") {
-        //   console.log(typeof(otherData))
-        //   blockData.data.selectedType = otherData.selectedType
-        // }
-
         const newChildNode = {
           id: childId,
           type: childType,
@@ -239,10 +232,8 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
           }
         })
       })
-      console.log("teste")
       setNodes(initialNodes)
       setEdges(JSON.parse(project.rest_api.endpoints[endpoint].logic.edge))
-      console.log(JSON.parse(project.rest_api.endpoints[endpoint].logic.node))
     } else {
       setNodes([]);
       setEdges([]);

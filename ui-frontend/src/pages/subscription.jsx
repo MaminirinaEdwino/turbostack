@@ -10,7 +10,6 @@ export default function Subscription() {
     const [activationKey, setActivationKey] = useState("")
     const checkToken = async () => {
             const res = await GoApp.checkToken()
-            console.log(res)
             setSubscription(res)
         }
     const saveToken = async () => {
@@ -20,7 +19,6 @@ export default function Subscription() {
     useEffect(() => {
         const checkToken = async () => {
             const res = await GoApp.checkToken()
-            console.log(res)
             setSubscription(res)
         }
         checkToken()

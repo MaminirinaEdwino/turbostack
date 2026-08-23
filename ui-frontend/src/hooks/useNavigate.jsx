@@ -17,7 +17,6 @@ export const useNavigateProject = ()=>{
     const navigateToProject = (projectName) => {
         dispatch(setActualProject(projectName))
         dispatch(setActualWindow("Project Home Page"))
-        console.log(projectName)
     };
 
     return navigateToProject

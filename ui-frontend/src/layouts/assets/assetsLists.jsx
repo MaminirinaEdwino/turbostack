@@ -12,7 +12,6 @@ export default function Assetslist() {
     const [assets, setAssets] = useState([])
     const loadProject = async () => {
         const res = await GoApp.fetchProjectByName(projectName)
-        console.log(res)
         if (res.type == "static" || res.type == "web_app") {
             if (res.assets != null) {
                 setAssets(res.assets)
@@ -22,7 +21,6 @@ export default function Assetslist() {
     useEffect(() => {
         const loadProject = async () => {
             const res = await GoApp.fetchProjectByName(projectName)
-            console.log(res)
             if (res.type == "static" || res.type == "web_app") {
                 if (res.assets != null) {
                     setAssets(res.assets)

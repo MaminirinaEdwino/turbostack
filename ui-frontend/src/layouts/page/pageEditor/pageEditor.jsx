@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
 import {
@@ -511,7 +512,7 @@ export default function PageEditor({ projectName }) {
                   <PanelRightOpen size={20} />
                 </button>
               )}
-              <div className=" h-[80vh] overflow-scroll fixed  w-fit shadow-lg rounded-lg ">
+              <div className=" h-[80vh] overflow-scroll fixed  w-fit shadow-lg shadow-gray-600 rounded-lg ">
                 <div className="p-4 bg-white/50 backdrop-blur-2xl dark:bg-gray-800/50 border-b border-couleur1/5 flex items-center justify-between sticky top-0 z-10">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-400/20 border border-red-400/40"></div>

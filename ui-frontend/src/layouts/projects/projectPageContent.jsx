@@ -98,7 +98,7 @@ export default function ProjectPageView({ project }) {
         </div>
       )}
 
-      {/* {project.type === "bdd" && <BDDProjectInterface project={project}></BDDProjectInterface>} */}
+      {/* {project.type === "webapp" && <BDDProjectInterface project={project}></BDDProjectInterface>} */}
     </div>
   );
 }

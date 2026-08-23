@@ -117,82 +117,21 @@ const HomePage = () => {
                             <div className="space-y-8 flex flex-col">
                                 <AiChatModal isOpen={isChatModalOpen} onClose={() => setChatModalOpen(!isChatModalOpen)} />
 
-                                {projectDetails.type === "web_app" && (
+                                {/* {projectDetails.type === "webapp" && (
                                     <div className="flex items-center gap-3.5 mb-2 text-couleur1 dark:text-gray-200">
                                         <div className="p-2.5 bg-couleur1 text-white rounded-xl shadow-md">
                                             <Layout size={22} />
                                         </div>
                                         <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">{projectDetails.nom} Workspace</h2>
                                     </div>
-                                )}
+                                )} */}
 
                                 <ProjectPageView project={projectDetails} />
 
-                                {projectDetails.type !== "bdd" && (
-                                    <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                        <div className="flex w-full flex-col gap-4">
-
-                                            {/* Command Bar Floating */}
-                                            <div className="fixed bg-couleur1 dark:bg-gray-900/90 backdrop-blur-md p-1.5 px-3 gap-4 bottom-4 left-1/2 -translate-x-1/2 z-40 rounded-full border border-couleur1/10 dark:border-white/10 shadow-xl flex items-center w-11 hover:w-60 transition-all duration-500 ease-in-out group overflow-hidden">
-                                                <h3 className="text-sm font-semibold dark:text-gray-200 flex items-center gap-4 text-couleur3 whitespace-nowrap min-w-max">
-                                                    <Command size={18} /> Commands
-                                                </h3>
-                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                                                    {!logs.isRunning && (
-                                                        <button
-                                                            onClick={() => handleStart()}
-                                                            className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
-                                                            title="Start"
-                                                        >
-                                                            <Play size={16} />
-                                                        </button>
-                                                    )}
-                                                    <button
-                                                        className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
-                                                        onClick={async () => {
-                                                            const res = await GoApp.stopProject(projectDetails.nom)
-                                                            setLogs(res)
-                                                        }}
-                                                        title="Stop"
-                                                    >
-                                                        <StopCircle size={16} />
-                                                    </button>
-                                                    <button
-                                                        className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
-                                                        onClick={async () => {
-                                                            await GoApp.stopProject(projectDetails.nom)
-                                                            await handleStart()
-                                                        }}
-                                                        title="Restart"
-                                                    >
-                                                        <RefreshCcw size={16} />
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {/* Terminal / Logs Card */}
-                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
-                                                <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
-                                                    <Logs size={18} /> Logs
-                                                </h3>
-                                                <div className="flex flex-col gap-2">
-                                                    <div className="bg-gray-950 text-emerald-400 font-mono text-xs min-h-44 max-h-56 p-4 rounded-xl flex flex-col overflow-y-auto shadow-inner space-y-1 border border-gray-800">
-                                                        {logs.logs && logs.logs.length > 0 ? (
-                                                            logs.logs.map((log, index) => (
-                                                                <code key={index} className="leading-relaxed opacity-90">{log}</code>
-                                                            ))
-                                                        ) : (
-                                                            <span className="text-gray-600 italic">No logs available...</span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </section>
-                                )}
+                               
 
                                 {/* Web App Overview Section */}
-                                {projectDetails.type === "web_app" && (
+                                {projectDetails.type === "webapp" && (
                                     <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
@@ -272,12 +211,75 @@ const HomePage = () => {
                                         </div>
                                     </section>
                                 )}
+
+                                 {projectDetails.type !== "bdd" && (
+                                    <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                        <div className="flex w-full flex-col gap-4">
+
+                                            {/* Command Bar Floating */}
+                                            <div className="fixed bg-couleur1 dark:bg-gray-900/90 backdrop-blur-md p-1.5 px-3 gap-4 bottom-4 left-1/2 -translate-x-1/2 z-40 rounded-full border border-couleur1/10 dark:border-white/10 shadow-xl flex items-center w-11 hover:w-60 transition-all duration-500 ease-in-out group overflow-hidden">
+                                                <h3 className="text-sm font-semibold dark:text-gray-200 flex items-center gap-4 text-couleur3 whitespace-nowrap min-w-max">
+                                                    <Command size={18} /> Commands
+                                                </h3>
+                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                                                    {!logs.isRunning && (
+                                                        <button
+                                                            onClick={() => handleStart()}
+                                                            className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
+                                                            title="Start"
+                                                        >
+                                                            <Play size={16} />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
+                                                        onClick={async () => {
+                                                            const res = await GoApp.stopProject(projectDetails.nom)
+                                                            setLogs(res)
+                                                        }}
+                                                        title="Stop"
+                                                    >
+                                                        <StopCircle size={16} />
+                                                    </button>
+                                                    <button
+                                                        className="p-1.5 rounded-lg text-couleur3 hover:bg-white/10 transition-colors cursor-pointer"
+                                                        onClick={async () => {
+                                                            await GoApp.stopProject(projectDetails.nom)
+                                                            await handleStart()
+                                                        }}
+                                                        title="Restart"
+                                                    >
+                                                        <RefreshCcw size={16} />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Terminal / Logs Card */}
+                                            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-couleur1/10 dark:border-white/5 shadow-sm">
+                                                <h3 className="text-lg font-bold text-couleur1 dark:text-gray-200 mb-4 flex items-center gap-2">
+                                                    <Logs size={18} /> Logs
+                                                </h3>
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="bg-gray-950 text-emerald-400 font-mono text-xs min-h-44 max-h-56 p-4 rounded-xl flex flex-col overflow-y-auto shadow-inner space-y-1 border border-gray-800">
+                                                        {logs.logs && logs.logs.length > 0 ? (
+                                                            logs.logs.map((log, index) => (
+                                                                <code key={index} className="leading-relaxed opacity-90">{log}</code>
+                                                            ))
+                                                        ) : (
+                                                            <span className="text-gray-600 italic">No logs available...</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
                             </div>
                         )
                     )
                 ) : (
                     <section className="mb-10">
-                        <h2 className="text-lg font-semibold mb-5 opacity-70 text-couleur6 dark:text-gray-400 tracking-wide uppercase text-xs">Recent Projects</h2>
+                        <h2 className="text-lg font-semibold mb-5 opacity-70 text-couleur6 dark:text-gray-400 tracking-wide uppercase">Recent Projects</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {recentProjects.length > 0 ? (
                                 recentProjects.map((projectName, index) => (

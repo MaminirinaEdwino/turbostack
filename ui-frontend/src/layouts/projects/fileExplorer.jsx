@@ -110,7 +110,7 @@ export default function FileExplorer({ projectName }) {
         </div>
 
         {/* Main: Visionneuse de contenu */}
-        <div className="w-2/3 flex flex-col bg-white dark:bg-gray-950 overflow-hidden">
+        <div className="w-2/3 flex flex-col bg-white dark:bg-gray-950 overflow-hidden max-h-[90vh] ">
           {selectedPath ? (
             <pre className="flex-1 overflow-auto p-6 text-xs font-mono text-couleur1/80 leading-relaxed custom-scrollbar whitespace-pre">
               {content}

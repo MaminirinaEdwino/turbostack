@@ -95,7 +95,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
     if (typeof (project) == "object" && endpoint != null) {
       let modelList = [];
       let endPointModelList = [];
-      project?.rest_api.endpoints[endpoint].model.map((mdl) => {
+     project?.rest_api.endpoints[endpoint]?.model != null && project?.rest_api.endpoints[endpoint]?.model.map((mdl) => {
         project?.bdd.models.map((mdl2) => {
           if (mdl2.nom == mdl.nom) {
             modelList.push(mdl2);

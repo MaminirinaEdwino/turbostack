@@ -136,7 +136,7 @@ export default function Pageslist() {
                                         <ExternalLink size={14} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                     <p className="text-xs font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 p-1.5 rounded truncate">
-                                        Path: {page.uri || `/${page.nom?.toLowerCase()}`}
+                                        Path: {project?.type =="static" && page.uri ||  project?.type =="webapp" && project?.rest_api.endpoints.filter(ep=>ep.return_page === page.nom)[0]?.uri || project?.type =="webapp" && "not linked to a controller"}
                                     </p>
                                 </div>
                             ))}

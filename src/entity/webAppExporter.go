@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -386,7 +387,143 @@ func (wap *webAppMaker) CreateControllerFile() {
 	}
 }
 
-func (wap *webAppMaker) GenerateView() {}
+func (wap *webAppMaker) RenderBlocksToHTML(blocks []pageContent, projectName string, pageName string) string {
+	cssPath := fmt.Sprintf("%s/%s/web-app/src/static/css/%s.css", config.PROJECT_DIR, projectName, pageName)
+	cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+
+	var sb strings.Builder
+
+	var desktopSb strings.Builder
+	desktopSb.Grow(4096)
+	var tabletSb strings.Builder
+	tabletSb.Grow(4096)
+	defer desktopSb.Reset()
+	defer tabletSb.Reset()
+	for _, b := range blocks {
+		block := b
+
+		tag := fmt.Sprintf("%v", block.tag)
+		content := fmt.Sprintf("%v", block.content)
+		className := fmt.Sprintf("%v", block.className)
+		style := fmt.Sprintf("%v", block.styles)
+		id := fmt.Sprintf("%v", block.id)
+		inputType := fmt.Sprintf("%v", block.inputType)
+		placeholder := fmt.Sprintf("%v", block.placeholder)
+
+		// Gestion des balises auto-fermantes
+		if tag == "img" {
+			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-block-id=\"%s\" />", content, className, id)
+			continue
+		} else if tag == "input" {
+			fmt.Fprintf(&sb, "<input type=\"%s\" class=\"%s\" data-block-id=\"%s\" placeholder=\"%s\"/>", inputType, className, id, placeholder)
+			continue
+		}
+
+		fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" > ", tag, className, id)
+		var cssVal map[string]map[string]string
+		if style != "" {
+			er := json.Unmarshal([]byte(style), &cssVal)
+			if er != nil {
+				fmt.Println("error", er)
+				continue
+			}
+		}
+
+		desktop := cssVal["desktop"]
+		tablet := cssVal["tablet"]
+		mobile := cssVal["mobile"]
+		if len(tablet) > 0 {
+			fmt.Fprintf(&tabletSb, "[data-block-id=\"%s\"]{\n", id)
+			for key, val := range tablet {
+				checkValueSb(&tabletSb, key, val)
+				// fmt.Fprint(&tabletSb, key, val)
+			}
+			fmt.Fprint(&tabletSb, "}\n")
+		}
+
+		if len(mobile) > 0 {
+			fmt.Fprintf(&desktopSb, "[data-block-id=\"%s\"]{\n", id)
+			for key, val := range mobile {
+				checkValueSb(&desktopSb, key, val)
+				// fmt.Fprint(&desktopSb, key, val)
+			}
+			fmt.Fprint(&desktopSb, "}\n")
+		}
+
+		if len(desktop) > 0 {
+			fmt.Fprintf(cssFile, "[data-block-id=\"%s\"]{\n", id)
+			for key, val := range desktop {
+				checkValueFile(cssFile, key, val)
+				// cssFile.WriteString(key)
+				// cssFile.WriteString(val)
+			}
+			fmt.Fprint(cssFile, "}\n")
+		}
+		sb.WriteString(content)
+
+		if len(block.children) > 0 {
+			sb.WriteString(wap.RenderBlocksToHTML(block.children, projectName, pageName))
+		}
+
+		fmt.Fprintf(&sb, "</%s>", tag)
+	}
+	if desktopSb.Len() > 0 {
+		cssFile.WriteString("@media (max-width: 375px) {\n")
+		cssFile.WriteString(desktopSb.String())
+		cssFile.WriteString("}\n")
+	}
+	if tabletSb.Len() > 0 {
+		cssFile.WriteString("@media (min-width: 376px) and (max-width: 1024px) {\n")
+		cssFile.WriteString(tabletSb.String())
+		cssFile.WriteString("}\n")
+	}
+	return sb.String()
+}
+
+
+func (wap *webAppMaker) GenerateView() {
+	projectName := wap.ProjectName
+	site := wap.WebApp.pages
+	
+
+	// 1. Génération du CSS global
+	cssPath := fmt.Sprintf("%s/%s/web-app/src/static/css/style.css", config.PROJECT_DIR, projectName)
+	cssFile, _ := os.Create(cssPath)
+
+	defer cssFile.Close()
+
+	// 2. Génération des pages HTML
+	for _, page := range site {
+		pageName := strings.ToLower(strings.ReplaceAll(page.GetNom(), " ", "_"))
+		filePath := fmt.Sprintf("%s/%s/web-app/src/views/%s.html", config.PROJECT_DIR, projectName, pageName)
+		cssPath := fmt.Sprintf("%s/%s/web-app/src/views/css/global_%s.css", config.PROJECT_DIR, projectName, pageName)
+		cssFile, _ := os.OpenFile(cssPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+		styleWriter(page, cssFile)
+		file, err := os.Create(filePath)
+		if err != nil {
+			continue
+		}
+
+		var sb strings.Builder
+		sb.WriteString("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n")
+		sb.WriteString("\t<meta charset=\"UTF-8\">\n")
+		fmt.Fprintf(&sb, "\t<title>%s</title>\n", page.GetNom())
+		fmt.Fprint(&sb, "\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n")
+		fmt.Fprintf(&sb, "\t<link rel=\"stylesheet\" href=\"/static/css/%s.css\">\n", pageName)
+		fmt.Fprintf(&sb, "\t<link rel=\"stylesheet\" href=\"/static/css/global_%s.css\">\n", pageName)
+		sb.WriteString("</head>\n<body>\n")
+
+		// Conversion du contenu JSON en HTML
+		content := page.GetContent()
+
+		sb.WriteString(wap.RenderBlocksToHTML(content, projectName, pageName))
+
+		sb.WriteString("\n</body>\n</html>")
+
+		file.WriteString(sb.String())
+		file.Close()
+	}
+}
 
 func (wap *webAppMaker) WebAppGenerator() {
 	wap.SetupArch()
@@ -395,4 +532,5 @@ func (wap *webAppMaker) WebAppGenerator() {
 	// wap.CreateModelFile()
 
 	wap.CreateControllerFile()
+	wap.GenerateView()
 }

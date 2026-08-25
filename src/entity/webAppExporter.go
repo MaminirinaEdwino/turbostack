@@ -167,6 +167,7 @@ defer db.Close()
 
 func WebAppSelectByParamsTemplate(query, dbCaller, returnType, scanValue, pageName, uriParams string) string {
 	return fmt.Sprintf(`
+func ()  {
 	%s := r.PathValue("%s")
 	%s
 	var returnValue returnType
@@ -180,6 +181,8 @@ func WebAppSelectByParamsTemplate(query, dbCaller, returnType, scanValue, pageNa
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"ReturnContent": returnValue,
 	})
+	
+}
 	`, uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName)
 }
 
@@ -376,8 +379,9 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("/src/config\"\n")
 	sb.WriteString("\t\"")
 	sb.WriteString(strings.ReplaceAll(mgr.ProjectName, " ", "_"))
-	sb.WriteString("/src/routes\"\n")
-	sb.WriteString("\t\"")
+	sb.WriteString("/src/controller\"\n")
+	sb.WriteString("\t)\n")
+	// sb.WriteString("\t\"")
 	// sb.WriteString(strings.ReplaceAll(mgr.ProjectName, " ", "_"))
 	// sb.WriteString("/src/middlewares\"\n")
 	// sb.WriteString(")\n\n")
@@ -387,7 +391,7 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("\tconfig.InitDB()\n\n")
 	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
 	sb.WriteString("\tmux := http.NewServeMux()\n\n")
-	sb.WriteString("\troutes.RegisterRoutes(mux)\n\n")
+	sb.WriteString("\trouter.RegisterRoutes(mux)\n\n")
 
 	sb.WriteString("\t// 5. Lancement du serveur\n")
 	sb.WriteString("\tport := \":8080\"\n")

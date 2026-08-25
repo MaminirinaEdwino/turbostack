@@ -276,7 +276,7 @@ func (wap *webAppMaker) WriteScanValue(endpoint Endpoint) string {
 	var strBuilder []string
 	for _, val := range endpoint.returnContent {
 		for _, mod := range val.attributs {
-			strBuilder = append(strBuilder, fmt.Sprintf("&u.%s", utils.ToUpperFirstLetter(mod.nom)))
+			strBuilder = append(strBuilder, fmt.Sprintf("&returnValue.%s", utils.ToUpperFirstLetter(mod.nom)))
 		}
 	}
 	return strings.Join(strBuilder, ", ")

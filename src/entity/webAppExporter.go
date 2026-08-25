@@ -167,7 +167,8 @@ defer db.Close()
 
 func WebAppSelectByParamsTemplate(query, dbCaller, returnType, scanValue, pageName, uriParams string) string {
 	return fmt.Sprintf(`
-func ()  {
+func (w http.ResponseWriter, r *http.Request)  {
+	%s
 	%s := r.PathValue("%s")
 	%s
 	var returnValue returnType
@@ -181,7 +182,7 @@ func ()  {
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"ReturnContent": returnValue,
 	})
-}`, uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName)
+}`, DBCallerTemplate(), uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName)
 }
 
 func (wap *webAppMaker) CreateModelFile() {

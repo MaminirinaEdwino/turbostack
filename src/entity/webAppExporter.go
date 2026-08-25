@@ -356,6 +356,47 @@ func renderTemplate(w http.ResponseWriter, pageName string, data interface{}) {
 }	
 	`
 }
+func (mgr *webAppMaker) mainExporter() {
+	filePath := fmt.Sprintf("%s/%s/web-app/main.go", config.PROJECT_DIR, mgr.ProjectName)
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating main file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	sb.WriteString("package main\n\n")
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"fmt\"\n")
+	sb.WriteString("\t\"log\"\n")
+	sb.WriteString("\t\"net/http\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(mgr.ProjectName, " ", "_"))
+	sb.WriteString("/src/config\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(mgr.ProjectName, " ", "_"))
+	sb.WriteString("/src/routes\"\n")
+	sb.WriteString("\t\"")
+	// sb.WriteString(strings.ReplaceAll(mgr.ProjectName, " ", "_"))
+	// sb.WriteString("/src/middlewares\"\n")
+	// sb.WriteString(")\n\n")
+
+	sb.WriteString("func main() {\n")
+	sb.WriteString("\t// 1. Initialisation de la base de données\n")
+	sb.WriteString("\tconfig.InitDB()\n\n")
+	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
+	sb.WriteString("\tmux := http.NewServeMux()\n\n")
+	sb.WriteString("\troutes.RegisterRoutes(mux)\n\n")
+
+	sb.WriteString("\t// 5. Lancement du serveur\n")
+	sb.WriteString("\tport := \":8080\"\n")
+	sb.WriteString("\tfmt.Printf(\"🚀 TurboStack API running on http://localhost%s\\n\", port)\n")
+	sb.WriteString("\tlog.Fatal(http.ListenAndServe(port, handler))\n")
+	sb.WriteString("}\n")
+
+	file.WriteString(sb.String())
+}
 
 func (mgr *webAppMaker) writeModSumFile() {
 	projectName := strings.ReplaceAll(mgr.ProjectName, " ", "_")
@@ -410,7 +451,6 @@ func (wap *webAppMaker) RenderBlocksToHTML(blocks []pageContent, projectName str
 		inputType := fmt.Sprintf("%v", block.inputType)
 		placeholder := fmt.Sprintf("%v", block.placeholder)
 
-		// Gestion des balises auto-fermantes
 		if tag == "img" {
 			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-block-id=\"%s\" />", content, className, id)
 			continue
@@ -436,7 +476,6 @@ func (wap *webAppMaker) RenderBlocksToHTML(blocks []pageContent, projectName str
 			fmt.Fprintf(&tabletSb, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range tablet {
 				checkValueSb(&tabletSb, key, val)
-				// fmt.Fprint(&tabletSb, key, val)
 			}
 			fmt.Fprint(&tabletSb, "}\n")
 		}
@@ -454,8 +493,6 @@ func (wap *webAppMaker) RenderBlocksToHTML(blocks []pageContent, projectName str
 			fmt.Fprintf(cssFile, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range desktop {
 				checkValueFile(cssFile, key, val)
-				// cssFile.WriteString(key)
-				// cssFile.WriteString(val)
 			}
 			fmt.Fprint(cssFile, "}\n")
 		}
@@ -480,19 +517,13 @@ func (wap *webAppMaker) RenderBlocksToHTML(blocks []pageContent, projectName str
 	return sb.String()
 }
 
-
 func (wap *webAppMaker) GenerateView() {
 	projectName := wap.ProjectName
 	site := wap.WebApp.pages
-	
-
-	// 1. Génération du CSS global
 	cssPath := fmt.Sprintf("%s/%s/web-app/src/static/css/style.css", config.PROJECT_DIR, projectName)
 	cssFile, _ := os.Create(cssPath)
 
 	defer cssFile.Close()
-
-	// 2. Génération des pages HTML
 	for _, page := range site {
 		pageName := strings.ToLower(strings.ReplaceAll(page.GetNom(), " ", "_"))
 		filePath := fmt.Sprintf("%s/%s/web-app/src/views/%s.html", config.PROJECT_DIR, projectName, pageName)
@@ -530,7 +561,7 @@ func (wap *webAppMaker) WebAppGenerator() {
 	wap.writeModSumFile()
 	wap.CreateConfigFile()
 	// wap.CreateModelFile()
-
 	wap.CreateControllerFile()
 	wap.GenerateView()
+	wap.mainExporter()
 }

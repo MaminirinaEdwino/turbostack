@@ -64,7 +64,6 @@ func startServer(mux *http.ServeMux, PORT int) {
 		mainFile.WriteString(fmt.Sprintf("\tmux.HandleFunc(\"GET %s\", handle_%s)\n", page.uri, pageName))
 	}
 	mainFile.WriteString("\tstartServer(mux, PORT)\n}\n")
-
 }
 
 func checkValueSb(sb *strings.Builder, key, value string) {
@@ -97,6 +96,7 @@ func styleWriter(page Page, cssFile *os.File) {
 	desktop := cssVal["desktop"]
 	tablet := cssVal["tablet"]
 	mobile := cssVal["mobile"]
+
 	if len(tablet) > 0 {
 		for tag, val := range tablet {
 			fmt.Fprintf(&tabletSb, "%s {\n", tag)
@@ -104,6 +104,7 @@ func styleWriter(page Page, cssFile *os.File) {
 			fmt.Fprintf(&tabletSb, ";\n}\n")
 		}
 	}
+
 	if len(mobile) > 0 {
 		for tag, val := range mobile {
 			fmt.Fprintf(&mobileSb, "%s {\n", tag)
@@ -119,11 +120,13 @@ func styleWriter(page Page, cssFile *os.File) {
 			fmt.Fprintf(cssFile, ";\n}\n")
 		}
 	}
+
 	if mobileSb.Len() > 0 {
 		cssFile.WriteString("\n\n@media (max-width: 375px) {\n")
 		cssFile.WriteString(mobileSb.String())
 		cssFile.WriteString("}\n")
 	}
+
 	if tabletSb.Len() > 0 {
 		cssFile.WriteString("@media (min-width: 376px) and (max-width: 1024px) {\n")
 		cssFile.WriteString(tabletSb.String())
@@ -154,7 +157,6 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 		inputType := fmt.Sprintf("%v", block.inputType)
 		placeholder := fmt.Sprintf("%v", block.placeholder)
 
-		// Gestion des balises auto-fermantes
 		if tag == "img" {
 			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-block-id=\"%s\" />", content, className, id)
 			continue
@@ -180,7 +182,6 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 			fmt.Fprintf(&tabletSb, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range tablet {
 				checkValueSb(&tabletSb, key, val)
-				// fmt.Fprint(&tabletSb, key, val)
 			}
 			fmt.Fprint(&tabletSb, "}\n")
 		}
@@ -189,7 +190,6 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 			fmt.Fprintf(&desktopSb, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range mobile {
 				checkValueSb(&desktopSb, key, val)
-				// fmt.Fprint(&desktopSb, key, val)
 			}
 			fmt.Fprint(&desktopSb, "}\n")
 		}
@@ -198,8 +198,6 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 			fmt.Fprintf(cssFile, "[data-block-id=\"%s\"]{\n", id)
 			for key, val := range desktop {
 				checkValueFile(cssFile, key, val)
-				// cssFile.WriteString(key)
-				// cssFile.WriteString(val)
 			}
 			fmt.Fprint(cssFile, "}\n")
 		}

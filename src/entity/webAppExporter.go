@@ -139,7 +139,7 @@ func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryV
 }
 
 func WebAppDeleteActionTemplate(dbCaller, params, query, redirectUri string) string {
-	return fmt.Sprintf(`func HandleUserDelete(w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		r.ParseForm()
@@ -181,9 +181,7 @@ func ()  {
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"ReturnContent": returnValue,
 	})
-	
-}
-	`, uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName)
+}`, uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName)
 }
 
 func (wap *webAppMaker) CreateModelFile() {

@@ -311,18 +311,18 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 					attrTab = append(attrTab, val.nom)
 				}
 
-				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage, " ", ""), endpoint.params[0]))
+				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.params[0]))
 
 			} else {
 				var attrTab []string
 				for _, val := range endpoint.model[0].attributs {
 					attrTab = append(attrTab, val.nom)
 				}
-				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ReplaceAll(endpoint.returnPage, " ", "")))
+				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_"))))
 
 			}
 		} else {
-			fmt.Fprint(&strBuilder, WebAppPostViewtemplate(strings.ReplaceAll(endpoint.returnPage, " ", "_")))
+			fmt.Fprint(&strBuilder, WebAppPostViewtemplate(strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_"))))
 		}
 	case "POST":
 		var attr []string

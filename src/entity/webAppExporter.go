@@ -496,8 +496,10 @@ func (wap *webAppMaker) RenderBlocksToHTML(blocks []pageContent, projectName str
 			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-block-id=\"%s\" />", content, className, id)
 			continue
 		} else if tag == "input" {
-			fmt.Fprintf(&sb, "<input type=\"%s\" class=\"%s\" data-block-id=\"%s\" placeholder=\"%s\"/>", inputType, className, id, placeholder)
+			fmt.Fprintf(&sb, "<input type=\"%s\" class=\"%s\" data-block-id=\"%s\" placeholder=\"%s\" name=\"%s\"/>", inputType, className, id, placeholder, block.name)
 			continue
+		} else if tag == "form" {
+			fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" action=\"%s\" method=\"POST\" >", tag, className, id, block.formAction)
 		}
 
 		fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" > ", tag, className, id)

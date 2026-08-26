@@ -188,7 +188,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                                 onClick={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: "", models: ep.model })}
                             > <Form size={14}></Form> {ep.nom}</button>)}
 
-                            {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0]?.model.map(mdl => <>
+                            {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0]?.model?.map(mdl => <>
                                 {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].return_content_type == "array" && <>
                                     <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ range .${mdl.nom[0].toUpperCase()}${[mdl.nom.split(mdl.nom[0])[1]]} }}` })}> <Form size={14}></Form>{mdl.nom} range .{mdl.nom[0].toUpperCase()}{[mdl.nom.split(mdl.nom[0])]}</button>
                                     <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ else }}`, isTemplateElement: true })}> <Form size={14}></Form> else </button>

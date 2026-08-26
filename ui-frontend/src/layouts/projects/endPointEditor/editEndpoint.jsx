@@ -603,7 +603,7 @@ export default function EditEndpoint({
         <div className="my-2">
           <p className="text-xs font-bold opacity-50 uppercase">Select a page</p>
           <div className="flex gap-2 text-xs ">
-            {project != null && project?.web_app.pages.map((p) => <button onClick={(e) => {
+            {project != null && project?.web_app?.pages?.map((p) => <button onClick={(e) => {
               e.preventDefault()
               if (endpoint.return_page == p.nom) {
                 setEndpoint({ ...endpoint, return_page: null })

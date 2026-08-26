@@ -39,7 +39,7 @@ func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName strin
 	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request){
 	%s
 	%s
-	rows, err := db.Query("SELECT %s")
+	rows, err := db.Query("%s")
 	if err != nil {
 		http.Error(w, "Erreur BDD: "+err.Error(), http.StatusInternalServerError)
 		return

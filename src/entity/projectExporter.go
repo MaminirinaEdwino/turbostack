@@ -96,6 +96,7 @@ func (mgr *ProjectManager) ExporterWebApp(Project Project) {
 		WebApp:      Project.GetWebApp(),
 		Techno:      "go",
 		Api:         Project.rest_api,
+		BDD:         Project.bdd,
 	}
 	webAppMaker.WebAppGenerator()
 	fmt.Println("web app generated")

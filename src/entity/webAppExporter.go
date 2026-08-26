@@ -16,6 +16,7 @@ type webAppMaker struct {
 	WebApp      WebApp
 	Techno      string
 	Api         RestApi
+	BDD         BDD
 }
 
 func (wap *webAppMaker) SetupArch() {
@@ -194,7 +195,7 @@ func (wap *webAppMaker) CreateModelFile() {
 
 func (wap *webAppMaker) CreateConfigFile() {
 	if wap.Techno == "go" {
-		wap.configAPIExporter(wap.ProjectName)
+		wap.configAPIExporter2(wap.ProjectName, wap.BDD.models)
 	}
 }
 
@@ -225,6 +226,43 @@ func (mgr *webAppMaker) configAPIExporter(projectName string) {
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
 	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\tfmt.Println(\"Successfully connected to database\")\n")
+	sb.WriteString("}\n")
+
+	file.WriteString(sb.String())
+}
+
+func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
+	filePath := fmt.Sprintf("%s/%s/web-app/src/config/db.go", config.PROJECT_DIR, projectName)
+
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating config file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
+
+	var sb strings.Builder
+	var sqlgen Sqlgenerator
+	sb.WriteString("package config\n\n")
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"database/sql\"\n")
+	sb.WriteString("\t\"fmt\"\n")
+	sb.WriteString("\t\"log\"\n")
+	sb.WriteString("\t_ \"github.com/lib/pq\"\n")
+	sb.WriteString(")\n\n")
+
+	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
+	sb.WriteString("func InitDB() {\n")
+	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
+	sb.WriteString(fmt.Sprintf("\tconnStr := \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", strings.ReplaceAll(strings.ToLower(projectName), " ", "_")))
+	sb.WriteString("\tvar err error\n")
+	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString(fmt.Sprintf("\tquery := `%s`\n", sqlgen.GenerateDBAndTableInit(model, projectName)))
+	sb.WriteString("\t_, err = DB.Exec(query)\n\tif err != nil {\n\t\tfmt.Errorf(\"échec lors de l'initialisation des tables: %w\", err)\n\t}\n")
 	sb.WriteString("\tfmt.Println(\"Successfully connected to database\")\n")
 	sb.WriteString("}\n")
 

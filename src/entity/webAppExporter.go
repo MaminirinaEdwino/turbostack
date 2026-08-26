@@ -46,17 +46,17 @@ func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName strin
 	}
 	defer rows.Close()
 
-	var returnValue []returnType
+	var returnValues []returnType
 	for rows.Next() {
-		var u returnType
+		var returnValue returnType
 		if err := rows.Scan(%s); err != nil {
 			continue
 		}
-		returnValue = append(returnValue, u)
+		returnValues = append(returnValues, returnValue)
 	}
 
 	renderTemplate(w, "%s.html", map[string]interface{}{
-		"ReturnContent": returnValue,
+		"ReturnContent": returnValues,
 	})
 }`, returnType, dbCaller, query, scanValue, pageName)
 }
@@ -381,7 +381,7 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("/src/controller\"\n")
 	sb.WriteString("\t)\n")
 	// sb.WriteString("\t\"")
-	// sb.WriteString(strings.ReplaceAll(mgr.ProjectName, " ", "_"))
+	// sb.WriteString(strings.ReplaceAlreturnValuesl(mgr.ProjectName, " ", "_"))
 	// sb.WriteString("/src/middlewares\"\n")
 	// sb.WriteString(")\n\n")
 
@@ -390,12 +390,12 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("\tconfig.InitDB()\n\n")
 	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
 	sb.WriteString("\tmux := http.NewServeMux()\n\n")
-	sb.WriteString("\trouter.RegisterRoutes(mux)\n\n")
+	sb.WriteString("\tcontroller.RegisterRoutes(mux)\n\n")
 
 	sb.WriteString("\t// 5. Lancement du serveur\n")
 	sb.WriteString("\tport := \":8080\"\n")
 	sb.WriteString("\tfmt.Printf(\"🚀 TurboStack API running on http://localhost%s\\n\", port)\n")
-	sb.WriteString("\tlog.Fatal(http.ListenAndServe(port, handler))\n")
+	sb.WriteString("\tlog.Fatal(http.ListenAndServe(port, mux))\n")
 	sb.WriteString("}\n")
 
 	file.WriteString(sb.String())

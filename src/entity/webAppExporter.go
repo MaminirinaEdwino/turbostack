@@ -218,6 +218,7 @@ func (mgr *webAppMaker) configAPIExporter(projectName string) {
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString("var connStr = \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
 	sb.WriteString(`func ConnectDB() *sql.DB {
 	var err error
 	DB, err := sql.Open("postgres", connStr)
@@ -230,7 +231,7 @@ func (mgr *webAppMaker) configAPIExporter(projectName string) {
 	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
-	sb.WriteString("\tconnStr := \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
+	
 	sb.WriteString("\tvar err error\n")
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
@@ -262,6 +263,7 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("var DB *sql.DB\n\n")
+	fmt.Fprintf(&sb, "var connStr = \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", strings.ReplaceAll(strings.ToLower(projectName), " ", "_"))
 	sb.WriteString(`func ConnectDB() *sql.DB {
 	var err error
 	DB, err := sql.Open("postgres", connStr)
@@ -274,7 +276,7 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
-	sb.WriteString(fmt.Sprintf("\tconnStr := \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", strings.ReplaceAll(strings.ToLower(projectName), " ", "_")))
+	
 	sb.WriteString("\tvar err error\n")
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
@@ -367,14 +369,14 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 					attrTab = append(attrTab, val.nom)
 				}
 
-				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.params[0]))
+				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.params[0]))
 
 			} else {
 				var attrTab []string
 				for _, val := range endpoint.model[0].attributs {
 					attrTab = append(attrTab, val.nom)
 				}
-				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPG(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_"))))
+				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_"))))
 
 			}
 		} else {
@@ -385,15 +387,15 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 		for _, val := range endpoint.model[0].attributs {
 			attr = append(attr, val.nom)
 		}
-		fmt.Fprint(&strBuilder, WebAppPostActionTemplate(goapimaker.DbCallerPG(), endpoint.redirectUri, wap.WriteContentExtraction(endpoint), wap.WriteParamsChecker(endpoint), goapimaker.Insert(endpoint.model[0].nom, attr), strings.Join(attr, ", ")))
+		fmt.Fprint(&strBuilder, WebAppPostActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.redirectUri, wap.WriteContentExtraction(endpoint), wap.WriteParamsChecker(endpoint), goapimaker.Insert(endpoint.model[0].nom, attr), strings.Join(attr, ", ")))
 	case "PUT":
 		var attr []string
 		for _, val := range endpoint.model[0].attributs {
 			attr = append(attr, val.nom)
 		}
-		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPG(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.nom, attr, endpoint.params[0]), strings.Join(attr, ", "), endpoint.redirectUri))
+		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.nom, attr, endpoint.params[0]), strings.Join(attr, ", "), endpoint.redirectUri))
 	case "DELETE":
-		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPG(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
+		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
 	}
 	strBuilder.WriteString(")")
 	return strBuilder.String()

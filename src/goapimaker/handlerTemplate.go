@@ -33,6 +33,12 @@ db := config.DB
 defer db.Close()
 	`
 }
+func DBCallerTemplateWebAPp() string {
+	return `
+db := config.ConnectDB()
+defer db.Close()
+	`
+}
 
 func WriteResponseWriter() string {
 	return `

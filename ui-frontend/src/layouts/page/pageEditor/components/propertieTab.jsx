@@ -388,6 +388,9 @@ export default function PropertiesTab({
                                 <optgroup label={mdl.nom}>
                                     {mdl.champs.map(field => <option>{touppertemplatevar(field.nom)}</option>)}
                                 </optgroup>
+                                <optgroup label={mdl.nom}>
+                                    {mdl.champs.map(field => <option>{(touppertemplatevar(mdl.nom)+touppertemplatevar(field.nom)).replaceAll(" }}{{ ", "")}</option>)}
+                                </optgroup>
                             </>)}
                         </datalist>
                         {currentActiveBlock.tag == "input" && <div className="flex flex-col gap-2">

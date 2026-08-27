@@ -36,7 +36,7 @@ func (wap *webAppMaker) SetupArch() {
 	}
 }
 
-func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName string) string {
+func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName, ModelName string) string {
 	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request){
 	%s
 	%s
@@ -57,9 +57,9 @@ func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName strin
 	}
 
 	renderTemplate(w, "%s.html", map[string]interface{}{
-		"ReturnContent": returnValues,
+		"%s": returnValues,
 	})
-}`, returnType, dbCaller, query, scanValue, pageName)
+}`, returnType, dbCaller, query, scanValue, pageName, ModelName)
 }
 
 func WebAppPostViewtemplate(pageName string) string {
@@ -98,7 +98,7 @@ func WebAppPostActionTemplate(dbCaller, redirectUri, paramsExtraction, paramsChe
 }`, dbCaller, paramsExtraction, paramsChecker, query, paramsExec, redirectUri)
 }
 
-func WebAppEditTemplate(dbCaller, params, returnType, query, scanValue, pageName string) string {
+func WebAppEditTemplate(dbCaller, params, returnType, query, scanValue, pageName, ModelName string) string {
 	return fmt.Sprintf(`func HandleUserEdit(w http.ResponseWriter, r *http.Request) {
 	%s
 	%s := r.PathValue("%s")
@@ -112,9 +112,9 @@ func WebAppEditTemplate(dbCaller, params, returnType, query, scanValue, pageName
 	}
 
 	renderTemplate(w, "%s.html", map[string]interface{}{
-		"ReturnValue": returnValue,
+		"%s": returnValue,
 	})
-}`, dbCaller, params, params, returnType, query, params, scanValue, pageName)
+}`, dbCaller, params, params, returnType, query, params, scanValue, pageName, ModelName)
 }
 
 func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryValue, redirectUri string) string {
@@ -166,7 +166,7 @@ defer db.Close()
 	`
 }
 
-func WebAppSelectByParamsTemplate(query, dbCaller, returnType, scanValue, pageName, uriParams string) string {
+func WebAppSelectByParamsTemplate(query, dbCaller, returnType, scanValue, pageName, uriParams, ModelName string) string {
 	return fmt.Sprintf(`
 func (w http.ResponseWriter, r *http.Request)  {
 	%s
@@ -181,9 +181,9 @@ func (w http.ResponseWriter, r *http.Request)  {
 	}
 
 	renderTemplate(w, "%s.html", map[string]interface{}{
-		"ReturnContent": returnValue,
+		"%s": returnValue,
 	})
-}`, DBCallerTemplate(), uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName)
+}`, DBCallerTemplate(), uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName, ModelName)
 }
 
 func (wap *webAppMaker) CreateModelFile() {
@@ -369,14 +369,14 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 					attrTab = append(attrTab, val.nom)
 				}
 
-				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.params[0]))
+				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.params[0], endpoint.model[0].nom))
 
 			} else {
 				var attrTab []string
 				for _, val := range endpoint.model[0].attributs {
 					attrTab = append(attrTab, val.nom)
 				}
-				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_"))))
+				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.model[0].nom))
 
 			}
 		} else {
@@ -390,11 +390,12 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 		fmt.Fprint(&strBuilder, WebAppPostActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.redirectUri, wap.WriteContentExtraction(endpoint), wap.WriteParamsChecker(endpoint), goapimaker.Insert(endpoint.model[0].nom, attr), strings.Join(attr, ", ")))
 	case "PUT":
 		var attr []string
+		var attrForQuery []string
 		for i, val := range endpoint.model[0].attributs {
-			fmt.Printf("%s = $%d", val.nom, i+1)
 			attr = append(attr, fmt.Sprintf("%s = $%d", val.nom, i+1))
+			attrForQuery = append(attrForQuery, val.nom)
 		}
-		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.nom, attr, endpoint.params[0]), strings.Join(attr, ", "), endpoint.redirectUri))
+		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.nom, attr, endpoint.params[0]), strings.Join(attrForQuery, ", "), endpoint.redirectUri))
 	case "DELETE":
 		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
 	}

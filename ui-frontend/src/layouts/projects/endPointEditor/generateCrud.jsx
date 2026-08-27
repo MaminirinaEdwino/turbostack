@@ -48,12 +48,12 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
             newEndpoints.push({
                 nom: `create ${selectedModel.nom}`,
                 uri: baseUri + "/create", method: "GET", role: "public",
-                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{ ...selectedModel }]
+                model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: [], return_content: [{ ...selectedModel }]
             })
             newEndpoints.push({
                 nom: `update ${selectedModel.nom}`,
                 uri: baseUri + "/edit/:id", method: "GET", role: "public",
-                model: [{ ...selectedModel, champs: selectedChamps }], params: [], manual_fields: [], return_content: [{ ...selectedModel }]
+                model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: [], return_content: [{ ...selectedModel }]
             })
             newEndpoints.push({
                 nom: `Create ${selectedModel.nom}`,

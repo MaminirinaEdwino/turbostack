@@ -291,12 +291,16 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 
 func (wap *webAppMaker) HandleURIParamsSyntaxeForGo(uri string) string {
 	uriTab := strings.Split(uri, "/")
+	realUri  := []string{}
 	for _, val := range uriTab {
+		res := val
 		if strings.Contains(val, ":") {
-			val = fmt.Sprintf("{%s}", strings.Replace(val, ":", "", -1))
+			res = fmt.Sprintf("{%s}", strings.ReplaceAll(val, ":", ""))
+			fmt.Println(res)
 		}
+		realUri = append(realUri, res)
 	}
-	return strings.Join(uriTab, "/")
+	return strings.Join(realUri, "/")
 }
 
 func (wap *webAppMaker) WriteBodyType(endpoint Endpoint) string {

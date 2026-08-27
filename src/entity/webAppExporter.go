@@ -173,7 +173,7 @@ func (w http.ResponseWriter, r *http.Request)  {
 	%s := r.PathValue("%s")
 	%s
 	var returnValue returnType
-	query := "SELECT id, name, email FROM users WHERE %s = $1"
+	query := "%s"
 	err := db.QueryRow(query, %s).Scan(%s)
 	if err != nil {
 		http.Error(w, "model introuvable", http.StatusNotFound)
@@ -183,7 +183,7 @@ func (w http.ResponseWriter, r *http.Request)  {
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"%s": returnValue,
 	})
-}`, DBCallerTemplate(), uriParams, uriParams, returnType, uriParams, uriParams, scanValue, pageName, ModelName)
+}`, goapimaker.DBCallerTemplateWebAPp(), uriParams, uriParams, returnType, query, uriParams, scanValue, pageName, ModelName)
 }
 
 func (wap *webAppMaker) CreateModelFile() {
@@ -291,7 +291,7 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 
 func (wap *webAppMaker) HandleURIParamsSyntaxeForGo(uri string) string {
 	uriTab := strings.Split(uri, "/")
-	realUri  := []string{}
+	realUri := []string{}
 	for _, val := range uriTab {
 		res := val
 		if strings.Contains(val, ":") {

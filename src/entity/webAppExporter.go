@@ -231,7 +231,7 @@ func (mgr *webAppMaker) configAPIExporter(projectName string) {
 	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
-	
+
 	sb.WriteString("\tvar err error\n")
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
@@ -276,7 +276,7 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
-	
+
 	sb.WriteString("\tvar err error\n")
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
@@ -390,8 +390,9 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 		fmt.Fprint(&strBuilder, WebAppPostActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.redirectUri, wap.WriteContentExtraction(endpoint), wap.WriteParamsChecker(endpoint), goapimaker.Insert(endpoint.model[0].nom, attr), strings.Join(attr, ", ")))
 	case "PUT":
 		var attr []string
-		for _, val := range endpoint.model[0].attributs {
-			attr = append(attr, val.nom)
+		for i, val := range endpoint.model[0].attributs {
+			fmt.Printf("%s = $%d", val.nom, i+1)
+			attr = append(attr, fmt.Sprintf("%s = $%d", val.nom, i+1))
 		}
 		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.nom, attr, endpoint.params[0]), strings.Join(attr, ", "), endpoint.redirectUri))
 	case "DELETE":

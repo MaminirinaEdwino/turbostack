@@ -128,7 +128,7 @@ func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryV
 	%s
 
 	query := "%s"
-	_, err := db.Exec(query, %s)
+	_, err := db.Exec(query, %s, %s)
 	if err != nil {
 		http.Error(w, "Erreur lors de la mise à jour: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -136,7 +136,7 @@ func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryV
 
 	// Redirection vers la page de détails de l'utilisateur
 	http.Redirect(w, r, "%s"+%s, http.StatusSeeOther)
-}`, dbCaller, params, params, contentExtraction, query, queryValue, redirectUri, params)
+}`, dbCaller, params, params, contentExtraction, query, queryValue, params, redirectUri, params)
 }
 
 func WebAppDeleteActionTemplate(dbCaller, params, query, redirectUri string) string {
@@ -363,8 +363,14 @@ func (wap *webAppMaker) WriteParamsChecker(endpoint Endpoint) string {
 
 func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint) string {
 	var strBuilder strings.Builder
+	var method string
+	if endpoint.method == "GET" {
+		method = "GET"
+	} else {
+		method = "POST"
+	}
 
-	fmt.Fprintf(&strBuilder, "\nmux.HandleFunc(\"%s %s\",", endpoint.method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	fmt.Fprintf(&strBuilder, "\nmux.HandleFunc(\"%s %s\",", method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
 	switch endpoint.method {
 	case "GET":
 		if len(endpoint.model) > 0 {
@@ -403,7 +409,7 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 			attr = append(attr, fmt.Sprintf("%s = $%d", val.nom, i+1))
 			attrForQuery = append(attrForQuery, val.nom)
 		}
-		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.nom, attr, endpoint.params[0]), strings.Join(attrForQuery, ", "), endpoint.redirectUri))
+		fmt.Fprint(&strBuilder, WebAppEditActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], wap.WriteContentExtraction(endpoint), goapimaker.Update(endpoint.model[0].nom, attr, endpoint.params[0]), strings.Join(attrForQuery, ", "), endpoint.redirectUri))
 	case "DELETE":
 		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
 	}

@@ -29,7 +29,7 @@ func SelectByWithAttr(tableName string, params string, paramsGet string) string 
 func Insert(tableName string, attr []string) string {
 	var tmp []string
 	for i := range attr {
-		tmp = append(tmp, fmt.Sprintf("$%d", i))
+		tmp = append(tmp, fmt.Sprintf("$%d", i+1))
 	}
 	return fmt.Sprintf("insert into %s (%s) values (%s)", tableName, strings.Join(attr, ", "), strings.Join(tmp, ", "))
 }

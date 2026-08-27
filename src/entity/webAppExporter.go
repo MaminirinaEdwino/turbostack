@@ -218,6 +218,15 @@ func (mgr *webAppMaker) configAPIExporter(projectName string) {
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString(`func ConnectDB() *sql.DB {
+	var err error
+	DB, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return DB
+}
+`)
 	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
@@ -253,6 +262,15 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString(`func ConnectDB() *sql.DB {
+	var err error
+	DB, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return DB
+}
+`)
 	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")

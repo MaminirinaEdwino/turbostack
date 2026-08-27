@@ -182,8 +182,9 @@ func (w http.ResponseWriter, r *http.Request)  {
 
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"%s": returnValue,
+		"%s": %s,
 	})
-}`, goapimaker.DBCallerTemplateWebAPp(), uriParams, uriParams, returnType, query, uriParams, scanValue, pageName, ModelName)
+}`, goapimaker.DBCallerTemplateWebAPp(), uriParams, uriParams, returnType, query, uriParams, scanValue, pageName, ModelName, utils.ToUpperFirstLetter(uriParams), uriParams)
 }
 
 func (wap *webAppMaker) CreateModelFile() {

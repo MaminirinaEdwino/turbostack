@@ -35,7 +35,7 @@ func (ej *EndpointJSON) ToModel() Endpoint {
 		model = append(model, val.ToModel())
 	}
 	var returnModel []Model
-	for _, val := range ej.Model {
+	for _, val := range ej.ReturnContent {
 		returnModel = append(returnModel, val.ToModel())
 	}
 	return Endpoint{

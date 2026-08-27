@@ -21,7 +21,7 @@ func (e *Endpoint) ToJSON() EndpointJSON {
 		model = append(model, val.ToJSON())
 	}
 	var retunModel []ModelJSON
-	for _, val := range e.model {
+	for _, val := range e.returnContent {
 		retunModel = append(retunModel, val.ToJSON())
 	}
 	return EndpointJSON{

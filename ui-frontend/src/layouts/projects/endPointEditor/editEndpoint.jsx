@@ -225,6 +225,7 @@ export default function EditEndpoint({
       }
       return m;
     });
+    console.log(updatedModels)
     setEndpoint({ ...endpoint, return_content: updatedModels });
   };
   return (

@@ -146,7 +146,7 @@ func WebAppDeleteActionTemplate(dbCaller, params, query, redirectUri string) str
 		r.ParseForm()
 	}
 
-	%s := r.FormValue("%s")
+	%s := r.PathValue("%s")
 
 	query := "%s"
 	_, err := db.Exec(query, %s)

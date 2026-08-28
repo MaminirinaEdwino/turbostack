@@ -377,7 +377,7 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 			if len(endpoint.params) > 0 {
 				fmt.Println(endpoint.params, endpoint.uri)
 				var attrTab []string
-				for _, val := range endpoint.model[0].attributs {
+				for _, val := range endpoint.returnContent[0].attributs {
 					attrTab = append(attrTab, val.nom)
 				}
 
@@ -387,7 +387,7 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 				fmt.Println(endpoint.params, endpoint.uri)
 				fmt.Println(endpoint.params)
 				var attrTab []string
-				for _, val := range endpoint.model[0].attributs {
+				for _, val := range endpoint.returnContent[0].attributs {
 					attrTab = append(attrTab, val.nom)
 				}
 				fmt.Fprint(&strBuilder, WebAppSelectTemplate(goapimaker.SelectWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", ")), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.model[0].nom))
@@ -536,9 +536,12 @@ func (wap *webAppMaker) RenderBlocksToHTML(blocks []pageContent, projectName str
 			continue
 		} else if tag == "form" {
 			fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" action=\"%s\" method=\"POST\" >", tag, className, id, block.formAction)
+		} else if tag == "a" {
+			fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" href=\"%s\"> ", tag, className, id, block.href)
+		} else {
+			fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" > ", tag, className, id)
 		}
 
-		fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" > ", tag, className, id)
 		var cssVal map[string]map[string]string
 		if style != "" {
 			er := json.Unmarshal([]byte(style), &cssVal)

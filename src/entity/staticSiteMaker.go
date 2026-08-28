@@ -67,7 +67,6 @@ func startServer(mux *http.ServeMux, PORT int) {
 }
 
 func checkValueSb(sb *strings.Builder, key, value string) {
-	fmt.Println("value : ", value)
 	if value != "" {
 		fmt.Fprintf(sb, "\t%s:%s;\n", key, value)
 	}
@@ -85,11 +84,10 @@ func styleWriter(page Page, cssFile *os.File) {
 	var tabletSb strings.Builder
 	var cssVal map[string]map[string]string
 	style := page.styles
-	fmt.Println(style)
 	if style != "" {
 		er := json.Unmarshal([]byte(style), &cssVal)
 		if er != nil {
-			fmt.Println("error df", er)
+			fmt.Println("error :", er)
 		}
 	}
 
@@ -170,7 +168,7 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 		if style != "" {
 			er := json.Unmarshal([]byte(style), &cssVal)
 			if er != nil {
-				fmt.Println("error", er)
+				fmt.Println("error :", er)
 				continue
 			}
 		}

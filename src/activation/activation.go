@@ -17,7 +17,6 @@ func CheckActivationToken() map[string]interface{} {
 	tokenFile, err := os.ReadFile(userDir + "/.turbo_stack/token")
 
 	if err != nil && os.IsNotExist(err) {
-		fmt.Println(err)
 		os.MkdirAll(userDir+"/.turbo_stack", os.ModePerm)
 		file, _ := os.Create(userDir + "/.turbo_stack/token")
 		defer file.Close()
@@ -35,9 +34,7 @@ func CheckActivationToken() map[string]interface{} {
 	iatfval, _ := strconv.ParseFloat(fmt.Sprint(res["iat"]), 64)
 	iatintVal := int64(iatfval)
 	iatTime := time.Unix(iatintVal, 0)
-	dateLayout := "Monday 01 January 2006 at 15:04:05"
-
-	fmt.Println(iatTime.Format(dateLayout))
+	// dateLayout := "Monday 01 January 2006 at 15:04:05"
 	if tokenErr != nil {
 		return map[string]interface{}{
 			"subscription": res["subscription"],

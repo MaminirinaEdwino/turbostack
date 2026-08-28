@@ -94,7 +94,6 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 
 func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName string) {
 	for _, ep := range endpoints {
-		fmt.Println(ep)
 		eName := ep.GetNom()
 		if eName == "" {
 			continue

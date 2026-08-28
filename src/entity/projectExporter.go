@@ -99,5 +99,4 @@ func (mgr *ProjectManager) ExporterWebApp(Project Project) {
 		BDD:         Project.bdd,
 	}
 	webAppMaker.WebAppGenerator()
-	fmt.Println("web app generated")
 }

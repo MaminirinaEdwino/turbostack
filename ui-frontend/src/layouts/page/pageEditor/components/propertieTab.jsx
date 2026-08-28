@@ -34,28 +34,19 @@ export default function PropertiesTab({
     useEffect(() => {
         const loadProject = async () => {
             const res = await GoApp.fetchProjectByName(projectName)
-            console.log(res)
-            res?.rest_api?.endpoints.map(ep => {
+            res != undefined && res?.rest_api?.endpoints?.map(ep => {
                 if (ep.return_page === activePage.nom) {
                     setmodel([...model, ...ep.return_content])
                 }
             })
-            let tmp = []
-            res?.rest_api?.endpoints.map(ep => {
-                console.log(ep.uri)
-                tmp.push(ep.uri)
-            })
-            setUriList(tmp)
         }
         loadProject()
-    }, [projectName])
+    }, [activePage.nom, model, projectName])
     useEffect(() => {
         const loadProject = async () => {
             const res = await GoApp.fetchProjectByName(projectName)
-            console.log(res)
             let tmp = []
             res?.rest_api?.endpoints.map(ep => {
-                console.log(ep.uri)
                 tmp.push(ep.uri)
             })
             setUriList(tmp)
@@ -370,7 +361,7 @@ export default function PropertiesTab({
                             >
                                 <option value="custom">-- Custom Link --</option>
                                 {projectType == "static" && availablePages.map(page => (
-                                    <option key={page.uri} value={page.uri}>Page: {page.nom} ({page.uri})</option>
+                                    <option key={page.ur + page.nom} value={page.uri}>Page: {page.nom} ({page.uri})</option>
                                 ))}
                                 {projectType == "webapp" && uriList.map(page => (
                                     <option key={page} value={page}>{page}</option>
@@ -469,10 +460,10 @@ export default function PropertiesTab({
                                 }}
                             >
                                 <option value="custom">-- Custom Link --</option>
-                                { projectType =="static" && availablePages.map(page => (
+                                {projectType == "static" && availablePages.map(page => (
                                     <option key={page.uri + "form"} value={page.uri}>Page: {page.nom} ({page.uri})</option>
                                 ))}
-                                {projectType =="webapp" && uriList.map(page => (
+                                {projectType == "webapp" && uriList.map(page => (
                                     <option key={page + "form"} value={page}>{page}</option>
                                 ))}
 

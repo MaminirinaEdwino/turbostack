@@ -297,7 +297,6 @@ func (wap *webAppMaker) HandleURIParamsSyntaxeForGo(uri string) string {
 		res := val
 		if strings.Contains(val, ":") {
 			res = fmt.Sprintf("{%s}", strings.ReplaceAll(val, ":", ""))
-			fmt.Println(res)
 		}
 		realUri = append(realUri, res)
 	}
@@ -375,7 +374,6 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 	case "GET":
 		if len(endpoint.model) > 0 {
 			if len(endpoint.params) > 0 {
-				fmt.Println(endpoint.params, endpoint.uri)
 				var attrTab []string
 				for _, val := range endpoint.returnContent[0].attributs {
 					attrTab = append(attrTab, val.nom)
@@ -384,8 +382,6 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 				fmt.Fprint(&strBuilder, WebAppSelectByParamsTemplate(goapimaker.SelectByWithAttr(endpoint.model[0].nom, strings.Join(attrTab, ", "), endpoint.params[0]), goapimaker.DbCallerPGWebApp(), wap.WriteReturnType(endpoint), wap.WriteScanValue(endpoint), strings.ToLower(strings.ReplaceAll(endpoint.returnPage, " ", "_")), endpoint.params[0], endpoint.model[0].nom))
 
 			} else {
-				fmt.Println(endpoint.params, endpoint.uri)
-				fmt.Println(endpoint.params)
 				var attrTab []string
 				for _, val := range endpoint.returnContent[0].attributs {
 					attrTab = append(attrTab, val.nom)

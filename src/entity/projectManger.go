@@ -75,7 +75,6 @@ func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, name)
 	file, err := os.ReadFile(filePath)
 	if err != nil {
-		fmt.Println(err)
 		return ProjectJSON{}
 	}
 	json.Unmarshal(file, &pJson)
@@ -84,7 +83,6 @@ func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 
 func (mgr *ProjectManager) SaveProject(project ProjectJSON) error {
 	filename := project.Nom
-	fmt.Println(project.Nom)
 	filepath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, filename)
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	if err != nil {

@@ -167,7 +167,6 @@ func handleStartProject(projectDir string, w webview.WebView) map[string]interfa
 				"logs":      pm.logs,
 				"pid":       pm.pid,
 			})
-			fmt.Println("dfdf", string(data))
 			Dispatch(w, "get-status-event", string(data))
 			pm.mu.Unlock()
 		}
@@ -213,8 +212,6 @@ func handleStopProject(projectName string) map[string]interface{} {
 		}
 	}
 
-	// Tuer le processus
-	fmt.Println(pm.cmd.Process.Pid)
 
 	// err := syscall.Kill(pm.cmd.Process.Pid, syscall.SIGTERM)
 	err := PkillByName(strings.ReplaceAll(projectName, " ", "_"))
@@ -259,20 +256,16 @@ func (s *ProjectService) UploadAsset(projectName, fileName, base64file string) s
 }
 
 func (s *ProjectService) SaveScript(projectName, scriptName, script string) string {
-	fmt.Println("save script", scriptName, script)
 	project := s.FetchProjectByName(projectName)
 	project.BDD.AddScript(scriptName, script)
-	fmt.Println(len(project.BDD.Scripts))
 	s.Manager.SaveProject(project)
 	return "success"
 }
 
 func (s *ProjectService) ExportProject(name, typeProject string) string {
 	var pJson entity.ProjectJSON
-	fmt.Println(typeProject)
 	config.CheckCreateDir(name)
 	pJson = s.FetchProjectByName(name)
-	// fmt.Println(pJson)
 	switch typeProject {
 	case "api":
 		config.CheckCreateDir(fmt.Sprintf("%s/api", name))
@@ -320,7 +313,6 @@ func (s *ProjectService) SaveProject(name, project string) string {
 	var pJson entity.ProjectJSON
 	json.Unmarshal([]byte(project), &pJson)
 	s.Manager.SaveProject(pJson)
-	fmt.Println("type_projet", pJson.Type)
 	switch pJson.Type {
 	case "bdd":
 		s.Manager.ExporterDB(pJson.ToModel())
@@ -385,7 +377,6 @@ func (s *ProjectService) FetchFolderForUpload(folder string) []entity.FileNode {
 	} else {
 		dirPath = folder
 	}
-	fmt.Println(dirPath)
 	dir, err := os.ReadDir(dirPath)
 	if os.IsNotExist(err) {
 		return []entity.FileNode{}

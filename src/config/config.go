@@ -27,7 +27,6 @@ func CheckIfExist(chemin string) bool {
 }
 
 func CheckCreateDir(path string) {
-	fmt.Println("check dir", path)
 	filePath := fmt.Sprintf("%s/%s", PROJECT_DIR, path)
 	if !CheckIfExist(filePath) {
 		os.MkdirAll(filePath, os.ModePerm)

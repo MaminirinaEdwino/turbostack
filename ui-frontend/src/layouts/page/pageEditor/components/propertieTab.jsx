@@ -402,7 +402,7 @@ export default function PropertiesTab({
                                     {mdl.champs.map(field => <option>{touppertemplatevar(field.nom)}</option>)}
                                 </optgroup>
                                 <optgroup label={mdl.nom}>
-                                    {mdl.champs.map(field => <option>{(touppertemplatevar(mdl.nom)+touppertemplatevar(field.nom)).replaceAll(" }}{{ ", "")}</option>)}
+                                    {mdl.champs.map(field => <option>{(touppertemplatevar(mdl.nom) + touppertemplatevar(field.nom)).replaceAll(" }}{{ ", "")}</option>)}
                                 </optgroup>
                             </>)}
                         </datalist>
@@ -445,6 +445,24 @@ export default function PropertiesTab({
                                 value={currentActiveBlock.action || ""}
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { action: e.target.value })}
                             />
+                            <select
+                                className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
+                                value={availablePages.some(p => p.uri === currentActiveBlock.href) ? currentActiveBlock.href : "custom"}
+                                onChange={(e) => {
+                                    if (e.target.value !== "custom") {
+                                        updateBlock(currentActiveBlock.id, { action: e.target.value });
+                                    }
+                                }}
+                            >
+                                <option value="custom">-- Custom Link --</option>
+                                {availablePages.map(page => (
+                                    <option key={page.uri+"form"} value={page.uri}>Page: {page.nom} ({page.uri})</option>
+                                ))}
+                                {uriList.map(page => (
+                                    <option key={page+"form"} value={page}>{page}</option>
+                                ))}
+
+                            </select>
                         </div>}
                     </div>
                 </div>

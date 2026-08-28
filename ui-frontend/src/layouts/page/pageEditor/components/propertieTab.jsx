@@ -16,10 +16,18 @@ export default function PropertiesTab({
     const [model, setmodel] = useState([])
     const [asset, setAsset] = useState([])
     const [uriList, setUriList] = useState([])
+    const [projectType, setProjectType] = useState("static")
     useEffect(() => {
         const loadAsset = async () => {
             const res = await GoApp.fetchProjectByName(projectName)
             setAsset(res.assets)
+        }
+        loadAsset()
+    }, [projectName])
+    useEffect(() => {
+        const loadAsset = async () => {
+            const res = await GoApp.fetchProjectByName(projectName)
+            setProjectType(res.type)
         }
         loadAsset()
     }, [projectName])
@@ -32,6 +40,19 @@ export default function PropertiesTab({
                     setmodel([...model, ...ep.return_content])
                 }
             })
+            let tmp = []
+            res?.rest_api?.endpoints.map(ep => {
+                console.log(ep.uri)
+                tmp.push(ep.uri)
+            })
+            setUriList(tmp)
+        }
+        loadProject()
+    }, [projectName])
+    useEffect(() => {
+        const loadProject = async () => {
+            const res = await GoApp.fetchProjectByName(projectName)
+            console.log(res)
             let tmp = []
             res?.rest_api?.endpoints.map(ep => {
                 console.log(ep.uri)
@@ -338,7 +359,6 @@ export default function PropertiesTab({
                     {currentActiveBlock.tag === 'a' && (
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Link target</label>
-                            {uriList.length}
                             <select
                                 className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
                                 value={availablePages.some(p => p.uri === currentActiveBlock.href) ? currentActiveBlock.href : "custom"}
@@ -349,10 +369,10 @@ export default function PropertiesTab({
                                 }}
                             >
                                 <option value="custom">-- Custom Link --</option>
-                                {availablePages.map(page => (
+                                {projectType == "static" && availablePages.map(page => (
                                     <option key={page.uri} value={page.uri}>Page: {page.nom} ({page.uri})</option>
                                 ))}
-                                {uriList.map(page => (
+                                {projectType == "webapp" && uriList.map(page => (
                                     <option key={page} value={page}>{page}</option>
                                 ))}
 
@@ -438,13 +458,7 @@ export default function PropertiesTab({
                         </div>}
                         {currentActiveBlock.tag == "form" && <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Form target</label>
-                            <input
-                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
-                                type="text"
-                                placeholder="URI . . ."
-                                value={currentActiveBlock.action || ""}
-                                onChange={(e) => updateBlock(currentActiveBlock.id, { action: e.target.value })}
-                            />
+
                             <select
                                 className="bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
                                 value={availablePages.some(p => p.uri === currentActiveBlock.href) ? currentActiveBlock.href : "custom"}
@@ -455,14 +469,21 @@ export default function PropertiesTab({
                                 }}
                             >
                                 <option value="custom">-- Custom Link --</option>
-                                {availablePages.map(page => (
-                                    <option key={page.uri+"form"} value={page.uri}>Page: {page.nom} ({page.uri})</option>
+                                { projectType =="static" && availablePages.map(page => (
+                                    <option key={page.uri + "form"} value={page.uri}>Page: {page.nom} ({page.uri})</option>
                                 ))}
-                                {uriList.map(page => (
-                                    <option key={page+"form"} value={page}>{page}</option>
+                                {projectType =="webapp" && uriList.map(page => (
+                                    <option key={page + "form"} value={page}>{page}</option>
                                 ))}
 
                             </select>
+                            <input
+                                className="w-full bg-couleur3/30 dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm dark:text-gray-200 font-sans focus:ring-2 ring-couleur1/20 transition-all"
+                                type="text"
+                                placeholder="URI . . ."
+                                value={currentActiveBlock.action || ""}
+                                onChange={(e) => updateBlock(currentActiveBlock.id, { action: e.target.value })}
+                            />
                         </div>}
                     </div>
                 </div>

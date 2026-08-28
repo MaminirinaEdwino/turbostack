@@ -308,7 +308,7 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 		s.Manager.ExporterStaticSite(pJson.ToModel())
 	case "api":
 		s.Manager.ExporterAPI(pJson.ToModel())
-	case "web_app":
+	case "webapp":
 		s.Manager.ExporterWebApp(pJson.ToModel())
 	}
 	return "Success"
@@ -320,6 +320,7 @@ func (s *ProjectService) SaveProject(name, project string) string {
 	var pJson entity.ProjectJSON
 	json.Unmarshal([]byte(project), &pJson)
 	s.Manager.SaveProject(pJson)
+	fmt.Println("type_projet", pJson.Type)
 	switch pJson.Type {
 	case "bdd":
 		s.Manager.ExporterDB(pJson.ToModel())
@@ -327,7 +328,7 @@ func (s *ProjectService) SaveProject(name, project string) string {
 		s.Manager.ExporterStaticSite(pJson.ToModel())
 	case "api":
 		s.Manager.ExporterAPI(pJson.ToModel())
-	case "web_app":
+	case "webapp":
 		s.Manager.ExporterWebApp(pJson.ToModel())
 	}
 	return "Success"

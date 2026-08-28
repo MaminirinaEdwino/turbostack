@@ -465,7 +465,8 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
 	sb.WriteString("\tmux := http.NewServeMux()\n\n")
 	sb.WriteString("\tcontroller.RegisterRoutes(mux)\n\n")
-
+	sb.WriteString("\tstaticServer := http.FileServer(http.Dir(\"static\"))\n\n")
+	sb.WriteString("\tmux.Handle(\"GET /static/\", http.StripPrefix(\"/static/\", staticServer))\n")
 	sb.WriteString("\t// 5. Lancement du serveur\n")
 	sb.WriteString("\tport := \":8080\"\n")
 	sb.WriteString("\tfmt.Printf(\"🚀 TurboStack API running on http://localhost%s\\n\", port)\n")

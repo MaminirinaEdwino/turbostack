@@ -46,7 +46,7 @@ export default function PropertiesTab({
         const loadProject = async () => {
             const res = await GoApp.fetchProjectByName(projectName)
             let tmp = []
-            res?.rest_api?.endpoints.map(ep => {
+            res?.rest_api?.endpoints?.map(ep => {
                 tmp.push(ep.uri)
             })
             setUriList(tmp)

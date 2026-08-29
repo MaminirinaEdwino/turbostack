@@ -404,7 +404,7 @@ export default function PageEditor({ projectName }) {
               <div className="flex items-start gap-2.5 flex-col w-fit">
                 <div className="flex gap-4 justify-between items-center w-full">
                   <span className="opacity-60 text-xs font-semibold uppercase tracking-wider text-couleur1 dark:text-gray-400">
-                    {editingType} name : {[project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom)].length}
+                    {editingType} name : {[project?.rest_api?.endpoints?.filter(ep => ep.return_page === activeItem?.nom)].length}
                   </span>
                   {/* {(project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom)["nom"] == null && "teste")} */}
                   {editingType == "page" && project?.type == "webapp" && project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom).length >0 && project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom)[0]["nom"]!= null ? <input

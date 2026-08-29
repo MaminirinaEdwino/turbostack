@@ -4,7 +4,6 @@ import (
 	"embed"
 	"encoding/json"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/MaminirinaEdwino/turbostack/src/activation"
@@ -22,7 +21,7 @@ func OpenDetachedPreviewWindow() {
 	prevWv := webview.New(true)
 	prevWv.SetTitle("TurboStack - Preview")
 	prevWv.SetSize(1024, 768, webview.HintNone)
-	prevWv.Navigate("http://localhost:1627/?mode=preview")
+	prevWv.Navigate("http://localhost:5173/?mode=preview")
 	pMgr.RegisterAll(prevWv)
 	go prevWv.Run()
 }
@@ -57,14 +56,14 @@ func main() {
 	w.SetTitle("Turbo Stack")
 	w.SetSize(800, 600, webview.HintNone)
 	w.Bind("openPreviewWindow", OpenDetachedPreviewWindow)
-	go func() {
-		fs := http.FileServer(http.FS(assets))
-		http.ListenAndServe(":1627", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			r.URL.Path = "/ui-dist" + r.URL.Path
-			fs.ServeHTTP(w, r)
-		}))
-	}()
+	// go func() {
+	// 	fs := http.FileServer(http.FS(assets))
+	// 	http.ListenAndServe(":1627", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 		r.URL.Path = "/ui-dist" + r.URL.Path
+	// 		fs.ServeHTTP(w, r)
+	// 	}))
+	// }()
 
-	w.Navigate("http://localhost:1627")
+	w.Navigate("http://localhost:5173")
 	w.Run()
 }

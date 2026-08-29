@@ -19,12 +19,9 @@ var assets embed.FS
 var pMgr api.Manager
 
 func OpenDetachedPreviewWindow() {
-	// Créer une nouvelle fenêtre WebView séparée
-
 	prevWv := webview.New(true)
 	prevWv.SetTitle("TurboStack - Preview")
 	prevWv.SetSize(1024, 768, webview.HintNone)
-	// Naviguer directement vers l'UI dédiée au preview
 	prevWv.Navigate("http://localhost:1627/?mode=preview")
 	pMgr.RegisterAll(prevWv)
 	go prevWv.Run()

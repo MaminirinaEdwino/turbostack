@@ -86,10 +86,12 @@ export default function PropertiesTab({
                         </div>
                     </div>
 
-                    <div className="space-y-5">                    
+                    <div className="space-y-5">
+
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between">
                                 <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Visual Styling</label>
+
                                 <div className="flex gap-2">
                                     <button onClick={onCopyStyle} className="p-1 text-couleur1/40 hover:text-couleur1 transition-all" title="Copier le style">
                                         <Copy size={14} />
@@ -110,9 +112,12 @@ export default function PropertiesTab({
                                     </button>}
                                 </div>
                             </div>
+                            <div className="flex gap-2 mx-1">
+                                {GROUP_LIST.map(group => <button className={`flex items-center transition-all duration-250 gap-1 ${activeGroup == group && "bg-couleur1 p-1 text-couleur3 rounded text-lg "} `} title={group+" tab"} onClick={() => setActiveGroup(group)}>{GROUP_LIST_ICON[group]}</button>)}
+                            </div>
                             <div className=" gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
                                 {GROUP_LIST.map(group => <div className="mb-2">
-                                    <h3 className={"flex items-center gap-1 text-couleur6 my-1 transition-all  duration-200 ease-in-out " + (activeGroup != group && "text-xs")} onClick={() => setActiveGroup(group)}> {GROUP_LIST_ICON[group]} {group}</h3>
+                                    {group == activeGroup && <h3 className={"flex items-center gap-1 text-couleur6 my-1 transition-all  duration-200 ease-in-out " + (activeGroup != group && "text-xs")} onClick={() => setActiveGroup(group)}> {GROUP_LIST_ICON[group]} {group}</h3>}
                                     <div className={"grid grid-cols-2 transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
 
                                         {STYLE_CONTROLS.filter((ctrl) => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.group)).map((ctrl) => {

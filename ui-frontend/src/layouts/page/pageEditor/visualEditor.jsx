@@ -18,6 +18,7 @@ import BlockTab from "./components/blockTab";
 import GlobalTab from "./components/globalTab";
 import PropertiesTab from "./components/propertieTab";
 import PseudoClassTab from "./components/pseudoClassTab";
+import HtmlPropertiesTab from "./components/htmlPropertieTab";
 
 
 export default function VisualEditor({
@@ -506,7 +507,7 @@ export default function VisualEditor({
         } catch (e) {
             stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
         }
-        
+
         const vp = activeViewport || "desktop";
         stylesObj[vp] = { ...(stylesObj[vp] || {}), [prop]: value };
         updateBlock(currentActiveBlock.id, { styles: JSON.stringify(stylesObj) });
@@ -608,6 +609,7 @@ export default function VisualEditor({
                     {allowedTabs.includes("blocks") && <ChangeTabBtn icon={<Layers size={14} />} value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'} />}
                     {allowedTabs.includes("global") && <ChangeTabBtn icon={<Globe size={14} />} value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"} />}
                     {allowedTabs.includes("properties") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"} />}
+                    {allowedTabs.includes("HTML properties") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"HTML Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"HTML properties"} />}
                     {allowedTabs.includes("pseudo classes") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Pseudo class"} setter={setActiveTab} activeTab={activeTab} newVal={"pseudo classes"} />}
                 </div>
             )}
@@ -650,7 +652,25 @@ export default function VisualEditor({
                         selectedGlobalTag={selectedPseudoTag}
                         activeViewport={activeViewport}
                     />
-                </> : null}
+                </> : allowedTabs.includes("HTML properties") && activeTab === "HTML properties" ?
+                    <>
+                        <HtmlPropertiesTab
+                            availablePages={availablePages}
+                            activeViewport={activeViewport}
+                            currentActiveBlock={currentActiveBlock}
+                            getIconForTag={getIconForTag}
+                            handleStyleChange={handleStyleChange}
+                            updateBlock={updateBlock}
+                            onCopyStyle={() => handleCopyStyle(currentActiveBlock?.styles)}
+                            onPasteStyle={() => handlePasteStyle(currentActiveBlock?.id)}
+                            hasCopiedStyle={!!copiedStyle}
+                            styleToTablet={() => pasteStyleToTablet(currentActiveBlock?.id)}
+                            styleToDesktop={() => pasteStyleToDeskTop(currentActiveBlock?.id)}
+                            styleToModbile={() => pasteStyleToMobile(currentActiveBlock?.id)}
+                            setCurrentActiveBlock={setActiveBlock}
+                            activePage={activePage}
+                        />
+                    </> : null}
         </div >
     );
 }

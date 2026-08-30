@@ -149,7 +149,10 @@ export default function HtmlPropertiesTab({
                                 value={currentActiveBlock.for || ""}
                                 onChange={(e) => updateBlock(currentActiveBlock.id, { for: e.target.value })}
                             />
-                        </div>} 
+                        </div>}
+
+                            
+                        
                     </div>
                     {currentActiveBlock.tag === "input" && (
                         <div className="flex flex-col gap-5">

@@ -1,6 +1,7 @@
-import { Box, Form, FormInput, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image,ImageIcon, Link, Pilcrow, Square, Text, VideoIcon, SlidersHorizontalIcon, SquareIcon, StepForward, BoxIcon } from "lucide-react";
+import { Box, Form, FormInput, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon, SlidersHorizontalIcon, SquareIcon, StepForward, BoxIcon, WallpaperIcon, LocateFixed, Scroll, Container, Fullscreen  } from "lucide-react";
 import { BsTextarea, BsDisplay, BsBorder, BsBorderOuter } from "react-icons/bs";
 import { GrInProgress, GrFlows, GrLocation } from "react-icons/gr";
+import { FcAutomatic } from "react-icons/fc";
 
 const sizeDistUnit = ["px", "em", "rem", "cm", "vh", "vw", "%"]
 
@@ -9,7 +10,7 @@ export const STYLE_CONTROLS = [
     { conditions: [], label: "font-size", prop: "font-size", type: "number", placeholder: "e.g. 16", group: "text", unite: ["px", "em", "rem", "cm", "%"] },
     { conditions: [], label: "text-align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "text" },
     { conditions: [], label: "font-weight", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "text" },
-    { conditions: [], label: "background-color", prop: "background-color", type: "color", group: "background", reset: "none" },
+
     { conditions: [], group: "sizing", label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10", unite: ["px", "em", "rem", "cm", "%"] },
     { conditions: [], group: "sizing", label: "Margin", prop: "margin", type: "number", placeholder: "e.g. 0", unite: ["px", "em", "rem", "cm", "%"] },
     { conditions: [], label: "border-radius", prop: "border-radius", type: "number", placeholder: "e.g. 8", unite: ["px", "em", "rem", "cm", "%"], group: "border" },
@@ -28,15 +29,16 @@ export const STYLE_CONTROLS = [
     { conditions: [], group: "animation", label: "animation-name", prop: "animation-name", type: "text" },
     { conditions: [], group: "animation", label: "animation-play-state", prop: "animation-play-state", type: "select", options: ["running", "pause"] },
     { conditions: [], group: "animation", label: "animaiton-timing-function", prop: "animation-timing-function", type: "select", options: ["ease", "linear", "easy-in", "ease-out", "ease-in-out"] },
-    { conditions: [], group: "background", label: "backgroud-image", prop: "background-image", type: "text" },
-    { conditions: [], group: "background", label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"] },
-    { conditions: [], group: "background", label: "backgroud-break", prop: "background-break", type: "select", options: ["bounding-box", "each-box", "continuous"] },
-    { conditions: [], group: "background", label: "backgroud-clip", prop: "background-clip", type: "select", options: ["border-box", "padding-box", "content-box", "no-clip"] },
+    { grid: "grid-1-4", conditions: [], label: "background-color", prop: "background-color", type: "color", group: "background", reset: "none" },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-image", prop: "background-image", type: "text" },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"], buttoned: true, optionIcon: [<LocateFixed size={14}></LocateFixed>, <Scroll size={14}></Scroll>], reset: "none" },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-break", prop: "background-break", type: "select", options: ["bounding-box", "each-box", "continuous"] },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-clip", prop: "background-clip", type: "select", options: ["border-box", "padding-box", "content-box", "no-clip"] },
 
-    { conditions: [], group: "background", label: "backgroud-origin", prop: "background-origin", type: "select", options: ["border-box", "padding-box", "content-box"] },
-    { conditions: [], group: "background", label: "backgroud-position", prop: "background-position", type: "select", options: ["top left", "top center", "top right", "center left", "center center", "center right", "bottom left", "bottom center", "bottom right"] },
-    { conditions: [], group: "background", label: "backgroud-repeat", prop: "background-repeat", type: "select", options: ["repeat", "repeat-x", "repeat-y", "no-repeat"] },
-    { conditions: [], group: "background", label: "backgroud-size", prop: "background-size", type: "select", options: ["auto", "cover", "contain"] },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-origin", prop: "background-origin", type: "select", options: ["border-box", "padding-box", "content-box"] },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-position", prop: "background-position", type: "select", options: ["top left", "top center", "top right", "center left", "center center", "center right", "bottom left", "bottom center", "bottom right"] },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-repeat", prop: "background-repeat", type: "select", options: ["repeat", "repeat-x", "repeat-y", "no-repeat"] },
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-size", prop: "background-size", type: "select", options: ["auto", "cover", "contain"], optionIcon: [<FcAutomatic size={14}></FcAutomatic>, <Fullscreen size={14}></Fullscreen>, <Container size={14}></Container>], buttoned: true, reset: "none" },
     { conditions: [], group: "border", label: "border-color", prop: "border-color", type: "color" },
     { conditions: [], group: "border", label: "border-width", prop: "border-width", type: "number", unite: sizeDistUnit },
     { conditions: [], group: "border", label: "border-style", prop: "border-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
@@ -115,7 +117,7 @@ export const BLOCK_TYPES = [
 ];
 export const GROUP_LIST = ["background", "display", "animation", "border", "sizing", "outline", "text", "transition", "box-shadow", "position"]
 export const GROUP_LIST_ICON = {
-    "background": <Image size={14}></Image>,
+    "background": <WallpaperIcon size={14}></WallpaperIcon>,
     "display": <BsDisplay size={14}></BsDisplay>,
     "animation": <GrFlows size={14}></GrFlows>,
     "border": <BsBorder size={14}></BsBorder>,

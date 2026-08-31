@@ -113,12 +113,12 @@ export default function PropertiesTab({
                                 </div>
                             </div>
                             <div className="flex gap-2 mx-1">
-                                {GROUP_LIST.map(group => <button className={`flex items-center transition-all duration-250 gap-1 ${activeGroup == group && "bg-couleur1 p-1 text-couleur3 rounded text-lg "} `} title={group+" tab"} onClick={() => setActiveGroup(group)}>{GROUP_LIST_ICON[group]}</button>)}
+                                {GROUP_LIST.map(group => <button className={`flex items-center transition-all duration-250 gap-1 ${activeGroup == group && "bg-couleur1 p-1 text-couleur3 rounded text-lg scale-125"} `} title={group + " tab"} onClick={() => setActiveGroup(group)}>{GROUP_LIST_ICON[group]}</button>)}
                             </div>
                             <div className=" gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
                                 {GROUP_LIST.map(group => <div className="mb-2">
                                     {group == activeGroup && <h3 className={"flex items-center gap-1 text-couleur6 my-1 transition-all  duration-200 ease-in-out " + (activeGroup != group && "text-xs")} onClick={() => setActiveGroup(group)}> {GROUP_LIST_ICON[group]} {group}</h3>}
-                                    <div className={"grid grid-cols-2 transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
+                                    <div className={"grid grid-cols-3  transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
 
                                         {STYLE_CONTROLS.filter((ctrl) => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.group)).map((ctrl) => {
                                             if (group == ctrl.group) {
@@ -126,7 +126,7 @@ export default function PropertiesTab({
 
                                                 if (ctrl.conditions && ctrl.conditions.length > 0 && ctrl.conditions[1] == currentStyles[ctrl.conditions[0]]) {
                                                     return (
-                                                        <div key={ctrl.prop} className="flex flex-col gap-1 justify-between my-1">
+                                                        <div key={ctrl.prop} className={"flex flex-col gap-1 justify-between  my-1 " + (ctrl.grid && ctrl.grid)}>
                                                             <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label} {ctrl.reset && <>
                                                                 <button onClick={() => handleStyleChange(ctrl.prop, ctrl.reset)}><LoaderCircle size={10} /></button>
                                                             </>} </span>
@@ -195,7 +195,7 @@ export default function PropertiesTab({
                                                     )
                                                 } if (ctrl.conditions.length == 0) {
                                                     return (
-                                                        <div>
+                                                        <div className={(ctrl.grid && ctrl.grid)}>
 
                                                             <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label} {ctrl.reset && <button onClick={() => handleStyleChange(ctrl.prop, ctrl.reset)}><BiReset size={10} /></button>} </span>
                                                             {ctrl.type === "number" ? (
@@ -233,22 +233,24 @@ export default function PropertiesTab({
                                                                             {ctrl.unite.map(unite => <option value={unite}>{unite}</option>)}
                                                                         </>}
                                                                     </select>}
+
                                                                 </div>
                                                             ) : ctrl.type === "select" ? (
-                                                                <select
+                                                                !ctrl.buttoned ? <select
                                                                     className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  text-xs outline-none focus:ring-0 ring-couleur1/20 transition-all border-b  border-couleur2  appearance-none"
                                                                     value={currentValue}
                                                                     onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
                                                                 >
                                                                     <option value="">--</option>
                                                                     {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                                </select>
+                                                                </select> : <div className="flex gap-2">
+                                                                    {ctrl.options.map((opt, idx)=><button className={"flex text-xs gap-1 p-1 rounded transition-all duration-150 "+(currentValue == opt && "bg-couleur1 text-couleur3 ")} onClick={(e) => handleStyleChange(ctrl.prop, opt)}> {ctrl.optionIcon[idx]} {opt} </button>)}
+                                                                </div>
                                                             ) : (
                                                                 <input
                                                                     type={ctrl.type}
                                                                     className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
                                                                     placeholder={ctrl.placeholder}
-                                                                    // For color inputs, ensure value is always a string, even if empty
                                                                     value={currentValue}
                                                                     onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
                                                                 />)

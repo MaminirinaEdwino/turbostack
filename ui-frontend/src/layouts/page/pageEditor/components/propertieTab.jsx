@@ -118,7 +118,7 @@ export default function PropertiesTab({
                             <div className=" gap-3 bg-couleur3/10 dark:bg-gray-800/50 p-4 rounded-2xl border border-couleur1/5">
                                 {GROUP_LIST.map(group => <div className="mb-2">
                                     {group == activeGroup && <h3 className={"flex items-center gap-1 text-couleur6 my-1 transition-all  duration-200 ease-in-out " + (activeGroup != group && "text-xs")} onClick={() => setActiveGroup(group)}> {GROUP_LIST_ICON[group]} {group}</h3>}
-                                    <div className={"grid grid-cols-3  transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
+                                    <div className={"grid grid-cols-4  transition-all duration-150 delay-150 gap-2 p-1" + (activeGroup != group && " hidden")}>
 
                                         {STYLE_CONTROLS.filter((ctrl) => (TAG_STYLE_GROUPS[currentActiveBlock.tag] || []).includes(ctrl.group)).map((ctrl) => {
                                             if (group == ctrl.group) {
@@ -204,7 +204,7 @@ export default function PropertiesTab({
                                                                     <input
                                                                         key={"condition" + ctrl.prop + ctrl.conditions}
                                                                         type="number"
-                                                                        className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0"
+                                                                        className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0 text-sm"
                                                                         placeholder="e.g. 10"
                                                                         value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
                                                                         disabled={currentValue === "auto"}
@@ -217,7 +217,7 @@ export default function PropertiesTab({
                                                                     />
                                                                     {/* Sélecteur d'unité */}
                                                                     {ctrl.unite && <select
-                                                                        className="bg-white dark:bg-gray-900 px-2 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-10 outline-0"
+                                                                        className="bg-white dark:bg-gray-900 px-1 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-6 outline-0"
                                                                         value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
                                                                         onChange={(e) => {
                                                                             const newUnit = e.target.value;
@@ -246,11 +246,11 @@ export default function PropertiesTab({
                                                                 </select> : <div className="flex gap-2">
                                                                     {ctrl.options.map((opt, idx) => <button className={"flex text-xs gap-1 p-1 rounded transition-all duration-150 " + (currentValue == opt && "bg-couleur1 text-couleur3 ")} onClick={(e) => handleStyleChange(ctrl.prop, opt)}> {ctrl.optionIcon[idx]} {opt} </button>)}
                                                                 </div>
-                                                            ) : ctrl.type == "preset" ? <div>
-                                                                {ctrl.presetType == "color" && ctrl.option.map(opt => <button className="w-10 h-10 rounded-full" style={{ backgroundImage: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
+                                                            ) : ctrl.type == "preset" ? <div className="flex flex-wrap gap-1">
+                                                                {ctrl.presetType == "color" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " border-2 border-couleur2")} style={{ backgroundImage: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
 
                                                                 </button>)}
-                                                            </div> : (
+                                                            </div> : ctrl.type == "separator" ? "" : (
                                                                 <input
                                                                     type={ctrl.type}
                                                                     className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}

@@ -1,7 +1,10 @@
-import { Box, Form, FormInput, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon, SlidersHorizontalIcon, SquareIcon, StepForward, BoxIcon, WallpaperIcon, LocateFixed, Scroll, Container, Fullscreen, LocateIcon } from "lucide-react";
+import { Box, Form, FormInput, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, ImageIcon, Link, Pilcrow, Square, Text, VideoIcon, SlidersHorizontalIcon, SquareIcon, StepForward, BoxIcon, WallpaperIcon, LocateFixed, Scroll, Container, Fullscreen, LocateIcon, Maximize, Eye, EyeClosed } from "lucide-react";
 import { BsTextarea, BsDisplay, BsBorder, BsBorderOuter } from "react-icons/bs";
 import { GrInProgress, GrFlows, GrLocation } from "react-icons/gr";
 import { FcAutomatic } from "react-icons/fc";
+import { FaScroll } from "react-icons/fa";
+import { PiEmptyFill } from "react-icons/pi";
+import { GoScreenFull } from "react-icons/go";
 
 const sizeDistUnit = ["px", "em", "rem", "cm", "vh", "vw", "%"]
 
@@ -11,10 +14,30 @@ export const STYLE_CONTROLS = [
     { conditions: [], label: "text-align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "text" },
     { conditions: [], label: "font-weight", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "text" },
 
-    { conditions: [], group: "sizing", label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10", unite: ["px", "em", "rem", "cm", "%"] },
-    { conditions: [], group: "sizing", label: "Margin", prop: "margin", type: "number", placeholder: "e.g. 0", unite: ["px", "em", "rem", "cm", "%"] },
-    { conditions: [], group: "sizing", label: "Width", prop: "width", type: "number", placeholder: "100", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", label: "Height", prop: "height", type: "number", placeholder: "auto", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10", unite: ["px", "em", "rem", "cm", "%"] },
+    { reset: "0", conditions: [], group: "sizing", label: "Margin", prop: "margin", type: "number", placeholder: "e.g. 0", unite: ["px", "em", "rem", "cm", "%"] },
+    { grid: "grid-1-2", reset: "0", conditions: [], group: "sizing", label: "Width", prop: "width", type: "number", placeholder: "100", unite: sizeDistUnit },
+    {
+        grid: "grid-2-5", conditions: [], label: "Preset", prop: "width", type: "select", buttoned: true, group: "sizing", options: [
+            "auto",
+            "fit-content"
+        ],
+        optionIcon: [
+            <Maximize size={14}></Maximize>,
+            <Fullscreen size={14}></Fullscreen>
+        ]
+    },
+    { grid: "grid-1-2", reset: "0", conditions: [], group: "sizing", label: "Height", prop: "height", type: "number", placeholder: "auto", unite: sizeDistUnit },
+    {
+        grid: "grid-2-5", conditions: [], label: "Preset", prop: "height", type: "select", buttoned: true, group: "sizing", options: [
+            "auto",
+            "fit-content"
+        ],
+        optionIcon: [
+            <Maximize size={14}></Maximize>,
+            <Fullscreen size={14}></Fullscreen>
+        ]
+    },
     { conditions: [], group: "display", label: "Display", prop: "display", type: "select", options: ["block", "inline-block", "flex", "grid", "none"], grid: "grid-1-5" },
     { group: "display", label: "Flex dir", prop: "flex-direction", type: "select", options: ["row", "column", "row-wrap", "column-wrap"], conditions: ["display", "flex"], grid: "grid-1-3" },
     { group: "display", label: "Flex gap", prop: "gap", type: "number", conditions: ["display", "flex"], unite: ["px", "em", "rem", "cm", "%"], grid: "grid-3-5" },
@@ -44,7 +67,7 @@ export const STYLE_CONTROLS = [
     { grid: "grid-1-5", conditions: [], group: "background", label: "backgroud-position", prop: "background-position", type: "select", options: ["top left", "top center", "top right", "center left", "center center", "center right", "bottom left", "bottom center", "bottom right"] },
     { grid: "grid-1-5", conditions: [], group: "background", label: "backgroud-repeat", prop: "background-repeat", type: "select", options: ["repeat", "repeat-x", "repeat-y", "no-repeat"] },
     { grid: "grid-1-5", conditions: [], group: "background", label: "backgroud-size", prop: "background-size", type: "select", options: ["auto", "cover", "contain"], optionIcon: [<FcAutomatic size={14}></FcAutomatic>, <Fullscreen size={14}></Fullscreen>, <Container size={14}></Container>], buttoned: true, reset: "none" },
-    { grid: "grid-1-5",conditions: [], label: "border-radius", prop: "border-radius", type: "number", placeholder: "e.g. 8", unite: ["px", "em", "rem", "cm", "%"], group: "border" },
+    { grid: "grid-1-5", conditions: [], label: "border-radius", prop: "border-radius", type: "number", placeholder: "e.g. 8", unite: ["px", "em", "rem", "cm", "%"], group: "border" },
     { grid: "grid-1-3", conditions: [], group: "border", label: "border-color", prop: "border-color", type: "color" },
     { grid: "grid-3-5", conditions: [], group: "border", label: "border-width", prop: "border-width", type: "number", unite: sizeDistUnit },
     { grid: "grid-1-5", conditions: [], group: "border", label: "border-style", prop: "border-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
@@ -64,19 +87,70 @@ export const STYLE_CONTROLS = [
     { grid: "grid-1-3", conditions: [], group: "border", label: "border-right-color", prop: "border-right-color", type: "color" },
     { grid: "grid-3-5", conditions: [], group: "border", label: "border-right-width", prop: "border-right-width", type: "number", unite: sizeDistUnit },
     { grid: "grid-1-5", conditions: [], group: "border", label: "border-right-style", prop: "border-right-style", type: "select", options: ["none", "hidden", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
-    { conditions: [], group: "sizing", label: "m-top", prop: "margin-top", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", label: "m-bottom", prop: "margin-bottom", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", label: "m-left", prop: "margin-left", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", label: "m-right", prop: "margin-right", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", prop: "padding-top", label: "p-top", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", prop: "padding-bottom", label: "p-bottom", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", prop: "padding-left", label: "p-left", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", prop: "padding-right", label: "p-right", type: "number", unite: sizeDistUnit },
-    { conditions: [], group: "sizing", prop: "overflow", label: "overflow", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
-    { conditions: [], group: "sizing", prop: "overflow-x", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
-    { conditions: [], group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
-    { conditions: [], group: "sizing", prop: "overflow-style", label: "of-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"] },
-    { conditions: [], group: "sizing", prop: "box-sizing", label: "box-sizing", type: "select", options: ["border-box", "content-box", "inherit", "initial"] },
+    { reset: "0", conditions: [], group: "sizing", label: "m-top", prop: "margin-top", type: "number", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", label: "m-bott", prop: "margin-bottom", type: "number", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", label: "m-left", prop: "margin-left", type: "number", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", label: "m-right", prop: "margin-right", type: "number", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", prop: "padding-top", label: "p-top", type: "number", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", prop: "padding-bottom", label: "p-bottom", type: "number", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", prop: "padding-left", label: "p-left", type: "number", unite: sizeDistUnit },
+    { reset: "0", conditions: [], group: "sizing", prop: "padding-right", label: "p-right", type: "number", unite: sizeDistUnit },
+    { grid: "grid-1-5", conditions: [], group: "sizing", label: "overflow", prop: "border-bottom-color", type: "separator" },
+    {
+        reset: "none", grid: "grid-1-5", conditions: [], group: "sizing", prop: "overflow", label: "overflow", type: "select", options: ["visible", "hidden", "scroll"], buttoned: true, optionIcon: [
+            <Eye size={14}></Eye>,
+            <EyeClosed size={14}></EyeClosed>,
+            <FaScroll size={14}></FaScroll>
+        ]
+    },
+    {
+        grid: "grid-1-5", conditions: [], group: "sizing", prop: "overflow", label: "", type: "select", options: ["auto", "no-display", "no-content"], buttoned: true, optionIcon: [
+            <Fullscreen size={14}></Fullscreen>,
+            <PiEmptyFill size={14}></PiEmptyFill>,
+            <GoScreenFull size={14}></GoScreenFull>
+        ]
+    },
+    {
+        reset: "none", grid: "grid-1-5", conditions: [], group: "sizing", prop: "overflow-y", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll"], buttoned: true, optionIcon: [
+            <Eye size={14}></Eye>,
+            <EyeClosed size={14}></EyeClosed>,
+            <FaScroll size={14}></FaScroll>
+        ]
+    },
+    {
+        grid: "grid-1-5", conditions: [], group: "sizing", prop: "overflow-x", label: "", type: "select", options: ["auto", "no-display", "no-content"], buttoned: true, optionIcon: [
+            <Fullscreen size={14}></Fullscreen>,
+            <PiEmptyFill size={14}></PiEmptyFill>,
+            <GoScreenFull size={14}></GoScreenFull>
+        ]
+    },
+    {
+        reset: "none", grid: "grid-1-5", conditions: [], group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll"], buttoned: true, optionIcon: [
+            <Eye size={14}></Eye>,
+            <EyeClosed size={14}></EyeClosed>,
+            <FaScroll size={14}></FaScroll>
+        ]
+    },
+    {
+        grid: "grid-1-5", conditions: [], group: "sizing", prop: "overflow-y", label: "", type: "select", options: ["auto", "no-display", "no-content"], buttoned: true, optionIcon: [
+            <Fullscreen size={14}></Fullscreen>,
+            <PiEmptyFill size={14}></PiEmptyFill>,
+            <GoScreenFull size={14}></GoScreenFull>
+        ]
+    },
+    // { conditions: [], group: "sizing", prop: "overflow-x", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
+    // { conditions: [], group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
+    { reset: "none",grid: "grid-1-5",conditions: [], group: "sizing", prop: "overflow-style", label: "overflow-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"], optionIcon : [
+        <Text size={14}></Text>,
+        <Text size={14}></Text>,
+        <Text size={14}></Text>
+    ], buttoned: true },
+    { grid: "grid-1-5",reset: "none",conditions: [], group: "sizing", prop: "box-sizing", label: "box-sizing", type: "select", options: ["border-box", "content-box", "inherit", "initial"], optionIcon: [
+        <Fullscreen size={14}></Fullscreen>,
+        <Fullscreen size={14}></Fullscreen>,
+        <Fullscreen size={14}></Fullscreen>,
+        <Fullscreen size={14}></Fullscreen>
+    ], buttoned: true },
     { conditions: [], group: "outline", prop: "outline-color", label: "outline-color", type: "color" },
     { conditions: [], group: "outline", prop: "outline-offset", label: "outline-offset", type: "number", unite: sizeDistUnit },
     { conditions: [], group: "outline", prop: "outline-width", label: "outline-width", type: "number", unite: sizeDistUnit },

@@ -30,7 +30,13 @@ export const STYLE_CONTROLS = [
     { conditions: [], group: "animation", label: "animation-play-state", prop: "animation-play-state", type: "select", options: ["running", "pause"] },
     { conditions: [], group: "animation", label: "animaiton-timing-function", prop: "animation-timing-function", type: "select", options: ["ease", "linear", "easy-in", "ease-out", "ease-in-out"] },
     { grid: "grid-1-4", conditions: [], label: "background-color", prop: "background-color", type: "color", group: "background", reset: "none" },
-    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-image", prop: "background-image", type: "text" },
+    
+    { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-image", prop: "background-image", type: "text", reset: "" },
+    { grid: "grid-1-4", conditions: [], label: "background-image preset", prop: "background-image", type: "preset",presetType: "color", group: "background", option: [
+        "linear-gradient(200deg, red, green, yellow, blue)",
+        "linear-gradient(200deg, red, yellow)",
+        "linear-gradient(200deg, blue,rgb(0, 136, 255), rgb(133, 133, 232))"
+    ] },
     { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"], buttoned: true, optionIcon: [<LocateFixed size={14}></LocateFixed>, <Scroll size={14}></Scroll>], reset: "none" },
     { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-break", prop: "background-break", type: "select", options: ["bounding-box", "each-box", "continuous"] },
     { grid: "grid-1-4", conditions: [], group: "background", label: "backgroud-clip", prop: "background-clip", type: "select", options: ["border-box", "padding-box", "content-box", "no-clip"] },

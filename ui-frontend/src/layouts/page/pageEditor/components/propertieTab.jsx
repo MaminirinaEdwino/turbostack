@@ -244,9 +244,13 @@ export default function PropertiesTab({
                                                                     <option value="">--</option>
                                                                     {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                                                                 </select> : <div className="flex gap-2">
-                                                                    {ctrl.options.map((opt, idx)=><button className={"flex text-xs gap-1 p-1 rounded transition-all duration-150 "+(currentValue == opt && "bg-couleur1 text-couleur3 ")} onClick={(e) => handleStyleChange(ctrl.prop, opt)}> {ctrl.optionIcon[idx]} {opt} </button>)}
+                                                                    {ctrl.options.map((opt, idx) => <button className={"flex text-xs gap-1 p-1 rounded transition-all duration-150 " + (currentValue == opt && "bg-couleur1 text-couleur3 ")} onClick={(e) => handleStyleChange(ctrl.prop, opt)}> {ctrl.optionIcon[idx]} {opt} </button>)}
                                                                 </div>
-                                                            ) : (
+                                                            ) : ctrl.type == "preset" ? <div>
+                                                                {ctrl.presetType == "color" && ctrl.option.map(opt => <button className="w-10 h-10 rounded-full" style={{ backgroundImage: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
+
+                                                                </button>)}
+                                                            </div> : (
                                                                 <input
                                                                     type={ctrl.type}
                                                                     className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}

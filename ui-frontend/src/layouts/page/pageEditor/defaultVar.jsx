@@ -69,6 +69,7 @@ export const STYLE_CONTROLS = [
             "linear-gradient(200deg, blue,rgb(0, 136, 255), rgb(133, 133, 232))",
             "linear-gradient(200deg, blue,rgb(0, 136, 255),red, rgb(133, 133, 232))",
             "linear-gradient(200deg, blue,rgb(0, 136, 255),green, rgb(133, 133, 232))",
+            "repeating-radial-gradient(circle, blue 0px,rgb(0, 136, 255) 10px ,green 20px, rgb(133, 133, 232) 30px)",
         ]
     },
     { grid: "grid-1-5", conditions: [], group: "background", label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"], buttoned: true, optionIcon: [<LocateFixed size={14}></LocateFixed>, <Scroll size={14}></Scroll>], reset: "none" },
@@ -196,6 +197,9 @@ export const STYLE_CONTROLS = [
             "0px 1px 0px 1px red",
             "inset 0px 1px 0px 1px blue",
             "0px 1px 0px 1px green",
+            "0 0 15px rgba(101, 126, 255, 0.7)",
+            "0 0 10px #0ff",
+            "0 5px 0 #ea5edb"
         ]
     },
     { conditions: [], group: "position", prop: "position", label: "Position", type: "select", options: ["sticky", "relative", "fixed", "absolute"], buttoned: true, optionIcon: [<LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>], grid: "grid-1-5", reset: "none" },

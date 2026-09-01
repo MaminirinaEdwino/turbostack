@@ -66,7 +66,9 @@ export const STYLE_CONTROLS = [
         grid: "grid-1-5", conditions: [], label: "Preset", prop: "background-image", type: "preset", presetType: "color", group: "background", option: [
             "linear-gradient(200deg, red, green, yellow, blue)",
             "linear-gradient(200deg, red, yellow)",
-            "linear-gradient(200deg, blue,rgb(0, 136, 255), rgb(133, 133, 232))"
+            "linear-gradient(200deg, blue,rgb(0, 136, 255), rgb(133, 133, 232))",
+            "linear-gradient(200deg, blue,rgb(0, 136, 255),red, rgb(133, 133, 232))",
+            "linear-gradient(200deg, blue,rgb(0, 136, 255),green, rgb(133, 133, 232))",
         ]
     },
     { grid: "grid-1-5", conditions: [], group: "background", label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"], buttoned: true, optionIcon: [<LocateFixed size={14}></LocateFixed>, <Scroll size={14}></Scroll>], reset: "none" },

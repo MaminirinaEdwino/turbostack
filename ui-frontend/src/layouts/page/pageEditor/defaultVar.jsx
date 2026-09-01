@@ -5,14 +5,23 @@ import { FcAutomatic } from "react-icons/fc";
 import { FaScroll } from "react-icons/fa";
 import { PiEmptyFill } from "react-icons/pi";
 import { GoScreenFull } from "react-icons/go";
+import { CiTextAlignCenter, CiTextAlignJustify, CiTextAlignLeft, CiTextAlignRight } from "react-icons/ci";
+import { BiDownArrow, BiLeftArrow, BiRightArrow } from "react-icons/bi";
 
 const sizeDistUnit = ["px", "em", "rem", "cm", "vh", "vw", "%"]
 
 export const STYLE_CONTROLS = [
-    { label: "Text-color", prop: "color", type: "color", group: "text", conditions: [] },
-    { conditions: [], label: "font-size", prop: "font-size", type: "number", placeholder: "e.g. 16", group: "text", unite: ["px", "em", "rem", "cm", "%"] },
-    { conditions: [], label: "text-align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "text" },
-    { conditions: [], label: "font-weight", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "text" },
+    { grid: "grid-1-3", label: "Text-color", prop: "color", type: "color", group: "text", conditions: [] },
+    { grid: "grid-3-5", conditions: [], label: "font-size", prop: "font-size", type: "number", placeholder: "e.g. 16", group: "text", unite: ["px", "em", "rem", "cm", "%"] },
+    {
+        conditions: [], label: "text-align", prop: "text-align", type: "select", options: ["left", "center", "right", "justify"], group: "text", optionIcon: [
+            <CiTextAlignLeft size={14}></CiTextAlignLeft>,
+            <CiTextAlignCenter size={14}></CiTextAlignCenter>,
+            <CiTextAlignRight size={14}></CiTextAlignRight>,
+            <CiTextAlignJustify size={14}></CiTextAlignJustify>,
+        ], buttoned: true, grid: "grid-1-5"
+    },
+    { grid: "grid-1-3", conditions: [], label: "font-weight", prop: "font-weight", type: "select", options: ["normal", "bold", "100", "300", "500", "700", "900"], group: "text" },
 
     { reset: "0", conditions: [], group: "sizing", label: "Padding", prop: "padding", type: "number", placeholder: "e.g. 10", unite: ["px", "em", "rem", "cm", "%"] },
     { reset: "0", conditions: [], group: "sizing", label: "Margin", prop: "margin", type: "number", placeholder: "e.g. 0", unite: ["px", "em", "rem", "cm", "%"] },
@@ -140,27 +149,38 @@ export const STYLE_CONTROLS = [
     },
     // { conditions: [], group: "sizing", prop: "overflow-x", label: "overflow-x", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
     // { conditions: [], group: "sizing", prop: "overflow-y", label: "overflow-y", type: "select", options: ["visible", "hidden", "scroll", "auto", "no-display", "no-content"] },
-    { reset: "none",grid: "grid-1-5",conditions: [], group: "sizing", prop: "overflow-style", label: "overflow-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"], optionIcon : [
-        <Text size={14}></Text>,
-        <Text size={14}></Text>,
-        <Text size={14}></Text>
-    ], buttoned: true },
-    { grid: "grid-1-5",reset: "none",conditions: [], group: "sizing", prop: "box-sizing", label: "box-sizing", type: "select", options: ["border-box", "content-box", "inherit", "initial"], optionIcon: [
-        <Fullscreen size={14}></Fullscreen>,
-        <Fullscreen size={14}></Fullscreen>,
-        <Fullscreen size={14}></Fullscreen>,
-        <Fullscreen size={14}></Fullscreen>
-    ], buttoned: true },
+    {
+        reset: "none", grid: "grid-1-5", conditions: [], group: "sizing", prop: "overflow-style", label: "overflow-style", type: "select", options: ["auto", "marquee-line", "mar-quee-block"], optionIcon: [
+            <Text size={14}></Text>,
+            <Text size={14}></Text>,
+            <Text size={14}></Text>
+        ], buttoned: true
+    },
+    {
+        grid: "grid-1-5", reset: "none", conditions: [], group: "sizing", prop: "box-sizing", label: "box-sizing", type: "select", options: ["border-box", "content-box", "inherit", "initial"], optionIcon: [
+            <Fullscreen size={14}></Fullscreen>,
+            <Fullscreen size={14}></Fullscreen>,
+            <Fullscreen size={14}></Fullscreen>,
+            <Fullscreen size={14}></Fullscreen>
+        ], buttoned: true
+    },
     { conditions: [], group: "outline", prop: "outline-color", label: "outline-color", type: "color" },
     { conditions: [], group: "outline", prop: "outline-offset", label: "outline-offset", type: "number", unite: sizeDistUnit },
     { conditions: [], group: "outline", prop: "outline-width", label: "outline-width", type: "number", unite: sizeDistUnit },
     { conditions: [], group: "outline", prop: "outline-style", label: "outline-style", type: "select", options: ["none", "groove", "solid", "double", "dashed", "dotted", "inset", "outset", "ridge"] },
-    { conditions: [], group: "text", prop: "Direction", label: "Direction", type: "select", options: ["ltr", "rtl", "inherit"] },
-    { conditions: [], group: "text", prop: "hanging-punctuation", label: "hanging-punctuation", type: "select", options: ["none", "start", "end", "end-edge"] },
-    { conditions: [], group: "text", prop: "letter-spacing", label: "letter-spacing", type: "number", unite: sizeDistUnit },
+    { grid: "grid-3-5", conditions: [], group: "text", prop: "letter-spacing", label: "letter-spacing", type: "number", unite: sizeDistUnit },
+    {
+        grid: "grid-1-3", conditions: [], group: "text", prop: "Direction", label: "Text Direction", type: "select", options: ["ltr", "rtl", "inherit"], optionIcon: [
+            <BiRightArrow></BiRightArrow>,
+            <BiLeftArrow></BiLeftArrow>,
+            <BiDownArrow></BiDownArrow>,
+        ], buttoned: true
+    },
     { conditions: [], group: "text", prop: "text-indent", label: "text-indent", type: "number", unite: sizeDistUnit },
+    { grid: "grid-1-5", conditions: [], group: "text", prop: "hanging-punctuation", label: "hanging-punctuation", type: "select", options: ["none", "start", "end", "end-edge"] },
+
     { conditions: [], group: "text", prop: "punctuation-trim", label: "punctuation-trim", type: "select", options: ["none", "start", "end", "adja-cent"] },
-    { conditions: [], group: "text", prop: "text-align", label: "text-align", type: "select", options: ["center", "start", "end", "left", "right", "justify"] },
+    // { conditions: [], group: "text", prop: "text-align", label: "text-align", type: "select", options: ["center", "start", "end", "left", "right", "justify"] },
     { conditions: [], group: "text", prop: "text-align-last", label: "text-align-last", type: "select", options: ["center", "start", "end", "left", "right", "justify"] },
     { conditions: [], group: "text", prop: "text-decoration", label: "text-decoration", type: "select", options: ["none", "underline", "overline", "blink"] },
     { conditions: [], group: "text", prop: "text-justify", label: "text-justify", type: "select", options: ["auto", "inter-word", "inter-ideograph", "inter-cluster", "distribute", "kashida", "tibetan"] },
@@ -168,7 +188,14 @@ export const STYLE_CONTROLS = [
     { conditions: [], group: "transition", prop: "transition-time", label: "transition-time", type: "number", unite: ["s", "ms"] },
     { conditions: [], group: "transition", prop: "transition-delay", label: "transition-delay", type: "number", unite: ["s", "ms"] },
     { conditions: [], group: "transition", prop: "transition-timing-function", label: "transition", type: "select", options: ["ease", "linear", "ease-in", "ease-out", "ease-in-out"] },
-    { conditions: [], group: "box-shadow", prop: "box-shadow", label: "box-shadow", type: "text", placeholder: "inset 0px 0px 0px 0px #ffffff" },
+    { conditions: [], group: "box-shadow", prop: "box-shadow", label: "box-shadow", type: "text", placeholder: "inset 0px 0px 0px 0px #ffffff", grid: "grid-1-5" },
+    {
+        conditions: [], buttoned: true, presetType: "box-shadow", group: "box-shadow", prop: "box-shadow", label: "", type: "preset", placeholder: "inset 0px 0px 0px 0px #ffffff", grid: "grid-1-5", option: [
+            "0px 1px 0px 1px red",
+            "inset 0px 1px 0px 1px blue",
+            "0px 1px 0px 1px green",
+        ]
+    },
     { conditions: [], group: "position", prop: "position", label: "Position", type: "select", options: ["sticky", "relative", "fixed", "absolute"], buttoned: true, optionIcon: [<LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>], grid: "grid-1-5", reset: "none" },
     { conditions: [], group: "position", prop: "top", label: "Top", type: "number", unite: sizeDistUnit },
     { conditions: [], group: "position", prop: "bottom", label: "Bottom", type: "number", unite: sizeDistUnit },

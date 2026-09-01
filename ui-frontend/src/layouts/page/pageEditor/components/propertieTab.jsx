@@ -250,6 +250,8 @@ export default function PropertiesTab({
                                                                 {ctrl.presetType == "color" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " border-2 border-couleur2")} style={{ backgroundImage: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
 
                                                                 </button>)}
+                                                                {ctrl.presetType == "box-shadow" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " bg-couleur2/20")} style={{ boxShadow: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
+                                                                </button>)}
                                                             </div> : ctrl.type == "separator" ? "" : (
                                                                 <input
                                                                     type={ctrl.type}

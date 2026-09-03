@@ -70,6 +70,9 @@ export const STYLE_CONTROLS = [
             "linear-gradient(200deg, blue,rgb(0, 136, 255),red, rgb(133, 133, 232))",
             "linear-gradient(200deg, blue,rgb(0, 136, 255),green, rgb(133, 133, 232))",
             "repeating-radial-gradient(circle, blue 0px,rgb(0, 136, 255) 10px ,green 20px, rgb(133, 133, 232) 30px)",
+            "linear-gradient(169deg, #261bc5 , #1d5b8b 68px, #1e21c2 )",
+            "linear-gradient(169deg, #9f8484 , #a81515 , #570000 )",
+            "linear-gradient(324deg, #027e17 , #3b710e , #5f6b00 )"
         ]
     },
     { grid: "grid-1-5", conditions: [], group: "background", label: "backgroud-attachement", prop: "background-attachment", type: "select", options: ["fixed", "scroll"], buttoned: true, optionIcon: [<LocateFixed size={14}></LocateFixed>, <Scroll size={14}></Scroll>], reset: "none" },
@@ -199,7 +202,12 @@ export const STYLE_CONTROLS = [
             "0px 1px 0px 1px green",
             "0 0 15px rgba(101, 126, 255, 0.7)",
             "0 0 10px #0ff",
-            "0 5px 0 #ea5edb"
+            "0 5px 0 #ea5edb",
+            "4px 5px 3px 2px #221584",
+            "0px 0px 10px 2px #68a93d",
+            "inset 0px 0px 10px 2px #68a93d, inset 0px 1px 3px 3px #68a93d",
+            "inset 0px 0px 10px 2px #7e7c72, inset 0px 0px 4px 9px #7e7c72",
+            "0px 0px 10px 2px #7e7c72, inset 0px 0px 4px 9px #7e7c72"
         ]
     },
     { conditions: [], group: "position", prop: "position", label: "Position", type: "select", options: ["sticky", "relative", "fixed", "absolute"], buttoned: true, optionIcon: [<LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>, <LocateIcon size={14}></LocateIcon>], grid: "grid-1-5", reset: "none" },

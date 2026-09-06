@@ -1,26 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
-import {
-  Save,
-  FileText,
-  Puzzle,
-  Plus,
-  Edit3,
-  Trash2,
-  Loader2,
-  X,
-  PanelLeftOpen,
-  CheckCircle,
-  AlertCircle,
-  PanelRightOpen,
-  Smartphone,
-  Tablet,
-  Monitor,
-  MonitorUp,
-} from "lucide-react";
-import VisualEditor from "./visualEditor";
-import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../../../hooks/useNavigate";
 import DarkModeToggle from "../../../components/darkModeToggle";
 import ToDashBoardBtn from "./components/toDashBoardbtn";
@@ -29,6 +9,8 @@ import PreviewSection from "./components/previewSection";
 import Toast from "../../../components/toast";
 import PageList from "./components/pageList";
 import RightSideBar from "./components/rightSideBar";
+import LeftSideBar from "./components/leftSideBar";
+import { Loader2 } from "lucide-react";
 
 export default function PageEditor({ projectName }) {
   const navigateTo = useNavigate();
@@ -321,15 +303,6 @@ export default function PageEditor({ projectName }) {
     });
   };
 
-
-
-  // Détection de la clé de composant pour l'affichage (priorité au pluriel comme dans pagelist.jsx)
-
-
-
-  // Convertit les blocs JSON en HTML pour la prévisualisation dans l'iframe
-
-
   const handleSave = async () => {
     showToast("Saving project...", "loading");
     try {
@@ -366,11 +339,11 @@ export default function PageEditor({ projectName }) {
         handleResetZoom();
       }
       // Barres latérales
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "w") {
         e.preventDefault();
         setIsLeftSidebarOpen((prev) => !prev);
       }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "w") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
         e.preventDefault();
         setIsRightSidebarOpen((prev) => !prev);
       }
@@ -397,41 +370,21 @@ export default function PageEditor({ projectName }) {
         {editMode ? (
           <div className="flex h-full min-h-150 ">
             {/* Left Sidebar: Structure & Blocks */}
-            <aside
-              className={`fixed top-2 h-full z-50 transition-transform duration-300 ease-in-out ${isLeftSidebarOpen ? "left-0" : "-left-100"} w-80 bg-couleur3 dark:bg-gray-950 border-r border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto my-2 `}
-            >
-              <div className="flex justify-between items-center mb-6 sticky -top-6 bg-couleur3 z-10">
-                <h2 className="text-sm font-black uppercase text-couleur1/80">
-                  Structure
-                </h2>
-                <button
-                  onClick={() => setIsLeftSidebarOpen(false)}
-                  className="p-2 rounded-full hover:bg-couleur1/10 text-couleur1 dark:text-gray-300"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <VisualEditor
-                key={`left-${editingType}-${editingType === "page" ? selectedPageIndex : selectedComponentIndex}`}
-                content={activeItem?.content}
-                availablePages={siteData?.pages || []}
-                availableComponents={siteData?.[compKey] || []}
-                activeBlock={activeBlock}
-                setActiveBlock={setActiveBlock}
-                activeTab="blocks"
-                activeViewport={viewport.name}
-                allowedTabs={["blocks"]}
-                onChange={(blocks) => updateActiveItemField("content", blocks)}
-                showToast={showToast}
-                onPageStylesChange={(styles) =>
-                  updateActiveItemField("styles", styles)
-                }
-
-                editingtype={editingType}
-                updateBlockStyle={updateActiveItemField}
-                activePage={activeItem}
-              />
-            </aside>
+            <LeftSideBar
+              activeBlock={activeBlock}
+              activeItem={activeItem}
+              compKey={compKey}
+              editingType={editingType}
+              isLeftSidebarOpen={isLeftSidebarOpen}
+              selectedComponentIndex={selectedComponentIndex}
+              selectedPageIndex={selectedPageIndex}
+              setActiveBlock={setActiveBlock}
+              setIsLeftSidebarOpen={setIsLeftSidebarOpen}
+              showToast={showToast}
+              siteData={siteData}
+              updateActiveItemField={updateActiveItemField}
+              viewport={viewport}
+            />
 
             {/* Main content: Prévisualisation isolée (Iframe) */}
             <PreviewSection

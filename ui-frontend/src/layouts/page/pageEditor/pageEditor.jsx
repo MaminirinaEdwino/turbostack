@@ -23,6 +23,7 @@ import VisualEditor from "./visualEditor";
 import { FcPrevious } from "react-icons/fc";
 import { useNavigate } from "../../../hooks/useNavigate";
 import DarkModeToggle from "../../../components/darkModeToggle";
+import ToDashBoardBtn from "./components/toDashBoardbtn";
 
 export default function PageEditor({ projectName }) {
   const navigateTo = useNavigate();
@@ -387,17 +388,7 @@ export default function PageEditor({ projectName }) {
       <div className="p-4 px-6 flex items-center justify-between border-b border-couleur1/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-20 shadow-xs transition-colors duration-300">
         {/* Section Gauche : Navigation & Titre / Édition */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={() =>
-              editMode ? setEditMode(false) : navigateTo("Dashboard")
-            }
-            className="p-2.5 rounded-xl border border-couleur1/20 dark:border-white/20 bg-white dark:bg-gray-800 text-couleur1 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700 transition-all duration-200 active:scale-95 shadow-xs cursor-pointer"
-            title={editMode ? "Exit edit mode" : "Return to Dashboard"}
-          >
-            <div className="flex items-center gap-1 text-couleur1 dark:text-gray-200">
-              <FcPrevious size={18} />
-            </div>
-          </button>
+          <ToDashBoardBtn editMode={editMode} setEditMode={setEditMode} navigateTo={navigateTo} />
 
           <h1 className="text-xl font-bold text-couleur1 dark:text-gray-100 tracking-tight">
             {editMode ? (
@@ -407,7 +398,7 @@ export default function PageEditor({ projectName }) {
                     {editingType} name : {[project?.rest_api?.endpoints?.filter(ep => ep.return_page === activeItem?.nom)].length}
                   </span>
                   {/* {(project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom)["nom"] == null && "teste")} */}
-                  {editingType == "page" && project?.type == "webapp" && project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom).length >0 && project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom)[0]["nom"]!= null ? <input
+                  {editingType == "page" && project?.type == "webapp" && project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom).length > 0 && project?.rest_api.endpoints.filter(ep => ep.return_page === activeItem?.nom)[0]["nom"] != null ? <input
                     value={activeItem?.nom}
                     onChange={(e) => updateActiveItemField("nom", e.target.value)}
                     className="bg-transparent border-b border-couleur1/30 dark:border-white/20 focus:border-couleur1 dark:focus:border-white outline-none px-2 py-0.5 text-couleur1 dark:text-gray-100 text-sm font-semibold transition-colors"
@@ -663,8 +654,8 @@ export default function PageEditor({ projectName }) {
                 activeViewport={viewport.name}
                 allowedTabs={
                   editingType === "page"
-                    ? ["global", "properties", "HTML properties","pseudo classes"]
-                    : ["properties","HTML properties", "pseudo classes"]
+                    ? ["global", "properties", "HTML properties", "pseudo classes"]
+                    : ["properties", "HTML properties", "pseudo classes"]
                 }
                 onChange={(blocks) => updateActiveItemField("content", blocks)}
                 onPageStylesChange={(styles) =>

@@ -28,6 +28,7 @@ import Header from "./components/header";
 import PreviewSection from "./components/previewSection";
 import Toast from "../../../components/toast";
 import PageList from "./components/pageList";
+import RightSideBar from "./components/rightSideBar";
 
 export default function PageEditor({ projectName }) {
   const navigateTo = useNavigate();
@@ -452,47 +453,23 @@ export default function PageEditor({ projectName }) {
 
 
             {/* Right Sidebar: Properties & Global */}
-            <aside
-              className={`fixed top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out ${isRightSidebarOpen ? "translate-x-0" : "translate-x-full"} w-96 bg-couleur3 dark:bg-gray-950 border-l border-couleur1/10 shadow-xl flex flex-col p-6 overflow-y-auto`}
-            >
-              <div className="flex justify-between items-center mb-6 sticky -top-6 bg-couleur3">
-                <h2 className="text-sm font-black uppercase text-couleur1/80">
-                  Configuration
-                </h2>
-                <button
-                  onClick={() => setIsRightSidebarOpen(false)}
-                  className="p-2 rounded-full hover:bg-couleur1/10 text-couleur1 dark:text-gray-300"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <VisualEditor
-                key={`right-${editingType}-${editingType === "page" ? selectedPageIndex : selectedComponentIndex}`}
-                content={activeItem?.content}
-                pageStyles={activeItem?.styles || ""}
-                availablePages={siteData?.pages || []}
-                availableComponents={siteData?.[compKey] || []}
-                activeBlock={activeBlock}
-                setActiveBlock={setActiveBlock}
-                activeTab={rightActiveTab}
-                setActiveTab={setRightActiveTab}
-                activeViewport={viewport.name}
-                allowedTabs={
-                  editingType === "page"
-                    ? ["global", "properties", "HTML properties", "pseudo classes"]
-                    : ["properties", "HTML properties", "pseudo classes"]
-                }
-                onChange={(blocks) => updateActiveItemField("content", blocks)}
-                onPageStylesChange={(styles) =>
-                  updateActiveItemField("styles", styles)
-                }
-                showToast={showToast}
-
-                editingtype={editingType}
-                updateBlockStyle={updateActiveItemField}
-                activePage={activeItem}
-              />
-            </aside>
+            <RightSideBar
+              activeBlock={activeBlock}
+              activeItem={activeItem}
+              compKey={compKey}
+              editingType={editingType}
+              isRightSidebarOpen={isRightSidebarOpen}
+              rightActiveTab={rightActiveTab}
+              selectedComponentIndex={selectedComponentIndex}
+              selectedPageIndex={selectedPageIndex}
+              setActiveBlock={setActiveBlock}
+              setIsRightSidebarOpen={setIsRightSidebarOpen}
+              setRightActiveTab={setRightActiveTab}
+              showToast={showToast}
+              siteData={siteData}
+              updateActiveItemField={updateActiveItemField}
+              viewport={viewport}
+            />
           </div>
         ) : (
           <PageList addComponent={addComponent} addPage={addPage} compKey={compKey} project={project} removeComponent={removeComponent} removePage={removePage} setEditMode={setEditMode} setEditingType={setEditingType} setSelectedComponentIndex={setSelectedComponentIndex} setSelectedPageIndex={setSelectedPageIndex} siteData={siteData} />

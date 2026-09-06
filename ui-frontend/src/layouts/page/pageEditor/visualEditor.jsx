@@ -1,12 +1,5 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo } from "react";
-import {
-    Type, Image as ImageIcon, Trash2, Settings2, Copy, ClipboardPaste,
-    MousePointer2, Layers, GripVertical, Globe, PlusSquare, Puzzle,
-    ChevronDown,
-    ChevronUp,
-    Clock
-} from "lucide-react";
 import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
 import { parseStyles } from './utilsFunc';
 import { stringifyStyles } from './utilsFunc';
@@ -20,6 +13,7 @@ import PropertiesTab from "./components/propertieTab";
 import PseudoClassTab from "./components/pseudoClassTab";
 import HtmlPropertiesTab from "./components/htmlPropertieTab";
 import TreeBlocks from "./components/treeBlocks";
+import { Globe, Layers, Settings2 } from "lucide-react";
 
 
 export default function VisualEditor({

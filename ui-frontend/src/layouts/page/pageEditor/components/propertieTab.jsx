@@ -75,19 +75,7 @@ export default function PropertiesTab({
 
             {currentActiveBlock ? (
                 <div className="space-y-6">
-
-                    <div className="flex items-center gap-3 p-4 bg-couleur1/5 rounded-2xl border border-couleur1/10">
-                        <div className="p-3 bg-couleur1 text-white rounded-xl shadow-sm">
-                            {getIconForTag(currentActiveBlock.tag)}
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase text-couleur1 opacity-40">Active Block Settings</p>
-                            <p className="text-sm font-bold text-couleur1 dark:text-gray-200">{currentActiveBlock.tag.toUpperCase()}</p>
-                        </div>
-                    </div>
-
                     <div className="space-y-5">
-
                         <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between">
                                 <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Visual Styling</label>
@@ -192,7 +180,6 @@ export default function PropertiesTab({
                                                                     type={ctrl.type}
                                                                     className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
                                                                     placeholder={ctrl.placeholder}
-                                                                    // For color inputs, ensure value is always a string, even if empty
                                                                     value={currentValue}
                                                                     onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
                                                                 />)
@@ -212,7 +199,7 @@ export default function PropertiesTab({
                                                                         key={"condition" + ctrl.prop + ctrl.conditions}
                                                                         type="number"
                                                                         className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0 text-sm"
-                                                                        placeholder="e.g. 10"
+                                                                        placeholder="10"
                                                                         value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
                                                                         disabled={currentValue === "auto"}
                                                                         onChange={(e) => {

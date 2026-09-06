@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BLOCK_TYPES } from '../defaultVar';
-import { Blocks,  Form, FormIcon, ListTree, Palette, Pen, Pencil, Puzzle } from 'lucide-react';
+import { Blocks, Form, FormIcon, ListTree, Palette, Pen, Pencil, Puzzle } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { GoApp } from '../../../../services/bridge';
 import BlockTabNavBar from './blockTabNavBar';
+import FormElementBtn from './formElementBtn';
 
 export default function BlockTab({ blocks, renderBlocksList, addBlock, availableComponents, setGlobalStyle, editingtype, activePage }) {
     const projectName = useSelector((state) => state.app.actualProject)
@@ -165,28 +166,46 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                     <h3 className='text-xs font-black uppercase text-couleur1/40 ' onClick={() => setActualTab("apiform")}>API Forms and request element</h3>
                     {actualTab == "apiform" && <div className='grid grid-cols-2 gap-2'>
                         {typeof (project) != "string" && project.rest_api.endpoints != null && <>
-                            {((project.rest_api.endpoints).filter(ep => ep.method !== "GET")).map(ep => <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm'
-                                onClick={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: "", models: ep.model })}
-                            > <Form size={14}></Form> {ep.nom}</button>)}
+                            {((project.rest_api.endpoints).filter(ep => ep.method !== "GET")).map(ep => <FormElementBtn content={<>  <Form size={14}></Form> {ep.nom} </>} action={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: "", models: ep.model })} />)}
 
                             {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0]?.return_content?.map(mdl => <>
                                 {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].return_content_type == "array" && <>
-                                    <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ range .${mdl.nom[0].toUpperCase()}${[mdl.nom.split(mdl.nom[0])[1]]} }}` })}> <Form size={14}></Form>{mdl.nom} range .{mdl.nom[0].toUpperCase()}{[mdl.nom.split(mdl.nom[0])]}</button>
-                                    <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ else }}`, isTemplateElement: true })}> <Form size={14}></Form> else </button>
+                                    <FormElementBtn
+                                        content={<>
+                                            <Form size={14}></Form>{mdl.nom} range .{mdl.nom[0].toUpperCase()}{[mdl.nom.split(mdl.nom[0])]}
+                                        </>}
+                                        action={() => addBlock({ tag: "div", defaultContent: `{{ range .${mdl.nom[0].toUpperCase()}${[mdl.nom.split(mdl.nom[0])[1]]} }}` })}
+                                    />
+
+                                    <FormElementBtn content={<>
+                                        <Form size={14}></Form> else
+                                    </>}
+                                        action={() => addBlock({ tag: "div", defaultContent: `{{ else }}`, isTemplateElement: true })} />
+
                                     <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm' onClick={() => addBlock({ tag: "div", defaultContent: `{{ end }}`, isTemplateElement: true })}> <Form size={14}></Form> end range</button>
+
+                                    <FormElementBtn content={<>
+                                        <Form size={14}></Form> end range
+                                    </>}
+                                        action={() => addBlock({ tag: "div", defaultContent: `{{ end }}`, isTemplateElement: true })}
+                                    />
+
                                     {mdl.champs.map(champs => <>
-                                        <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm'
-                                            onClick={() => addBlock({ tag: "div", defaultContent: `{{ .${champs.nom[0].toUpperCase()}${champs.nom.split(champs.nom[0])[1]} }}`, isTemplateElement: true })}> <Form size={14}></Form> {mdl.nom}  {champs.nom[0].toUpperCase()}{champs.nom.split(champs.nom[0])[1]} </button>
+
+                                        <FormElementBtn content={<><Form size={14}></Form> {mdl.nom}  {champs.nom[0].toUpperCase()}{champs.nom.split(champs.nom[0])[1]} </>} action={() => addBlock({ tag: "div", defaultContent: `{{ .${champs.nom[0].toUpperCase()}${champs.nom.split(champs.nom[0])[1]} }}`, isTemplateElement: true })} />
                                     </>)}
                                 </>}
                                 {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].return_content_type == "object" && <>
                                     {mdl.champs.map(champs => <>
-                                        <button className='flex items-center gap-2 p-3 px-3 rounded-xl bg-white/50 dark:bg-gray-900/40 border border-couleur1/10 hover:border-couleur1 transition-all text-couleur1 text-sm'
-                                            onClick={() => addBlock({
+                                        <FormElementBtn
+                                            action={() => addBlock({
                                                 tag: "div",
                                                 defaultContent: `{{ .${mdl.nom[0].toUpperCase()}${mdl.nom.split(mdl.nom[0])[1]}.${champs.nom[0].toUpperCase()}${champs.nom.split(champs.nom[0])[1]} }}`,
                                                 isTemplateElement: true
-                                            })}> <Form size={14}></Form> {mdl.nom}  {champs.nom[0].toUpperCase()}{champs.nom.split(champs.nom[0])[1]} </button>
+                                            })}
+                                            content={<>
+                                                <Form size={14}></Form> {mdl.nom}  {champs.nom[0].toUpperCase()}{champs.nom.split(champs.nom[0])[1]}
+                                            </>} />
                                     </>)}
                                 </>}
                             </>)}

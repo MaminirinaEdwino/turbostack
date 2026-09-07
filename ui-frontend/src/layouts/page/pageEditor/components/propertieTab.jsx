@@ -7,6 +7,7 @@ import { BiReset } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { GoApp } from "../../../../services/bridge";
 import ResetBtn from "./resetBtn";
+import { ColorPicker } from "./colorPicker";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
@@ -240,18 +241,22 @@ export default function PropertiesTab({
                                                                 </div>
                                                             ) : ctrl.type == "preset" ? <div className="flex flex-wrap gap-1">
                                                                 {ctrl.presetType == "color" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " border-2 border-couleur2")} style={{ backgroundImage: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
-
                                                                 </button>)}
+
+
                                                                 {ctrl.presetType == "box-shadow" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " bg-couleur2/20")} style={{ boxShadow: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
                                                                 </button>)}
                                                             </div> : ctrl.type == "separator" ? "" : (
-                                                                <input
-                                                                    type={ctrl.type}
-                                                                    className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
-                                                                    placeholder={ctrl.placeholder}
-                                                                    value={currentValue}
-                                                                    onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
-                                                                />)
+                                                                <>
+                                                                    <input
+                                                                        type={ctrl.type}
+                                                                        className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
+                                                                        placeholder={ctrl.placeholder}
+                                                                        value={currentValue}
+                                                                        onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
+                                                                    />
+                                                                    {/* {ctrl.type == "color" && <ColorPicker label={""} onChange={handleStyleChange} value={currentValue} cssProp={ctrl.prop} />} */}
+                                                                </>)
                                                             }
                                                         </div>
                                                     )

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { BiReset } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { GoApp } from "../../../../services/bridge";
+import ResetBtn from "./resetBtn";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
@@ -115,9 +116,7 @@ export default function PropertiesTab({
                                                 if (ctrl.conditions && ctrl.conditions.length > 0 && ctrl.conditions[1] == currentStyles[ctrl.conditions[0]]) {
                                                     return (
                                                         <div key={ctrl.prop} className={"flex flex-col gap-1 justify-between  my-1 " + (ctrl.grid && ctrl.grid)}>
-                                                            <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label} {ctrl.reset && <>
-                                                                <button onClick={() => handleStyleChange(ctrl.prop, ctrl.reset)}><LoaderCircle size={10} /></button>
-                                                            </>} </span>
+                                                            <ResetBtn ctrl={ctrl} handleStyleChange={handleStyleChange} />
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
@@ -190,8 +189,7 @@ export default function PropertiesTab({
                                                 } if (ctrl.conditions.length == 0) {
                                                     return (
                                                         <div className={(ctrl.grid && ctrl.grid)}>
-
-                                                            <span className="text-[9px] font-bold opacity-40 uppercase">{ctrl.label} {ctrl.reset && <button onClick={() => handleStyleChange(ctrl.prop, ctrl.reset)}><BiReset size={10} /></button>} </span>
+                                                            <ResetBtn ctrl={ctrl} handleStyleChange={handleStyleChange} />
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
@@ -259,13 +257,10 @@ export default function PropertiesTab({
                                                     )
                                                 }
                                             }
-                                        })
-                                        }
+                                        })}
                                     </div>
                                 </div>)}
                             </div>
-
-
                         </div>
                     </div>
                 </div>

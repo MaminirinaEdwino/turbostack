@@ -116,13 +116,13 @@ export default function PropertiesTab({
 
                                                 if (ctrl.conditions && ctrl.conditions.length > 0 && ctrl.conditions[1] == currentStyles[ctrl.conditions[0]]) {
                                                     return (
-                                                        <div key={ctrl.prop} className={"flex flex-col gap-1 justify-between  my-1 " + (ctrl.grid && ctrl.grid)}>
+                                                        <div key={ctrl.prop+group} className={"flex flex-col gap-1 justify-between  my-1 " + (ctrl.grid && ctrl.grid)}>
                                                             <ResetBtn ctrl={ctrl} handleStyleChange={handleStyleChange} />
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
                                                                     <input
-                                                                        key={ctrl.prop}
+                                                                        key={ctrl.prop+group}
                                                                         type="number"
                                                                         className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0"
                                                                         placeholder="e.g. 10"

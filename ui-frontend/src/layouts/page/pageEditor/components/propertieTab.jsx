@@ -228,6 +228,7 @@ export default function PropertiesTab({
                                                                     </select>}
 
                                                                 </div>
+                                                                
                                                             ) : ctrl.type === "select" ? (
                                                                 !ctrl.buttoned ? <select
                                                                     className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  text-xs outline-none focus:ring-0 ring-couleur1/20 transition-all border-b  border-couleur2  appearance-none"

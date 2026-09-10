@@ -13,6 +13,7 @@ import (
 	webview "github.com/webview/webview_go"
 )
 
+
 //go:embed ui-dist/*
 var assets embed.FS
 var pMgr api.Manager

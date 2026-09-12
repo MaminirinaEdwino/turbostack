@@ -12,6 +12,7 @@ import NumberTypePropInput from "./numberTypePropInput";
 import PropUnitSelector from "./propUnitSelector";
 import { SelectTypeButtoned, SelectTypeNotButtoned } from "./selectType";
 import PresetComponent from "./presetComponent";
+import GeneralPropInput from "./generalPropInput";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
@@ -131,33 +132,10 @@ export default function PropertiesTab({
 
                                                                 </div>
                                                             ) : ctrl.type === "select" ? (
-                                                                !ctrl.buttoned ? <select
-                                                                    className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  text-xs outline-none focus:ring-0 ring-couleur1/20 transition-all border-b  border-couleur2  appearance-none"
-                                                                    value={currentValue}
-                                                                    onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
-                                                                >
-                                                                    <option value="">--</option>
-                                                                    {ctrl.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                                </select> : <div className="flex gap-2">
-                                                                    {ctrl.options.map((opt, idx) => <button className={"flex text-xs gap-1 p-1 rounded transition-all duration-150 " + (currentValue == opt && "bg-couleur1 text-couleur3 ")} onClick={(e) => handleStyleChange(ctrl.prop, opt)}> {ctrl.optionIcon[idx]} {opt} </button>)}
-                                                                </div>
-                                                            ) : ctrl.type == "preset" ? <div className="flex flex-wrap gap-1">
-                                                                {ctrl.presetType == "color" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " border-2 border-couleur2")} style={{ backgroundImage: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
-
-                                                                </button>)}
-                                                                {ctrl.presetType == "box-shadow" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " bg-couleur2/20")} style={{ boxShadow: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
-                                                                </button>)}
-                                                            </div> : ctrl.type == "separator" ? "" : (
-                                                                <input
-                                                                    key={ctrl.type + ctrl.prop}
-                                                                    type={ctrl.type}
-                                                                    className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
-                                                                    placeholder={ctrl.placeholder}
-                                                                    value={currentValue}
-                                                                    onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
-                                                                />)
+                                                                !ctrl.buttoned ? <SelectTypeNotButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : <SelectTypeButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />
+                                                            ) : ctrl.type == "preset" ? <PresetComponent ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : ctrl.type == "separator" ? "" : (
+                                                                <GeneralPropInput ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />)
                                                             }
-
                                                         </div>
                                                     )
                                                 } if (ctrl.conditions.length == 0) {
@@ -176,16 +154,7 @@ export default function PropertiesTab({
                                                             ) : ctrl.type === "select" ? (
                                                                 !ctrl.buttoned ? <SelectTypeNotButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : <SelectTypeButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />
                                                             ) : ctrl.type == "preset" ? <PresetComponent ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : ctrl.type == "separator" ? "" : (
-                                                                <>
-                                                                    <input
-                                                                        type={ctrl.type}
-                                                                        className={`w-full bg-white dark:bg-gray-900 ${ctrl.type === 'color' ? 'h-8 p-1' : 'px-2 py-1.5'}  border-b text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all   border-couleur2  appearance-none shad`}
-                                                                        placeholder={ctrl.placeholder}
-                                                                        value={currentValue}
-                                                                        onChange={(e) => handleStyleChange(ctrl.prop, e.target.value)}
-                                                                    />
-                                                                    {/* {ctrl.type == "color" && <ColorPicker label={""} onChange={handleStyleChange} value={currentValue} cssProp={ctrl.prop} />} */}
-                                                                </>)
+                                                                <GeneralPropInput ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />)
                                                             }
                                                         </div>
                                                     )

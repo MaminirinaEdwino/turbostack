@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { GoApp } from "../../../../services/bridge";
 import ResetBtn from "./resetBtn";
 import { ColorPicker } from "./colorPicker";
+import NumberTypePropInput from "./numberTypePropInput";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
@@ -116,25 +117,12 @@ export default function PropertiesTab({
 
                                                 if (ctrl.conditions && ctrl.conditions.length > 0 && ctrl.conditions[1] == currentStyles[ctrl.conditions[0]]) {
                                                     return (
-                                                        <div key={ctrl.prop+group} className={"flex flex-col gap-1 justify-between  my-1 " + (ctrl.grid && ctrl.grid)}>
+                                                        <div key={ctrl.prop + group} className={"flex flex-col gap-1 justify-between  my-1 " + (ctrl.grid && ctrl.grid)}>
                                                             <ResetBtn ctrl={ctrl} handleStyleChange={handleStyleChange} />
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
-                                                                    <input
-                                                                        key={ctrl.prop+group}
-                                                                        type="number"
-                                                                        className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0"
-                                                                        placeholder="e.g. 10"
-                                                                        value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
-                                                                        disabled={currentValue === "auto"}
-                                                                        onChange={(e) => {
-                                                                            const numValue = e.target.value;
-                                                                            let unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
-                                                                            if (unit === "auto") unit = "px";
-                                                                            handleStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${ctrl.unite ? unit : ""}`);
-                                                                        }}
-                                                                    />
+                                                                    <NumberTypePropInput ctrl={ctrl} currentValue={currentValue} group={group} handleStyleChange={handleStyleChange} />
                                                                     {/* Sélecteur d'unité */}
                                                                     {ctrl.unite && <select
                                                                         key={ctrl.prop + ctrl.unit}
@@ -194,20 +182,7 @@ export default function PropertiesTab({
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
                                                                     {/* Input numérique pour la valeur */}
-                                                                    <input
-                                                                        key={"condition" + ctrl.prop + ctrl.conditions}
-                                                                        type="number"
-                                                                        className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  border-b border-couleur2 ring-couleur1/20 transition-all appearance-none outline-0 text-sm"
-                                                                        placeholder="10"
-                                                                        value={currentValue === "auto" ? "" : (parseFloat(currentValue) || "")}
-                                                                        disabled={currentValue === "auto"}
-                                                                        onChange={(e) => {
-                                                                            const numValue = e.target.value;
-                                                                            let unit = currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px";
-                                                                            if (unit === "auto") unit = "px";
-                                                                            handleStyleChange(ctrl.prop, numValue === "" ? "" : `${numValue}${ctrl.unite ? unit : ""}`);
-                                                                        }}
-                                                                    />
+                                                                    <NumberTypePropInput ctrl={ctrl} currentValue={currentValue} group={group} handleStyleChange={handleStyleChange} />
                                                                     {/* Sélecteur d'unité */}
                                                                     {ctrl.unite && <select
                                                                         className="bg-white dark:bg-gray-900 px-1 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-6 outline-0"
@@ -228,7 +203,7 @@ export default function PropertiesTab({
                                                                     </select>}
 
                                                                 </div>
-                                                                
+
                                                             ) : ctrl.type === "select" ? (
                                                                 !ctrl.buttoned ? <select
                                                                     className="w-full bg-white dark:bg-gray-900 px-2 py-1.5  text-xs outline-none focus:ring-0 ring-couleur1/20 transition-all border-b  border-couleur2  appearance-none"

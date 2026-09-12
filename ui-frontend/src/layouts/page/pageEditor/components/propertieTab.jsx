@@ -11,6 +11,7 @@ import { ColorPicker } from "./colorPicker";
 import NumberTypePropInput from "./numberTypePropInput";
 import PropUnitSelector from "./propUnitSelector";
 import { SelectTypeButtoned, SelectTypeNotButtoned } from "./selectType";
+import PresetComponent from "./presetComponent";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
@@ -174,14 +175,7 @@ export default function PropertiesTab({
 
                                                             ) : ctrl.type === "select" ? (
                                                                 !ctrl.buttoned ? <SelectTypeNotButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : <SelectTypeButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />
-                                                            ) : ctrl.type == "preset" ? <div className="flex flex-wrap gap-1">
-                                                                {ctrl.presetType == "color" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " border-2 border-couleur2")} style={{ backgroundImage: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
-                                                                </button>)}
-
-
-                                                                {ctrl.presetType == "box-shadow" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " bg-couleur2/20")} style={{ boxShadow: opt }} onClick={(e) => handleStyleChange(ctrl.prop, opt)}>
-                                                                </button>)}
-                                                            </div> : ctrl.type == "separator" ? "" : (
+                                                            ) : ctrl.type == "preset" ? <PresetComponent ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : ctrl.type == "separator" ? "" : (
                                                                 <>
                                                                     <input
                                                                         type={ctrl.type}

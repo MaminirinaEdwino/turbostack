@@ -9,6 +9,7 @@ import { GoApp } from "../../../../services/bridge";
 import ResetBtn from "./resetBtn";
 import { ColorPicker } from "./colorPicker";
 import NumberTypePropInput from "./numberTypePropInput";
+import PropUnitSelector from "./propUnitSelector";
 
 export default function PropertiesTab({
     currentActiveBlock, getIconForTag, updateBlock, handleStyleChange, availablePages,
@@ -124,25 +125,7 @@ export default function PropertiesTab({
                                                                     {/* Input numérique pour la valeur */}
                                                                     <NumberTypePropInput ctrl={ctrl} currentValue={currentValue} group={group} handleStyleChange={handleStyleChange} />
                                                                     {/* Sélecteur d'unité */}
-                                                                    {ctrl.unite && <select
-                                                                        key={ctrl.prop + ctrl.unit}
-                                                                        className="bg-white dark:bg-gray-900 px-2 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-10 outline-0"
-                                                                        value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
-                                                                        onChange={(e) => {
-                                                                            const newUnit = e.target.value;
-                                                                            if (newUnit === "auto") {
-                                                                                handleStyleChange(ctrl.prop, "auto");
-                                                                            } else {
-                                                                                const numValue = parseFloat(currentValue) || 0;
-                                                                                handleStyleChange(ctrl.prop, `${numValue}${newUnit}`);
-                                                                            }
-                                                                        }}
-                                                                    >
-                                                                        {ctrl.unite && <>
-                                                                            {ctrl.unite.map(unite => <option value={unite}>{unite}</option>)}
-                                                                        </>}
-
-                                                                    </select>}
+                                                                    {ctrl.unite && <PropUnitSelector ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />}
 
                                                                 </div>
                                                             ) : ctrl.type === "select" ? (
@@ -184,23 +167,7 @@ export default function PropertiesTab({
                                                                     {/* Input numérique pour la valeur */}
                                                                     <NumberTypePropInput ctrl={ctrl} currentValue={currentValue} group={group} handleStyleChange={handleStyleChange} />
                                                                     {/* Sélecteur d'unité */}
-                                                                    {ctrl.unite && <select
-                                                                        className="bg-white dark:bg-gray-900 px-1 py-1.5 border-b  border-couleur2 text-xs outline-none focus:ring-2 ring-couleur1/20 transition-all appearance-none min-w-6 outline-0"
-                                                                        value={currentValue === "auto" ? "auto" : (currentValue.match(/[a-zA-Z%]+$/)?.[0] || "px")}
-                                                                        onChange={(e) => {
-                                                                            const newUnit = e.target.value;
-                                                                            if (newUnit === "auto") {
-                                                                                handleStyleChange(ctrl.prop, "auto");
-                                                                            } else {
-                                                                                const numValue = parseFloat(currentValue) || 0;
-                                                                                handleStyleChange(ctrl.prop, `${numValue}${newUnit}`);
-                                                                            }
-                                                                        }}
-                                                                    >
-                                                                        {ctrl.unite && <>
-                                                                            {ctrl.unite.map(unite => <option value={unite}>{unite}</option>)}
-                                                                        </>}
-                                                                    </select>}
+                                                                    {ctrl.unite && <PropUnitSelector ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />}
 
                                                                 </div>
 

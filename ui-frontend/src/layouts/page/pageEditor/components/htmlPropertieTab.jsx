@@ -75,17 +75,6 @@ export default function HtmlPropertiesTab({
 
             {currentActiveBlock ? (
                 <div className="space-y-6">
-
-                    <div className="flex items-center gap-3 p-4 bg-couleur1/5 rounded-2xl border border-couleur1/10">
-                        <div className="p-3 bg-couleur1 text-white rounded-xl shadow-sm">
-                            {getIconForTag(currentActiveBlock.tag)}
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase text-couleur1 opacity-40">Active Block Settings</p>
-                            <p className="text-sm font-bold text-couleur1 dark:text-gray-200">{currentActiveBlock.tag.toUpperCase()}</p>
-                        </div>
-                    </div>
-
                     <div className="space-y-5">
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Tag Type</label>

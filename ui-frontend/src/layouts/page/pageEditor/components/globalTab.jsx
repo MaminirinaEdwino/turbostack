@@ -11,18 +11,10 @@ export default function GlobalTab({
     const [activeGroup, setActiveGroup] = useState(GROUP_LIST[0])
     return <>
         <div className="flex flex-col gap-6 animate-in fade-in duration-300 ">
-            <div className="flex items-center gap-3 p-4 bg-couleur1/5 rounded-2xl border border-couleur1/10">
-                <div className="p-3 bg-couleur1 text-white rounded-xl shadow-sm">
-                    <Globe size={18} />
-                </div>
-                <div>
-                    <p className="text-[10px] font-black uppercase text-couleur1 opacity-40">Page Settings</p>
-                    <p className="text-sm font-bold text-couleur1 dark:text-gray-200">Global Page Style</p>
-                </div>
-            </div>
+            
 
             <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Élément cible</label>
+                <label className="text-[10px] font-bold text-couleur1 opacity-50 uppercase tracking-wider">Target</label>
                 <select
                     className="bg-white dark:bg-gray-800 p-3 rounded-xl border border-couleur1/10 outline-none text-sm font-semibold text-couleur1 dark:text-white appearance-none cursor-pointer focus:ring-2 ring-couleur1/20 transition-all"
                     value={selectedGlobalTag}
@@ -30,8 +22,8 @@ export default function GlobalTab({
                 >
                     <optgroup label="Balises">
                         {availableSelectors.tags.map(tag => (<>
-                            <option key={tag} value={tag}>{tag === 'body' ? 'Toute la page (Body)' : `<${tag.toUpperCase()}>`}</option>
-                            <option key={tag} value={tag + ":hover"}>{tag === 'body' ? 'Toute la page (Body)' : `<${tag.toUpperCase()}>:hover`}</option>
+                            <option key={tag} value={tag}>{tag === 'body' ? 'body' : `${tag}`}</option>
+                            <option key={tag} value={tag + ":hover"}>{tag === 'body' ? 'body:hover' : `${tag}:hover`}</option>
                         </>
                         ))}
                     </optgroup>
@@ -234,11 +226,7 @@ export default function GlobalTab({
 
                 </div>
             </div>
-            <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-200/50">
-                <p className="text-[10px] text-amber-800 dark:text-amber-200 leading-tight">
-                    <strong>Astuce:</strong> Les styles appliqués ici impacteront tous les éléments correspondant au sélecteur <strong>{selectedGlobalTag}</strong>.
-                </p>
-            </div>
+           
         </div>
     </>
 }

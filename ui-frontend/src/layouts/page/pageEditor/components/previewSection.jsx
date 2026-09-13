@@ -105,7 +105,6 @@ export default function PreviewSection({ isLeftSidebarOpen, isRightSidebarOpen, 
                         <button title="separete the preview" onClick={handleDetachPreview}>
                             <MonitorUp size={15} />
                         </button>
-
                     </div>
                 </div>
             </div>
@@ -115,8 +114,8 @@ export default function PreviewSection({ isLeftSidebarOpen, isRightSidebarOpen, 
                     style={{
                         width: viewport.width,
                         // height: viewport.height,
-                        transform: `scale(${zoomLevel})`, // Correction ici
-                        transformOrigin: "top center", // Correction ici
+                        transform: `scale(${zoomLevel})`, 
+                        transformOrigin: "top center", 
                         overflow: "scroll"
                     }}
                     className="bg-white shadow-2xl transition-all duration-500 ease-in-out rounded-sm h-full "
@@ -126,7 +125,6 @@ export default function PreviewSection({ isLeftSidebarOpen, isRightSidebarOpen, 
                                         <head>
                                             <meta charset="UTF-8">
                                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
                                             <style>
                                                 body { margin: 0; padding: 0; min-height: 100vh; font-family: sans-serif; }
                                                 img { max-width: 100%; height: auto; }

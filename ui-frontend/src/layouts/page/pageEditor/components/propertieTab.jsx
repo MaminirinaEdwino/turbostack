@@ -60,7 +60,6 @@ export default function PropertiesTab({
         }
         loadProject()
     }, [projectName])
-    // Extraction intelligente des styles selon le viewport
     const getStylesForViewport = () => {
         if (!currentActiveBlock?.styles) return {};
         try {
@@ -68,7 +67,6 @@ export default function PropertiesTab({
                 const parsed = JSON.parse(currentActiveBlock.styles);
                 return parsed[activeViewport] || parsed.desktop || {};
             }
-            // Fallback pour l'ancien format string
             return parseStyles(currentActiveBlock.styles);
         } catch (e) {
             return {};
@@ -125,11 +123,8 @@ export default function PropertiesTab({
                                                             <ResetBtn ctrl={ctrl} handleStyleChange={handleStyleChange} />
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
-                                                                    {/* Input numérique pour la valeur */}
                                                                     <NumberTypePropInput ctrl={ctrl} currentValue={currentValue} group={group} handleStyleChange={handleStyleChange} />
-                                                                    {/* Sélecteur d'unité */}
                                                                     {ctrl.unite && <PropUnitSelector ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />}
-
                                                                 </div>
                                                             ) : ctrl.type === "select" ? (
                                                                 !ctrl.buttoned ? <SelectTypeNotButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : <SelectTypeButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />
@@ -144,13 +139,9 @@ export default function PropertiesTab({
                                                             <ResetBtn ctrl={ctrl} handleStyleChange={handleStyleChange} />
                                                             {ctrl.type === "number" ? (
                                                                 <div className="flex gap-1">
-                                                                    {/* Input numérique pour la valeur */}
                                                                     <NumberTypePropInput ctrl={ctrl} currentValue={currentValue} group={group} handleStyleChange={handleStyleChange} />
-                                                                    {/* Sélecteur d'unité */}
                                                                     {ctrl.unite && <PropUnitSelector ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />}
-
                                                                 </div>
-
                                                             ) : ctrl.type === "select" ? (
                                                                 !ctrl.buttoned ? <SelectTypeNotButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : <SelectTypeButtoned ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} />
                                                             ) : ctrl.type == "preset" ? <PresetComponent ctrl={ctrl} currentValue={currentValue} handleStyleChange={handleStyleChange} /> : ctrl.type == "separator" ? "" : (

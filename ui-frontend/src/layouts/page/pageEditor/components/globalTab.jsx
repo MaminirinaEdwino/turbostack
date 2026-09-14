@@ -134,6 +134,7 @@ export default function GlobalTab({
                                                     </button>)}
                                                     {ctrl.presetType == "box-shadow" && ctrl.option.map(opt => <button className={"w-10 h-10 rounded-full " + (currentValue == opt && " bg-couleur2/20")} style={{ boxShadow: opt }} onClick={(e) => handlePageStyleChange(ctrl.prop, opt)}>
                                                     </button>)}
+                                                    
                                                 </div> : ctrl.type == "separator" ? "" : (
                                                     <input
                                                         key={ctrl.type + ctrl.prop}

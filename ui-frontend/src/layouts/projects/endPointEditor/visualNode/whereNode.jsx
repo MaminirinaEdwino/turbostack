@@ -68,7 +68,7 @@ export default function WhereNode({ id, data, isConnectable }) {
 
       {
         data.parentType != "deleteNode" && <>
-          <div className="border-b border-couleur2"></div>
+          <div className="border-b border-couleur2 "></div>
           <div>
             <button className="p-2 text-couleur2 flex text-[9px] gap-2 items-center" onClick={() => data.addChildAutomatically(id, "returnNode", { model: data.model })}> <Plug size={10} /> RETURN</button>
           </div>

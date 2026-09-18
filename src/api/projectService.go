@@ -304,6 +304,7 @@ func (s *ProjectService) CreateProject(name, description, projectType string) st
 	case "webapp":
 		s.Manager.ExporterWebApp(pJson.ToModel())
 	}
+	fmt.Println("create")
 	return "Success"
 }
 

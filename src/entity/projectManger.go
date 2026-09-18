@@ -27,6 +27,7 @@ func (mgr *ProjectManager) LoadProjects() error {
 
 	projectFiles, err := os.ReadDir(config.PROJECT_DIR)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	for _, val := range projectFiles {
@@ -75,6 +76,7 @@ func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, name)
 	file, err := os.ReadFile(filePath)
 	if err != nil {
+		fmt.Println(err)
 		return ProjectJSON{}
 	}
 	json.Unmarshal(file, &pJson)

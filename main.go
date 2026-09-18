@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -28,6 +29,7 @@ func OpenDetachedPreviewWindow() {
 }
 
 func main() {
+	os.Setenv("WEBKIT_DISABLE_SANDBOX", "1")
 	debug := true
 	w := webview.New(debug)
 
@@ -52,7 +54,8 @@ func main() {
 		file.WriteString(string(content))
 	}
 	mgr.RegisterAll(w)
-
+	homeDir, _ := os.UserHomeDir()
+	fmt.Println(homeDir, "mlqdsjfmqlkjdsf")
 	pMgr = *mgr
 	w.SetTitle("Turbo Stack")
 	w.SetSize(800, 600, webview.HintNone)

@@ -1,0 +1,27 @@
+APP_NAME=TurboStack
+APP_DIR=$(APP_NAME).AppDir
+
+.PHONY: appimage build clean
+
+build:
+	CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/turbostack ./cmd/turbostack
+
+appimage: build
+	rm -rf $(APP_DIR)
+	mkdir -p $(APP_DIR)/usr/bin
+	mkdir -p $(APP_DIR)/usr/share/turbostack
+	
+	# Copie du binaire et des ressources
+	cp bin/turbostack $(APP_DIR)/usr/bin/
+	
+	# Fichiers AppImage requis
+	cp assets/turbostack.png $(APP_DIR)/turbostack.png
+	cp build/AppRun $(APP_DIR)/AppRun
+	cp build/TurboStack.desktop $(APP_DIR)/TurboStack.desktop
+	chmod +x $(APP_DIR)/AppRun
+	
+	# Génération de l'AppImage
+	ARCH=x86_64 ./appimagetool-x86_64.AppImage $(APP_DIR) $(APP_NAME)-x86_64.AppImage
+
+clean:
+	rm -rf bin/ $(APP_DIR) $(APP_NAME)-*.AppImage

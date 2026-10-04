@@ -1,0 +1,1811 @@
+import { Handle, Position } from "@xyflow/react";
+
+export default function BodyParamsNode({ id, data, isConnectable }) {
+  // const onChange = (field, value) => {
+  //   if (data.onNodeDataChange) {
+  //     data.onNodeDataChange(id, { ...data, [field]: value });
+  //   }
+  // };
+  return <div key={id} className="blocNode2">
+    <div>
+      <Handle
+        position={Position.Right}
+        type="source"
+        isConnectable={isConnectable}
+      />
+      <h2 className="header">Request Body params</h2>
+    </div>
+    <h3 className="text-[10px]">{data.bodyParams.field.nom}: {data.bodyParams.field.type} {data.bodyParams.field.default_value}</h3>
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+
+export function EqualNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div className="relative">
+            <Handle
+                type="target"
+                id={"equal_handle"}
+                position={Position.Left}
+                isConnectable={isConnectable}
+            />
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">Equal</h2>
+        </div>
+        <div>
+            <div className="relative">
+                <Handle
+                    type="source"
+                    id={"equal_value_1_handle"}
+                    position={Position.Right}
+                    isConnectable={isConnectable}
+                />
+                <span className="text-couleur2 p-4 flex justify-between">Value 1</span>
+            </div>
+            <div className="relative">
+                <Handle
+                    type="source"
+                    id={"equal_value_2_handle"}
+                    position={Position.Right}
+                    isConnectable={isConnectable}
+                />
+                <span className="text-couleur2 p-4 flex justify-between">Value 2</span>
+            </div>
+        </div>
+    </div>
+}
+
+export function DifferentNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div className="relative">
+            <Handle
+                type="target"
+                id={"different_handle"}
+                position={Position.Left}
+                isConnectable={isConnectable}
+            />
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">Different</h2>
+        </div>
+        <div>
+            <div className="relative">
+                <Handle
+                    type="source"
+                    id={"different_value_1_handle"}
+                    position={Position.Right}
+                    isConnectable={isConnectable}
+                />
+                <span className="text-couleur2 p-4 flex justify-between">Value 1</span>
+            </div>
+            <div className="relative">
+                <Handle
+                    type="source"
+                    id={"different_value_1_handle"}
+                    position={Position.Right}
+                    isConnectable={isConnectable}
+                />
+                <span className="text-couleur2 p-4 flex justify-between">Value 2</span>
+            </div>
+        </div>
+    </div>
+}
+
+export function InferiorNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div className="relative">
+            <Handle
+                type="target"
+                id={"inferior_handle"}
+                position={Position.Left}
+                isConnectable={isConnectable}
+            />
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">Inferior</h2>
+        </div>
+        <div>
+            <div relative>
+                <Handle
+                    type="source"
+                    id={"inferior_value_1_handle"}
+                    position={Position.Right}
+                    isConnectable={isConnectable}
+                />
+                <span className="text-couleur2 p-4 flex justify-between">Value 1</span>
+            </div>
+            <div className="relative">
+                <Handle
+                    type="source"
+                    id={"inferior_value_1_handle"}
+                    position={Position.Right}
+                    isConnectable={isConnectable}
+                />
+                <span className="text-couleur2 p-4 flex justify-between">Value 2</span>
+            </div>
+        </div>
+    </div>
+}
+export function SuperiorNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div className="relative">
+            <Handle
+                type="target"
+                id={"superior_handle"}
+                position={Position.Left}
+                isConnectable={isConnectable}
+            />
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">Superior</h2>
+        </div>
+
+        <div className="relative">
+            <span className="text-couleur2 p-4 flex justify-between">Value 1</span>
+            <Handle
+                type="source"
+                id={"superior_value_1_handle"}
+                position={Position.Right}
+                isConnectable={isConnectable}
+            />
+        </div>
+        <div className="relative">
+            <span className="text-couleur2 p-4 flex justify-between">Value 2</span>
+            <Handle
+                type="source"
+                id={"superior_value_1_handle"}
+                position={Position.Right}
+                isConnectable={isConnectable}
+            />
+        </div>
+    </div>
+}
+
+import { Handle, Position } from "@xyflow/react";
+import { Plug } from "lucide-react";
+
+export default function DeleteNode({ id, data, isConnectable }) {
+  // const onChange = (field, value) => {
+  //   if (data.onNodeDataChange) {
+  //     data.onNodeDataChange(id, { ...data, [field]: value });
+  //   }
+  // };
+  return <div className="blocNode2">
+    <div>
+      <h2 className="m-2 border-couleur2 text-white/50 border-b text-center">DELETE</h2>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+    </div>
+    {/* <div className="text-sm mx-2 text-couleur2 border-b">Values</div>*/}
+    {/* {
+      data.model.champs.map((field) => <div className="my-2 text-couleur2 text-[10px]">
+        <div className="flex items-center relative flex-row gap-3">
+          <Handle
+            type="target"
+            position={Position.Left}
+            isConnectable={isConnectable}
+            style={{
+              top:"3px",
+              position: "relative",
+              // left: "-8px"
+            }}
+            id={"insert-value-"+field.nom}
+          />
+          {field.nom}
+        </div>
+      </div>)
+    }
+    <div className="border-b border-couleur2 m-2"></div>*/}
+
+    <div>
+      <button className="p-2 text-couleur2 flex text-[9px] gap-2 items-center" onClick={() => data.addChildAutomatically(id, "whereNode", { model: data.model, parentType: "deleteNode" })}> <Plug size={10} />WHERE</button>
+    </div>
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+
+export default function ElseIfNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+                id={"condition_target_handle"}
+            />
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">Else If</h2>
+        </div>
+        <div className="relative">
+            <h3 className="text-couleur2 p-4 flex justify-between">condition</h3>
+            <Handle
+                type="source"
+                position={Position.Right}
+                isConnectable={isConnectable}
+                id={"condition_handle"}
+            />
+            <div className="relative text-couleur2 flex justify-evenly">
+                <button onClick={() => data.addChildAutomatically(id, "superiorNode", {})}>{'>'}</button>
+                <button onClick={() => data.addChildAutomatically(id, "inferiorNode", {})}>{'<'}</button>
+                <button onClick={() => data.addChildAutomatically(id, "equalNode", {})}>{'=='}</button>
+                <button onClick={() => data.addChildAutomatically(id, "differentNode", {})}>{'!='}</button>
+            </div>
+        </div>
+        <div className="relative">
+            <h3 className="text-couleur2 p-4 flex justify-between">Execute</h3>
+            <Handle
+                type="source"
+                position={Position.Right}
+                isConnectable={isConnectable}
+                id={"instruction_handle"}
+            />
+        </div>
+    </div>
+}import { Handle, Position } from "@xyflow/react";
+
+export default function ElseNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+                id={"condition_target_handle"}
+            />
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">Else</h2>
+        </div>
+        <div className="relative">
+            <h3 className="text-couleur2 p-4 flex justify-between">Execute</h3>
+            <Handle
+                type="source"
+                position={Position.Right}
+                isConnectable={isConnectable}
+                id={"instruction_handle"}
+            />
+        </div>
+    </div>
+}import { Handle, Position } from "@xyflow/react";
+
+export default function ForNode({ id, data, isConnectable }) {
+    const onChange = (field, value) => {
+      if (data.onNodeDataChange) {
+        data.onNodeDataChange(id, { ...data, [field]: value });
+      }
+    };
+    return <div className="bg-gray-900 border border-couleur2 rounded-md min-w-40 font-mono">
+        <div className="relative">
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">For</h2>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+            />
+        </div>
+        <div className="relative">
+            <span className="text-couleur2 p-4 flex justify-between">value </span>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+                id={"for_value_target"}
+            />
+        </div>
+        <div className="relative">
+            <span className="text-couleur2 p-4 flex justify-between">to </span>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+                id={"for_limit_target"}
+            />
+        </div>
+        <div className="relative">
+            <button className="text-couleur2 p-4 flex justify-between" onClick={()=>{
+                if (data.increment) {
+                    onChange("increment", !data.increment)
+                }else{
+                    onChange("increment", true)
+                }
+
+            }}> {data.increment ? "value++": "value--"} </button>
+        </div>
+        <div className="relative">
+            <span className="text-couleur2 p-4 flex justify-between">do </span>
+            <Handle
+                type="source"
+                position={Position.Right}
+                isConnectable={isConnectable}
+                id={"do"}
+            />
+        </div>
+    </div>
+}import { Handle, Position } from "@xyflow/react";
+// import  {nodeStyle}  from "../nodeStyle";
+
+export default function FunctionNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+
+  return (
+    <div className="shadow-lg">
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+        style={{ background: "#f38ba8" }}
+      />
+
+      <div
+        className="flex justify-between items-center"
+        style={{
+          borderBottom: "1px solid #45475a",
+          paddingBottom: "4px",
+          marginBottom: "8px",
+        }}
+      >
+        <span style={{ color: "#89b4fa", fontWeight: "bold" }}>
+          ⚡ Action / Fonction
+        </span>
+        <button
+          onClick={() => data.onDeleteNode(id)}
+          style={{
+            background: "#f38ba8",
+            color: "#11111b",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            padding: "2px 6px",
+            fontSize: "10px",
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label style={{ fontSize: "11px", color: "#a6adc8" }}>
+          Nom de l'action :
+        </label>
+        <input
+          type="text"
+          value={data.name || ""}
+          onChange={(e) => onChange("name", e.target.value)}
+          className="nodrag"
+          style={{
+            background: "#313244",
+            color: "#cdd6f4",
+            border: "1px solid #45475a",
+            borderRadius: "4px",
+            padding: "2px 4px",
+          }}
+        />
+
+        <label style={{ fontSize: "11px", color: "#a6adc8" }}>
+          Arguments / Params :
+        </label>
+        <input
+          type="text"
+          value={data.params || ""}
+          onChange={(e) => onChange("params", e.target.value)}
+          className="nodrag"
+          placeholder="req, res"
+          style={{
+            background: "#313244",
+            color: "#cdd6f4",
+            border: "1px solid #45475a",
+            borderRadius: "4px",
+            padding: "2px 4px",
+          }}
+        />
+      </div>
+
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+        style={{ background: "#a6e3a1" }}
+      />
+    </div>
+  );
+}
+import { Handle, Position } from "@xyflow/react";
+import { Plus } from "lucide-react";
+
+export default function IfElseNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div className="">
+            <h2 className="">Condition</h2>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+                id={'if_else_target_handle'}
+            />
+        </div>
+        <div className=" ">
+            <h3 className="">If  <button className="cursor-pointer" onClick={() => data.addChildAutomatically(id, "ifNode", {})}> <Plus size={14} /> </button></h3>
+            <Handle
+                type="source"
+                id={"if_handle"}
+                isConnectable={isConnectable}
+                position={Position.Right}
+            />
+
+        </div>
+        <div className="">
+            <h3 className="">Else If <button className="cursor-pointer" onClick={() => data.addChildAutomatically(id, "elseIfNode", { "sourceHandle": "else_if_handle" })}> <Plus size={14} /> </button></h3>
+            <Handle
+                type="source"
+                id={"else_if_handle"}
+                isConnectable={isConnectable}
+                position={Position.Right}
+            />
+
+        </div>
+        <div className="">
+            <h3 className="">Else <button className="cursor-pointer" onClick={() => data.addChildAutomatically(id, "elseNode", { "sourceHandle": "else_handle" })}> <Plus size={14} /> </button></h3>
+            <Handle
+                type="source"
+                id={"else_handle"}
+                isConnectable={isConnectable}
+                position={Position.Right}
+            />
+
+        </div>
+    </div>
+}import { Handle, Position } from "@xyflow/react";
+
+export default function IfNode({ id, data, isConnectable }) {
+    return <div className="blocNode2">
+        <div>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+                id={"condition_target_handle"}
+            />
+            <h2 >If</h2>
+        </div>
+        <div >
+            <h3 >condition</h3>
+            <div className="flex w-full text-couleur2 justify-evenly">
+                <button onClick={() => data.addChildAutomatically(id, "superiorNode", {})}>{'>'}</button>
+                <button onClick={() => data.addChildAutomatically(id, "inferiorNode", {})}>{'<'}</button>
+                <button onClick={() => data.addChildAutomatically(id, "equalNode", {})}>{'=='}</button>
+                <button onClick={() => data.addChildAutomatically(id, "differentNode", {})}>{'!='}</button>
+            </div>
+            <Handle
+                type="source"
+                position={Position.Right}
+                isConnectable={isConnectable}
+                id={"condition_handle"}
+            />
+        </div>
+        <div >
+            <h3>Execute</h3>
+            <Handle
+                type="source"
+                position={Position.Right}
+                isConnectable={isConnectable}
+                id={"instruction_handle"}
+            />
+        </div>
+    </div>
+}import { Handle, Position } from "@xyflow/react";
+import { Plug } from "lucide-react";
+
+export default function InsertNode({ id, data, isConnectable }) {
+  // const onChange = (field, value) => {
+  //   if (data.onNodeDataChange) {
+  //     data.onNodeDataChange(id, { ...data, [field]: value });
+  //   }
+  // };
+  return <div className="blocNode2">
+    <div>
+      <h2 className="m-2 border-couleur2 text-white/50 border-b text-center">Insert into </h2>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+        style={{
+          top: "20px",
+          background: "green",
+          borderColor: "white"
+        }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+    </div>
+    {/* <div className="text-sm mx-2 text-couleur2 border-b">Values</div>*/}
+    {
+      data.model.champs.map((field) => <div className="my-2 text-couleur2 text-[10px]">
+        <div className="flex items-center relative flex-row gap-3">
+          <Handle
+            type="target"
+            position={Position.Left}
+            isConnectable={isConnectable}
+            style={{
+              top: "3px",
+              position: "relative",
+              // left: "-8px"
+            }}
+            id={"insert-value-" + field.nom}
+          />
+          {field.nom}
+        </div>
+      </div>)
+    }
+    <div className="border-b border-couleur2 m-2">
+
+    </div>
+
+    <div>
+      <button className="p-2 text-couleur2 flex text-[9px] gap-2 items-center" onClick={() => data.addChildAutomatically(id, "returnNode", { model: data.model, parentType: "insertNode" })}> <Plug size={10} /> RETURN</button>
+    </div>
+  </div>
+}
+import { Handle, Position, useNodeConnections } from "@xyflow/react";
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Plug } from "lucide-react";
+import { useState } from "react";
+
+export default function ModelNode({ id, data, isConnectable }) {
+  // const onChange = (field, value) => {
+  //   if (data.onNodeDataChange) {
+  //     data.onNodeDataChange(id, { ...data, [field]: value });
+  //   }
+  // };
+  const [expand, setExpand] = useState(false);
+  const isConnected = useNodeConnections({ id: id, handleType: "target", handleId: "model_handle_target" })
+  // let otherData = {}
+  return (
+
+    <div className="blocNode2">
+      <div>
+        <h2 className="">{data.name}</h2>
+
+        <Handle
+          type="target"
+          id={"model_handle_target"}
+          position={Position.Left}
+          isConnectable={isConnectable}
+          style={{ backgroundColor: `${isConnected.length > 0 && "#4ecdc4"}` }}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          isConnectable={isConnectable}
+        />
+      </div>
+      <div className="m-2 pb-2 text-[10px] text-couleur2 border-b">
+        <div>
+          {data.model.champs.map((field) => <div><span >{field.nom}</span>:<span>{field.type}</span> <span>{field.default_value}</span> </div>)}
+        </div>
+      </div>
+      <div className={`flex gap-2 flex-col items-start text-couleur2 overflow-hidden transition-all duration-500 `}>
+        <h3 onClick={() => setExpand(!expand)} className="text-[.7rem] flex items-center justify-between w-full cursor-pointer">Function {expand ? <ChevronUp /> : <ChevronDown />}
+        </h3>
+
+        {/* <button
+          onClick={() => data.addChildAutomatically(id, "selectNode", {selectedType: "ONE"})}
+          className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
+        >
+          <Plug size={10}/> GET ONE
+        </button>*/}
+        {expand && <div className="flex flex-col items-start gap-1 px-2 pb-2">
+          <button
+            onClick={() => data.addChildAutomatically(id, "selectNode", { selectedType: "ALL", model: data.model })}
+            className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
+          >
+            <Plug size={10} /> GET ALL
+          </button>
+          <button
+            onClick={() => data.addChildAutomatically(id, "selectNode", { selectedType: "BY", model: data.model })}
+            className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
+          >
+            <Plug size={10} /> GET BY
+          </button>
+          <button
+            onClick={() => data.addChildAutomatically(id, "insertNode", { model: data.model })}
+            className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
+          >
+            <Plug size={10} /> INSERT
+          </button>
+          <button
+            onClick={() => data.addChildAutomatically(id, "updateNode", { model: data.model })}
+            className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
+          >
+            <Plug size={10} /> UPDATE
+          </button>
+
+          <button
+            onClick={() => data.addChildAutomatically(id, "deleteNode", { model: data.model })}
+            className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
+          >
+            <Plug size={10} /> DELETE
+          </button>
+          <button
+            onClick={() => data.addChildAutomatically(id, "whereNode", {})}
+            className="nodrag flex gap-1 justify-center items-center text-[10px] cursor-pointer"
+          >
+            <Plug size={10} /> JOIN
+          </button>
+        </div>}
+      </div>
+
+    </div>
+  );
+}
+import { Handle, Position } from "@xyflow/react";
+
+export default function RequestParams({ id, data, isConnectable }) {
+  // const onChange = (field, value) => {
+  //   if (data.onNodeDataChange) {
+  //     data.onNodeDataChange(id, { ...data, [field]: value });
+  //   }
+  // };
+  return <div key={id} className="blocNode2">
+   <div>
+     <Handle
+      position={Position.Right}
+      type="source"
+      isConnectable={isConnectable}
+      contextMenu="teste"
+      nodeId={id}
+    />
+    <h2 className="">Request params</h2>
+   </div>
+    <h3 className="text-[10px]">{data.requestParams} </h3>
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+import { Check, Plus } from "lucide-react";
+import { useState } from "react";
+
+export default function ResponseNode({ id, data, isConnectable }) {
+  const [addResponse, setAddResponse] = useState(false)
+  const [fieldName, setFieldName] = useState("")
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+  return <div className="blocNode2">
+
+   <div>
+     <Handle
+      type="target"
+      position={Position.Left}
+      isConnectable={isConnectable}
+      id={"connect_from_parent"}
+    />
+    <h2 className="text-white/50 border-b border-couleur2 m-2 flex justify-between">Response
+      <button onClick={()=>setAddResponse(!addResponse)}> <div className={`${addResponse && "rotate-45"} transition-all duration-500`}><Plus/></div></button>
+    </h2>
+   </div>
+    <div className="relative flex mb-2">
+      <span className="px-2 text-[12px]">Status Code</span>
+      <Handle
+        type="target"
+        id={"response_status"}
+        position={Position.Left}
+      />
+    </div>
+    {data.response && data.response.map((res) => <div className="relative flex py-2">
+      <Handle
+        type="target"
+        id={"response_value"}
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <span className="mx-2 text-[12px]">{res}</span>
+    </div>)}
+    {addResponse && <div className="p-2 flex items-center">
+      <input type="text" placeholder="field name" value={fieldName} onChange={(e)=>setFieldName(e.target.value)} className="border-b outline-couleur2 px-2 py-1 text-[10px]"/>
+      <button className="p-1" onClick={() => {
+        if (data.response) {
+          let list = data["response"]
+          list.push(fieldName)
+          onChange("response", list)
+          setFieldName("")
+          setAddResponse(!addResponse)
+        }
+      }}><Check/></button>
+    </div>}
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+
+export default function ReturnNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+  return <div id={id} className="blocNode2">
+    <div>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <Handle
+      type="source"
+      position={Position.Right}
+      isConnectable={isConnectable}
+    />
+      <h2 className="text-white/50 text-center border-b border-couleur2">Return</h2>
+    </div>
+    {
+      data.model.champs.map((field, id) => <div className="px-3 pb-2">
+        <input className="hidden" type="checkbox" id={field.nom + id} onChange={(e) => onChange(`${field.nom}`, e.target.checked)} />
+        <label htmlFor={field.nom + id} className={`text-[10px] ${data[field.nom] ? "text-couleur2" : "text-gray-900/80"}`}>
+          {field.nom}
+        </label>
+      </div>)
+    }
+    
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+import { Play } from "lucide-react";
+
+export default function RootNode({ isConnectable }) {
+  return <div className="p-2 bg-white shadow-xl rounded">
+    <Play size={14} className="" />
+    <Handle
+      type="source"
+      position={Position.Right}
+      isConnectable={isConnectable}
+      style={{
+
+      }}
+    />
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+import { Plug } from "lucide-react";
+
+export default function SelectNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+
+  return (
+    <div className="blocNode2" >
+      <div>
+        <Handle
+          type="target"
+          position={Position.Left}
+          isConnectable={isConnectable}
+          style={{ background: "#f38ba8" }}
+        />
+        <h2 className="text-center mb-2 text-white/50  border-b border-couleur2"> GET {data.selectedType} FROM {data.model.nom}</h2>
+        <div>
+        <Handle
+          type="source"
+          position={Position.Right}
+          isConnectable={isConnectable}
+          style={{ background: "#f38ba8" }}
+        />
+      </div>
+      </div>
+
+      <div className="text-[10px] border-b border-couleur2 p-2">
+        {data.model.champs.map((field) => <div
+          className={` flex  gap-2 items-center rounded-sm p-2 m-1 ${data[field.nom] ? "bg-couleur2 text-couleur1" : "text-couleur2"}`} >
+          <input type="checkbox" className="hidden" id={field.nom} onChange={(e) => onChange(`${field.nom}`, e.target.checked)} /> <label htmlFor={field.nom} >{field.nom}</label></div>)}
+      </div>
+      
+      <div className="flex justify-center text-couleur2">
+        <button className="flex justify-center gap-1 items-center text-[10px]" onClick={() => data.addChildAutomatically(id, "whereNode", { selectedType: data.selectedType, model: data.model })}> <Plug size={10} /> WHERE </button>
+      </div>
+
+    </div>
+  );
+}
+import { Handle, Position } from "@xyflow/react";
+
+export default function StatusCodeNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+  return <div className="blocNode2">
+    <div>
+      <h2 className="text-center text-white/50">Status Code</h2>
+      <Handle
+        type="source"
+        id={"status_code"}
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+    </div>
+    <select className="appearance-none px-3 py-1 m-2 nodrag dark:text-couleur2 text-couleur1 " onChange={(e) => onChange("status", e.target.value)}>
+      <option className="text-couleur2" value={200}>OK 200</option>
+      <option value={201}>Created 201</option>
+      <option value={404}>Not found 404</option>
+      <option value={500}>Serveur Error 500</option>
+    </select>
+
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+
+export default function TryCatchNode({ id, data, isConnectable }) {
+  return <div className="blocNode2">
+    <div className="relative border-b border-couleur2  ">
+      <Handle
+        id={"try_target_handle"}
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <h3 >Try</h3>
+      <Handle
+        id={"try_source_handle"}
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+    </div>
+    <div className="">
+      <Handle
+        id={"catch_handle"}
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+      <h3 >
+        Catch
+      </h3>
+    </div>
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+import { Plug } from "lucide-react";
+
+export default function UpdateNode({ id, data, isConnectable }) {
+  // const onChange = (field, value) => {
+  //   if (data.onNodeDataChange) {
+  //     data.onNodeDataChange(id, { ...data, [field]: value });
+  //   }
+  // };
+  return <div className="blocNode2">
+    <div>
+      <h2 className="m-2 border-couleur2 text-white/50 border-b text-center">UPDATE </h2>
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+    </div>
+    {/* <div className="text-sm mx-2 text-couleur2 border-b">Values</div>*/}
+    {
+      data.model.champs.map((field) => <div className="my-2 text-couleur2 text-[10px]">
+        <div className="flex items-center relative flex-row gap-3">
+          <Handle
+            type="target"
+            position={Position.Left}
+            isConnectable={isConnectable}
+            style={{
+              top: "3px",
+              position: "relative",
+              // left: "-8px"
+            }}
+            id={"insert-value-" + field.nom}
+          />
+          {field.nom}
+        </div>
+      </div>)
+    }
+    <div>
+
+    </div>
+    <div className="border-b border-couleur2 m-2"></div>
+
+    <div>
+      <button className="p-2 text-couleur2 flex text-[9px] gap-2 items-center" onClick={() => data.addChildAutomatically(id, "whereNode", { model: data.model, parentType: "updateNode" })}> <Plug size={10} />WHERE</button>
+    </div>
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+// import {nodestyle} from "../nodeStyle";
+
+export default function VarNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+
+  return (
+    <div className="blocNode2">
+      <div
+        className=""
+      >
+        <h2 >
+          Variable
+        </h2>
+        {/* <button
+          onClick={() => data.onDeleteNode(id)}
+        >
+          ✕
+        </button>*/}
+        <Handle
+          id={"var_" + id}
+          type="target"
+          position={Position.Left}
+          isConnectable={isConnectable}
+        />
+      </div>
+
+      <div className="flex flex-col gap-5 p-2">
+        <input
+          type="text"
+          placeholder="Nom"
+          value={data.name || ""}
+          onChange={(e) => onChange("name", e.target.value)}
+          className="nodrag bg-couleur2 px-2 py-1 rounded-sm"
+        />
+
+        <select
+          value={data.type || "string"}
+          onChange={(e) => onChange("type", e.target.value)}
+          className="nodrag appearance-none px-2 border-b"
+        >
+          <option value="string">String</option>
+          <option value="int">Integer</option>
+          <option value="boolean">Boolean</option>
+          <option value="json">JSON / Object</option>
+          <option value="node">Node</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder="Default Value"
+          value={data["default value"] || ""}
+          onChange={(e) => onChange("default value", e.target.value)}
+          className="nodrag border-b px-2"
+        />
+        <Handle
+          type="source"
+          isConnectable={isConnectable}
+          position={Position.Right}
+        />
+      </div>
+    </div>
+  );
+}
+import { Handle, Position } from "@xyflow/react";
+import { Plug } from "lucide-react";
+
+export default function WhereNode({ id, data, isConnectable }) {
+  const onChange = (field, value) => {
+    if (data.onNodeDataChange) {
+      data.onNodeDataChange(id, { ...data, [field]: value });
+    }
+  };
+  return (
+    <div className="blocNode2">
+      <div>
+        <h2 className="flex justify-center text-white/50 border-b border-couleur2 mb-2">WHERE</h2>
+        <Handle
+          type="target"
+          position={Position.Left}
+          isConnectable={isConnectable}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          isConnectable={isConnectable}
+        />
+      </div>
+      <div className="text-couleur2">
+        {data.model.champs.map((field) => <>
+          <div className="relative">
+            <input
+              className="hidden"
+              type="checkbox"
+              onChange={(e) => {
+                onChange(data.model.nom + "_check_" + field.nom, e.target.checked)
+              }}
+              id={data.model.nom + "_where_for_" + data.model.nom + "" + field.nom}
+            />
+           <div className="flex justify-between items-center px-2">
+             <label htmlFor={data.model.nom + "_where_for_" + data.model.nom + "" + field.nom}
+              className={data[data.model.nom + "_check_" + field.nom] && "border-b"}>  {field.nom} </label>
+            {data[data.model.nom + "_check_" + field.nom] && <label htmlFor={`${data.model.nom}_check_param_type_${field.nom}`} className="text-xs">{!data[data.model.nom + "_check_param_type_" + field.nom] ? "useNode" : "enter value"}</label>}
+           </div>
+
+            {
+              data[data.model.nom + "_check_" + field.nom] && <div className="flex flex-col p-2 gap-2">
+                <select className="appearance-none border-b outline-0 nodrag" onChange={(e) => onChange(data.model.nom + "_operator_" + field.nom, e.target.value)} >
+                  <option value="=">=</option>
+                  <option value=">=">{">"}=</option>
+                  <option value="<="> {"<="} </option>
+                  <option value="!=">!=</option>
+                </select>
+                <input type="checkbox" id={`${data.model.nom}_check_param_type_${field.nom}`} onChange={(e) => onChange(data.model.nom + "_check_param_type_" + field.nom, e.target.checked)} className="hidden" />
+
+                {data[data.model.nom + "_check_param_type_" + field.nom] && <input className="border-couleur2 py-1 appearance-none border-b rounded-none text-couleur1 px-1" type="text" onChange={(e) => onChange(data.model.nom + "_where_" + field.nom, e.target.value)} />}
+
+                {!data[data.model.nom + "_check_param_type_" + field.nom] && <div>
+                  <Handle
+                    type="target"
+                    id={data.model.nom + "_where_" + field.nom + "target"}
+                    position={Position.Left}
+
+                    isConnectable={isConnectable}
+                  /></div>}
+
+              </div>
+            }
+          </div>
+        </>)}
+      </div>
+
+      {
+        data.parentType != "deleteNode" && <>
+          <div className="border-b border-couleur2 "></div>
+          <div>
+            <button className="p-2 text-couleur2 flex text-[9px] gap-2 items-center" onClick={() => data.addChildAutomatically(id, "returnNode", { model: data.model })}> <Plug size={10} /> RETURN</button>
+          </div>
+        </>
+      }
+    </div>
+  );
+}
+export default function WhereSpecNode({ id, data, isConnectable }) {
+  return <div>
+    <div>Where</div>
+  </div>
+}
+import { Handle, Position } from "@xyflow/react";
+
+export default function WhileNode({id,data, isConnectable}){
+    return <div className="blocNode2">
+        <div className="relative">
+            <h2 className="p-2 border-b border-couleur2 mx-2 text-center text-white/50">While</h2>
+            <Handle
+                type="target"
+                position={Position.Left}
+                isConnectable={isConnectable}
+            />
+        </div>
+        <div className="relative">
+            <span className="text-couleur2 p-4 flex justify-between">condition</span>
+            <div className="relative text-couleur2 flex justify-evenly">
+                <button onClick={()=>data.addChildAutomatically(id, "superiorNode", {sourceHandle:"condition_handle"})}>{'>'}</button>
+                <button onClick={()=>data.addChildAutomatically(id, "inferiorNode", {sourceHandle:"condition_handle"})}>{'<'}</button>
+                <button onClick={()=>data.addChildAutomatically(id, "equalNode", {sourceHandle:"condition_handle"})}>{'=='}</button>
+                <button onClick={()=>data.addChildAutomatically(id, "differentNode", {sourceHandle:"condition_handle"})}>{'!='}</button>
+            </div>
+            <Handle
+                type="source"
+                id={"condition_handle"}
+                position={Position.Right}
+                isConnectable={isConnectable}
+            />
+        </div>
+        <div className="relative">
+            <span className="text-couleur2 p-4 flex justify-between">do</span>
+            <Handle
+                type="source"
+                id={"do_handle"}
+                position={Position.Right}
+                isConnectable={isConnectable}
+            />
+        </div>
+    </div>
+}import { useState, useEffect, useCallback } from "react";
+import {
+  applyNodeChanges,
+  applyEdgeChanges,
+  addEdge,
+  Background,
+  ReactFlow,
+  Controls,
+  useReactFlow,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { Database, LogOut, PanelLeft, Plus, Puzzle, Save } from "lucide-react";
+import RootNode from "./visualNode/rootNode";
+import FunctionNode from "./visualNode/functionNode";
+import VarNode from "./visualNode/varNode";
+import SelectNode from "./visualNode/selectNode";
+import WhereNode from "./visualNode/whereNode";
+import ModelNode from "./visualNode/modelNode";
+import BodyParamsNode from "./visualNode/bodyParamsNode";
+import RequestParams from "./visualNode/requestParams";
+import InsertNode from "./visualNode/insertNode";
+import ReturnNode from "./visualNode/returnTypeNode";
+import UpdateNode from "./visualNode/updateNode";
+import DeleteNode from "./visualNode/deleteNode";
+import ResponseNode from "./visualNode/responseNode";
+import StatusCodeNode from "./visualNode/statusCodeNode";
+import TryCatchNode from "./visualNode/tryCatchNode";
+import IfNode from "./visualNode/ifNode";
+import ElseNode from "./visualNode/elseNode";
+import IfElseNode from "./visualNode/ifElseNode";
+import ElseIfNode from "./visualNode/elseIfNode";
+import { DifferentNode, EqualNode, InferiorNode, SuperiorNode } from "./visualNode/conditionNode";
+import WhileNode from "./visualNode/whileNode";
+import ForNode from "./visualNode/forNode";
+import { GrReturn } from "react-icons/gr";
+import { ReactFlowProvider } from "@xyflow/react";
+import Toast from "../../../components/controllerEditor/toast";
+
+// Déclaration des types de nœuds sur mesure
+const nodeTypes = {
+  rootNode: RootNode,
+  functionNode: FunctionNode,
+  varNode: VarNode,
+  modelNode: ModelNode,
+  selectNode: SelectNode,
+  whereNode: WhereNode,
+  bodyParamsNode: BodyParamsNode,
+  requestParamsNode: RequestParams,
+  insertNode: InsertNode,
+  returnNode: ReturnNode,
+  updateNode: UpdateNode,
+  deleteNode: DeleteNode,
+  responseNode: ResponseNode,
+  statusCodeNode: StatusCodeNode,
+  tryCatchNode: TryCatchNode,
+  ifNode: IfNode,
+  elseNode: ElseNode,
+  ifElseNode: IfElseNode,
+  elseIfNode: ElseIfNode,
+  equalNode: EqualNode,
+  differentNode: DifferentNode,
+  superiorNode: SuperiorNode,
+  inferiorNode: InferiorNode,
+  whileNode: WhileNode,
+  forNode: ForNode
+};
+
+
+// ==========================================
+// COMPOSANT LOGIQUE DE TURBOSTACK
+// ==========================================
+export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScriptModal, colorMode }) {
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
+  const [model, setModel] = useState([]);
+  const [endPointModel, setEndPointModel] = useState([]);
+  const { fitBounds } = useReactFlow()
+  const focusOnNode = useCallback((nodePosition) => {
+    requestAnimationFrame(() => {
+      fitBounds({
+        x: nodePosition.x,
+        y: nodePosition.y,
+        width: 250,
+        height: 180,
+      },
+        {
+          duration: 800,
+          padding: 1.2
+        }
+      )
+    })
+  }, [fitBounds])
+  const [openTab, setOpenTab] = useState(false)
+  useEffect(() => {
+    if (typeof (project) == "object" && endpoint != null) {
+      let modelList = [];
+      let endPointModelList = [];
+     project?.rest_api.endpoints[endpoint]?.model != null && project?.rest_api.endpoints[endpoint]?.model.map((mdl) => {
+        project?.bdd.models.map((mdl2) => {
+          if (mdl2.nom == mdl.nom) {
+            modelList.push(mdl2);
+            endPointModelList.push(mdl);
+          }
+        })
+      })
+      setModel(modelList)
+      setEndPointModel(endPointModelList)
+    }
+  }, [endpoint, project])
+
+  const isValidConnection = useCallback(
+    (connection) => {
+      const sourceNode = nodes.find((n) => n.id === connection.source);
+      const targetNode = nodes.find((n) => n.id === connection.target);
+      if (!sourceNode || !targetNode) return false;
+      if (sourceNode == targetNode) return false;
+      if (connection.targetHandle && connection.targetHandle.startsWith("param-")) {
+        if (connection.sourceHandle == "exec-source") {
+          console.warn("connection non valide")
+          return false;
+        }
+      }
+
+      if (connection.targetHandle === "exec-target") {
+        if (connection.SourceHandle && connection.sourceHandle.startsWith("param-")) {
+          console.warn("connection non valide")
+          return false;
+        }
+      }
+      if (targetNode.type == "selectNode" && sourceNode.type != "modelNode")
+        return false;
+      const queryModifiers = ["whereNode", "joinNode"];
+      if (queryModifiers.includes(targetNode.type)) {
+        const validSources = ["selectNode", "whereNode", "joinNode", "requestParamsNode", "bodyParamsNode", "varNode"];
+        if (!validSources.includes(sourceNode.type)) {
+          console.warn(
+            "Les blocs WHERE ou JOIN doivent suivre un bloc SELECT, WHERE ou JOIN !",
+          );
+          return false;
+        }
+      }
+    },
+    [nodes],
+  );
+  // FONCTION : Modifier un bloc à chaud
+  const onNodeDataChange = useCallback((id, newData) => {
+    setNodes((nds) =>
+      nds.map((node) => (node.id === id ? { ...node, data: newData } : node)),
+    );
+  }, []);
+
+  // FONCTION : Supprimer un bloc d'instruction
+  const onDeleteNode = useCallback((id) => {
+    setNodes((nds) => nds.filter((node) => node.id !== id));
+    setEdges((eds) =>
+      eds.filter((edge) => edge.source !== id && edge.target !== id),
+    );
+  }, []);
+  const addChildAutomatically = useCallback(
+    (parentId, childType, otherData) => {
+      // const { selectedType } = otherData;
+      setNodes((currentNodes) => {
+        const parentNode = currentNodes.find((n) => n.id === parentId);
+        if (!parentNode) return currentNodes;
+
+        const childId = `${childType}_${Math.random().toString(36).substr(2, 5)}`;
+
+        // Positionner le bloc enfant intelligemment à droite du parent
+        const childPosition = {
+          x: parentNode.position.x + 300,
+          y: parentNode.position.y + ((currentNodes.length * 20) % 60), // Léger décalage pour éviter les superpositions si clics successifs
+        };
+
+        let blockData = {
+          name: childType,
+          onNodeDataChange,
+          onDeleteNode,
+          addChildAutomatically: parentNode.data.addChildAutomatically, // Permet le chaînage à l'infini (ex: dbModel -> select -> where)
+          selectedType: otherData.selectedType && otherData.selectedType,
+          model: otherData.model && otherData.model,
+          parentType: otherData.parentType && otherData.parentType
+        };
+
+        const newChildNode = {
+          id: childId,
+          type: childType,
+          position: childPosition,
+          data: blockData,
+        };
+
+        // Ajouter le lien immédiatement
+        if (otherData.sourceHandle) {
+          setEdges((currentEdges) => [
+            ...currentEdges,
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, sourceHandle: otherData.sourceHandle, style: { stroke: "#4ecdc4" } },
+          ]);
+        } else {
+          setEdges((currentEdges) => [
+            ...currentEdges,
+            { id: `e-${parentId}-${childId}`, source: parentId, target: childId, style: { stroke: "#4ecdc4" } },
+          ]);
+        }
+        focusOnNode(childPosition)
+        return [...currentNodes, newChildNode];
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onDeleteNode, onNodeDataChange],
+  );
+  // Charger la structure de données de l'API
+  useEffect(() => {
+
+    if (endpoint != null && project.rest_api.endpoints[endpoint].logic != null) {
+      // const { initialNodes, initialEdges } = flattenLogicTree(
+      //   endpoint.logic.node,
+      //   onNodeDataChange,
+      //   onDeleteNode,
+      //   addChildAutomatically,
+      // );
+      // setNodes(initialNodes);
+      // setEdges(initialEdges);
+      let initialNodes = [];
+      // let initialEdges = [];
+      JSON.parse(project.rest_api.endpoints[endpoint].logic.node).map((node) => {
+        initialNodes.push({
+          ...node,
+          data: {
+            ...node.data,
+            onNodeDataChange,
+            onDeleteNode,
+            addChildAutomatically
+          }
+        })
+      })
+      setNodes(initialNodes)
+      setEdges(JSON.parse(project.rest_api.endpoints[endpoint].logic.edge))
+    } else {
+      setNodes([]);
+      setEdges([]);
+    }
+  }, [endpoint, onNodeDataChange, onDeleteNode, addChildAutomatically, project]);
+
+  // FONCTION : Ajouter un nouveau bloc d'API depuis la barre latérale
+  const addNewBlock = (type) => {
+    const uniqueId = `${type}_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const newNode = {
+      id: uniqueId,
+      type: type === "function" ? "functionNode" : "varNode",
+      position: basePosition,
+      data: {
+        name: type === "function" ? "GetUsersDB" : "userId",
+        params: type === "function" ? "ctx" : "",
+        type: "string",
+        "default value": "",
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+      },
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+  };
+
+  const addModelBlock = (name, modelInfo) => {
+    const uniqueId = `modelNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const modelBlock = {
+      id: uniqueId,
+      type: "modelNode",
+      position: basePosition,
+      data: {
+        name: name,
+        model: modelInfo,
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+      },
+    };
+
+    setNodes((nds) => [...nds, modelBlock]);
+  };
+
+  const addRootBlock = () => {
+    const uniqueid = `rootNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+    const rootBlock = {
+      id: uniqueid,
+      type: "rootNode",
+      position: basePosition,
+      data: {
+        name: "rootNode",
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+    setNodes((nds) => [...nds, rootBlock]);
+  }
+  const addBodyParamsBlock = (bodyParams) => {
+    const uniqueId = `bodyParams_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "bodyParamsNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+        bodyParams: bodyParams
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+  const addRequestParamsBlock = (requestParams) => {
+    const uniqueId = `requestParams_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "requestParamsNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+        requestParams: requestParams
+      }
+    }
+
+    focusOnNode(basePosition)
+
+    setNodes((nds) => [...nds, block]);
+  }
+
+  const addResponseBlock = () => {
+    const uniqueId = `responseNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "responseNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+        response: []
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+
+  const addTryCatchBlock = () => {
+    const uniqueId = `tryCatchNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "tryCatchNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+  const addWhileBlock = () => {
+    const uniqueId = `whileNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "whileNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+
+  const addForBlock = () => {
+    const uniqueId = `forNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "forNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+  const addConditionBlock = () => {
+    const uniqueId = `ifElseNode_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "ifElseNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+
+  const addStatusCodeBlock = () => {
+    const uniqueId = `response_${Math.random().toString(36).substr(2, 5)}`;
+    const basePosition = { x: nodes.length * 50 + 100, y: 200 };
+
+    const block = {
+      id: uniqueId,
+      type: "statusCodeNode",
+      position: basePosition,
+      data: {
+        onNodeDataChange,
+        onDeleteNode,
+        addChildAutomatically,
+        response: []
+      }
+    }
+
+    setNodes((nds) => [...nds, block]);
+  }
+  const [toast, setToast] = useState(null)
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    if (type !== "loading") setTimeout(() => setToast(null), 3000);
+  };
+  const handleSave = useCallback(() => {
+    // const rebuiltTree = rebuildLogicTree(nodes, edges);
+    setProjet((prev) => {
+      if (prev != null) {
+        const updatedEndpoints = prev.rest_api.endpoints;
+        if (updatedEndpoints[endpoint]) {
+          updatedEndpoints[endpoint].logic = {
+            // ...updatedEndpoints[endpoint].logic,
+            node: JSON.stringify(nodes),
+            edge: JSON.stringify(edges)
+          };
+        }
+        return {
+          ...prev,
+          rest_api: { ...prev.rest_api, endpoints: updatedEndpoints },
+        };
+      } else {
+        return { ...prev };
+      }
+    });
+    showToast("Script Saved ! ", "success")
+  }, [nodes, edges, endpoint, setProjet]);
+
+  const onNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [],
+  );
+  const onEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [],
+  );
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [],
+  );
+  const onNodeClick = useCallback((event, node) => {
+    fitBounds(
+      {
+        x: node.position.x,
+        y: node.position.y,
+        width: node.measured?.width || 350,   // Utilise la largeur réelle si mesurée, sinon 250
+        height: node.measured?.height || 300, // Utilise la hauteur réelle si mesurée, sinon 180
+      },
+      {
+        duration: 600, // Animation rapide et fluide (0.6 seconde)
+        padding: 3,  // Garde une marge agréable autour du nœud cliqué
+      }
+    );
+  }, [fitBounds]);
+
+
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+
+    >
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2.5 p-1.5 rounded-2xl bg-white/70 dark:bg-gray-900/80 border border-slate-200/50 dark:border-slate-800/60 shadow-xl shadow-black/10 backdrop-blur-md transition-all">
+        {/* Bouton Sauvegarder */}
+        <button
+          onClick={handleSave}
+          className="px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 flex items-center gap-1.5 cursor-pointer text-couleur1 dark:text-couleur2 bg-white dark:bg-couleur1 border border-transparent hover:border-couleur2 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <Save size={14} className="transition-transform duration-200 group-hover:scale-110" />
+          <span>Save</span>
+        </button>
+
+        {/* Separateur visuel subtil */}
+        <div className="h-4 w-px bg-slate-300/50 dark:bg-slate-700/50" />
+
+        {/* Bouton Fermer */}
+        <button
+          onClick={() => {
+            setToggleVisualScriptModal("none");
+          }}
+          className="group px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 flex items-center gap-1.5 cursor-pointer text-couleur1 dark:text-couleur2 bg-white dark:bg-couleur1 border border-transparent hover:border-red-500/50 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/5 dark:hover:bg-red-500/10 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <Plus size={15} className="rotate-45 transition-transform duration-200 group-hover:rotate-185" />
+          <span>Close</span>
+        </button>
+      </div>
+      <div className="flex flex-1 overflow-hidden " >
+        {/* BARRE LATÉRALE D'INSTRUCTIONS D'API */}
+        {!openTab && <button
+          onClick={() => setOpenTab(true)}
+          title="Open side panel"
+          className="group fixed left-0 -translate-x-3 hover:translate-x-0 transition-transform duration-200 ease-out z-50 top-10 flex items-center gap-2 pl-4 pr-3 py-2.5 rounded-r-xl shadow-xl shadow-black/10 bg-white dark:bg-couleur1 text-couleur1 dark:text-couleur2 border border-l-0 border-slate-200/60 dark:border-slate-800/60 backdrop-blur-md cursor-pointer hover:border-couleur2"
+        >
+          <PanelLeft className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
+
+          {/* Indicateur visuel d'ouverture subtil au survol */}
+          <span className="text-xs font-semibold max-w-0 opacity-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs group-hover:opacity-100 transition-all duration-200 ease-out">
+            Panel
+          </span>
+        </button>}
+        <div
+          style={{ scrollbarWidth: "none" }}
+          className={`fixed top-0 bottom-0 z-40 w-64 h-screen flex flex-col gap-3 p-3 bg-white/80 dark:bg-gray-900/90 backdrop-blur-2xl border-r border-couleur2/40 shadow-2xl overflow-y-auto transition-all duration-300 ease-out scrollbar-none ${openTab ? "left-0" : "-left-64"
+            }`}
+        >
+          {/* En-tête du Panneau */}
+          <div className="flex items-center justify-between px-2 pt-2 pb-3 border-b border-gray-200/50 dark:border-gray-800/60">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-couleur2 animate-pulse" />
+              <h4 className="text-couleur1 text-base font-bold tracking-wide">
+                Base Blocks
+              </h4>
+            </div>
+            <button
+              onClick={() => setOpenTab(false)}
+              className="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+              title="Fermer le panneau"
+            >
+              <Plus size={18} className="rotate-45" />
+            </button>
+          </div>
+
+          {/* Section : Bloc de Contrôle de Flux */}
+          <div className="flex flex-col gap-1.5">
+            <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+              Control Flow
+            </span>
+            <button onClick={() => addRootBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> RootNode
+            </button>
+            <button onClick={() => addStatusCodeBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Status Code
+            </button>
+            <button onClick={() => addTryCatchBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Try Catch
+            </button>
+            <button onClick={() => addWhileBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> While
+            </button>
+            <button onClick={() => addForBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> For
+            </button>
+            <button onClick={() => addConditionBlock()} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> If/Else
+            </button>
+            <button onClick={() => addNewBlock("function")} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Function
+            </button>
+            <button onClick={() => addNewBlock("var")} className="dbModelStyle flex items-center gap-2">
+              <Plus size={14} /> Var
+            </button>
+            <button onClick={() => addResponseBlock()} className="dbModelStyle flex items-center gap-2">
+              <GrReturn size={14} /> Response
+            </button>
+          </div>
+
+          {/* Section : Modèles de données */}
+          {model && model.length > 0 && (
+            <div className="flex flex-col gap-1.5 pt-2 border-t border-gray-200/50 dark:border-gray-800/60">
+              <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                Database Models
+              </span>
+              {model.map((mdl, index) => (
+                <button
+                  key={`model-${mdl.nom}-${index}`}
+                  className="dbModelStyle flex items-center gap-2"
+                  onClick={() => addModelBlock(mdl.nom, mdl)}
+                >
+                  <Database size={14} /> {mdl.nom} Model
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Section : Params du Body */}
+          {endPointModel &&
+            endPointModel.map((mdl, index) => (
+              <div key={`endpoint-${mdl.nom}-${index}`} className="flex flex-col gap-1.5 pt-2 border-t border-gray-200/50 dark:border-gray-800/60">
+                <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                  {mdl.nom} Body Params
+                </span>
+                {mdl.champs &&
+                  mdl.champs.map((field, fieldIdx) => (
+                    <button
+                      key={`field-${field.nom}-${fieldIdx}`}
+                      className="dbModelStyle w-full flex items-center gap-2"
+                      onClick={() => addBodyParamsBlock({ field: field })}
+                    >
+                      <Puzzle size={14} /> {field.nom}
+                    </button>
+                  ))}
+              </div>
+            ))}
+
+          {/* Section : Request Params */}
+          {typeof project === "object" && project != null && endpoint !== undefined && (
+            <div className="flex flex-col gap-1.5 pt-2 border-t border-gray-200/50 dark:border-gray-800/60 pb-6">
+              <span className="px-2 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                Request Params
+              </span>
+              {project.rest_api?.endpoints?.[endpoint]?.params?.map((p, idx) => (
+                <button
+                  key={`param-${p}-${idx}`}
+                  className="dbModelStyle w-full flex items-center gap-2 font-mono text-xs"
+                  onClick={() => addRequestParamsBlock(`${p}`)}
+                >
+                  <span className="text-couleur2 font-bold">:</span>
+                  {p}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        {toast && (
+          <Toast toast={toast}></Toast>
+        )}
+        {/* CANVAS DE VISUAL SCRIPTING */}
+        <div className="bg-couleur3 " style={{ flex: 1, position: "relative" }}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            isValidConnection={isValidConnection}
+            fitView
+            colorMode={colorMode}
+            proOptions={{ hideAttribution: true }}
+            onNodeDoubleClick={onNodeClick}
+          >
+            <Background gap={30} variant="lines" />
+            <Controls />
+          </ReactFlow>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function TurboStackScripting(props) {
+  return (
+    <ReactFlowProvider>
+      <FlowCanvas {...props} />
+    </ReactFlowProvider>
+  )
+}

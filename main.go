@@ -30,6 +30,10 @@ func OpenDetachedPreviewWindow() {
 
 func main() {
 	// os.Setenv("WEBKIT_DISABLE_SANDBOX", "1")
+	// homeDir, err := os.UserHomeDir()
+	// fmt.Printf("DEBUG - HomeDir: %s (Err: %v)\n", homeDir, err)
+	// fmt.Printf("DEBUG - Env HOME: %s\n", os.Getenv("HOME"))
+	// fmt.Println(os.ReadDir(config.PROJECT_DIR))
 	debug := true
 	w := webview.New(debug)
 
@@ -54,8 +58,10 @@ func main() {
 		file.WriteString(string(content))
 	}
 	mgr.RegisterAll(w)
-	homeDir, _ := os.UserHomeDir()
-	fmt.Println(homeDir, "mlqdsjfmqlkjdsf")
+	// homeDir, _ := os.UserHomeDir()
+	fmt.Println(config.UserHomeDir, "this is the homedir")
+	fmt.Println(config.PROJECT_DIR, "this is the homedir")
+	fmt.Println(config.TURBO_STACK_DIR, "this is the homedir")
 	pMgr = *mgr
 	w.SetTitle("Turbo Stack")
 	w.SetSize(800, 600, webview.HintNone)

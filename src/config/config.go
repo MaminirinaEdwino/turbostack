@@ -30,7 +30,7 @@ func CheckIfExist(chemin string) bool {
 }
 
 func CheckCreateDir(path string) {
-	filePath := fmt.Sprintf("%s/%s", PROJECT_DIR, path)
+	filePath := filepath.Join(PROJECT_DIR, path)
 	if !CheckIfExist(filePath) {
 		os.MkdirAll(filePath, os.ModePerm)
 	}

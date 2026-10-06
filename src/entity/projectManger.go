@@ -73,10 +73,10 @@ func (mgr *ProjectManager) SaveProjects() error {
 
 func (mgr *ProjectManager) LoadProject(name string) ProjectJSON {
 	var pJson ProjectJSON
-	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, name)
+	filePath := filepath.Join(config.PROJECT_DIR, name)
 	file, err := os.ReadFile(filePath)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err, "load lty ee")
 		return ProjectJSON{}
 	}
 	json.Unmarshal(file, &pJson)

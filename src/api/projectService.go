@@ -361,10 +361,10 @@ func (s *ProjectService) FetchProjects() []entity.ProjectJSON {
 
 func (s *ProjectService) FetchProjectByName(name string) entity.ProjectJSON {
 	var pJson entity.ProjectJSON
-	filePath := fmt.Sprintf("%s/%s.json", config.PROJECT_DIR, name)
+	filePath := filepath.Join(config.PROJECT_DIR, name+".json")
 	file, err := os.ReadFile(filePath)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err, "by name")
 	}
 	json.Unmarshal(file, &pJson)
 	return pJson

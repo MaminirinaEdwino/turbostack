@@ -352,7 +352,6 @@ func (s *ProjectService) GetFileContent(projectName, path string) string {
 
 func (s *ProjectService) FetchProjects() []entity.ProjectJSON {
 	var projectList []entity.ProjectJSON
-	fmt.Println(s.Manager.Projects)
 	for _, val := range s.Manager.Projects {
 		projectList = append(projectList, val.ToJSON())
 	}

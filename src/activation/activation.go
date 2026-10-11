@@ -54,6 +54,6 @@ func CheckActivationToken() map[string]interface{} {
 
 func SaveTokenToFile(token string) {
 	userDir, _ := os.UserHomeDir()
-	tokenFile, _ := os.OpenFile(userDir+"/.turbostack/token", os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+	tokenFile, _ := os.OpenFile(userDir+"/.turbo_stack/token", os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	tokenFile.WriteString(token)
 }

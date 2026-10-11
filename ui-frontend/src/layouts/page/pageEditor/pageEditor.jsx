@@ -229,8 +229,8 @@ export default function PageEditor({ projectName }) {
       const typeKey = prev.type === "static" ? "site_statique" : "web_app";
       const newPage = {
         id: Math.random().toString(36).substr(2, 9),
-        nom: "New Page",
-        uri: "/new-page",
+        nom: "New Page "+ project.site_statique.pages.length,
+        uri: "/new-page-"+ project.site_statique.pages.length,
         content: [
           {
             id: Math.random().toString(36).substr(2, 9),
@@ -270,7 +270,7 @@ export default function PageEditor({ projectName }) {
 
       const newComponent = {
         id: Math.random().toString(36).substr(2, 9),
-        nom: "New Component",
+        nom: "New Component "+ project.site_statique.composants.length,
         content: [],
       };
       const updatedComponents = [

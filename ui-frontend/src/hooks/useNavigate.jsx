@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { setActualWindow, setActualProject } from "../appSlice";
 
-export const useNavigate = ()=>{
+export const useNavigate = () => {
     const dispatch = useDispatch();
 
     const navigateTo = (windowName) => {
@@ -11,7 +11,7 @@ export const useNavigate = ()=>{
     return navigateTo;
 }
 
-export const useNavigateProject = ()=>{
+export const useNavigateProject = () => {
     const dispatch = useDispatch();
 
     const navigateToProject = (projectName) => {

@@ -267,7 +267,75 @@ func (s *ProjectService) SaveScript(projectName, scriptName, script string) stri
 	return "success"
 }
 
-func (s *ProjectService) ExportProject(name, typeProject string) string {
+func CopyDir(src string, dst string) error {
+	// Récupérer les informations du dossier source (pour les permissions)
+	srcInfo, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	// Créer le dossier de destination avec les mêmes permissions
+	if err := os.MkdirAll(dst, srcInfo.Mode()); err != nil {
+		return err
+	}
+
+	// Lire le contenu du dossier source
+	entries, err := os.ReadDir(src)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		srcPath := filepath.Join(src, entry.Name())
+		dstPath := filepath.Join(dst, entry.Name())
+
+		if entry.IsDir() {
+			// Si c'est un sous-dossier, on appelle la fonction de manière récursive
+			if err := CopyDir(srcPath, dstPath); err != nil {
+				return err
+			}
+		} else {
+			// Si c'est un fichier, on le copie
+			if err := CopyFile(srcPath, dstPath); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// CopyFile copie un fichier unique de src vers dst
+func CopyFile(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	// Récupérer les permissions du fichier source
+	srcInfo, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	// Créer le fichier de destination avec les mêmes permissions
+	out, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcInfo.Mode())
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Copier efficacement les données
+	if _, err = io.Copy(out, in); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
+func (s *ProjectService) ExportProject(name, typeProject, path string) string {
 	var pJson entity.ProjectJSON
 	config.CheckCreateDir(name)
 	pJson = s.FetchProjectByName(name)
@@ -279,12 +347,13 @@ func (s *ProjectService) ExportProject(name, typeProject string) string {
 		config.CheckCreateDir(fmt.Sprintf("%s/models", name))
 		s.Manager.ExporterDB(pJson.ToModel())
 	case "frontend":
-		config.CheckCreateDir(fmt.Sprintf("%s/frontend", name))
+		// config.CheckCreateDir(fmt.Sprintf("%s/frontend", name))
 		s.Manager.ExporterStaticSite(pJson.ToModel())
 	case "full":
 		config.CheckCreateDir(fmt.Sprintf("%s/webapp", name))
 		s.Manager.ExporterWebApp(pJson.ToModel())
 	}
+	CopyDir(filepath.Join(config.PROJECT_DIR, name), filepath.Join(path, name))
 	return "Success"
 }
 

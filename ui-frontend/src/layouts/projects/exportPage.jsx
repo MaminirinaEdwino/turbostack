@@ -24,10 +24,10 @@ export default function ProjectHomePage({ projectName }) {
     try {
       // Appel au backend Go pour l'exportation
       // On passe le nom du projet et le type d'export (api, models, frontend, all)
-      await GoApp.exportProject(projectName, type); // On suppose que le backend gère le flag type
+      await GoApp.exportProject(projectName, type, folder); // On suppose que le backend gère le flag type
       setStatus({
         type: "success",
-        message: `Le code ${type.toUpperCase()} a été exporté avec succès !`,
+        message: `${projectName} ${type} code exported at : ${folder} `,
       });
       setTimeout(() => setStatus(null), 3000);
     } catch (error) {

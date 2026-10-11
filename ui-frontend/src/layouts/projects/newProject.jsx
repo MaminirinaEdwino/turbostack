@@ -2,10 +2,26 @@ import LayoutHeader from "../../components/layoutHeader";
 import MainLayout from "../mainLayout";
 import newProjetIllustration from "../../assets/newProject.svg";
 import { useNavigate } from "../../hooks/useNavigate";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GoApp } from "../../services/bridge";
 import { X, FolderPlus } from "lucide-react";
 export default function NewProject() {
+  const [projectList, setProjects] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await GoApp.fetchProjects();
+        if (response != null) {
+          setProjects(response);
+          console.log(response)
+        }
+      } catch (err) {
+        console.error("Erreur Turbo Stack:", err);
+      }
+    };
+    loadData();
+  }, []);
   const navigateTo = useNavigate();
   const [newProjectValue, setNewProject] = useState({
     name: "",
@@ -62,6 +78,7 @@ export default function NewProject() {
                     }))
                   }
                 />
+                {projectList.filter(val=>val.nom == newProjectValue.name).length > 0 && <p className="text-red-500 text-xs">Project already exists !</p>}
               </div>
               <div className="flex flex-col gap-2">
                 <label
@@ -109,16 +126,19 @@ export default function NewProject() {
                 </select>
               </div>
               <div className="flex gap-4 mt-4">
-                <button
-                  onClick={handleCreateProject}
-                  className="flex-1 flex items-center justify-center gap-2 bg-couleur1 text-white py-3 rounded-xl hover:shadow-lg hover:bg-opacity-90 transition-all font-bold"
-                >
-                  <FolderPlus size={20} /> Create Project
-                </button>
+                {
+                  projectList.filter(val=>val.nom == newProjectValue.name).length == 0 && newProjectValue.description != "" && newProjectValue.name != "" && newProjectValue.type != "" && <button
+
+                    onClick={handleCreateProject}
+                    className="flex-1 flex items-center justify-center gap-2 bg-couleur1 text-white py-3 rounded-xl hover:shadow-lg hover:bg-opacity-90 transition-all font-bold cursor-pointer"
+                  >
+                    <FolderPlus size={20} /> Create Project
+                  </button>
+                }
                 <button
                   type="button"
                   onClick={() => navigateTo("Project")}
-                  className="px-6 py-3 rounded-xl border border-couleur1 text-couleur1 font-bold hover:bg-couleur3 transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-xl border border-couleur1 text-couleur1 font-bold hover:bg-couleur3 transition-all flex items-center gap-2 cursor-pointer"
                 >
                   <X size={20} /> Cancel
                 </button>

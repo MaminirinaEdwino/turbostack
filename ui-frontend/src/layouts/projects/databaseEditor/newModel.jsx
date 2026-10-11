@@ -283,7 +283,9 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-                <button onClick={handleNewModel} className="px-6 py-2.5 bg-couleur1 hover:bg-couleur1/90 text-white font-semibold text-sm rounded-xl shadow-md transition-all cursor-pointer active:scale-95">Save</button>
+                {
+                    modelName != "" && <button onClick={handleNewModel} className="px-6 py-2.5 bg-couleur1 hover:bg-couleur1/90 text-white font-semibold text-sm rounded-xl shadow-md transition-all cursor-pointer active:scale-95">Save</button>
+                }
                 <button className="px-6 py-2.5 bg-couleur3 dark:bg-gray-800 hover:bg-couleur3/80 dark:hover:bg-gray-700 text-couleur1 dark:text-gray-200 font-semibold text-sm rounded-xl border border-couleur1/20 dark:border-white/20 transition-all cursor-pointer active:scale-95" onClick={handleCancel}>Cancel</button>
             </div>
         </div>

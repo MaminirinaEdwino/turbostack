@@ -6,12 +6,14 @@ import Exportheader from "./exportHeader";
 import ExportButton from "./exportBtn";
 import ExportNotification from "./exportNotification";
 import DarkModeToggle from "../../components/darkModeToggle";
+import FolderSelector from "./folderSelector";
 
 export default function ProjectHomePage({ projectName }) {
   const navigateTo = useNavigate();
   const [exporting, setExporting] = useState(null);
   const [status, setStatus] = useState(null);
-
+  const [folder, setFolder] = useState(null)
+  const [showModal, setShowModal] = useState(false)
   const handleExport = async (type) => {
     setExporting(type);
     setStatus({
@@ -80,6 +82,25 @@ export default function ProjectHomePage({ projectName }) {
         navigateTo={navigateTo}
         projectName={projectName}
       ></Exportheader>
+      <div className="flex flex-col gap-2 w-full max-w-md">
+            <label className="text-sm font-medium text-gray-700">Select Export Folder</label>
+            <div className="flex items-center gap-2">
+                <input 
+                    type="text" 
+                    readOnly 
+                    value={folder} 
+                    placeholder="No folder selected..." 
+                    className="flex-1 border border-couleur1/30 rounded-xl px-3 py-2 text-sm bg-gray-50/50 focus:outline-none"
+                />
+                <label className="bg-couleur1 text-white px-4 py-2 rounded-xl text-sm font-medium cursor-pointer hover:opacity-90 transition-all shadow-sm" onClick={()=>setShowModal(true)}>
+                    Browse
+                   
+                </label>
+            </div>
+        </div>
+      {
+        showModal && <FolderSelector onSelectFolder={setFolder} onClose={()=>setShowModal(false)}/>
+      }
       {/* Grille d'actions d'exportation */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {exportActions.map((action) => (
@@ -93,6 +114,7 @@ export default function ProjectHomePage({ projectName }) {
 
       {/* Notification de statut */}
       {status && <ExportNotification status={status}></ExportNotification>}
+      
     </div>
   );
 }

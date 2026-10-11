@@ -30,10 +30,10 @@ func OpenDetachedPreviewWindow() {
 
 func main() {
 	// os.Setenv("WEBKIT_DISABLE_SANDBOX", "1")
-	// homeDir, err := os.UserHomeDir()
-	// fmt.Printf("DEBUG - HomeDir: %s (Err: %v)\n", homeDir, err)
-	// fmt.Printf("DEBUG - Env HOME: %s\n", os.Getenv("HOME"))
-	// fmt.Println(os.ReadDir(config.PROJECT_DIR))
+	homeDir, err := os.UserHomeDir()
+	fmt.Printf("DEBUG - HomeDir: %s (Err: %v)\n", homeDir, err)
+	fmt.Printf("DEBUG - Env HOME: %s\n", os.Getenv("HOME"))
+	fmt.Println(os.ReadDir(config.PROJECT_DIR))
 	debug := true
 	w := webview.New(debug)
 

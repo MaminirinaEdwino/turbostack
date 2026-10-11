@@ -31,13 +31,15 @@ func (mgr *ProjectManager) LoadProjects() error {
 		return err
 	}
 	for _, val := range projectFiles {
+		fmt.Println(val.Name(), "read file pro")
 		if !val.IsDir() {
 			var pJson ProjectJSON
 			var p Project
 			filePath := fmt.Sprintf("%s/%s", config.PROJECT_DIR, val.Name())
+			fmt.Println(filePath, "file path ito")
 			saveFile, err := os.ReadFile(filePath)
 			if err != nil {
-				return err
+				fmt.Println(err.Error(), "eraera")
 			}
 
 			json.Unmarshal(saveFile, &pJson)
@@ -45,6 +47,7 @@ func (mgr *ProjectManager) LoadProjects() error {
 			mgr.Projects = append(mgr.Projects, p)
 		}
 	}
+	// fmt.Println(mgr.Projects, "prjcts")
 	sort.Slice(mgr.Projects, func(i, j int) bool {
 		return mgr.Projects[i].updateAt.After(mgr.Projects[j].updateAt)
 	})

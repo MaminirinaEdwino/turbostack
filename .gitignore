@@ -10,4 +10,5 @@ index.html.1
 index.html
 TurboStack.AppDir
 linuxdeploy*
-*.AppImage
+build.sh
+TurboStack-x86_64.AppImage

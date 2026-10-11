@@ -128,7 +128,7 @@ const HomePage = () => {
 
                                 <ProjectPageView project={projectDetails} />
 
-                               
+
 
                                 {/* Web App Overview Section */}
                                 {projectDetails.type === "webapp" && (
@@ -212,7 +212,7 @@ const HomePage = () => {
                                     </section>
                                 )}
 
-                                 {projectDetails.type !== "bdd" && (
+                                {projectDetails.type !== "bdd" && (
                                     <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <div className="flex w-full flex-col gap-4">
 

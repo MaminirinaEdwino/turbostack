@@ -75,5 +75,8 @@ export const GoApp = {
     },
     getProjectType: async (projectName)=>{
         return await window.getProjectType(projectName)
+    },
+    deleteProject: async (projectName)=>{
+        return await window.deleteProject(projectName)
     }
 }

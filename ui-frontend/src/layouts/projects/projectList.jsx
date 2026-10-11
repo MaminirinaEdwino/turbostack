@@ -30,6 +30,20 @@ export default function ProjectList() {
     dispatch(setActualProject(projectName));
     dispatch(setActualWindow("Dashboard"));
   };
+  const handleDeleteProject = async (projectName) => {
+    await GoApp.deleteProject(projectName)
+    const loadData = async () => {
+      try {
+        const response = await GoApp.fetchProjects();
+        if (response != null) {
+          setProjects(response);
+        }
+      } catch (err) {
+        console.error("Erreur Turbo Stack:", err);
+      }
+    };
+    loadData();
+  }
 
   const filteredProjects = projectList.filter((name) =>
     name.nom.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -66,6 +80,7 @@ export default function ProjectList() {
               key={index + name}
               index={index}
               name={name}
+              handleDelete={handleDeleteProject}
               handleProjectSelection={handleProjectSelection}
             ></ProjectCard>
           ))}

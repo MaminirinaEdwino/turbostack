@@ -175,11 +175,7 @@ export default function SideMenu() {
   const handleToggleMenu = (e) => {
     e.preventDefault();
     dispatch(setToggleMenuSide());
-    if (toggleMenu == false) {
-      setTimeout(() => {
-        dispatch(setToggleMenuSide());
-      }, 15000);
-    }
+    
   };
   return (
     <aside

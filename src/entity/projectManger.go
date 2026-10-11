@@ -139,6 +139,10 @@ func (mgr *ProjectManager) Delete(project Project) {
 	for i, val := range mgr.Projects {
 		if val.GetNom() == project.GetNom() {
 			mgr.Projects = slices.Delete(mgr.Projects, i, i+1)
+			projectPath := filepath.Join(config.PROJECT_DIR, project.nom)
+			
+			os.Remove(projectPath+".json")
+			os.RemoveAll(projectPath)
 			break
 		}
 	}

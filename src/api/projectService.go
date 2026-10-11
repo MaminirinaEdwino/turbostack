@@ -42,6 +42,7 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("loadStyleLib", ps.LoadStyleLib)
 	w.Bind("loadCompLib", ps.LoadComponentLib)
 	w.Bind("getProjectType", ps.GetProjectType)
+	w.Bind("deleteProject", ps.DeleteProject)
 }
 
 type ProcessManager struct {
@@ -57,6 +58,11 @@ var pm = &ProcessManager{}
 func (s *ProjectService) GetProjectType(projectName string) string {
 	project := s.FetchProjectByName(projectName)
 	return project.Type
+}
+
+func (s *ProjectService) DeleteProject(projectName string) {
+	project := s.FetchProjectByName(projectName)
+	s.Manager.Delete(project.ToModel())
 }
 
 func (s *ProjectService) StartProject(projectName string) map[string]interface{} {
@@ -211,7 +217,6 @@ func handleStopProject(projectName string) map[string]interface{} {
 			"pid":       pm.pid,
 		}
 	}
-
 
 	// err := syscall.Kill(pm.cmd.Process.Pid, syscall.SIGTERM)
 	err := PkillByName(strings.ReplaceAll(projectName, " ", "_"))

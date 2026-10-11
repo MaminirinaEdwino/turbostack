@@ -6,15 +6,12 @@ import { useEffect, useState } from "react";
 import { GoApp } from "../services/bridge";
 import React from "react";
 export default function Subscription() {
-    const [subscription, setSubscription] = useState("free")
     const [toggleKeyModal, setToggleKeyModal] = useState(false)
     const [activationKey, setActivationKey] = useState("")
+    const [subscription, setSubscription] = useState("free")
     const checkToken = async () => {
         const res = await GoApp.checkToken()
-        console.log("check token")
         setSubscription(res)
-        console.log(Object.keys(res))
-        
     }
     const saveToken = async () => {
         await GoApp.saveToken(activationKey)
@@ -89,7 +86,7 @@ export default function Subscription() {
 
             {/* Contenu principal : État de l'abonnement ou Liste des offres */}
             <div className="mt-6">
-                {subscription.expired === "false" ? (
+                {subscription.expired === "false" && subscription.subscription != "free" ? (
                     <div className="bg-white border border-couleur1/20 rounded-2xl p-6 shadow-sm max-w-xl mx-auto flex flex-col gap-4">
                         <div className="flex items-center justify-between border-b pb-4">
                             <span className="text-gray-500 font-medium">Actual subscription</span>

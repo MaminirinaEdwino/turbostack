@@ -13,6 +13,7 @@ import LeftSideBar from "./components/leftSideBar";
 import { Loader2 } from "lucide-react";
 
 export default function PageEditor({ projectName }) {
+  const [subscription, setSubscription] = useState(null)
   const navigateTo = useNavigate();
   const [project, setProject] = useState(null);
   const [selectedPageIndex, setSelectedPageIndex] = useState(null);
@@ -223,27 +224,42 @@ export default function PageEditor({ projectName }) {
     channel.postMessage({ type: 'UPDATE_RENDER', blocksCss: blocksCss, globalCss: globalCss, previewHtml: previewHtml, viewport: viewport });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocksCss, globalCss, previewHtml, viewport, updateActiveItemField]);
-
+  useEffect(() => {
+    const checkToken = async () => {
+      const res = await GoApp.checkToken()
+      setSubscription(res)
+    }
+    checkToken()
+  }, [])
   const addPage = () => {
-    setProject((prev) => {
-      const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-      const newPage = {
-        id: Math.random().toString(36).substr(2, 9),
-        nom: "New Page "+ project.site_statique.pages.length,
-        uri: "/new-page-"+ project.site_statique.pages.length,
-        content: [
-          {
-            id: Math.random().toString(36).substr(2, 9),
-            tag: "div",
-            content: "<h1>New Page</h1><p>Commencez à éditer...</p>",
-            className: "p-8",
-            styles: "",
-          },
-        ],
-      };
-      const updatedPages = [...(prev[typeKey].pages || []), newPage];
-      return { ...prev, [typeKey]: { ...prev[typeKey], pages: updatedPages } };
-    });
+    const createPage = () => {
+      setProject((prev) => {
+        const typeKey = prev.type === "static" ? "site_statique" : "web_app";
+        const newPage = {
+          id: Math.random().toString(36).substr(2, 9),
+          nom: "New Page " + (project?.site_statique?.pages?.length == undefined ? 0 : project.site_statique.pages.length),
+          uri: "/new-page-" + (project.site_statique.pages?.length == undefined ? 0 : project.site_statique.pages.length),
+          content: [
+            {
+              id: Math.random().toString(36).substr(2, 9),
+              tag: "div",
+              content: "<h1>New Page</h1><p>Commencez à éditer...</p>",
+              className: "p-8",
+              styles: "",
+            },
+          ],
+        };
+        const updatedPages = [...(prev[typeKey].pages || []), newPage];
+        return { ...prev, [typeKey]: { ...prev[typeKey], pages: updatedPages } };
+      });
+    }
+    if (subscription.subscription == "free" && project.site_statique.pages.length < 5) {
+      createPage()
+    } else if (subscription.subscription == "pro") {
+      createPage()
+    } else {
+      showToast("Activate TUrboStack to add more pages", "error")
+    }
   };
 
   const removePage = (index) => {
@@ -270,7 +286,7 @@ export default function PageEditor({ projectName }) {
 
       const newComponent = {
         id: Math.random().toString(36).substr(2, 9),
-        nom: "New Component "+ project.site_statique.composants.length,
+        nom: "New Component " + project.site_statique.composants?.length,
         content: [],
       };
       const updatedComponents = [

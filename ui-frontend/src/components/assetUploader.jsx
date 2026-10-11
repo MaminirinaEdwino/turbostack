@@ -29,7 +29,7 @@ export default function AssetUploaderModal({reloadAsset}) {
         // alert(res)
         reloadAsset()
     }
-    return <div className="h-fit overflow-scroll fixed w-[75%] p-3 rounded border border-couleur2 backdrop-blur-md shadow-2xl flex flex-col gap-4 text-slate-700 transition-all top-10 dark:text-couleur3 dark:bg-gray-950">
+    return <div className="h-fit overflow-scroll fixed w-[75%] p-3 rounded border border-couleur2 backdrop-blur-md shadow-2xl flex flex-col gap-4 text-slate-700 transition-all top-10 bg-white/90 dark:text-couleur3 dark:bg-gray-950">
         {projectName}
         <h2>Choose file to Upload</h2>
         <h3>

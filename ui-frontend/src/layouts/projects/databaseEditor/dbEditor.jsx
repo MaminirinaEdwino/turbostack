@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "../../../hooks/useNavigate";
+import { useCheckToken } from "../../../hooks/useCheckToken";
 import { GoApp } from "../../../services/bridge";
 import {
   addEdge,
@@ -43,6 +44,7 @@ export default function DbEditor({ projectName }) {
   const [selectedModelIndex, setSelectedModelIndex] = useState(null);
   const [toast, setToast] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const subscription = useCheckToken()
   const onNodesChange = useCallback(
     (changes) =>
       setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
@@ -319,28 +321,38 @@ export default function DbEditor({ projectName }) {
                     <span>Reorganize Layout</span>
                   </button>
 
-                  <button
-                    className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
-                    onClick={() => {
-                      setToggleUserModal("block");
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    <User size={18} className="text-couleur1 dark:text-gray-300" />
-                    <span>Generate User Table</span>
-                  </button>
+                  {
+                    subscription?.subscription != null && <button
+                      className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
+                      onClick={() => {
+                        setToggleUserModal("block");
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <User size={18} className="text-couleur1 dark:text-gray-300" />
+                      <span>Generate User Table</span>
+                    </button>
+                  }
 
                   <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-2"></div>
-
                   <button
                     className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-bold text-couleur1 dark:text-white hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
                     onClick={() => {
-                      handleNewModelModal();
-                      setIsMenuOpen(false);
+                      const funct = () => {
+                        handleNewModelModal();
+                        setIsMenuOpen(false);
+                      }
+                      if (subscription?.subscription != "pro" && project.models.length < 5) {
+                        funct()
+                      } else if (subscription.subscription == "pro") {
+                        funct()
+                      } else {
+                        showToast("Activate Turbo stack to add more table", "error")
+                      }
                     }}
                   >
                     <Plus size={18} />
-                    <span>Add New Table</span>
+                    <span>Add New Table </span>
                   </button>
                 </div>
               </>

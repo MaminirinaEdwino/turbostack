@@ -1,6 +1,13 @@
 import { Plus, Search } from "lucide-react";
 
-export default function ProjectListHeader({searchTerm, setSearchTerm, dispatch, setActualWindow}) {
+export default function ProjectListHeader({ searchTerm, setSearchTerm, dispatch, setActualWindow }) {
+    
+    const newProjectReidrectBtn = () => <button
+        onClick={() => dispatch(setActualWindow('New Project'))}
+        className="flex items-center gap-2 bg-couleur1 text-white px-6 py-2.5 rounded-xl hover:shadow-lg hover:bg-opacity-90 transition-all font-bold"
+    >
+        <Plus size={20} /> New Project
+    </button>
     return <>
         <div className="flex items-center gap-4">
             <div className="relative group">
@@ -13,12 +20,7 @@ export default function ProjectListHeader({searchTerm, setSearchTerm, dispatch, 
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <button
-                onClick={() => dispatch(setActualWindow('New Project'))}
-                className="flex items-center gap-2 bg-couleur1 text-white px-6 py-2.5 rounded-xl hover:shadow-lg hover:bg-opacity-90 transition-all font-bold"
-            >
-                <Plus size={20} /> New Project
-            </button>
+           {newProjectReidrectBtn()}
         </div>
     </>
 }

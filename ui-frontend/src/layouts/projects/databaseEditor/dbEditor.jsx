@@ -185,9 +185,18 @@ export default function DbEditor({ projectName }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const savedb = async () => {
     showToast("Sauvegarde en cours...", "loading");
+
     try {
-      await GoApp.savedb(projectName, JSON.stringify(project));
-      showToast("Database saved successfully !");
+      const loadProject = async () => {
+        const res = await GoApp.fetchProjectByName(projectName);
+        if (res) {
+          res.bdd = project
+          await GoApp.saveProject(projectName, JSON.stringify(project));
+          showToast("Database saved successfully !");
+        };
+      };
+      loadProject();
+
     } catch (error) {
       showToast("Erreur lors de la sauvegarde", error);
     }
@@ -342,7 +351,8 @@ export default function DbEditor({ projectName }) {
                         handleNewModelModal();
                         setIsMenuOpen(false);
                       }
-                      if (subscription?.subscription != "pro" && project.models.length < 5) {
+                      alert(subscription?.subscription)
+                      if (subscription?.subscription != "pro" || subscription?.subscription == null && project.models.length < 5) {
                         funct()
                       } else if (subscription.subscription == "pro") {
                         funct()

@@ -442,7 +442,8 @@ export default function QueryBuilder({ tables = [], onClose }) {
                     <pre className="text-emerald-400 font-semibold">{generatedQuery}</pre>
                 </div>
             </div>
-            <button onClick={() => onClose()} className="text-white px-5 py-2 hover:bg-red-500 rounded-md transition-all duration-150">close</button>
+            <button onClick={() => onClose()} className="text-white px-5 py-2 border border-red-600
+             bg-red-500 rounded-md transition-all duration-150">close btn</button>
         </div>
     );
 }

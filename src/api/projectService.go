@@ -406,7 +406,8 @@ func (s *ProjectService) SaveProjectBDD(name string, bddJson string) string {
 	pJson := s.Manager.LoadProject(name)
 	json.Unmarshal([]byte(bddJson), &bdd)
 	pJson.BDD = bdd
-	pJson.Nom = name
+	fmt.Println(bddJson)
+	fmt.Println(pJson)
 	s.Manager.SaveProject(pJson)
 	return "Success"
 }

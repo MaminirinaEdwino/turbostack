@@ -194,7 +194,7 @@ export default function SideMenu() {
       </div>
       <button
         onClick={handleToggleMenu}
-        className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 w-fit hover:text-couleur3 text-couleur1 justify-start mb-1"
+        className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:bg-opacity-10 hover:bg-couleur1 w-fit hover:text-couleur3 text-couleur1 justify-start mb-1 "
       >
         <div className="shrink-0">
           {toggleMenu ? (

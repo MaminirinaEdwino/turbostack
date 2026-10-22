@@ -17,11 +17,9 @@ export const GoApp = {
         return await window.fetchByProjectName(name)
     },
     savedb: async (name, project) => {
-        alert(project.type)
         return await window.saveBdd(name, project)
     },
     saveProject: async (name, project) => {
-        alert(project.type)
         return await window.saveProject(name, project)
     },
     exportProject: async (name, type, path) => {

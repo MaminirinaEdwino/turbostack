@@ -190,8 +190,9 @@ export default function DbEditor({ projectName }) {
       const loadProject = async () => {
         const res = await GoApp.fetchProjectByName(projectName);
         if (res) {
+          console.log(project)
           res.bdd = project
-          await GoApp.saveProject(projectName, JSON.stringify(project));
+          await GoApp.saveProject(projectName, JSON.stringify(res));
           showToast("Database saved successfully !");
         };
       };

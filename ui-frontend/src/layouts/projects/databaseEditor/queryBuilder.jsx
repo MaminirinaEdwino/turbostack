@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
 import { useSelector } from "react-redux";
+import { X } from "lucide-react";
 
 export default function QueryBuilder({ tables = [], onClose }) {
     // 1. États pour la construction de la requête
@@ -146,11 +147,11 @@ export default function QueryBuilder({ tables = [], onClose }) {
     };
 
     return (
-        <div className="w-full max-w-5xl mx-auto p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 shadow-xl transition-colors space-y-6">
+        <div className="w-full max-w-5xl mx-auto p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 shadow-xl transition-colors space-y-6 max-h-[94vh] overflow-scroll">
 
             {/* En-tête */}
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4 justify-between w-full">
 
                     <div>
                         <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
@@ -160,6 +161,8 @@ export default function QueryBuilder({ tables = [], onClose }) {
                             Generate SQL queries
                         </p>
                     </div>
+                    <button onClick={() => onClose()} className="text-white p-2  border border-red-600
+             bg-red-500 rounded-md transition-all duration-150"> <X size={15}></X> </button>
                 </div>
             </div>
             <div className="flex flex-col">
@@ -442,8 +445,7 @@ export default function QueryBuilder({ tables = [], onClose }) {
                     <pre className="text-emerald-400 font-semibold">{generatedQuery}</pre>
                 </div>
             </div>
-            <button onClick={() => onClose()} className="text-white px-5 py-2 border border-red-600
-             bg-red-500 rounded-md transition-all duration-150">close btn</button>
+            
         </div>
     );
 }

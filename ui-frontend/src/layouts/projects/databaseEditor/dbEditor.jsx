@@ -352,7 +352,7 @@ export default function DbEditor({ projectName }) {
                         handleNewModelModal();
                         setIsMenuOpen(false);
                       }
-                      alert(subscription?.subscription)
+                      
                       if (subscription?.subscription != "pro" || subscription?.subscription == null && project.models.length < 5) {
                         funct()
                       } else if (subscription.subscription == "pro") {

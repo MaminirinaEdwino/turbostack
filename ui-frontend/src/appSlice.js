@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const lastProject = localStorage.getItem('turbostack_project') || "";
 const lastWindow = localStorage.getItem('turbostack_window') || 'Dashboard';
 const lastDarkMode = localStorage.getItem('turbostack_darkMode') === 'true';
+const lastLanguage = localStorage.getItem('turbostack_language') || 'fr';
 
 const appSlice = createSlice({
   name: 'app',
@@ -11,6 +12,7 @@ const appSlice = createSlice({
     actualProject: lastProject,
     toggleMenuSide: true,
     darkMode: lastDarkMode,
+    language: lastLanguage,
   },
   reducers: {
     setActualWindow: (state, action) => {
@@ -27,9 +29,17 @@ const appSlice = createSlice({
     setToggleDarkMode: (state) => {
       state.darkMode = !state.darkMode;
       localStorage.setItem('turbostack_darkMode', state.darkMode);
+    },
+    setLanguage: (state, action) => {
+      state.language = action.payload;
+      localStorage.setItem('turbostack_language', action.payload);
+    },
+    toggleLanguage: (state) => {
+      state.language = state.language === 'fr' ? 'en' : 'fr';
+      localStorage.setItem('turbostack_language', state.language);
     }
   },
 });
 
-export const { setActualWindow, setActualProject, setToggleMenuSide, setToggleDarkMode } = appSlice.actions;
+export const { setActualWindow, setActualProject, setToggleMenuSide, setToggleDarkMode, setLanguage, toggleLanguage } = appSlice.actions;
 export default appSlice.reducer;

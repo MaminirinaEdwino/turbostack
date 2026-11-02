@@ -1,3 +1,4 @@
+import { useTranslation } from "../i18n";
 import MainLayout from "../layouts/mainLayout";
 import SubscriptionCard from "../components/subscriptionCard";
 import LayoutHeader from "../components/layoutHeader";
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react";
 import { GoApp } from "../services/bridge";
 import React from "react";
 export default function Subscription() {
+  const { t } = useTranslation();
     const [toggleKeyModal, setToggleKeyModal] = useState(false)
     const [activationKey, setActivationKey] = useState("")
     const [subscription, setSubscription] = useState("free")
@@ -51,12 +53,12 @@ export default function Subscription() {
             }>
                 <div className="bg-couleur3 border border-couleur1/30 rounded-2xl shadow-2xl w-[90%] max-w-lg p-6 flex flex-col gap-4 transform transition-all">
                     <div className="flex flex-col gap-1 text-center">
-                        <h3 className="text-xl font-bold text-couleur1">Add your activation key</h3>
-                        <p className="text-sm text-gray-500">Paste your subscription token below to activate your access.</p>
+                        <h3 className="text-xl font-bold text-couleur1">{t("Add your activation key")}</h3>
+                        <p className="text-sm text-gray-500">{t("Paste your subscription token below to activate your access.")}</p>
                     </div>
 
                     <textarea
-                        placeholder="Paste key here..."
+                        placeholder={t("Paste key here...")}
                         className="border border-couleur1/30 rounded-xl bg-gray-50/50 min-h-[160px] resize-none p-3 text-sm focus:outline-none focus:ring-2 focus:ring-couleur1/50 transition-all"
                         value={activationKey}
                         onChange={(e) => setActivationKey(e.target.value)}
@@ -89,17 +91,17 @@ export default function Subscription() {
                 {subscription.expired === "false" && subscription.subscription != "free" ? (
                     <div className="bg-white border border-couleur1/20 rounded-2xl p-6 shadow-sm max-w-xl mx-auto flex flex-col gap-4">
                         <div className="flex items-center justify-between border-b pb-4">
-                            <span className="text-gray-500 font-medium">Actual subscription</span>
+                            <span className="text-gray-500 font-medium">{t("Actual subscription")}</span>
                             <span className="font-bold text-couleur1 px-3 py-1 bg-couleur1/10 rounded-full text-sm">
                                 {subscription.subscription}
                             </span>
                         </div>
                         <div className="flex items-center justify-between py-2 border-b">
-                            <span className="text-gray-500 font-medium">Start date</span>
+                            <span className="text-gray-500 font-medium">{t("Start date")}</span>
                             <span className="text-gray-800 font-semibold">{subscription.iat}</span>
                         </div>
                         <div className="flex items-center justify-between pt-2">
-                            <span className="text-gray-500 font-medium">Expiration date</span>
+                            <span className="text-gray-500 font-medium">{t("Expiration date")}</span>
                             <span className="text-gray-800 font-semibold">{subscription.exp}</span>
                         </div>
                     </div>

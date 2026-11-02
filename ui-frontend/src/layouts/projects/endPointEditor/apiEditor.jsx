@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../i18n";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "../../../hooks/useNavigate";
 import { useSelector } from "react-redux";
@@ -33,6 +34,7 @@ import DarkModeToggle from "../../../components/darkModeToggle";
 const nodeType = { endpoint: EndpointNode };
 
 export default function ApiEditor({ projectName }) {
+  const { t } = useTranslation();
   const navigateTo = useNavigate();
   const isDarkMode = useSelector((state) => state.app.darkMode);
   const [project, setProject] = useState(null);
@@ -203,7 +205,7 @@ export default function ApiEditor({ projectName }) {
           </button>
 
           <h1 className="text-couleur1 dark:text-gray-100 text-2xl font-bold tracking-tight flex items-center gap-2">
-            <span className="opacity-60 text-lg font-medium">API Editor :</span>
+            <span className="opacity-60 text-lg font-medium">{t("API Editor :")}</span>
             <span>{projectName}</span>
           </h1>
         </div>

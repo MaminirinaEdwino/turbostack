@@ -21,6 +21,7 @@ import UnifiedEditor from "./layouts/projects/unifiedEditor";
 import HelpDocumentation from "./helpComponent";
 import { GoApp } from "./services/bridge";
 import WorkspaceNavigationBar from "./components/workspaceNavigation";
+import LanguageToggle from "./components/languageToggle";
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
@@ -111,6 +112,7 @@ function App() {
 
   return (
     <>
+      <LanguageToggle />
       <button
         onClick={() => setIsDocOpen(true)}
         className="px-4 z-50 py-2 bg-couleur1 text-white rounded-lg fixed right-2 bottom-35"

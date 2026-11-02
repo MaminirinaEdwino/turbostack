@@ -1,9 +1,11 @@
+import { useTranslation } from "../../../i18n";
 import React, { useState, useMemo } from "react";
 import { GoApp } from "../../../services/bridge";
 import { useSelector } from "react-redux";
 import { X } from "lucide-react";
 
 export default function QueryBuilder({ tables = [], onClose }) {
+  const { t } = useTranslation();
     // 1. États pour la construction de la requête
     const [selectedTable, setSelectedTable] = useState(tables != null && tables.length >0 ? tables[0]?.nom : "");
     const [action, setAction] = useState("SELECT");
@@ -388,7 +390,7 @@ export default function QueryBuilder({ tables = [], onClose }) {
                             onChange={(e) => setOrderBy({ ...orderBy, field: e.target.value })}
                             className="flex-1 px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs font-mono appearance-none"
                         >
-                            <option value="">Aucun tri</option>
+                            <option value="">{t("Aucun tri")}</option>
                             {availableFieldsWithTable.map(({ table, champ }) => (
                                 <option key={`${table}.${champ}`} value={`${table}.${champ}`}>
                                     {table}.{champ}

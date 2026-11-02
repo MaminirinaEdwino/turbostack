@@ -1,3 +1,4 @@
+import { useTranslation } from "../i18n";
 import { useState, useEffect } from "react";
 import {
     Loader2,Link as LinkIcon, 
@@ -13,6 +14,7 @@ import ControllerPageSelect from "./controllerEditor/controllerPageSelect";
 import EditHeader from "./controllerEditor/editHeader";
 
 export default function ControllerEditor({ projectName }) {
+  const { t } = useTranslation();
     const navigateTo = useNavigate();
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);

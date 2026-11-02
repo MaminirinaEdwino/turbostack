@@ -1,7 +1,9 @@
+import { useTranslation } from "../../../i18n";
 import { Check, X, Layers } from "lucide-react";
 import { useState } from "react";
 
 export default function GenerateCrud({ project, setProject, setToggle }) {
+  const { t } = useTranslation();
     const [selectedModel, setSelectedModel] = useState(null);
     const [bodyFields, setBodyFields] = useState([]);
 
@@ -111,7 +113,7 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
             </div>
 
             <div className="flex flex-col gap-1 mb-6">
-                <label className="text-xs font-bold opacity-50 uppercase">Select Table</label>
+                <label className="text-xs font-bold opacity-50 uppercase">{t("Select Table")}</label>
                 <select className="border border-couleur1 p-2 rounded-lg bg-white mt-1" onChange={(e) => handleModelChange(e.target.value)} value={selectedModel?.nom || ""}>
                     <option value="">-- Choose a table --</option>
                     {availableModels.map((m, i) => <option key={i} value={m.nom}>{m.nom}</option>)}
@@ -145,7 +147,7 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
             )}
 
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1">Cancel</button>
+                <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1">{t("Cancel")}</button>
                 <button onClick={handleGenerate} disabled={!selectedModel} className={`px-5 py-2 rounded-lg bg-couleur1 text-white font-semibold flex items-center gap-2 ${!selectedModel ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}>
                     <Check size={18} /> Generate 5 Endpoints
                 </button>

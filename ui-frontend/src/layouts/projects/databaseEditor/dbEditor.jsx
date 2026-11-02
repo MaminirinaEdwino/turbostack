@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../i18n";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "../../../hooks/useNavigate";
 import { useCheckToken } from "../../../hooks/useCheckToken";
@@ -34,6 +35,7 @@ const initialNodes = [];
 const nodeType = { model: DbModel };
 const initialEdges = [];
 export default function DbEditor({ projectName }) {
+  const { t } = useTranslation();
   const navigateTo = useNavigate();
   const [project, setProject] = useState(null);
   const [nodes, setNodes] = useState(initialNodes);
@@ -286,7 +288,7 @@ export default function DbEditor({ projectName }) {
           </button>
 
           <h1 className="text-couleur1 dark:text-gray-100 text-2xl font-bold tracking-tight flex items-center gap-2">
-            <span className="opacity-60 text-lg font-medium">DB Editor :</span>
+            <span className="opacity-60 text-lg font-medium">{t("DB Editor :")}</span>
             <span>{projectName}</span>
           </h1>
         </div>
@@ -305,7 +307,7 @@ export default function DbEditor({ projectName }) {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2.5 text-couleur1 dark:text-gray-200 border border-couleur1/20 dark:border-white/20 rounded-xl hover:bg-couleur1/10 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95 cursor-pointer"
-              title="More options"
+              title={t("More options")}
             >
               <MoreVertical size={18} />
             </button>
@@ -358,7 +360,7 @@ export default function DbEditor({ projectName }) {
                       } else if (subscription.subscription == "pro") {
                         funct()
                       } else {
-                        showToast("Activate Turbo stack to add more table", "error")
+                        showToast(t("Activate Turbo stack to add more table"), "error")
                       }
                     }}
                   >

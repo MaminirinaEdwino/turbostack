@@ -1,3 +1,4 @@
+import { useTranslation } from "../../i18n";
 import LayoutHeader from "../../components/layoutHeader";
 import MainLayout from "../mainLayout";
 import newProjetIllustration from "../../assets/newProject.svg";
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react";
 import { GoApp } from "../../services/bridge";
 import { X, FolderPlus } from "lucide-react";
 export default function NewProject() {
+  const { t } = useTranslation();
   const [projectList, setProjects] = useState([]);
 
   useEffect(() => {

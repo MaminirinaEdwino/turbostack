@@ -1,3 +1,4 @@
+import { useTranslation } from "../../i18n";
 import { Folder, Plus, Search, LayoutGrid } from "lucide-react";
 import SideMenu from "../../components/sideMenu";
 import { GoApp } from "../../services/bridge";
@@ -8,6 +9,7 @@ import ProjectListHeader from "./projectListHeader";
 import ProjectCard from "./projectCard";
 
 export default function ProjectList() {
+  const { t } = useTranslation();
   const [projectList, setProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useDispatch();

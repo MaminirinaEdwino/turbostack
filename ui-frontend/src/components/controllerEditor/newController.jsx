@@ -1,6 +1,8 @@
+import { useTranslation } from "../../i18n";
 import { Plus } from "lucide-react";
 
 export default function NewController({setProject, pages, typeKey}) {
+  const { t } = useTranslation();
     return <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-couleur1">Project Logic</h2>
         <button onClick={() => {

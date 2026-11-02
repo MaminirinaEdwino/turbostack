@@ -1,3 +1,4 @@
+import { useTranslation } from "../../i18n";
 // Utilisation de Lucide pour les icônes
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
@@ -11,6 +12,7 @@ import { X, FileText, Layout, LucidePuzzle, Globe, MessageCircle, Command, Logs,
 import AiChatModal from "../../components/modalAI";
 
 const HomePage = () => {
+  const { t } = useTranslation();
     const actualProject = useSelector((state) => state.app.actualProject);
     const dispatch = useDispatch();
     const [projectDetails, setProjectDetails] = useState(null);
@@ -279,7 +281,7 @@ const HomePage = () => {
                     )
                 ) : (
                     <section className="mb-10">
-                        <h2 className="text-lg font-semibold mb-5 opacity-70 text-couleur6 dark:text-gray-400 tracking-wide uppercase">Recent Projects</h2>
+                        <h2 className="text-lg font-semibold mb-5 opacity-70 text-couleur6 dark:text-gray-400 tracking-wide uppercase">{t("Recent Projects")}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {recentProjects.length > 0 ? (
                                 recentProjects.map((projectName, index) => (

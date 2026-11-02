@@ -1,7 +1,9 @@
+import { useTranslation } from "../../../i18n";
 import { Check, X, Plus, Trash2, Database } from "lucide-react";
 import { useState } from "react";
 
 export default function NewEndpoint({ project, setProject, setToggle }) {
+  const { t } = useTranslation();
     const [endpoint, setEndpoint] = useState({
         nom: "",
         uri: "/",
@@ -184,11 +186,11 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
 
             <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs font-bold opacity-50 uppercase">Name</label>
+                    <label className="text-xs font-bold opacity-50 uppercase">{t("Name")}</label>
                     <input className="border border-couleur1 p-2 rounded-lg outline-none focus:ring-2 ring-couleur1/20" type="text" value={endpoint.nom} onChange={(e) => setEndpoint({ ...endpoint, nom: e.target.value })} placeholder="Get Users" />
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs font-bold opacity-50 uppercase">Method</label>
+                    <label className="text-xs font-bold opacity-50 uppercase">{t("Method")}</label>
                     <select className="border border-couleur1 p-2 rounded-lg bg-white appearance-none" value={endpoint.method} onChange={(e) => setEndpoint({ ...endpoint, method: e.target.value })}>
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
@@ -199,7 +201,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                     </select>
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs font-bold opacity-50 uppercase">Access Role</label>
+                    <label className="text-xs font-bold opacity-50 uppercase">{t("Access Role")}</label>
                     <select className="border border-couleur1 p-2 rounded-lg bg-white capitalize appearance-none" value={endpoint.role} onChange={(e) => setEndpoint({ ...endpoint, role: e.target.value })}>
                         {availableRoles.map(role => (
                             <option key={role} value={role}>{role}</option>
@@ -209,12 +211,12 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
             </div>
 
             <div className="flex flex-col gap-1 mb-4">
-                <label className="text-xs font-bold opacity-50 uppercase">URI Path</label>
+                <label className="text-xs font-bold opacity-50 uppercase">{t("URI Path")}</label>
                 <input className="border border-couleur1 p-2 rounded-lg font-mono text-sm" type="text" value={endpoint.uri} onChange={(e) => setEndpoint({ ...endpoint, uri: e.target.value })} />
             </div>
 
             <div className="flex flex-col gap-1 mb-6">
-                <label className="text-xs font-bold opacity-50 uppercase">Associated Models</label>
+                <label className="text-xs font-bold opacity-50 uppercase">{t("Associated Models")}</label>
                 <div className="flex flex-wrap gap-2 mt-2 border border-dashed border-couleur1/30 p-3 rounded-lg min-h-15">
                     {availableModels.map((m, i) => (
                         <button
@@ -473,7 +475,7 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
                 </div>
             </div>}
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1 hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1 hover:bg-gray-50 transition-colors">{t("Cancel")}</button>
                 <button onClick={handleSave} className="px-5 py-2 rounded-lg bg-couleur1 text-white font-semibold flex items-center gap-2 hover:bg-opacity-90 transition-all">
                     <Check size={18} /> Create Endpoint
                 </button>

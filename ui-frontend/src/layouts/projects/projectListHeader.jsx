@@ -1,6 +1,8 @@
+import { useTranslation } from "../../i18n";
 import { Plus, Search } from "lucide-react";
 
 export default function ProjectListHeader({ searchTerm, setSearchTerm, dispatch, setActualWindow }) {
+  const { t } = useTranslation();
     
     const newProjectReidrectBtn = () => <button
         onClick={() => dispatch(setActualWindow('New Project'))}

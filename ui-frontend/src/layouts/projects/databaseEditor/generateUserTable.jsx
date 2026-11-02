@@ -1,7 +1,9 @@
+import { useTranslation } from "../../../i18n";
 import { Check, User } from "lucide-react";
 import { useState } from "react";
 
 export default function GenerateUserTable({ setModelList, modelList, setToggle }) {
+  const { t } = useTranslation();
     const [roles, setRoles] = useState("admin, user");
 
     const handleGenerate = (e) => {
@@ -35,12 +37,12 @@ export default function GenerateUserTable({ setModelList, modelList, setToggle }
             </div>
             
             <div className="flex flex-col gap-1 mb-6">
-                <label className="text-xs font-bold opacity-50 uppercase">Default Roles (comma separated)</label>
+                <label className="text-xs font-bold opacity-50 uppercase">{t("Default Roles (comma separated)")}</label>
                 <input className="border border-couleur1 p-2 rounded-lg outline-none focus:ring-2 ring-couleur1/20" type="text" value={roles} onChange={(e) => setRoles(e.target.value)} placeholder="admin, user, editor" />
             </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1 hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="button" onClick={() => setToggle("none")} className="px-5 py-2 rounded-lg border border-couleur1 text-couleur1 hover:bg-gray-50 transition-colors">{t("Cancel")}</button>
                 <button onClick={handleGenerate} className="px-5 py-2 rounded-lg bg-couleur1 text-white font-semibold flex items-center gap-2 hover:bg-opacity-90 transition-all">
                     <Check size={18}/> Generate User Table
                 </button>

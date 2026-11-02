@@ -1,3 +1,4 @@
+import { useTranslation } from "../../i18n";
 import { useEffect, useState } from "react";
 import { useNavigate } from "../../hooks/useNavigate";
 import { GoApp } from "../../services/bridge";
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 
 export default function APIlist() {
+  const { t } = useTranslation();
   const navigateTo = useNavigate();
   const projectName = useSelector((state) => state.app.actualProject);
   const [project, setProject] = useState(null);
@@ -167,7 +169,7 @@ export default function APIlist() {
         </h2>
         {totalEndpoints === 0 ? (
           <p className="text-gray-600 italic">
-            No endpoints defined yet. Use the API Editor to add some.
+            {t("No endpoints defined yet.")} Use the API Editor to add some.
           </p>
         ) : (
           <>

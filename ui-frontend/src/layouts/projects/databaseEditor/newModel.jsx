@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../i18n";
 import { Check, Trash2, Edit, Plus, X } from "lucide-react";
 import { useState } from "react";
 import RelationModal from "./RelationModal";
@@ -5,6 +6,7 @@ import { FcCancel } from "react-icons/fc";
 import { MdCancel } from "react-icons/md";
 
 export default function NewModel({ modelList, setModelList, setToggle }) {
+  const { t } = useTranslation();
     const [modelName, setModelName] = useState('')
     const [addField, setAddfield] = useState(false)
     const [fields, setFields] = useState([])
@@ -108,13 +110,13 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
         <h3 className="font-bold text-2xl text-couleur1 dark:text-gray-100 tracking-tight">New Table</h3>
 
         <div className="p-2 flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-couleur1/80 dark:text-gray-300" htmlFor="modelName">Table Name</label>
+            <label className="text-xs font-semibold uppercase tracking-wider text-couleur1/80 dark:text-gray-300" htmlFor="modelName">{t("Table Name")}</label>
             <input className="border border-couleur1/20 dark:border-white/20 bg-couleur3/20 dark:bg-gray-800 text-couleur1 dark:text-gray-100 my-1 px-3.5 py-2 rounded-xl outline-none focus:ring-2 focus:ring-couleur1/50 transition-all font-medium text-sm" type="text" id="modelName" onInput={(e) => setModelName(e.target.value)} value={modelName} placeholder="Table name" />
         </div>
 
         <div>
             <div className="flex justify-between items-center p-3 bg-couleur3/30 dark:bg-gray-800/50 rounded-xl border border-couleur1/5 dark:border-white/5 mb-3">
-                <h4 className="font-semibold text-couleur1 dark:text-gray-200">Model Fields</h4>
+                <h4 className="font-semibold text-couleur1 dark:text-gray-200">{t("Model Fields")}</h4>
                 <button className="bg-couleur1 hover:bg-couleur1/90 text-white font-medium flex gap-2 items-center px-4 py-1.5 rounded-xl transition-all duration-200 text-xs shadow-xs active:scale-95 cursor-pointer" onClick={(e) => {
                     e.preventDefault()
                     setAddfield(!addField)
@@ -126,9 +128,9 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                     <thead>
                         <tr className="border-b border-couleur1/10 dark:border-white/10 bg-couleur3/20 dark:bg-gray-800/80 text-[11px] font-bold tracking-wider text-couleur1/70 dark:text-gray-400 uppercase">
                             <th className="py-3 px-4 min-w-40">Name</th>
-                            <th className="py-3 px-4 min-w-30">Type</th>
-                            <th className="py-3 px-4 min-w-40">Default Value</th>
-                            <th className="py-3 px-4 min-w-30">Constraint</th>
+                            <th className="py-3 px-4 min-w-30">{t("Type")}</th>
+                            <th className="py-3 px-4 min-w-40">{t("Default Value")}</th>
+                            <th className="py-3 px-4 min-w-30">{t("Constraint")}</th>
                             <th className="py-3 px-4 min-w-30 text-right">Action</th>
                         </tr>
                     </thead>
@@ -145,7 +147,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                             onInput={(e) => setEditField({ ...editField, type: e.target.value })}
                                             value={editField.type}
                                         >
-                                            <option value="">Type</option>
+                                            <option value="">{t("Type")}</option>
                                             <option value="int">INT</option>
                                             <option value="string">VARCHAR</option>
                                             <option value="text">TEXT</option>
@@ -228,13 +230,13 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                                     onInput={(e) => setNewField({ ...newField, type: e.target.value })}
                                     value={newField.type}
                                 >
-                                    <option value="">Type</option>
+                                    <option value="">{t("Type")}</option>
                                     <option value="int">INT</option>
                                     <option value="string">VARCHAR</option>
                                     <option value="text">TEXT</option>
                                 </select>
                             </td>
-                            <td className="p-3"><input list="default-value-list" className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium" type="text" placeholder="Default value" onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
+                            <td className="p-3"><input list="default-value-list" className="w-full px-2.5 py-1.5 border border-couleur1/30 rounded-lg outline-none focus:ring-2 focus:ring-couleur1/50 bg-white dark:bg-gray-900 text-couleur1 dark:text-gray-100 text-xs font-medium" type="text" placeholder={t("Default value")} onInput={(e) => setNewField({ ...newField, default_value: e.target.value })} value={newField.default_value} /></td>
                             <td className="p-3">
                                 <div className="flex flex-wrap gap-1 min-w-30">
                                     {["primary key", "unique", "not null", "relation", ...(newField.type === "int" ? ["autoincrement"] : [])].map(c => {
@@ -286,7 +288,7 @@ export default function NewModel({ modelList, setModelList, setToggle }) {
                 {
                     modelName != "" && <button onClick={handleNewModel} className="px-6 py-2.5 bg-couleur1 hover:bg-couleur1/90 text-white font-semibold text-sm rounded-xl shadow-md transition-all cursor-pointer active:scale-95">Save</button>
                 }
-                <button className="px-6 py-2.5 bg-couleur3 dark:bg-gray-800 hover:bg-couleur3/80 dark:hover:bg-gray-700 text-couleur1 dark:text-gray-200 font-semibold text-sm rounded-xl border border-couleur1/20 dark:border-white/20 transition-all cursor-pointer active:scale-95" onClick={handleCancel}>Cancel</button>
+                <button className="px-6 py-2.5 bg-couleur3 dark:bg-gray-800 hover:bg-couleur3/80 dark:hover:bg-gray-700 text-couleur1 dark:text-gray-200 font-semibold text-sm rounded-xl border border-couleur1/20 dark:border-white/20 transition-all cursor-pointer active:scale-95" onClick={handleCancel}>{t("Cancel")}</button>
             </div>
         </div>
 

@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../i18n";
 import { Check, X, Plus, Trash2, Database } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -7,6 +8,7 @@ export default function EditEndpoint({
   setProject,
   setToggle,
 }) {
+  const { t } = useTranslation();
   const [endpoint, setEndpoint] = useState({
     nom: "",
     uri: "/",
@@ -233,7 +235,7 @@ export default function EditEndpoint({
 
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-bold opacity-50 uppercase">Name</label>
+          <label className="text-xs font-bold opacity-50 uppercase">{t("Name")}</label>
           <input
             className="border border-couleur1 p-2 rounded-lg outline-none focus:ring-2 ring-couleur1/20"
             type="text"

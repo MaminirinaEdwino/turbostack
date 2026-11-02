@@ -1,4 +1,6 @@
+import { useTranslation } from "../i18n";
 export default function SubscriptionCard({ name, illustration, text, price, setTogglekeyModal }) {
+  const { t } = useTranslation();
     return (
         <div className="border border-couleur1/30 bg-white p-6 rounded-2xl w-80 flex flex-col items-center m-3 shadow-lg hover:shadow-xl transition-all duration-300 relative box-border group">
             {/* Badge du nom modernisé avec un léger effet d'ombre */}
@@ -21,7 +23,7 @@ export default function SubscriptionCard({ name, illustration, text, price, setT
                 onClick={() => setTogglekeyModal(true)} 
                 className="w-full bg-couleur6 text-couleur3 font-medium py-2.5 px-6 rounded-xl cursor-pointer hover:opacity-90 active:scale-95 transition-all shadow-sm"
             >
-                {price}
+                {t(price)}
             </button>
         </div>
     );

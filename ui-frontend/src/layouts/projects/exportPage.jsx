@@ -1,3 +1,4 @@
+import { useTranslation } from "../../i18n";
 import React, { useState } from "react";
 import { Database, Settings, Layout, Terminal } from "lucide-react";
 import { GoApp } from "../../services/bridge";
@@ -9,6 +10,7 @@ import DarkModeToggle from "../../components/darkModeToggle";
 import FolderSelector from "./folderSelector";
 
 export default function ProjectHomePage({ projectName }) {
+  const { t } = useTranslation();
   const navigateTo = useNavigate();
   const [exporting, setExporting] = useState(null);
   const [status, setStatus] = useState(null);

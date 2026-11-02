@@ -1,3 +1,4 @@
+import { useTranslation } from "../i18n";
 import {
   LayoutDashboard,
   CreditCard,
@@ -25,6 +26,7 @@ import logo from "../assets/logotransparent.png";
 import { GoApp } from "../services/bridge";
 import { useEffect } from "react";
 export default function SideMenu() {
+  const { t } = useTranslation();
   const navigateTo = useNavigate();
   const dispatch = useDispatch();
   const toggleMenu = useSelector((state) => state.app.toggleMenuSide);
@@ -249,7 +251,7 @@ export default function SideMenu() {
                     className={`flex-1 flex items-center justify-between transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}
                   >
                     <span className="font-medium">
-                      {item.label || item.name}
+                      {t(item.label || item.name)}
                     </span>
                     {editorExpanded || isSubActive ? (
                       <ChevronDown size={14} />
@@ -270,7 +272,7 @@ export default function SideMenu() {
                         onClick={() => navigateTo(sub.name)}
                       >
                         {sub.icon}
-                        <span>{sub.label}</span>
+                        <span>{t(sub.label)}</span>
                       </div>
                     ))}
                   </div>
@@ -287,7 +289,7 @@ export default function SideMenu() {
                         onClick={() => navigateTo(sub.name)}
                       >
                         {sub.icon}
-                        <span>{sub.label}</span>
+                        <span>{t(sub.label)}</span>
                       </div>
                     ))}
                   </div>
@@ -310,7 +312,7 @@ export default function SideMenu() {
               <span
                 className={`font-medium transition-all duration-300 ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"}`}
               >
-                {item.label || item.name}
+                {t(item.label || item.name)}
               </span>
             </div>
           );

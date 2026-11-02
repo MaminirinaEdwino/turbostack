@@ -1,7 +1,9 @@
+import { useTranslation } from "../../../i18n";
 import React, { useState } from 'react';
 import { Check, X } from 'lucide-react';
 
 export default function RelationModal({ models, onSelectRelation, onClose }) {
+  const { t } = useTranslation();
     const [selectedModelName, setSelectedModelName] = useState('');
     const [selectedFieldName, setSelectedFieldName] = useState('');
 
@@ -31,7 +33,7 @@ export default function RelationModal({ models, onSelectRelation, onClose }) {
                 <h3 className="text-xl font-bold text-couleur1 mb-4">Sélectionner la cible de la relation</h3>
 
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Modèle cible</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("Modèle cible")}</label>
                     <select
                         className="w-full p-2 border border-couleur1/30 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         value={selectedModelName}
@@ -46,7 +48,7 @@ export default function RelationModal({ models, onSelectRelation, onClose }) {
 
                 {selectedModelName && targetModel && (
                     <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Champ cible</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("Champ cible")}</label>
                         <select
                             className="w-full p-2 border border-couleur1/30 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                             value={selectedFieldName}

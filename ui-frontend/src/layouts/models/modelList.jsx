@@ -1,3 +1,4 @@
+import { useTranslation } from "../../i18n";
 import { useEffect, useState } from "react";
 import { useNavigate } from "../../hooks/useNavigate";
 import { GoApp } from "../../services/bridge";
@@ -6,6 +7,7 @@ import { useSelector } from "react-redux";
 import { Database, Table, List, ChevronLeft, ChevronRight, Settings, Code } from "lucide-react";
 
 export default function BDDModelList() {
+  const { t } = useTranslation();
     const navigateTo = useNavigate();
     const projectName = useSelector((state) => state.app.actualProject);
     const [project, setProject] = useState(null);
@@ -81,14 +83,14 @@ export default function BDDModelList() {
         <SideMenu />
         <div className="flex-1 p-8 overflow-y-auto">
             <h1 className="text-couleur1 text-3xl font-semibold mb-6 flex items-center gap-3">
-                <Database size={32} /> Database Models for {projectName}
+                <Database size={32} /> {t("Database Models for")} {projectName}
             </h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-lg shadow-md border border-couleur1/10">
                     <div className="flex items-center gap-3 mb-3">
                         <Table size={24} className="text-couleur1" />
-                        <h2 className="text-xl font-bold text-couleur1">Models Summary</h2>
+                        <h2 className="text-xl font-bold text-couleur1">{t("Models Summary")}</h2>
                     </div>
                     <p className="text-gray-700">Total Tables: <span className="font-semibold">{totalModels}</span></p>
                     <p className="text-gray-700">Total Fields: <span className="font-semibold">{totalFields}</span></p>
@@ -105,7 +107,7 @@ export default function BDDModelList() {
                 <List size={24} /> Tables Details
             </h2>
             {totalModels === 0 ? (
-                <p className="text-gray-600 italic">No tables defined yet. Use the DB Editor to add some.</p>
+                <p className="text-gray-600 italic">{t("No tables defined yet. Use the DB Editor to add some.")}</p>
             ) : (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

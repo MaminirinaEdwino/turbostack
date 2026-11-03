@@ -261,7 +261,7 @@ export default function DbEditor({ projectName }) {
 
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-couleur6 ">
-      <DarkModeToggle></DarkModeToggle>
+      {/* <DarkModeToggle></DarkModeToggle> */}
       {project?.models != null && <>
         <button className="z-50 fixed bottom-20 right-2 dark:bg-couleur1 p-2 rounded-lg dark:text-couleur3 " onClick={() => setShowQueryBuilder(!showQueryBuilder)}><Code2 /></button>
       </>}

@@ -22,11 +22,14 @@ import HelpDocumentation from "./helpComponent";
 import { GoApp } from "./services/bridge";
 import WorkspaceNavigationBar from "./components/workspaceNavigation";
 import LanguageToggle from "./components/languageToggle";
+import DarkModeToggle from "./components/darkModeToggle";
+import { Settings } from "lucide-react";
 function App() {
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
   const isDarkMode = useSelector((state) => state.app.darkMode);
   const [isAppReady, setIsAppReady] = useState(false);
+  const [setttingMenuState, setSettingMenuState] = useState(false)
   const windowList = [
     "api_editor",
     "page_editor",
@@ -112,13 +115,23 @@ function App() {
 
   return (
     <>
-      <LanguageToggle />
-      <button
-        onClick={() => setIsDocOpen(true)}
-        className="px-4 z-50 py-2 bg-couleur1 text-white rounded-lg fixed right-2 bottom-35"
-      >
-        ?
-      </button>
+
+      <div className={"fixed right-2 bottom-30 gap-1 flex flex-col items-end"}>
+        {setttingMenuState && <>
+          <LanguageToggle />
+          <button
+            title="Help Section"
+            onClick={() => setIsDocOpen(true)}
+            className="px-4 z-50 py-2 bg-couleur1 text-white rounded-lg bottom-35"
+          >
+            ?
+          </button>
+          <DarkModeToggle />
+        </>}
+        <div className={"p-3 rounded-full border border-couleur1/50 "+(setttingMenuState ? "text-white bg-couleur1": "text-couleur1 bg-couleur1/10")} onClick={()=>setSettingMenuState(!setttingMenuState)}>
+          <Settings size={18} />
+        </div>
+      </div>
 
       {/* Le composant Documentation qui s'affiche par-dessus l'interface */}
       <HelpDocumentation

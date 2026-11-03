@@ -208,14 +208,14 @@ export default function SideMenu() {
       </button>
       <nav className="sidemenu flex-1 space-y-2 overflow-y-scroll">
         {/* Theme Toggle */}
-        <button
+        {/* <button
           onClick={() => dispatch(setToggleDarkMode())}
           className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all border-couleur7 text-couleur1 hover:bg-couleur1 hover:text-white justify-start fixed w-fit bottom-0 -right-8 z-10 dark:bg-couleur1 dark:text-white dark:border-none hover:right-2 ease-in-out"
         >
           <div className="shrink-0">
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </div>
-        </button>
+        </button> */}
 
         {menuItems.map((item) => {
           const isSubActive = item.subItems?.some(

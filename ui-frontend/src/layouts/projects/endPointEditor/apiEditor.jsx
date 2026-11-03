@@ -279,7 +279,7 @@ export default function ApiEditor({ projectName }) {
           </div>
         </div>
       </div>
-      <DarkModeToggle></DarkModeToggle>
+      {/* <DarkModeToggle></DarkModeToggle> */}
       {/* Modal de création */}
       <div
         className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}

@@ -380,7 +380,7 @@ export default function PageEditor({ projectName }) {
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
       {/* Header Commun */}
       <Header activeItem={activeItem} editMode={editMode} editingType={editingType} handleSave={handleSave} navigateTo={navigateTo} project={project} projectName={projectName} setEditMode={setEditMode} updateActiveItemField={updateActiveItemField} />
-      <DarkModeToggle></DarkModeToggle>
+      {/* <DarkModeToggle></DarkModeToggle> */}
       {/* Vue Conditionnelle */}
       <div className="flex-1 overflow-y-auto p-8">
         {editMode ? (

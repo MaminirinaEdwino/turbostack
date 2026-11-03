@@ -115,7 +115,7 @@ function App() {
 
   return (
     <>
-      <div className={"fixed right-2 bottom-30 gap-1 flex flex-col items-end"}>
+      <div className={"fixed right-2 bottom-30 gap-1 flex flex-col items-end z-50" }>
         {setttingMenuState && <>
           <LanguageToggle />
           <button

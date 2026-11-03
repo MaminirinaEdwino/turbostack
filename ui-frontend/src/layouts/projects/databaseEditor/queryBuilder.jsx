@@ -152,7 +152,7 @@ export default function QueryBuilder({ tables = [], onClose }) {
         <div className="w-full max-w-5xl mx-auto p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 shadow-xl transition-colors space-y-6 max-h-[94vh] overflow-scroll">
 
             {/* En-tête */}
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 sticky -top-2 bg-couleur5 dark:bg-gray-900">
                 <div className="flex items-center gap-4 justify-between w-full">
 
                     <div>

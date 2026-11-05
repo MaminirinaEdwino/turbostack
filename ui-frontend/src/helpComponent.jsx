@@ -207,7 +207,6 @@ export default function HelpDocumentation({ isOpen, onClose }) {
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </div>

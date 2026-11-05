@@ -26,7 +26,7 @@ export default function AiChatModal({ isOpen, onClose }) {
         setMessages((prev) => [...prev, userMsg]);
         // const currentPrompt = prompt;
         setPrompt("");
-        const res = await GoApp.chat(prompt).then((res) => {
+        await GoApp.chat(prompt).then((res) => {
             setMessages((prev) => [
                 ...prev,
                 {

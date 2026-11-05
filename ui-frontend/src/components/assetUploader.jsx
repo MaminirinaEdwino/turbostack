@@ -57,7 +57,7 @@ export default function AssetUploaderModal({reloadAsset}) {
                     </div>
                 )}
                 <div className="h-[90%] w-full overflow-scroll">
-                    {fileList.map((file, idx) => <FileNode
+                    {fileList != null && fileList.map((file, idx) => <FileNode
                         key={file.name + idx}
                         setFolder={setFolder}
                         fileNode={file}

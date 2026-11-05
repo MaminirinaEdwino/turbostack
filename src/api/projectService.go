@@ -454,12 +454,14 @@ func (s *ProjectService) FetchFolderForUpload(folder string) []entity.FileNode {
 	}
 	dir, err := os.ReadDir(dirPath)
 	if os.IsNotExist(err) {
+		fmt.Println(err)
 		return []entity.FileNode{}
 	}
 	for _, entry := range dir {
 		info, err := entry.Info()
-
+		// fmt.Println(info)
 		if err != nil {
+			fmt.Println(err.Error())
 			continue
 		}
 

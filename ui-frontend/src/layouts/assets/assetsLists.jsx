@@ -12,7 +12,7 @@ export default function Assetslist() {
     const [assets, setAssets] = useState([])
     const loadProject = async () => {
         const res = await GoApp.fetchProjectByName(projectName)
-        if (res.type == "static" || res.type == "web_app") {
+        if (res.type == "static" || res.type == "webapp") {
             if (res.assets != null) {
                 setAssets(res.assets)
             }

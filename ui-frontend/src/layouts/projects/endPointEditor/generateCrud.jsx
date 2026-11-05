@@ -42,7 +42,7 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
             {
                 nom: `Get ${selectedModel.nom} by ID`,
                 uri: `${baseUri}/:id`, method: "GET", role: "public",
-                model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: []
+                model: [{ ...selectedModel, champs: selectedChamps }], params: ["id"], manual_fields: [], return_content: [{ ...selectedModel }]
             },
         ];
 

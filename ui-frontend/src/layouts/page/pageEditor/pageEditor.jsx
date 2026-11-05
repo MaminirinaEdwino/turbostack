@@ -253,12 +253,13 @@ export default function PageEditor({ projectName }) {
         return { ...prev, [typeKey]: { ...prev[typeKey], pages: updatedPages } };
       });
     }
-    if (subscription.subscription == "free" && project.site_statique.pages.length < 5) {
+    if ((subscription.subscription == "free" && project.site_statique.pages.length < 5) || subscription.subscription == null) {
       createPage()
     } else if (subscription.subscription == "pro") {
       createPage()
     } else {
-      showToast("Activate TUrboStack to add more pages", "error")
+      alert(subscription.subscription)
+      showToast("Activate TUrboStack to add more page ss", "error")
     }
   };
 

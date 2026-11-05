@@ -78,5 +78,8 @@ export const GoApp = {
     },
     deleteProject: async (projectName)=>{
         return await window.deleteProject(projectName)
-    }
+    },
+    chat: async (message)=>{
+        return await window.chat(message)
+    },
 }

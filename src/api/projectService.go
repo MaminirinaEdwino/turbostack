@@ -6,12 +6,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/MaminirinaEdwino/turbostack/src/chatbot"
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
@@ -43,6 +46,7 @@ func (ps *ProjectService) Bind(w webview.WebView) {
 	w.Bind("loadCompLib", ps.LoadComponentLib)
 	w.Bind("getProjectType", ps.GetProjectType)
 	w.Bind("deleteProject", ps.DeleteProject)
+	w.Bind("chat", ps.AskChat)
 }
 
 type ProcessManager struct {
@@ -508,4 +512,11 @@ func (s *ProjectService) GetImageAsBase64(path string) (string, error) {
 
 	encoded := base64.StdEncoding.EncodeToString(bytes)
 	return fmt.Sprintf("data:%s;base64,%s", mimeType, encoded), nil
+}
+
+
+func (s *ProjectService) AskChat(message string) string {
+	rand.Seed(time.Now().UnixNano())
+	intents := chatbot.ChargerIntents()
+	return chatbot.ObtenirIntention(chatbot.Reseaux, message, intents)
 }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { GoApp } from "../services/bridge";
 
 export default function AiChatModal({ isOpen, onClose }) {
     const [prompt, setPrompt] = useState("");
@@ -12,7 +13,7 @@ export default function AiChatModal({ isOpen, onClose }) {
 
     if (!isOpen) return null;
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!prompt.trim()) return;
 
         // Ajout du message utilisateur
@@ -23,10 +24,21 @@ export default function AiChatModal({ isOpen, onClose }) {
         };
 
         setMessages((prev) => [...prev, userMsg]);
-        const currentPrompt = prompt;
+        // const currentPrompt = prompt;
         setPrompt("");
-
+        const res = await GoApp.chat(prompt).then((res) => {
+            setMessages((prev) => [
+                ...prev,
+                {
+                    sender: "ai",
+                    text: res,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }
+            ]);
+        })
+        // alert(res);
         // Simulation de la réponse IA (À remplacer par votre appel API / WebSocket Go)
+        /*
         setTimeout(() => {
             setMessages((prev) => [
                 ...prev,
@@ -37,6 +49,7 @@ export default function AiChatModal({ isOpen, onClose }) {
                 }
             ]);
         }, 1000);
+        */
     };
 
     return (
@@ -83,8 +96,8 @@ export default function AiChatModal({ isOpen, onClose }) {
                         >
                             <div
                                 className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.sender === "user"
-                                        ? "bg-couleur2 text-white rounded-br-none"
-                                        : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/60 rounded-bl-none"
+                                    ? "bg-couleur2 text-white rounded-br-none"
+                                    : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/60 rounded-bl-none"
                                     }`}
                             >
                                 {msg.text}

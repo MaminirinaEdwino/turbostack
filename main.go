@@ -10,6 +10,7 @@ import (
 
 	"github.com/MaminirinaEdwino/turbostack/src/activation"
 	"github.com/MaminirinaEdwino/turbostack/src/api"
+	"github.com/MaminirinaEdwino/turbostack/src/chatbot"
 	"github.com/MaminirinaEdwino/turbostack/src/config"
 	"github.com/MaminirinaEdwino/turbostack/src/entity"
 	webview "github.com/webview/webview_go"
@@ -34,6 +35,12 @@ func main() {
 	fmt.Printf("DEBUG - HomeDir: %s (Err: %v)\n", homeDir, err)
 	fmt.Printf("DEBUG - Env HOME: %s\n", os.Getenv("HOME"))
 	
+	chatbot.Reseaux, chatbot.MotsUniques, chatbot.TagsIntents, _  = chatbot.ChargerModele()
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	debug := true
 	w := webview.New(debug)
 

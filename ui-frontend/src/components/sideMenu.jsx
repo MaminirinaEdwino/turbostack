@@ -69,6 +69,7 @@ export default function SideMenu() {
     { name: "Api", icon: <Settings size={18} /> },
     { name: "Files", icon: <Folder size={18} /> },
     { name: "Export", icon: <SendToBack size={18} /> },
+    { name: 'Assets', icon: <ImageIcon size={18} /> },
   ])
 
   let menuItems = [

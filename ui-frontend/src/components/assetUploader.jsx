@@ -10,6 +10,7 @@ export default function AssetUploaderModal({reloadAsset}) {
     const [fileList, setFileList] = useState([])
     const [base64Image, setBase64Image] = useState("")
     const projectName = useSelector(state => state.app.actualProject)
+    
     useEffect(() => {
         const loadFile = async () => {
             const res = await GoApp.fetChFileForUpload(folder)

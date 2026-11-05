@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AssetUploaderModal from "./assetUploader";
 import LayoutHeader from "./layoutHeader";
 
 export default function ListView({ content, elementView, newIcon, sectionName, newText, reloadAsset }) {
     const [showModal, setShowModal] = useState(false);
-
+    useEffect(() => {
+        reloadAsset()
+    }, [])
     return (
         <main className="flex-1 p-6 md:p-8 overflow-y-auto relative min-h-screen bg-gray-50/50 dark:bg-gray-900/50">
             {/* Header de la section */}

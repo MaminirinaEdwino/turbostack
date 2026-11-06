@@ -21,7 +21,7 @@ import {
 import { useNavigate } from "../hooks/useNavigate";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { setToggleDarkMode, setToggleMenuSide } from "../appSlice";
+import { setToggleMenuSide } from "../appSlice";
 import logo from "../assets/logotransparent.png";
 import { GoApp } from "../services/bridge";
 import { useEffect } from "react";
@@ -32,7 +32,7 @@ export default function SideMenu() {
   const toggleMenu = useSelector((state) => state.app.toggleMenuSide);
   const actualWindow = useSelector((state) => state.app.actualWindow);
   const actualProject = useSelector((state) => state.app.actualProject);
-  const isDarkMode = useSelector((state) => state.app.darkMode);
+  // const isDarkMode = useSelector((state) => state.app.darkMode);
   const [editorExpanded, setEditorExpanded] = useState(false);
   const [subItems, setSubItems] = useState([
     // {

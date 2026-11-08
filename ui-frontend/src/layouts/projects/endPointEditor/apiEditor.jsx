@@ -264,6 +264,11 @@ export default function ApiEditor({ projectName }) {
         {/* Actions & Menu */}
         <div className="flex items-center gap-2 sm:gap-3 relative">
 
+          
+
+          
+        </div>
+        <div className="flex items-center gap-3 relative">
           {/* Undo / Redo Button Group */}
           <div className="flex items-center bg-couleur5 dark:bg-gray-800 border border-couleur1/20 dark:border-white/10 rounded-xl p-0.5 shadow-xs">
             <button
@@ -290,10 +295,6 @@ export default function ApiEditor({ projectName }) {
               <RotateCw size={16} />
             </button>
           </div>
-
-          
-        </div>
-        <div className="flex items-center gap-3 relative">
           <button
             className="flex gap-2 text-white bg-couleur1 hover:bg-couleur1/90 rounded-xl px-5 py-2.5 font-semibold transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 items-center cursor-pointer text-sm"
             onClick={saveApi}

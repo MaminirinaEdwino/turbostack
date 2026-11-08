@@ -601,6 +601,21 @@ export default function VisualEditor({
         ));
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+            if (isCtrlOrMeta && e.key.toLowerCase() === "d") {
+                e.preventDefault();
+                if (activeBlock) {
+                    duplicateBlock(activeBlock);
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [activeBlock, duplicateBlock]);
+
     return (
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
             {/* <>{activeTab}</> */}

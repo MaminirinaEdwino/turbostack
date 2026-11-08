@@ -288,14 +288,14 @@ export default function PageEditor({ projectName }) {
       });
     }
     // alert(project.site_statique)
-    if (!subscription || subscription.subscription == "free" || subscription.subscription == null ) {
-      alert(project.site_statique?.pages )
-      if ( (project.site_statique?.pages != null && project.site_statique?.pages.length < 5) || project.site_statique.pages == null) {
+    if (!subscription || subscription.subscription == "free" || subscription.subscription == null) {
+      alert(project.site_statique?.pages)
+      if ((project.site_statique?.pages != null && project.site_statique?.pages.length < 5) || project.site_statique.pages == null) {
         createPage()
       }
-    }  if (subscription.subscription == "pro") {
+    } if (subscription.subscription == "pro") {
       createPage()
-    }else {
+    } else {
       showToast("Activate TurboStack to add more pages", "error")
     }
   };
@@ -418,11 +418,26 @@ export default function PageEditor({ projectName }) {
         <Loader2 className="animate-spin" />
       </div>
     );
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
 
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
-      <Header activeItem={activeItem} editMode={editMode} editingType={editingType} handleSave={handleSave} navigateTo={navigateTo} project={project} projectName={projectName} setEditMode={setEditMode} updateActiveItemField={updateActiveItemField} />
-
+      <Header
+        activeItem={activeItem}
+        editMode={editMode}
+        editingType={editingType}
+        handleSave={handleSave}
+        navigateTo={navigateTo}
+        project={project}
+        projectName={projectName}
+        setEditMode={setEditMode}
+        updateActiveItemField={updateActiveItemField}
+        handleUndo={handleUndo}
+        handleRedo={handleRedo}
+        canUndo={historyIndex > 0}
+        canRedo={historyIndex < history.length - 1}
+      />
       <div className="flex-1 overflow-y-auto p-8">
         {editMode ? (
           <div className="flex h-full min-h-150 ">

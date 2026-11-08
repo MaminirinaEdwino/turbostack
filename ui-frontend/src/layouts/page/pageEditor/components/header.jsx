@@ -1,7 +1,7 @@
-import { Save } from "lucide-react";
+import { Save, RotateCcw, RotateCw } from "lucide-react";
 import ToDashBoardBtn from "./toDashBoardbtn";
 
-export default function Header({ editMode, setEditMode, navigateTo, editingType, project, activeItem, updateActiveItemField, projectName, handleSave }) {
+export default function Header({ editMode, setEditMode, navigateTo, editingType, project, activeItem, updateActiveItemField, projectName, handleSave, handleRedo, handleUndo, canRedo, canUndo }) {
     return <div className="p-4 px-6 flex items-center justify-between border-b border-couleur1/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-20 shadow-xs transition-colors duration-300">
         <div className="flex items-center gap-4">
             <ToDashBoardBtn editMode={editMode} setEditMode={setEditMode} navigateTo={navigateTo} />
@@ -46,13 +46,40 @@ export default function Header({ editMode, setEditMode, navigateTo, editingType,
                 )}
             </h1>
         </div>
+        <div className="flex gap-3">
+            <div className="flex items-center bg-couleur5 dark:bg-gray-800 border border-couleur1/20 dark:border-white/10 rounded-xl p-0.5 shadow-xs">
+                <button
+                    onClick={handleUndo}
+                    disabled={!canUndo}
+                    title="Undo (Ctrl+Z)"
+                    className={`p-2 rounded-lg transition-all duration-200 active:scale-95 cursor-pointer ${canUndo
+                            ? "text-couleur1 dark:text-gray-100 hover:bg-couleur1/10 dark:hover:bg-gray-700"
+                            : "text-gray-400 dark:text-gray-600 opacity-40 cursor-not-allowed"
+                        }`}
+                >
+                    <RotateCcw size={16} />
+                </button>
+                <div className="w-px h-4 bg-couleur1/10 dark:bg-white/10 my-auto"></div>
+                <button
+                    onClick={handleRedo}
+                    disabled={!canRedo}
+                    title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
+                    className={`p-2 rounded-lg transition-all duration-200 active:scale-95 cursor-pointer ${canRedo
+                            ? "text-couleur1 dark:text-gray-100 hover:bg-couleur1/10 dark:hover:bg-gray-700"
+                            : "text-gray-400 dark:text-gray-600 opacity-40 cursor-not-allowed"
+                        }`}
+                >
+                    <RotateCw size={16} />
+                </button>
+            </div>
 
-        {/* Section Droite : Action de Sauvegarde */}
-        <button
-            onClick={handleSave}
-            className="bg-couleur1 hover:bg-couleur1/90 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-sm shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
-        >
-            <Save size={18} /> Save Project
-        </button>
+            {/* Section Droite : Action de Sauvegarde */}
+            <button
+                onClick={handleSave}
+                className="bg-couleur1 hover:bg-couleur1/90 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 text-sm shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer"
+            >
+                <Save size={18} /> Save Project
+            </button>
+        </div>
     </div>
 }

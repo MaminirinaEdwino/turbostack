@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { GoApp } from "../../../services/bridge";
 import { useNavigate } from "../../../hooks/useNavigate";
 import DarkModeToggle from "../../../components/darkModeToggle";
@@ -15,7 +15,56 @@ import { Loader2 } from "lucide-react";
 export default function PageEditor({ projectName }) {
   const [subscription, setSubscription] = useState(null)
   const navigateTo = useNavigate();
-  const [project, setProject] = useState(null);
+
+  // États d'historique pour Undo / Redo
+  const [history, setHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [project, setProjectState] = useState(null);
+
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    if (type !== "loading") {
+      setTimeout(() => setToast(null), 3000);
+    }
+  };
+  // Fonction personnalisée pour mettre à jour le projet en enregistrant l'historique
+  const setProject = useCallback((updater, overwrite = false) => {
+    setProjectState((prev) => {
+      const nextProject = typeof updater === "function" ? updater(prev) : updater;
+      if (JSON.stringify(prev) === JSON.stringify(nextProject)) return prev;
+
+      setHistory((currHistory) => {
+        const newHistory = currHistory.slice(0, historyIndex + 1);
+        // Limiter l'historique à 30 états maximum pour éviter les surcharges mémoire
+        if (newHistory.length >= 30) newHistory.shift();
+        return [...newHistory, nextProject];
+      });
+      setHistoryIndex((currIndex) => Math.min(currIndex + 1, 29));
+      return nextProject;
+    });
+  }, [historyIndex]);
+
+  // Fonction Undo (Ctrl+Z)
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setProjectState(history[newIndex]);
+      showToast("Undo", "info");
+    }
+  }, [historyIndex, history]);
+
+  // Fonction Redo (Ctrl+Y / Ctrl+Shift+Z)
+  const handleRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setProjectState(history[newIndex]);
+      showToast("Redo", "info");
+    }
+  }, [historyIndex, history]);
+
   const [selectedPageIndex, setSelectedPageIndex] = useState(null);
   const [selectedComponentIndex, setSelectedComponentIndex] = useState(null);
   const [editingType, setEditingType] = useState("page"); // 'page' ou 'component'
@@ -28,30 +77,24 @@ export default function PageEditor({ projectName }) {
     height: "720px",
     name: "desktop",
   });
-  const [zoomLevel, setZoomLevel] = useState(1); // New state for zoom
-  const [toast, setToast] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+
 
   const [activeBlock, setActiveBlock] = useState(null);
   const [rightActiveTab, setRightActiveTab] = useState("properties");
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    if (type !== "loading") {
-      setTimeout(() => setToast(null), 3000);
-    }
-  };
 
-  // New zoom handlers
+
   const handleZoomIn = () => {
-    setZoomLevel((prev) => Math.min(prev + 0.05, 2)); // Max zoom 200%
+    setZoomLevel((prev) => Math.min(prev + 0.05, 2));
   };
 
   const handleZoomOut = () => {
-    setZoomLevel((prev) => Math.max(prev - 0.05, 0.5)); // Min zoom 50%
+    setZoomLevel((prev) => Math.max(prev - 0.05, 0.5));
   };
 
   const handleResetZoom = () => {
-    setZoomLevel(1); // Reset to 100%
+    setZoomLevel(1);
   };
 
   const siteData =
@@ -68,7 +111,7 @@ export default function PageEditor({ projectName }) {
         : null;
 
   const previewHtml = useMemo(() => {
-    if (!activeItem?.content || !Array.isArray(activeItem.content)) return ""; // Utilise activeItem
+    if (!activeItem?.content || !Array.isArray(activeItem.content)) return "";
     const renderBlocks = (blocks) => {
       return blocks
         .map((b) => {
@@ -76,7 +119,7 @@ export default function PageEditor({ projectName }) {
           const styles = b.styles || "";
           const content = b.content || "";
           const href = b.href || "#";
-          const htmlId = b.htmlId ? `id="${b.htmlId}"` : ""; // Ajout de l'attribut id si htmlId est défini
+          const htmlId = b.htmlId ? `id="${b.htmlId}"` : "";
           const isJsonStyle =
             typeof styles === "string" && styles.trim().startsWith("{");
           const inlineStyleAttr = isJsonStyle ? "" : `style="${styles}"`;
@@ -99,7 +142,6 @@ export default function PageEditor({ projectName }) {
     return renderBlocks(activeItem.content);
   }, [activeItem?.content]);
 
-  // Génère le CSS spécifique aux blocs pour chaque viewport
   const blocksCss = useMemo(() => {
     if (!activeItem?.content) return "";
     let css = "";
@@ -133,9 +175,8 @@ export default function PageEditor({ projectName }) {
     return css;
   }, [activeItem?.content]);
 
-  //mila modifiena am farany
   const globalCss = useMemo(() => {
-    if (!activeItem?.styles) return ""; // Utilise activeItem
+    if (!activeItem?.styles) return "";
     try {
       const stylesObj = JSON.parse(activeItem.styles);
       const format = (s) =>
@@ -152,13 +193,9 @@ export default function PageEditor({ projectName }) {
       }
       return format(stylesObj);
     } catch (e) {
-      return `body { ${activeItem.styles} }`; // Utilise activeItem
+      return `body { ${activeItem.styles} }`;
     }
   }, [activeItem?.styles]);
-  const channel = new BroadcastChannel('turbostack_preview_channel');
-
-  // Envoie le code au preview à chaque changement
-
 
   useEffect(() => {
     const channel = new BroadcastChannel('turbostack_preview_channel');
@@ -170,35 +207,33 @@ export default function PageEditor({ projectName }) {
         channel.postMessage({ type: 'UPDATE_RENDER', blockCss: blocksCss, globalCss: globalCss, previewHtml: previewHtml, viewport: viewport })
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [blocksCss, globalCss, previewHtml, viewport])
+
   const handleDetachPreview = async () => {
     await GoApp.openPreviewWindow()
   };
+
   useEffect(() => {
     const loadProject = async () => {
       setLoading(true);
       const res = await GoApp.fetchProjectByName(projectName);
-      if (res) setProject(res);
+      if (res) {
+        setProjectState(res);
+        setHistory([res]);
+        setHistoryIndex(0);
+      }
       setLoading(false);
     };
     loadProject();
   }, [projectName]);
 
-  // Mise à jour générique d'un champ de l'élément actif (page ou composant)
-  const updateActiveItemField = (field, value) => {
+  const updateActiveItemField = useCallback((field, value) => {
     setProject((prev) => {
       if (!prev) return prev;
       const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-
-      // Détection robuste de la clé des composants
-      const actualCompKey = prev[typeKey]?.composants
-        ? "composants"
-        : "composant";
+      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
       const itemsKey = editingType === "page" ? "pages" : actualCompKey;
-
-      const index =
-        editingType === "page" ? selectedPageIndex : selectedComponentIndex;
+      const index = editingType === "page" ? selectedPageIndex : selectedComponentIndex;
 
       if (
         index === null ||
@@ -206,10 +241,6 @@ export default function PageEditor({ projectName }) {
         !prev[typeKey][itemsKey] ||
         !prev[typeKey][itemsKey][index]
       ) {
-        console.warn("Update failed: invalid index or path", {
-          itemsKey,
-          index,
-        });
         return prev;
       }
 
@@ -219,11 +250,13 @@ export default function PageEditor({ projectName }) {
       const updatedTypeData = { ...prev[typeKey], [itemsKey]: newItems };
       return { ...prev, [typeKey]: updatedTypeData };
     });
-  };
+  }, [editingType, selectedComponentIndex, selectedPageIndex, setProject]);
+
   useEffect(() => {
+    const channel = new BroadcastChannel('turbostack_preview_channel');
     channel.postMessage({ type: 'UPDATE_RENDER', blocksCss: blocksCss, globalCss: globalCss, previewHtml: previewHtml, viewport: viewport });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blocksCss, globalCss, previewHtml, viewport, updateActiveItemField]);
+  }, [blocksCss, globalCss, previewHtml, viewport]);
+
   useEffect(() => {
     const checkToken = async () => {
       const res = await GoApp.checkToken()
@@ -231,14 +264,15 @@ export default function PageEditor({ projectName }) {
     }
     checkToken()
   }, [])
+
   const addPage = () => {
     const createPage = () => {
       setProject((prev) => {
         const typeKey = prev.type === "static" ? "site_statique" : "web_app";
         const newPage = {
           id: Math.random().toString(36).substr(2, 9),
-          nom: "New Page " + (project?.site_statique?.pages?.length == undefined ? 0 : project.site_statique.pages.length),
-          uri: "/new-page-" + (project.site_statique.pages?.length == undefined ? 0 : project.site_statique.pages.length),
+          nom: "New Page " + (prev?.site_statique?.pages?.length || 0),
+          uri: "/new-page-" + (prev?.site_statique?.pages?.length || 0),
           content: [
             {
               id: Math.random().toString(36).substr(2, 9),
@@ -253,13 +287,16 @@ export default function PageEditor({ projectName }) {
         return { ...prev, [typeKey]: { ...prev[typeKey], pages: updatedPages } };
       });
     }
-    if ((subscription.subscription == "free" && project.site_statique.pages.length < 5) || subscription.subscription == null) {
+    // alert(project.site_statique)
+    if (!subscription || subscription.subscription == "free" || subscription.subscription == null ) {
+      alert(project.site_statique?.pages )
+      if ( (project.site_statique?.pages != null && project.site_statique?.pages.length < 5) || project.site_statique.pages == null) {
+        createPage()
+      }
+    }  if (subscription.subscription == "pro") {
       createPage()
-    } else if (subscription.subscription == "pro") {
-      createPage()
-    } else {
-      alert(subscription.subscription)
-      showToast("Activate TUrboStack to add more page ss", "error")
+    }else {
+      showToast("Activate TurboStack to add more pages", "error")
     }
   };
 
@@ -276,18 +313,11 @@ export default function PageEditor({ projectName }) {
     setProject((prev) => {
       if (!prev) return prev;
       const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-      // On utilise la clé déjà existante ou on en crée une par défaut selon le type
-      const actualCompKey = prev[typeKey]?.composants
-        ? "composants"
-        : prev[typeKey]?.composant
-          ? "composant"
-          : prev.type === "static"
-            ? "composants"
-            : "composant";
+      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
 
       const newComponent = {
         id: Math.random().toString(36).substr(2, 9),
-        nom: "New Component " + project.site_statique.composants?.length,
+        nom: "New Component " + (prev[typeKey][actualCompKey]?.length || 0),
         content: [],
       };
       const updatedComponents = [
@@ -302,14 +332,11 @@ export default function PageEditor({ projectName }) {
   };
 
   const removeComponent = (index) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer ce composant ?"))
-      return;
+    if (!window.confirm("Voulez-vous vraiment supprimer ce composant ?")) return;
     setProject((prev) => {
       if (!prev) return prev;
       const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-      const actualCompKey = prev[typeKey]?.composants
-        ? "composants"
-        : "composant";
+      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
       const updatedComponents = prev[typeKey][actualCompKey].filter(
         (_, i) => i !== index,
       );
@@ -331,44 +358,59 @@ export default function PageEditor({ projectName }) {
     }
   };
 
+  // Gestionnaire des raccourcis clavier globaux (Ctrl+Z, Ctrl+Y, Sauvegarde, etc.)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Sauvegarde
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+      const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+
+      // Undo: Ctrl+Z (sans la touche Shift)
+      if (isCtrlOrMeta && e.key.toLowerCase() === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+      // Redo: Ctrl+Y ou Ctrl+Shift+Z
+      else if ((isCtrlOrMeta && e.key.toLowerCase() === "y") || (isCtrlOrMeta && e.shiftKey && e.key.toLowerCase() === "z")) {
+        e.preventDefault();
+        handleRedo();
+      }
+      // Sauvegarde: Ctrl+S
+      else if (isCtrlOrMeta && e.key.toLowerCase() === "s") {
         e.preventDefault();
         handleSave();
       }
-      // Retour à la liste
-      if (e.key === "Escape" && editMode) {
+      // Retour à la liste: Escape
+      else if (e.key === "Escape" && editMode) {
         setEditMode(false);
       }
-      // Zoom
-      if ((e.ctrlKey || e.metaKey) && (e.key === "+" || e.key === "=")) {
+      // Zoom In: Ctrl +
+      else if (isCtrlOrMeta && (e.key === "+" || e.key === "=")) {
         e.preventDefault();
         handleZoomIn();
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === "-") {
+      // Zoom Out: Ctrl -
+      else if (isCtrlOrMeta && e.key === "-") {
         e.preventDefault();
         handleZoomOut();
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === "0") {
+      // Reset Zoom: Ctrl 0
+      else if (isCtrlOrMeta && e.key === "0") {
         e.preventDefault();
         handleResetZoom();
       }
-      // Barres latérales
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "w") {
+      // Toggle Left Sidebar: Ctrl+W
+      else if (isCtrlOrMeta && e.key.toLowerCase() === "w") {
         e.preventDefault();
         setIsLeftSidebarOpen((prev) => !prev);
       }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
+      // Toggle Right Sidebar: Ctrl+B
+      else if (isCtrlOrMeta && e.key.toLowerCase() === "b") {
         e.preventDefault();
         setIsRightSidebarOpen((prev) => !prev);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editMode, project, zoomLevel]);
+  }, [editMode, handleUndo, handleRedo]);
 
   if (loading)
     return (
@@ -379,14 +421,11 @@ export default function PageEditor({ projectName }) {
 
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950">
-      {/* Header Commun */}
       <Header activeItem={activeItem} editMode={editMode} editingType={editingType} handleSave={handleSave} navigateTo={navigateTo} project={project} projectName={projectName} setEditMode={setEditMode} updateActiveItemField={updateActiveItemField} />
-      {/* <DarkModeToggle></DarkModeToggle> */}
-      {/* Vue Conditionnelle */}
+
       <div className="flex-1 overflow-y-auto p-8">
         {editMode ? (
           <div className="flex h-full min-h-150 ">
-            {/* Left Sidebar: Structure & Blocks */}
             <LeftSideBar
               activeBlock={activeBlock}
               activeItem={activeItem}
@@ -403,7 +442,6 @@ export default function PageEditor({ projectName }) {
               viewport={viewport}
             />
 
-            {/* Main content: Prévisualisation isolée (Iframe) */}
             <PreviewSection
               blocksCss={blocksCss}
               globalCss={globalCss}
@@ -421,8 +459,6 @@ export default function PageEditor({ projectName }) {
               viewport={viewport}
             />
 
-
-            {/* Right Sidebar: Properties & Global */}
             <RightSideBar
               activeBlock={activeBlock}
               activeItem={activeItem}
@@ -446,7 +482,6 @@ export default function PageEditor({ projectName }) {
         )}
       </div>
 
-      {/* Toast Notification */}
       {toast && (
         <Toast toast={toast} />
       )}

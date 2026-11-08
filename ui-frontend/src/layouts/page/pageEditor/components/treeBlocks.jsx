@@ -1,9 +1,9 @@
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Copy } from "lucide-react"
 import AddChild from "./addChild"
 import DeleteBlock from "./deleteBlock"
 import Block from "./block"
 
-export default function TreeBlocks({ handleDragStart, handleDragOver, handleDrop, setDraggedId, block, level, draggedId, activeBlock, selectBlock, indentAsChild, blocks, getIconForTag, addChild, removeBlock }) {
+export default function TreeBlocks({ handleDragStart, handleDragOver, handleDrop, setDraggedId, block, level, draggedId, activeBlock, selectBlock, indentAsChild, blocks, getIconForTag, addChild, removeBlock, duplicateBlock }) {
     return <div
         draggable
         onDragStart={(e) => handleDragStart(e, block.id)}
@@ -20,11 +20,26 @@ export default function TreeBlocks({ handleDragStart, handleDragOver, handleDrop
             <Block getIconForTag={getIconForTag} block={block} />
             <div className="flex items-center gap-1">
                 {block.tag != "input" && <AddChild block={block} addChild={addChild} />}
-                {block.children && block.children.length > 0 && <button onClick={() => {
-                    if (document.getElementById(block.id + "_child_div").style.display == "none") {
-                        document.getElementById(block.id + "_child_div").style.display = "block"
+                
+                {/* Bouton de duplication */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        duplicateBlock(block.id);
+                    }}
+                    title="Dupliquer le bloc"
+                    className="p-1.5 text-gray-500 hover:text-couleur1 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
+                >
+                    <Copy size={15} />
+                </button>
+
+                {block.children && block.children.length > 0 && <button onClick={(e) => {
+                    e.stopPropagation();
+                    const el = document.getElementById(block.id + "_child_div");
+                    if (el.style.display == "none") {
+                        el.style.display = "block"
                     } else {
-                        document.getElementById(block.id + "_child_div").style.display = "none"
+                        el.style.display = "none"
                     }
                 }}>
                     <div id={block.id + "_child_div_chevron"}>

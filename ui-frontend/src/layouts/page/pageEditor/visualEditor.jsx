@@ -383,6 +383,41 @@ export default function VisualEditor({
         if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
     };
 
+    const duplicateBlock = (id) => {
+        // Fonction récursive pour cloner profondément le bloc et lui générer de nouveaux IDs uniques
+        const cloneDeepWithNewIds = (b) => {
+            const newId = Math.random().toString(36).substr(2, 9);
+            return {
+                ...b,
+                id: newId,
+                htmlId: b.htmlId ? `${b.htmlId}-copy-${newId.slice(0, 4)}` : "",
+                children: b.children ? b.children.map(child => cloneDeepWithNewIds(child)) : []
+            };
+        };
+
+        const duplicateInTree = (list) => {
+            let newList = [];
+            for (const b of list) {
+                newList.push(b);
+                if (b.id === id) {
+                    // Insérer le double juste après le bloc original
+                    newList.push(cloneDeepWithNewIds(b));
+                } else if (b.children && b.children.length > 0) {
+                    newList[newList.length - 1] = {
+                        ...b,
+                        children: duplicateInTree(b.children)
+                    };
+                }
+            }
+            return newList;
+        };
+
+        const updated = duplicateInTree(blocks);
+        setBlocks(updated);
+        sync(updated);
+        if (showToast) showToast("Bloc dupliqué avec succès !");
+    };
+
     const addChild = (parentId, type, isComponent = false) => {
         const id = Math.random().toString(36).substr(2, 9);
         let newBlock;
@@ -557,7 +592,7 @@ export default function VisualEditor({
 
         return blocksList.map((block) => (
             <React.Fragment key={block.id}>
-                <TreeBlocks activeBlock={activeBlock} addChild={addChild} block={block} blocks={blocks} draggedId={draggedId} getIconForTag={getIconForTag} handleDragOver={handleDragOver} handleDragStart={handleDragStart} handleDrop={handleDrop} indentAsChild={indentAsChild} level={level} removeBlock={removeBlock} selectBlock={selectBlock} setDraggedId={setDraggedId} />
+                <TreeBlocks activeBlock={activeBlock} addChild={addChild} block={block} blocks={blocks} draggedId={draggedId} getIconForTag={getIconForTag} handleDragOver={handleDragOver} handleDragStart={handleDragStart} handleDrop={handleDrop} indentAsChild={indentAsChild} level={level} removeBlock={removeBlock} selectBlock={selectBlock} setDraggedId={setDraggedId} duplicateBlock={duplicateBlock} />
                 {/* <button onClick={()=>handleShowChild()}>d</button> */}
                 <div id={block.id + "_child_div"}>
                     {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}

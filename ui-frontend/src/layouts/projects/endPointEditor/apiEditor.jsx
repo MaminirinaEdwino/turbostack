@@ -24,12 +24,10 @@ import {
   LayoutGrid,
   Layers,
   MoreVertical,
-  Cross,
-  Sun,
-  Moon,
+  RotateCcw,
+  RotateCw,
 } from "lucide-react";
 import TurboStackScripting from "./blocEditor";
-import DarkModeToggle from "../../../components/darkModeToggle";
 
 const nodeType = { endpoint: EndpointNode };
 
@@ -37,13 +35,55 @@ export default function ApiEditor({ projectName }) {
   const { t } = useTranslation();
   const navigateTo = useNavigate();
   const isDarkMode = useSelector((state) => state.app.darkMode);
-  const [project, setProject] = useState(null);
+
+  // États d'historique pour Undo / Redo
+  const [history, setHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [project, setProjectState] = useState(null);
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+
+  // Fonction personnalisée pour mettre à jour le projet en enregistrant l'historique
+  const setProject = useCallback((updater) => {
+    setProjectState((prev) => {
+      const nextProject = typeof updater === "function" ? updater(prev) : updater;
+      if (JSON.stringify(prev) === JSON.stringify(nextProject)) return prev;
+
+      setHistory((currHistory) => {
+        const newHistory = currHistory.slice(0, historyIndex + 1);
+        if (newHistory.length >= 30) newHistory.shift();
+        return [...newHistory, nextProject];
+      });
+      setHistoryIndex((currIndex) => Math.min(currIndex + 1, 29));
+      return nextProject;
+    });
+  }, [historyIndex]);
+
+  // Fonction Undo (Ctrl+Z)
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setProjectState(history[newIndex]);
+      showToast("Undo", "info");
+    }
+  }, [historyIndex, history]);
+
+  // Fonction Redo (Ctrl+Y / Ctrl+Shift+Z)
+  const handleRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setProjectState(history[newIndex]);
+      showToast("Redo", "info");
+    }
+  }, [historyIndex, history]);
+
   const [nodes, setNodes] = useState([]);
   const [toggleModal, setToggleModal] = useState("none");
   const [toggleEditModal, setToggleEditModal] = useState("none");
   const [toggleCrudModal, setToggleCrudModal] = useState("none");
-  const [toggleVisualScriptModal, setToggleVisualScriptModal] =
-    useState("none");
+  const [toggleVisualScriptModal, setToggleVisualScriptModal] = useState("none");
   const [selectedEndpointIndex, setSelectedEndpointIndex] = useState(null);
   const [toast, setToast] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,7 +97,9 @@ export default function ApiEditor({ projectName }) {
     const loadProject = async () => {
       const res = await GoApp.fetchProjectByName(projectName);
       if (res) {
-        setProject(res);
+        setProjectState(res);
+        setHistory([res]);
+        setHistoryIndex(0);
       }
     };
     if (!project) loadProject();
@@ -74,7 +116,7 @@ export default function ApiEditor({ projectName }) {
       };
     });
     setToggleEditModal("none");
-  }, []);
+  }, [setProject]);
 
   const handleVisualScripting = useCallback((index) => {
     setSelectedEndpointIndex(index);
@@ -110,9 +152,8 @@ export default function ApiEditor({ projectName }) {
       }));
       setter(updatedNodes);
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [project]); // Added nodes to dependency array
+  }, [project]);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -121,18 +162,16 @@ export default function ApiEditor({ projectName }) {
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const reorganizeNodes = () => {
+  const reorganizeNodes = useCallback(() => {
     setNodes((prevNodes) =>
       prevNodes.map((node, index) => ({
         ...node,
         position: { x: (index % 5) * 300, y: Math.floor(index / 5) * 200 },
       })),
     );
-  };
+  }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const saveApi = async () => {
+  const saveApi = useCallback(async () => {
     showToast("Sauvegarde en cours...", "loading");
     try {
       await GoApp.saveProject(projectName, JSON.stringify(project));
@@ -140,17 +179,29 @@ export default function ApiEditor({ projectName }) {
     } catch (error) {
       showToast("Erreur lors de la sauvegarde", error);
     }
-  };
+  }, [projectName, project]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+
+      // Undo: Ctrl+Z
+      if (isCtrlOrMeta && e.key.toLowerCase() === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+      // Redo: Ctrl+Y ou Ctrl+Shift+Z
+      else if ((isCtrlOrMeta && e.key.toLowerCase() === "y") || (isCtrlOrMeta && e.shiftKey && e.key.toLowerCase() === "z")) {
+        e.preventDefault();
+        handleRedo();
+      }
       // Sauvegarde (Ctrl+S)
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+      else if (isCtrlOrMeta && e.key.toLowerCase() === "s") {
         e.preventDefault();
         saveApi();
       }
       // Retour ou fermeture de modale (Escape)
-      if (e.key === "Escape") {
+      else if (e.key === "Escape") {
         if (
           toggleModal !== "none" ||
           toggleEditModal !== "none" ||
@@ -164,8 +215,8 @@ export default function ApiEditor({ projectName }) {
         }
       }
       // Réorganisation (Ctrl+Shift+L)
-      if (
-        (e.ctrlKey || e.metaKey) &&
+      else if (
+        isCtrlOrMeta &&
         e.shiftKey &&
         e.key.toLowerCase() === "l"
       ) {
@@ -183,18 +234,19 @@ export default function ApiEditor({ projectName }) {
     saveApi,
     reorganizeNodes,
     navigateTo,
+    handleUndo,
+    handleRedo,
   ]);
-  // const isDarkMode = useSelector((state)=>state.app.darkMode)
+
   return (
     <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
       <div className="p-3 pb-4 h-fit flex items-center justify-between fixed z-30 w-full border-b border-couleur1/10 dark:border-white/10 -top-16 hover:top-0 transition-all duration-300 ease-in-out bg-couleur3/90 dark:bg-couleur6/90 backdrop-blur-md rounded-b-2xl shadow-xl box-border group">
 
-        {/* Petit indicateur visuel au survol en bas de la barre */}
         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-couleur1 dark:bg-gray-700 text-couleur3 dark:text-gray-200 text-[10px] px-3 py-0.5 rounded-b-md opacity-70 group-hover:opacity-0 transition-opacity pointer-events-none font-mono">
           Hover to expand editor bar
         </div>
 
-        {/* Titre & Navigation */}
+
         <div className="flex items-center gap-3">
           <button
             className="p-2.5 rounded-xl border border-couleur1/20 dark:border-white/20 bg-couleur5 dark:bg-gray-800 text-couleur1 dark:text-gray-100 hover:bg-couleur1/10 dark:hover:bg-gray-700 transition-all duration-200 active:scale-95 shadow-xs cursor-pointer"
@@ -209,8 +261,38 @@ export default function ApiEditor({ projectName }) {
             <span>{projectName}</span>
           </h1>
         </div>
-
         {/* Actions & Menu */}
+        <div className="flex items-center gap-2 sm:gap-3 relative">
+
+          {/* Undo / Redo Button Group */}
+          <div className="flex items-center bg-couleur5 dark:bg-gray-800 border border-couleur1/20 dark:border-white/10 rounded-xl p-0.5 shadow-xs">
+            <button
+              onClick={handleUndo}
+              disabled={!canUndo}
+              title="Undo (Ctrl+Z)"
+              className={`p-2 rounded-lg transition-all duration-200 active:scale-95 cursor-pointer ${canUndo
+                  ? "text-couleur1 dark:text-gray-100 hover:bg-couleur1/10 dark:hover:bg-gray-700"
+                  : "text-gray-400 dark:text-gray-600 opacity-40 cursor-not-allowed"
+                }`}
+            >
+              <RotateCcw size={16} />
+            </button>
+            <div className="w-px h-4 bg-couleur1/10 dark:bg-white/10 my-auto"></div>
+            <button
+              onClick={handleRedo}
+              disabled={!canRedo}
+              title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
+              className={`p-2 rounded-lg transition-all duration-200 active:scale-95 cursor-pointer ${canRedo
+                  ? "text-couleur1 dark:text-gray-100 hover:bg-couleur1/10 dark:hover:bg-gray-700"
+                  : "text-gray-400 dark:text-gray-600 opacity-40 cursor-not-allowed"
+                }`}
+            >
+              <RotateCw size={16} />
+            </button>
+          </div>
+
+          
+        </div>
         <div className="flex items-center gap-3 relative">
           <button
             className="flex gap-2 text-white bg-couleur1 hover:bg-couleur1/90 rounded-xl px-5 py-2.5 font-semibold transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 items-center cursor-pointer text-sm"
@@ -231,13 +313,11 @@ export default function ApiEditor({ projectName }) {
 
             {isMenuOpen && (
               <>
-                {/* Backdrop */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setIsMenuOpen(false)}
                 ></div>
 
-                {/* Menu Dropdown */}
                 <div className="absolute right-0 mt-3 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-couleur1/10 dark:border-white/10 z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
                   <button
                     className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
@@ -279,8 +359,7 @@ export default function ApiEditor({ projectName }) {
           </div>
         </div>
       </div>
-      {/* <DarkModeToggle></DarkModeToggle> */}
-      {/* Modal de création */}
+
       <div
         className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}
       >
@@ -293,7 +372,6 @@ export default function ApiEditor({ projectName }) {
         )}
       </div>
 
-      {/* Modal de modification */}
       <div
         className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleEditModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}
       >
@@ -307,7 +385,6 @@ export default function ApiEditor({ projectName }) {
         )}
       </div>
 
-      {/* Modal de génération CRUD */}
       <div
         className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleCrudModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}
       >
@@ -320,7 +397,6 @@ export default function ApiEditor({ projectName }) {
         )}
       </div>
 
-      {/* Toast Notification */}
       {toast && (
         <div
           className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${toast.type === "error"
@@ -359,7 +435,6 @@ export default function ApiEditor({ projectName }) {
           display: toggleVisualScriptModal,
         }}
       >
-
         <TurboStackScripting
           setProjet={setProject}
           endpoint={selectedEndpointIndex}

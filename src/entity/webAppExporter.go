@@ -114,10 +114,17 @@ func WebAppEditTemplate(dbCaller, params, returnType, query, scanValue, pageName
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"%s": returnValue,
 	})
-}`, dbCaller, params, params, returnType, query, params, scanValue, pageName, ModelName)
+}`, dbCaller, params, params, returnType, query, params, scanValue, pageName, utils.ToUpperFirstLetter(ModelName))
 }
 
 func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryValue, redirectUri string) string {
+
+	splitTab := strings.Split(redirectUri, "/")
+	for id, str := range strings.Split(redirectUri, "/") {
+		if strings.Contains(str, ":") {
+			splitTab[id] = ""
+		}
+	}
 	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
@@ -135,8 +142,8 @@ func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryV
 	}
 
 	// Redirection vers la page de détails de l'utilisateur
-	http.Redirect(w, r, "%s"+%s, http.StatusSeeOther)
-}`, dbCaller, params, params, contentExtraction, query, queryValue, params, redirectUri, params)
+	http.Redirect(w, r, "%s/"+%s, http.StatusSeeOther)
+}`, dbCaller, params, params, contentExtraction, query, queryValue, params, strings.Join(splitTab, "/"), params)
 }
 
 func WebAppDeleteActionTemplate(dbCaller, params, query, redirectUri string) string {
@@ -184,7 +191,7 @@ func (w http.ResponseWriter, r *http.Request)  {
 		"%s": returnValue,
 		"%s": %s,
 	})
-}`, goapimaker.DBCallerTemplateWebAPp(), uriParams, uriParams, returnType, query, uriParams, scanValue, pageName, ModelName, utils.ToUpperFirstLetter(uriParams), uriParams)
+}`, goapimaker.DBCallerTemplateWebAPp(), uriParams, uriParams, returnType, query, uriParams, scanValue, pageName, utils.ToUpperFirstLetter(ModelName), utils.ToUpperFirstLetter(uriParams), uriParams)
 }
 
 func (wap *webAppMaker) CreateModelFile() {
@@ -244,7 +251,7 @@ func (mgr *webAppMaker) configAPIExporter(projectName string) {
 }
 
 func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
-	filePath := fmt.Sprintf("%s/%s/web-app/src/config/db.go", config.PROJECT_DIR, projectName)
+	filePath := fmt.Sprintf("%s/%s/api/src/config/db.go", config.PROJECT_DIR, projectName)
 
 	file, err := os.Create(filePath)
 	if err != nil {
@@ -252,6 +259,8 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 		return
 	}
 	defer file.Close()
+
+	dbName := strings.ReplaceAll(strings.ToLower(projectName), " ", "_")
 
 	var sb strings.Builder
 	var sqlgen Sqlgenerator
@@ -264,27 +273,44 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("var DB *sql.DB\n\n")
-	fmt.Fprintf(&sb, "var connStr = \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", strings.ReplaceAll(strings.ToLower(projectName), " ", "_"))
-	sb.WriteString(`func ConnectDB() *sql.DB {
-	var err error
-	DB, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return DB
-}
-`)
-	sb.WriteString("// InitDB initialise la connexion à la base de données PostgreSQL\n")
+	sb.WriteString("// InitDB vérifie l'existence de la base de données, la crée si besoin, puis initialise les tables\n")
 	sb.WriteString("func InitDB() {\n")
-	sb.WriteString("\t// Modifiez cette chaîne de connexion selon votre environnement\n")
+	sb.WriteString("\tvar err error\n\n")
 
-	sb.WriteString("\tvar err error\n")
+	sb.WriteString("\t// 1. Connexion initiale à la base par défaut 'postgres' pour vérifier/créer la base cible\n")
+	sb.WriteString("\tdefaultConnStr := \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
+	sb.WriteString("\tdefaultDB, err := sql.Open(\"postgres\", defaultConnStr)\n")
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatalf(\"Erreur de connexion au serveur PostgreSQL : %v\", err)\n\t}\n")
+	sb.WriteString("\tdefer defaultDB.Close()\n\n")
+
+	sb.WriteString("\t// 2. Vérifier si la base de données existe\n")
+	sb.WriteString(fmt.Sprintf("\tvar exists bool\n"))
+	sb.WriteString(fmt.Sprintf("\terr = defaultDB.QueryRow(\"SELECT EXISTS (SELECT FROM pg_database WHERE datname = $1);\", \"%s\").Scan(&exists)\n", dbName))
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatalf(\"Erreur lors de la vérification de la base de données : %v\", err)\n\t}\n\n")
+
+	sb.WriteString("\t// 3. Créer la base de données si elle n'existe pas\n")
+	sb.WriteString("\tif !exists {\n")
+	sb.WriteString(fmt.Sprintf("\t\tfmt.Printf(\"La base de données '%s' n'existe pas. Création en cours...\\n\")\n", dbName))
+	sb.WriteString(fmt.Sprintf("\t\t_, err = defaultDB.Exec(`CREATE DATABASE \"%s\";`)\n", dbName))
+	sb.WriteString("\t\tif err != nil {\n\t\t\tlog.Fatalf(\"Erreur lors de la création de la base de données : %v\", err)\n\t\t}\n")
+	sb.WriteString(fmt.Sprintf("\t\tfmt.Println(\"Base de données '%s' créée avec succès !\")\n", dbName))
+	sb.WriteString("\t}\n\n")
+
+	sb.WriteString("\t// 4. Connexion définitive à la base de données du projet\n")
+	sb.WriteString(fmt.Sprintf("\tconnStr := \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", dbName))
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+
 	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+
+	sb.WriteString("\t// 5. Initialisation des tables à partir des modèles\n")
 	sb.WriteString(fmt.Sprintf("\tquery := `%s`\n", sqlgen.GenerateDBAndTableInit(model, projectName)))
-	sb.WriteString("\t_, err = DB.Exec(query)\n\tif err != nil {\n\t\tfmt.Errorf(\"échec lors de l'initialisation des tables: %w\", err)\n\t}\n")
-	sb.WriteString("\tfmt.Println(\"Successfully connected to database\")\n")
+	sb.WriteString("\t_, err = DB.Exec(query)\n")
+	sb.WriteString("\tif err != nil {\n")
+	sb.WriteString("\t\tlog.Fatalf(\"échec lors de l'initialisation des tables: %v\", err)\n")
+	sb.WriteString("\t}\n\n")
+
+	sb.WriteString("\tfmt.Println(\"Successfully connected to database and initialized tables\")\n")
 	sb.WriteString("}\n")
 
 	file.WriteString(sb.String())

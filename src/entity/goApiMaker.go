@@ -268,7 +268,7 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 
 	sb.WriteString("\t// 5. Lancement du serveur\n")
 	sb.WriteString("\tport := \":8080\"\n")
-	sb.WriteString("\tfmt.Printf(\"🚀 TurboStack API running on http://localhost%s\\n\", port)\n")
+	sb.WriteString("\tfmt.Printf(\"TurboStack API running on http://localhost%s\\n\", port)\n")
 	sb.WriteString("\tlog.Fatal(http.ListenAndServe(port, handler))\n")
 	sb.WriteString("}\n")
 

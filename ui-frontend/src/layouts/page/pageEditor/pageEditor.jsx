@@ -289,7 +289,7 @@ export default function PageEditor({ projectName }) {
     }
     // alert(project.site_statique)
     if (!subscription || subscription.subscription == "free" || subscription.subscription == null) {
-      alert(project.site_statique?.pages)
+      // alert(project.site_statique?.pages)
       if ((project.site_statique?.pages != null && project.site_statique?.pages.length < 5) || project.site_statique.pages == null) {
         createPage()
       }

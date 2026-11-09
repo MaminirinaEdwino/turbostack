@@ -37,6 +37,7 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	fmt.Println(projectpath)
 	fmt.Println(GenerateAndWriteOpenAPIJson(projectpath, &Project))
 	fmt.Println(GenerateDocsHandlerFile(projectpath))
+	// CopySwaggerUiDir(projectpath)
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 

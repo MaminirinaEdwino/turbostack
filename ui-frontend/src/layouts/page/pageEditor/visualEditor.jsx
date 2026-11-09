@@ -320,7 +320,8 @@ export default function VisualEditor({
                                     className: "",
                                     styles: "",
                                     children: [],
-                                    inputType: (type.inputType || "")
+                                    inputType: (type.inputType || ""),
+                                    name: field.nom
                                 }, {
                                     id: Math.random().toString(36).substr(2, 9),
                                     tag: (field.type == "int" || field.type == "string") && "input",
@@ -331,7 +332,8 @@ export default function VisualEditor({
                                     htmlId: "id_" + field.nom,
                                     // children: [],
                                     inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text"),
-                                    value: ""
+                                    value: "",
+                                    name: field.nom
                                 }
                             ]
                         })
@@ -450,7 +452,8 @@ export default function VisualEditor({
                                     className: "",
                                     styles: "",
                                     children: [],
-                                    inputType: (type.inputType || "")
+                                    inputType: (type.inputType || ""),
+                                    name: field.nom
                                 }, {
                                     id: Math.random().toString(36).substr(2, 9),
                                     tag: (field.type == "int" || field.type == "string") && "input",
@@ -459,7 +462,8 @@ export default function VisualEditor({
                                     className: "",
                                     styles: "",
                                     // children: [],
-                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text")
+                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text"),
+                                    name: field.name
                                 }
                             ]
                         })

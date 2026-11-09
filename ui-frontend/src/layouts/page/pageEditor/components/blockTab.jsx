@@ -166,7 +166,7 @@ export default function BlockTab({ blocks, renderBlocksList, addBlock, available
                     <h3 className='text-xs font-black uppercase text-couleur1/40 ' onClick={() => setActualTab("apiform")}>API Forms and request element</h3>
                     {actualTab == "apiform" && <div className='grid grid-cols-2 gap-2'>
                         {typeof (project) != "string" && project.rest_api.endpoints != null && <>
-                            {((project.rest_api.endpoints).filter(ep => ep.method !== "GET")).map(ep => <FormElementBtn content={<>  <Form size={14}></Form> {ep.nom} </>} action={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: "", models: ep.model })} />)}
+                            {((project.rest_api.endpoints).filter(ep => ep.method == "POST")).map(ep => <FormElementBtn content={<>  <Form size={14}></Form> {ep.nom} </>} action={() => addBlock({ isFormPost: true, tag: "form", uri: ep.uri, defaultContent: "", models: ep.model })} />)}
 
                             {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0]?.return_content?.map(mdl => <>
                                 {((project.rest_api.endpoints).filter(ep => ep.return_page === activePage.nom))[0].return_content_type == "array" && <>

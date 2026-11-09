@@ -85,7 +85,7 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 			uri := ep.GetUri()
 			eName := ep.GetNom()
 			funcName := strings.ToUpper(eName[:1]) + strings.ReplaceAll(eName[1:], " ", "_")
-			fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, uri, funcName)
+			fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, strings.Replace(uri, ":", "", 1), funcName)
 		}
 		sb.WriteString("}\n\n")
 	}
@@ -114,6 +114,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 		// Identification du modèle associé
 		var activeModel Model
 		if len(ep.GetModel()) > 0 {
+			fmt.Println("return content")
 			activeModel = ep.GetModel()[0]
 		}
 		modelName := activeModel.GetNom()
@@ -131,7 +132,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 				columns = append(columns, strings.ToLower(attr.GetNom()))
 				scanTargets = append(scanTargets, "&tmp."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
 			}
-
+			
 			switch ep.method {
 			case "DELETE":
 				fmt.Fprint(&sb, goapimaker.DeleteHandler(strings.ReplaceAll(funcName, " ", "_"), "pg", ep.params[0], tableName))

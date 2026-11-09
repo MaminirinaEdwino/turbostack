@@ -59,7 +59,7 @@ func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName, Mode
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"%s": returnValues,
 	})
-}`, returnType, dbCaller, query, scanValue, pageName, ModelName)
+}`, returnType, dbCaller, query, scanValue, pageName, utils.ToUpperFirstLetter(ModelName))
 }
 
 func WebAppPostViewtemplate(pageName string) string {

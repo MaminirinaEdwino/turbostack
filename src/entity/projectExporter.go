@@ -3,6 +3,7 @@ package entity
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
@@ -32,6 +33,10 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	apiMaker.middlewareAPIExporter(projectName)
 	apiMaker.mainAPIExporter(api.GetEndpoints(), projectName)
 	apiMaker.writeModSumFile(projectName)
+	projectpath := filepath.Join(config.PROJECT_DIR, projectName, "api")
+	fmt.Println(projectpath)
+	fmt.Println(GenerateAndWriteOpenAPIJson(projectpath, &Project))
+	fmt.Println(GenerateDocsHandlerFile(projectpath))
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 

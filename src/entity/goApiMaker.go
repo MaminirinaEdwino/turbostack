@@ -209,6 +209,9 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 	sb.WriteString("/src/routes\"\n")
 	sb.WriteString("\t\"")
 	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
+	sb.WriteString("/handlers\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
 	sb.WriteString("/src/middlewares\"\n")
 	sb.WriteString(")\n\n")
 
@@ -234,6 +237,7 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 		groupFuncName := strings.ToUpper(cleanGroupName[:1]) + cleanGroupName[1:]
 		fmt.Fprintf(&sb, "\troutes.RegisterRoutes%s(mux)\n", groupFuncName)
 	}
+	fmt.Fprintln(&sb, "\thandlers.RegisterDocsRoute(mux)\n")
 
 	sb.WriteString("\n\t// 4. Application du middleware CORS\n")
 	sb.WriteString("\thandler := middlewares.CorsMiddleware(mux)\n\n")

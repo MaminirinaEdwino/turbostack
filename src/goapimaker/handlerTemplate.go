@@ -143,7 +143,10 @@ func InsertHandler(epName, sgbd, tableName string, attr []string) string {
 	func %s(w http.ResponseWriter, r *http.Request){
 		%s
 		%s
-	res, err := db.Exec("%s", %s)
+	err = db.QueryRow("%s", %s).Scan(%s)
+	if err != nil {
+		fmt.Println(err)
+	}
 		%s
 		%s
 	}`+"\n",
@@ -152,6 +155,7 @@ func InsertHandler(epName, sgbd, tableName string, attr []string) string {
 		DBCallerHandler(sgbd),
 		Insert(tableName, attr),
 		strings.Join(bodyParam, ", "),
+		strings.ReplaceAll(strings.Join(bodyParam, ", "), "body", "&res"),
 		utils.WriteErrorCheker("insert error"),
 		WriteResponseWriter())
 }
@@ -177,6 +181,7 @@ func WriteBodyDecodeur(modelName string) string {
 func BodyDecodeurTemplate() *template.Template {
 	content := `
 var body models.{{ .EndPointName }} 
+var res models.{{ .EndPointName }} 
 decoder := json.NewDecoder(r.Body) 
 err := decoder.Decode(&body)
 {{ .ErrorChecker }}

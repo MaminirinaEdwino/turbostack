@@ -14,7 +14,7 @@ func Update(ep_name string, attrs []string, params string) string {
 }
 
 func Select(tableName string) string {
-	return fmt.Sprintf("select * from %s", tableName)
+	return fmt.Sprintf("select * from %s ", tableName)
 }
 func SelectWithAttr(tableName string, attr string) string {
 	return fmt.Sprintf("select %s from %s", attr, tableName)
@@ -31,5 +31,5 @@ func Insert(tableName string, attr []string) string {
 	for i := range attr {
 		tmp = append(tmp, fmt.Sprintf("$%d", i+1))
 	}
-	return fmt.Sprintf("insert into %s (%s) values (%s)", tableName, strings.Join(attr, ", "), strings.Join(tmp, ", "))
+	return fmt.Sprintf("insert into %s (%s) values (%s) returning %s ", tableName, strings.Join(attr, ", "), strings.Join(tmp, ", "), strings.Join(attr, ", "))
 }

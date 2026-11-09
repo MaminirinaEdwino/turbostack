@@ -20,7 +20,7 @@ func SelectWithAttr(tableName string, attr string) string {
 	return fmt.Sprintf("select %s from %s", attr, tableName)
 }
 func SelectBy(tableName string, params string) string {
-	return fmt.Sprintf("select * from %s where %s = $1", params, tableName)
+	return fmt.Sprintf("select * from %s where %s = $1", tableName, params)
 }
 func SelectByWithAttr(tableName string, params string, paramsGet string) string {
 	return fmt.Sprintf("select %s from %s where %s = $1", params, tableName, paramsGet)

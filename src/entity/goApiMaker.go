@@ -48,6 +48,22 @@ func (api *GoApiMaker) modelAPIExporter(models []Model, projectName string) {
 		file.Close()
 	}
 }
+
+func CorrectUriParamsWriting(uri string) string {
+	fmt.Println("teste", uri)
+	uriTable := strings.Split(uri, "/")
+	for id, str := range uriTable {
+		if strings.Contains(str, ":") {
+			str = strings.ReplaceAll(str, ":", "")
+			uriTable[id] = fmt.Sprintf("{%s}", str)
+			
+		}
+	}
+	final := strings.Join(uriTable, "/")
+	fmt.Println("final", final)
+	return final
+}
+
 func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName string) {
 	filePath := fmt.Sprintf("%s/%s/api/src/routes/routes.go", config.PROJECT_DIR, projectName)
 	file, err := os.Create(filePath)
@@ -85,7 +101,7 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 			uri := ep.GetUri()
 			eName := ep.GetNom()
 			funcName := strings.ToUpper(eName[:1]) + strings.ReplaceAll(eName[1:], " ", "_")
-			fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, strings.Replace(uri, ":", "", 1), funcName)
+			fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, CorrectUriParamsWriting(uri), funcName)
 		}
 		sb.WriteString("}\n\n")
 	}
@@ -132,7 +148,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 				columns = append(columns, strings.ToLower(attr.GetNom()))
 				scanTargets = append(scanTargets, "&tmp."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
 			}
-			
+
 			switch ep.method {
 			case "DELETE":
 				fmt.Fprint(&sb, goapimaker.DeleteHandler(strings.ReplaceAll(funcName, " ", "_"), "pg", ep.params[0], tableName))

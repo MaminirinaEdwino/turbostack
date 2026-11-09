@@ -52,9 +52,8 @@ func {{ .FuncName }}(w http.ResponseWriter, r *http.Request){
 	{{ .Params }} := r.PathValue("{{ .Params }}")
 	var res models.{{ .StructName }}
 	{{ .DbCallerHandler }}
-	rows,_ := db.Query("{{ .Query }}", {{ .Params }})
-	rows.Next()
-	rows.Scan({{ .ScanParams }})
+	db.QueryRow("{{ .Query }}", {{ .Params }}).Scan({{ .ScanParams }})
+	
 	{{ .ResponseWriter }}
 }
 	`

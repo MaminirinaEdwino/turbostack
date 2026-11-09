@@ -210,7 +210,7 @@ export function FlowCanvas({ setProjet, endpoint, project, setToggleVisualScript
   // Charger la structure de données de l'API
   useEffect(() => {
 
-    if (endpoint != null && project.rest_api.endpoints[endpoint].logic != null) {
+    if (endpoint != null && project.rest_api.endpoints[endpoint].logic != null && project.rest_api.endpoints[endpoint].logic != undefined) {
       // const { initialNodes, initialEdges } = flattenLogicTree(
       //   endpoint.logic.node,
       //   onNodeDataChange,

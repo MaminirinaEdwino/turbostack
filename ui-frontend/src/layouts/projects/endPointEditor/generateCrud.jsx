@@ -31,7 +31,7 @@ export default function GenerateCrud({ project, setProject, setToggle }) {
         if (!selectedModel) return;
 
         const baseUri = `/${selectedModel.nom.toLowerCase()}`;
-        const selectedChamps = selectedModel.champs.filter(c => bodyFields.includes(c.nom));
+        const selectedChamps = selectedModel.champs;
 
         let newEndpoints = [
             {

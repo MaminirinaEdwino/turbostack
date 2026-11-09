@@ -9,8 +9,13 @@ func Delete(table string, params string) string {
 	return fmt.Sprintf("delete from %s where %s = $1", table, params)
 }
 
-func Update(ep_name string, attrs []string, params string) string {
-	return fmt.Sprintf("update %s set %s where %s = $%d returning * ", ep_name, strings.Join(attrs, ", "), params, len(attrs)+1)
+func Update(model_name string, attrs []string, params string) string {
+	var tmp []string
+	for _, str := range attrs {
+		tab := strings.Split(str, "=")
+		tmp = append(tmp, tab[0])
+	}
+	return fmt.Sprintf("update %s set %s where %s = $%d returning %s ", model_name, strings.Join(attrs, ", "), params, len(attrs)+1, strings.Join(tmp, ","))
 }
 
 func Select(tableName string) string {

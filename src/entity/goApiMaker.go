@@ -56,7 +56,7 @@ func CorrectUriParamsWriting(uri string) string {
 		if strings.Contains(str, ":") {
 			str = strings.ReplaceAll(str, ":", "")
 			uriTable[id] = fmt.Sprintf("{%s}", str)
-			
+
 		}
 	}
 	final := strings.Join(uriTable, "/")
@@ -144,16 +144,23 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 
 			var columns []string
 			var scanTargets []string
-			for _, attr := range activeModel.GetAttributs() {
+			var putScanTargets []string
+			var put_columns []string
+			for id, attr := range activeModel.GetAttributs() {
 				columns = append(columns, strings.ToLower(attr.GetNom()))
+				put_columns = append(put_columns, strings.ToLower(fmt.Sprintf("%s = $%d", attr.GetNom(), id+1)))
 				scanTargets = append(scanTargets, "&tmp."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
+				putScanTargets = append(putScanTargets, "body."+strings.ToUpper(attr.GetNom()[:1])+attr.GetNom()[1:])
 			}
-
+			// putScanTargets = append(putScanTargets, ep.params[0])
+			// fmt.Println("params ",ep.params[0])
 			switch ep.method {
 			case "DELETE":
 				fmt.Fprint(&sb, goapimaker.DeleteHandler(strings.ReplaceAll(funcName, " ", "_"), "pg", ep.params[0], tableName))
 			case "PUT":
-				fmt.Fprint(&sb, goapimaker.PutHandler(ep.model[0].nom, strings.ReplaceAll(funcName, " ", "_"), "pg", columns, strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"), ep.params[0]))
+				fmt.Println("ep model name", ep.params[0])
+				putScanTargets = append(putScanTargets, ep.params[0])
+				fmt.Fprint(&sb, goapimaker.PutHandler(ep.model[0].nom, strings.ReplaceAll(funcName, " ", "_"), "pg", put_columns, strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"), ep.params[0],strings.Join(putScanTargets, ", ")))
 			case "GET":
 				if len(ep.params) > 0 {
 					data := struct {
@@ -278,67 +285,67 @@ func (mgr *GoApiMaker) writeModSumFile(projectName string) {
 }
 
 func (mgr *GoApiMaker) configAPIExporter(projectName string, model []Model) {
-    filePath := fmt.Sprintf("%s/%s/api/src/config/db.go", config.PROJECT_DIR, projectName)
+	filePath := fmt.Sprintf("%s/%s/api/src/config/db.go", config.PROJECT_DIR, projectName)
 
-    file, err := os.Create(filePath)
-    if err != nil {
-        fmt.Printf("Error creating config file %s : %v\n", filePath, err)
-        return
-    }
-    defer file.Close()
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("Error creating config file %s : %v\n", filePath, err)
+		return
+	}
+	defer file.Close()
 
-    dbName := strings.ReplaceAll(strings.ToLower(projectName), " ", "_")
+	dbName := strings.ReplaceAll(strings.ToLower(projectName), " ", "_")
 
-    var sb strings.Builder
-    var sqlgen Sqlgenerator
-    sb.WriteString("package config\n\n")
-    sb.WriteString("import (\n")
-    sb.WriteString("\t\"database/sql\"\n")
-    sb.WriteString("\t\"fmt\"\n")
-    sb.WriteString("\t\"log\"\n")
-    sb.WriteString("\t_ \"github.com/lib/pq\"\n")
-    sb.WriteString(")\n\n")
+	var sb strings.Builder
+	var sqlgen Sqlgenerator
+	sb.WriteString("package config\n\n")
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"database/sql\"\n")
+	sb.WriteString("\t\"fmt\"\n")
+	sb.WriteString("\t\"log\"\n")
+	sb.WriteString("\t_ \"github.com/lib/pq\"\n")
+	sb.WriteString(")\n\n")
 
-    sb.WriteString("var DB *sql.DB\n\n")
-    sb.WriteString("// InitDB vérifie l'existence de la base de données, la crée si besoin, puis initialise les tables\n")
-    sb.WriteString("func InitDB() {\n")
-    sb.WriteString("\tvar err error\n\n")
-    
-    sb.WriteString("\t// 1. Connexion initiale à la base par défaut 'postgres' pour vérifier/créer la base cible\n")
-    sb.WriteString("\tdefaultConnStr := \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
-    sb.WriteString("\tdefaultDB, err := sql.Open(\"postgres\", defaultConnStr)\n")
-    sb.WriteString("\tif err != nil {\n\t\tlog.Fatalf(\"Erreur de connexion au serveur PostgreSQL : %v\", err)\n\t}\n")
-    sb.WriteString("\tdefer defaultDB.Close()\n\n")
+	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString("// InitDB vérifie l'existence de la base de données, la crée si besoin, puis initialise les tables\n")
+	sb.WriteString("func InitDB() {\n")
+	sb.WriteString("\tvar err error\n\n")
 
-    sb.WriteString("\t// 2. Vérifier si la base de données existe\n")
-    sb.WriteString(fmt.Sprintf("\tvar exists bool\n"))
-    sb.WriteString(fmt.Sprintf("\terr = defaultDB.QueryRow(\"SELECT EXISTS (SELECT FROM pg_database WHERE datname = $1);\", \"%s\").Scan(&exists)\n", dbName))
-    sb.WriteString("\tif err != nil {\n\t\tlog.Fatalf(\"Erreur lors de la vérification de la base de données : %v\", err)\n\t}\n\n")
+	sb.WriteString("\t// 1. Connexion initiale à la base par défaut 'postgres' pour vérifier/créer la base cible\n")
+	sb.WriteString("\tdefaultConnStr := \"user=postgres password=root dbname=postgres sslmode=disable host=localhost port=5432\"\n")
+	sb.WriteString("\tdefaultDB, err := sql.Open(\"postgres\", defaultConnStr)\n")
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatalf(\"Erreur de connexion au serveur PostgreSQL : %v\", err)\n\t}\n")
+	sb.WriteString("\tdefer defaultDB.Close()\n\n")
 
-    sb.WriteString("\t// 3. Créer la base de données si elle n'existe pas\n")
-    sb.WriteString("\tif !exists {\n")
-    sb.WriteString(fmt.Sprintf("\t\tfmt.Printf(\"La base de données '%s' n'existe pas. Création en cours...\\n\")\n", dbName))
-    sb.WriteString(fmt.Sprintf("\t\t_, err = defaultDB.Exec(`CREATE DATABASE \"%s\";`)\n", dbName))
-    sb.WriteString("\t\tif err != nil {\n\t\t\tlog.Fatalf(\"Erreur lors de la création de la base de données : %v\", err)\n\t\t}\n")
-    sb.WriteString(fmt.Sprintf("\t\tfmt.Println(\"Base de données '%s' créée avec succès !\")\n", dbName))
-    sb.WriteString("\t}\n\n")
+	sb.WriteString("\t// 2. Vérifier si la base de données existe\n")
+	sb.WriteString(fmt.Sprintf("\tvar exists bool\n"))
+	sb.WriteString(fmt.Sprintf("\terr = defaultDB.QueryRow(\"SELECT EXISTS (SELECT FROM pg_database WHERE datname = $1);\", \"%s\").Scan(&exists)\n", dbName))
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatalf(\"Erreur lors de la vérification de la base de données : %v\", err)\n\t}\n\n")
 
-    sb.WriteString("\t// 4. Connexion définitive à la base de données du projet\n")
-    sb.WriteString(fmt.Sprintf("\tconnStr := \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", dbName))
-    sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
-    sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\t// 3. Créer la base de données si elle n'existe pas\n")
+	sb.WriteString("\tif !exists {\n")
+	sb.WriteString(fmt.Sprintf("\t\tfmt.Printf(\"La base de données '%s' n'existe pas. Création en cours...\\n\")\n", dbName))
+	sb.WriteString(fmt.Sprintf("\t\t_, err = defaultDB.Exec(`CREATE DATABASE \"%s\";`)\n", dbName))
+	sb.WriteString("\t\tif err != nil {\n\t\t\tlog.Fatalf(\"Erreur lors de la création de la base de données : %v\", err)\n\t\t}\n")
+	sb.WriteString(fmt.Sprintf("\t\tfmt.Println(\"Base de données '%s' créée avec succès !\")\n", dbName))
+	sb.WriteString("\t}\n\n")
 
-    sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
+	sb.WriteString("\t// 4. Connexion définitive à la base de données du projet\n")
+	sb.WriteString(fmt.Sprintf("\tconnStr := \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", dbName))
+	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
+	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
 
-    sb.WriteString("\t// 5. Initialisation des tables à partir des modèles\n")
-    sb.WriteString(fmt.Sprintf("\tquery := `%s`\n", sqlgen.GenerateDBAndTableInit(model, projectName)))
-    sb.WriteString("\t_, err = DB.Exec(query)\n")
-    sb.WriteString("\tif err != nil {\n")
-    sb.WriteString("\t\tlog.Fatalf(\"échec lors de l'initialisation des tables: %v\", err)\n")
-    sb.WriteString("\t}\n\n")
+	sb.WriteString("\tif err = DB.Ping(); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
 
-    sb.WriteString("\tfmt.Println(\"Successfully connected to database and initialized tables\")\n")
-    sb.WriteString("}\n")
+	sb.WriteString("\t// 5. Initialisation des tables à partir des modèles\n")
+	sb.WriteString(fmt.Sprintf("\tquery := `%s`\n", sqlgen.GenerateDBAndTableInit(model, projectName)))
+	sb.WriteString("\t_, err = DB.Exec(query)\n")
+	sb.WriteString("\tif err != nil {\n")
+	sb.WriteString("\t\tlog.Fatalf(\"échec lors de l'initialisation des tables: %v\", err)\n")
+	sb.WriteString("\t}\n\n")
 
-    file.WriteString(sb.String())
+	sb.WriteString("\tfmt.Println(\"Successfully connected to database and initialized tables\")\n")
+	sb.WriteString("}\n")
+
+	file.WriteString(sb.String())
 }

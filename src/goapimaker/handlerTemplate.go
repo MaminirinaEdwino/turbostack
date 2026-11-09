@@ -15,8 +15,13 @@ func %s(w http.ResponseWriter, r *http.Request){
 	%s
 	var res []models.%s
 
-	rows, _ := db.Query("%s")
-	
+	rows, err := db.Query("%s")
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+
+		json.NewEncoder(w).Encode(err)
+	}
 	for rows.Next(){
 		var tmp models.%s
 		rows.Scan(%s)
@@ -52,8 +57,12 @@ func {{ .FuncName }}(w http.ResponseWriter, r *http.Request){
 	{{ .Params }} := r.PathValue("{{ .Params }}")
 	var res models.{{ .StructName }}
 	{{ .DbCallerHandler }}
-	db.QueryRow("{{ .Query }}", {{ .Params }}).Scan({{ .ScanParams }})
-	
+	err := db.QueryRow("{{ .Query }}", {{ .Params }}).Scan({{ .ScanParams }})
+	if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err)
+	}
 	{{ .ResponseWriter }}
 }
 	`
@@ -74,12 +83,16 @@ func {{ .FuncName }}(w http.ResponseWriter, r *http.Request){
 		log.Fatal(err)
 	}
 	{{ .DbCallerHandler }}
-	rows, err := db.Query("{{ .PutQuery }}", {{ .Params }})
+	rows, err := db.Query("{{ .PutQuery }}", {{ .PutParams }})
 	if err != nil {
-		log.Fatal(err)
+	w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err)
 	}
 	rows.Next()
 	rows.Scan({{ .ScanParams }})
+	
+	
 	{{ .ResponseWriter }}
 }		
 `
@@ -88,7 +101,7 @@ func {{ .FuncName }}(w http.ResponseWriter, r *http.Request){
 	return temp
 }
 
-func PutHandler(modelName, epName, sgbd string, attrs []string, ScanParamsWriter string, params string) string {
+func PutHandler(modelName, epName, sgbd string, attrs []string, ScanParamsWriter string, params string, putParams string) string {
 	tmp := PutTemplate()
 
 	var tmpBuffer bytes.Buffer
@@ -100,14 +113,18 @@ func PutHandler(modelName, epName, sgbd string, attrs []string, ScanParamsWriter
 		ResponseWriter  string
 		Params          string
 		FuncName        string
+		PutParams       string
+		MajParams       string
 	}{
 		EndPointName:    utils.ToUpperFirstLetter(modelName),
 		DbCallerHandler: DBCallerHandler(sgbd),
-		PutQuery:        Update(epName, attrs, sgbd),
+		PutQuery:        Update(modelName, attrs, params),
 		ScanParams:      ScanParamsWriter,
 		ResponseWriter:  WriteResponseWriter(),
 		Params:          params,
 		FuncName:        strings.ReplaceAll(epName, " ", "_"),
+		PutParams:       putParams,
+		MajParams:       utils.ToUpperFirstLetter(params),
 	}
 	err := tmp.Execute(&tmpBuffer, data)
 	if err != nil {
@@ -124,14 +141,19 @@ func %s(w http.ResponseWriter, r *http.Request){
 		Message string
 	}
 	%s
-	rows,_ := db.Query("%s", %s)
+	rows,err := db.Query("%s", %s)
+	if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err)
+	}
 	rows.Next()
 	res := response{
-		Message: "users deleted",
+		Message: "element deleted",
 	}
 	%s
 }
-	`, epName, params, params, DBCallerHandler(sgbd), Delete(tableName, sgbd), params, WriteResponseWriter())
+	`, epName, params, params, DBCallerHandler(sgbd), Delete(tableName, params), params, WriteResponseWriter())
 }
 
 func InsertHandler(epName, sgbd, tableName string, attr []string) string {
@@ -145,7 +167,9 @@ func InsertHandler(epName, sgbd, tableName string, attr []string) string {
 		%s
 	err = db.QueryRow("%s", %s).Scan(%s)
 	if err != nil {
-		fmt.Println(err)
+	w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err)
 	}
 		%s
 		%s
@@ -185,6 +209,9 @@ var res models.{{ .EndPointName }}
 decoder := json.NewDecoder(r.Body) 
 err := decoder.Decode(&body)
 {{ .ErrorChecker }}
+if err != nil {
+		json.NewEncoder(w).Encode(err)
+	}
 	`
 	temp := template.New(content)
 	temp.Parse(content)

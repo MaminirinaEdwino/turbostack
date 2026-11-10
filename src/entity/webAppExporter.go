@@ -252,7 +252,7 @@ func (mgr *webAppMaker) configAPIExporter(projectName string) {
 }
 
 func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
-	filePath := fmt.Sprintf("%s/%s/api/src/config/db.go", config.PROJECT_DIR, projectName)
+	filePath := fmt.Sprintf("%s/%s/web-app/src/config/db.go", config.PROJECT_DIR, projectName)
 
 	file, err := os.Create(filePath)
 	if err != nil {
@@ -488,6 +488,9 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
 	sb.WriteString("\tmux := http.NewServeMux()\n\n")
 	sb.WriteString("\tcontroller.RegisterRoutes(mux)\n\n")
+	sb.WriteString("\tmux.HandleFunc(\"POST /login\", controllers.WebLogin)\n\n")
+	sb.WriteString("\tmux.HandleFunc(\"POST /register\", controllers.WebRegister)\n\n")
+	sb.WriteString("\tmux.HandleFunc(\"POST /logout\", controllers.WebLogout)\n\n")
 	sb.WriteString("\tstaticServer := http.FileServer(http.Dir(\"src/static\"))\n\n")
 	sb.WriteString("\tmux.Handle(\"GET /static/\", http.StripPrefix(\"/static/\", staticServer))\n")
 	sb.WriteString("\t// 5. Lancement du serveur\n")
@@ -672,7 +675,8 @@ func (wap *webAppMaker) WebAppGenerator() {
 	usermodel, hasUserModel := FindUserModel(wap.BDD.models)
 	projectpath := filepath.Join(config.PROJECT_DIR, wap.ProjectName, "web-app")
 	if hasUserModel {
-		GenerateWebAuthController(projectpath, usermodel)
+		fmt.Println("Has user model")
+		GenerateWebAuthController(projectpath, usermodel, wap.ProjectName)
 		GenerateWebSessionMiddleware(projectpath)
 	}else{
 		fmt.Println("no user model")

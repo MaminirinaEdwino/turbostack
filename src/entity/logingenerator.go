@@ -108,9 +108,11 @@ func Verify(secret string, token string, leeway float64) (map[string]any, error)
 `
 }
 func GenerateWebSessionMiddleware(projectPath string) error {
-    filePath := fmt.Sprintf("%s/src/middlewares/session.go", projectPath)
+	dirPath := fmt.Sprintf("%s/src/middlewares", projectPath)
+	os.MkdirAll(dirPath, 0755)
+	filePath := fmt.Sprintf("%s/src/middlewares/session.go", projectPath)
 
-    code := `package middlewares
+	code := `package middlewares
 
 import (
 	"context"
@@ -136,13 +138,15 @@ func RequireSession(next http.Handler) http.Handler {
 	})
 }
 `
-    return os.WriteFile(filePath, []byte(code), 0644)
+	return os.WriteFile(filePath, []byte(code), 0644)
 }
 
-func  GenerateApiAuthMiddleware(projectPath, projectName string) error {
-    filePath := fmt.Sprintf("%s/src/middlewares/auth.go", projectPath)
-    
-    code := `package middlewares
+func GenerateApiAuthMiddleware(projectPath, projectName string) error {
+	dirPath := fmt.Sprintf("%s/src/middlewares", projectPath)
+	os.MkdirAll(dirPath, 0755)
+	filePath := fmt.Sprintf("%s/src/middlewares/auth.go", projectPath)
+
+	code := `package middlewares
 
 import (
 	"context"
@@ -198,7 +202,7 @@ func AuthMiddleware(requiredRole string) func(http.Handler) http.Handler {
 	}
 }
 `
-    return os.WriteFile(filePath, []byte(fmt.Sprintf(code, projectName)), 0644)
+	return os.WriteFile(filePath, []byte(fmt.Sprintf(code, projectName)), 0644)
 }
 
 func FindUserModel(models []Model) (Model, bool) {
@@ -239,7 +243,7 @@ func GenerateAuthController(projectPath string, userModel Model) error {
 	sb.WriteString("\t\"encoding/json\"\n")
 	sb.WriteString("\t\"net/http\"\n")
 	sb.WriteString(fmt.Sprintf("\t\"%s/src/config\"\n", filepath.Base(projectPath))) // Remplace selon ton module
-	
+
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("const JwtSecret = \"turbostack_super_secret_key\"\n\n")
@@ -298,7 +302,7 @@ func GenerateAuthController(projectPath string, userModel Model) error {
 
 	// --- 3. LOGIN ADMIN ---
 	sb.WriteString(generateLoginHandler("LoginAdmin", tableName, "admin"))
-	
+
 	os.WriteFile(turboPath, []byte(WriteTurboJWTCode()), 0644)
 	return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }
@@ -403,19 +407,19 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	// Écrire le fichier controllers/auth_controller.go
 	return os.WriteFile(filepath.Join(projectPath, "src", "controllers", "auth_controller.go"), []byte(code), 0644)
 }
-func GenerateWebAuthController(projectPath string, userModel Model) error {
+func GenerateWebAuthController(projectPath string, userModel Model, projecName string) error {
 	tableName := strings.ToLower(userModel.GetNom())
-	filePath := fmt.Sprintf("%s/src/controllers/auth_controller.go", projectPath)
-
+	filePath := fmt.Sprintf("%s/src/controller/auth_controller.go", projectPath)
+	fmt.Println(filePath)
 	var sb strings.Builder
 
-	sb.WriteString("package controllers\n\n")
+	sb.WriteString("package controller\n\n")
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"database/sql\"\n")
 	sb.WriteString("\t\"encoding/json\"\n")
 	sb.WriteString("\t\"net/http\"\n")
 	sb.WriteString("\t\"time\"\n")
-	sb.WriteString(fmt.Sprintf("\t\"%s/src/config\"\n", filepath.Base(projectPath))) // Remplace selon ton module
+	sb.WriteString(fmt.Sprintf("\t\"%s/src/config\"\n", projecName)) // Remplace selon ton module
 	sb.WriteString(")\n\n")
 
 	// --- 1. WEB REGISTER (Traitement du formulaire ou JSON d'inscription) ---
@@ -519,13 +523,13 @@ func GenerateWebAuthController(projectPath string, userModel Model) error {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 `)
-	for _, str := range userModel.attributs {
-		if str.nom == "role" {
-			val := str.default_value.(string)
-			sb.WriteString(generateLoginHandler("Login", userModel.nom, val))
-		}
-	}
-	// sb.WriteString(generateLoginHandler("Login", userModel.nom, "admin"))
-	sb.WriteString(generateLoginHandler("LoginAdmin", userModel.nom, "admin"))
+	// for _, str := range userModel.attributs {
+	// 	if str.nom == "role" {
+	// 		val := str.default_value.(string)
+	// 		sb.WriteString(generateLoginHandler("Login", userModel.nom, val))
+	// 	}
+	// }
+	// // sb.WriteString(generateLoginHandler("Login", userModel.nom, "admin"))
+	// sb.WriteString(generateLoginHandler("LoginAdmin", userModel.nom, "admin"))
 	return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }

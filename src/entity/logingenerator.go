@@ -408,83 +408,83 @@ func RefreshToken(w http.ResponseWriter, r *http.Request) {
 	return os.WriteFile(filepath.Join(projectPath, "src", "controllers", "auth_controller.go"), []byte(code), 0644)
 }
 func GenerateWebAuthController(projectPath string, userModel Model, projecName string) error {
-	tableName := strings.ToLower(userModel.GetNom())
-	filePath := fmt.Sprintf("%s/src/controller/auth_controller.go", projectPath)
-	fmt.Println(filePath)
-	var sb strings.Builder
+    tableName := strings.ToLower(userModel.GetNom())
+    filePath := fmt.Sprintf("%s/src/controller/auth_controller.go", projectPath)
+    fmt.Println(filePath)
+    var sb strings.Builder
 
-	sb.WriteString("package controller\n\n")
-	sb.WriteString("import (\n")
-	sb.WriteString("\t\"database/sql\"\n")
-	sb.WriteString("\t\"encoding/json\"\n")
-	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString("\t\"time\"\n")
-	sb.WriteString(fmt.Sprintf("\t\"%s/src/config\"\n", projecName)) // Remplace selon ton module
-	sb.WriteString(")\n\n")
+    sb.WriteString("package controller\n\n")
+    sb.WriteString("import (\n")
+    sb.WriteString("\t\"database/sql\"\n")
+    sb.WriteString("\t\"net/http\"\n")
+    // sb.WriteString("\t\"strconv\"\n")
+    sb.WriteString("\t\"time\"\n")
+    sb.WriteString(fmt.Sprintf("\t\"%s/src/config\"\n", projecName))
+    sb.WriteString(")\n\n")
 
-	// --- 1. WEB REGISTER (Traitement du formulaire ou JSON d'inscription) ---
-	sb.WriteString("func WebRegister(w http.ResponseWriter, r *http.Request) {\n")
-	sb.WriteString("\tif r.Method != http.MethodPost {\n")
-	sb.WriteString("\t\thttp.Error(w, \"Method not allowed\", http.StatusMethodNotAllowed)\n")
-	sb.WriteString("\t\treturn\n")
-	sb.WriteString("\t}\n\n")
+    // --- 1. WEB REGISTER (Traitement des données du formulaire HTML) ---
+    sb.WriteString("func WebRegister(w http.ResponseWriter, r *http.Request) {\n")
+    sb.WriteString("\tif r.Method != http.MethodPost {\n")
+    sb.WriteString("\t\thttp.Error(w, \"Method not allowed\", http.StatusMethodNotAllowed)\n")
+    sb.WriteString("\t\treturn\n")
+    sb.WriteString("\t}\n\n")
 
-	sb.WriteString("\tvar creds struct {\n")
-	var insertCols []string
-	var insertVals []string
-	var scanArgs []string
+    sb.WriteString("\tif err := r.ParseForm(); err != nil {\n")
+    sb.WriteString("\t\thttp.Error(w, \"Invalid form data\", http.StatusBadRequest)\n")
+    sb.WriteString("\t\treturn\n")
+    sb.WriteString("\t}\n\n")
 
-	for _, field := range userModel.GetAttributs() {
-		fName := strings.ToLower(field.GetNom())
-		if fName == "id" {
-			continue
-		}
+    var insertCols []string
+    var insertVals []string
+    var scanArgs []string
 
-		goType := "string"
-		if field.GetType() == "int" || field.GetType() == "integer" {
-			goType = "int"
-		}
+    for _, field := range userModel.GetAttributs() {
+        fName := strings.ToLower(field.GetNom())
+        if fName == "id" || fName == "role" {
+            continue
+        }
 
-		sb.WriteString(fmt.Sprintf("\t\t%s %s `json:\"%s\"`\n", capitalize(field.GetNom()), goType, fName))
-		insertCols = append(insertCols, fName)
-		insertVals = append(insertVals, fmt.Sprintf("$%d", len(insertCols)))
-		scanArgs = append(scanArgs, fmt.Sprintf("creds.%s", capitalize(field.GetNom())))
-	}
-	sb.WriteString("\t}\n\n")
+        // Gestion du type de champ pour la récupération du formulaire
+        if field.GetType() == "int" || field.GetType() == "integer" {
+            sb.WriteString(fmt.Sprintf("\t%sStr := r.FormValue(\"%s\")\n", fName, fName))
+            sb.WriteString(fmt.Sprintf("\t%s, _ := strconv.Atoi(%sStr)\n", fName, fName))
+        } else {
+            sb.WriteString(fmt.Sprintf("\t%s := r.FormValue(\"%s\")\n", fName, fName))
+        }
 
-	sb.WriteString("\tif err := json.NewDecoder(r.Body).Decode(&creds); err != nil {\n")
-	sb.WriteString("\t\thttp.Error(w, \"Invalid body\", http.StatusBadRequest)\n")
-	sb.WriteString("\t\treturn\n")
-	sb.WriteString("\t}\n\n")
+        insertCols = append(insertCols, fName)
+        insertVals = append(insertVals, fmt.Sprintf("$%d", len(insertCols)))
+        scanArgs = append(scanArgs, fName)
+    }
+    sb.WriteString("\n")
 
-	queryInsert := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tableName, strings.Join(insertCols, ", "), strings.Join(insertVals, ", "))
-	sb.WriteString(fmt.Sprintf("\t_, err := config.DB.Exec(\"%s\", %s)\n", queryInsert, strings.Join(scanArgs, ", ")))
-	sb.WriteString("\tif err != nil {\n")
-	sb.WriteString("\t\thttp.Error(w, \"User already exists or error: \"+err.Error(), http.StatusBadRequest)\n")
-	sb.WriteString("\t\treturn\n")
-	sb.WriteString("\t}\n\n")
+    queryInsert := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tableName, strings.Join(insertCols, ", "), strings.Join(insertVals, ", "))
+    sb.WriteString(fmt.Sprintf("\t_, err := config.DB.Exec(\"%s\", %s)\n", queryInsert, strings.Join(scanArgs, ", ")))
+    sb.WriteString("\tif err != nil {\n")
+    sb.WriteString("\t\thttp.Error(w, \"User already exists or error: \"+err.Error(), http.StatusBadRequest)\n")
+    sb.WriteString("\t\treturn\n")
+    sb.WriteString("\t}\n\n")
 
-	sb.WriteString("\thttp.Redirect(w, r, \"/login\", http.StatusSeeOther)\n")
-	sb.WriteString("}\n\n")
+    sb.WriteString("\thttp.Redirect(w, r, \"/login\", http.StatusSeeOther)\n")
+    sb.WriteString("}\n\n")
 
-	// --- 2. WEB LOGIN (Création du cookie de session) ---
-	sb.WriteString(fmt.Sprintf(`func WebLogin(w http.ResponseWriter, r *http.Request) {
+    // --- 2. WEB LOGIN (Traitement du formulaire de connexion) ---
+    sb.WriteString(fmt.Sprintf(`func WebLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var creds struct {
-		Username string `+"`json:\"username\"`"+`
-		Password string `+"`json:\"password\"`"+`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		http.Error(w, "Invalid body", http.StatusBadRequest)
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Invalid form data", http.StatusBadRequest)
 		return
 	}
 
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
 	var userID int
-	err := config.DB.QueryRow("SELECT id FROM %s WHERE username = $1 AND password = $2", creds.Username, creds.Password).Scan(&userID)
+	err := config.DB.QueryRow("SELECT id FROM %s WHERE username = $1 AND password = $2", username, password).Scan(&userID)
 	if err == sql.ErrNoRows {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
@@ -496,22 +496,22 @@ func GenerateWebAuthController(projectPath string, userModel Model, projecName s
 	// Création d'un cookie de session HTTP sécurisé
 	cookie := http.Cookie{
 		Name:     "session_user",
-		Value:    creds.Username,
+		Value:    username,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HttpOnly: true,
 		Path:     "/",
 	}
 	http.SetCookie(w, &cookie)
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Logged in successfully"})
+	// Redirection vers le tableau de bord après connexion réussie
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 `, tableName))
 
-	sb.WriteString("\n")
+    sb.WriteString("\n")
 
-	// --- 3. WEB LOGOUT (Suppression du cookie) ---
-	sb.WriteString(`func WebLogout(w http.ResponseWriter, r *http.Request) {
+    // --- 3. WEB LOGOUT (Suppression du cookie) ---
+    sb.WriteString(`func WebLogout(w http.ResponseWriter, r *http.Request) {
 	cookie := http.Cookie{
 		Name:     "session_user",
 		Value:    "",
@@ -523,13 +523,6 @@ func GenerateWebAuthController(projectPath string, userModel Model, projecName s
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 `)
-	// for _, str := range userModel.attributs {
-	// 	if str.nom == "role" {
-	// 		val := str.default_value.(string)
-	// 		sb.WriteString(generateLoginHandler("Login", userModel.nom, val))
-	// 	}
-	// }
-	// // sb.WriteString(generateLoginHandler("Login", userModel.nom, "admin"))
-	// sb.WriteString(generateLoginHandler("LoginAdmin", userModel.nom, "admin"))
-	return os.WriteFile(filePath, []byte(sb.String()), 0644)
+
+    return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }

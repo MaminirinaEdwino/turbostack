@@ -38,7 +38,7 @@ func (wap *webAppMaker) SetupArch() {
 }
 
 func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName, ModelName string) string {
-	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request){
+	return fmt.Sprintf(`
 	%s
 	%s
 	rows, err := db.Query("%s")
@@ -64,7 +64,7 @@ func WebAppSelectTemplate(query, dbCaller, returnType, scanValue, pageName, Mode
 }
 
 func WebAppPostViewtemplate(pageName string) string {
-	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`
 	renderTemplate(w, "%s.html", map[string]interface{}{
 		"Title": "Create",
 	})
@@ -72,7 +72,7 @@ func WebAppPostViewtemplate(pageName string) string {
 }
 
 func WebAppPostActionTemplate(dbCaller, redirectUri, paramsExtraction, paramsChecker, query, paramsExec string) string {
-	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`
 	// Parsing de la Form Data
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
@@ -126,7 +126,7 @@ func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryV
 			splitTab[id] = ""
 		}
 	}
-	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		r.ParseForm()
@@ -148,7 +148,7 @@ func WebAppEditActionTemplate(dbCaller, params, contentExtraction, query, queryV
 }
 
 func WebAppDeleteActionTemplate(dbCaller, params, query, redirectUri string) string {
-	return fmt.Sprintf(`func (w http.ResponseWriter, r *http.Request) {
+	return fmt.Sprintf(`
 	%s
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		r.ParseForm()
@@ -176,7 +176,7 @@ defer db.Close()
 
 func WebAppSelectByParamsTemplate(query, dbCaller, returnType, scanValue, pageName, uriParams, ModelName string) string {
 	return fmt.Sprintf(`
-func (w http.ResponseWriter, r *http.Request)  {
+
 	%s
 	%s := r.PathValue("%s")
 	%s
@@ -274,6 +274,15 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 	sb.WriteString(")\n\n")
 
 	sb.WriteString("var DB *sql.DB\n\n")
+	sb.WriteString("var connStr string\n\n")
+	sb.WriteString(`func ConnectDB() *sql.DB {
+	var err error
+	DB, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return DB
+}`)
 	sb.WriteString("// InitDB vérifie l'existence de la base de données, la crée si besoin, puis initialise les tables\n")
 	sb.WriteString("func InitDB() {\n")
 	sb.WriteString("\tvar err error\n\n")
@@ -298,7 +307,7 @@ func (mgr *webAppMaker) configAPIExporter2(projectName string, model []Model) {
 	sb.WriteString("\t}\n\n")
 
 	sb.WriteString("\t// 4. Connexion définitive à la base de données du projet\n")
-	sb.WriteString(fmt.Sprintf("\tconnStr := \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", dbName))
+	sb.WriteString(fmt.Sprintf("\tconnStr = \"user=postgres password=root dbname=%s sslmode=disable host=localhost port=5432\"\n", dbName))
 	sb.WriteString("\tDB, err = sql.Open(\"postgres\", connStr)\n")
 	sb.WriteString("\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n")
 
@@ -396,7 +405,11 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 		method = "POST"
 	}
 
-	fmt.Fprintf(&strBuilder, "\nmux.HandleFunc(\"%s %s\",", method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	if endpoint.role == "public" {
+		fmt.Fprintf(&strBuilder, "\nmux.HandleFunc(\"%s %s\", func(w http.ResponseWriter, r *http.Request) {", method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	}else{
+		fmt.Fprintf(&strBuilder, "\nmux.Handle(\"%s %s\", middlewares.RequireSession(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {", method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
+	}
 	switch endpoint.method {
 	case "GET":
 		if len(endpoint.model) > 0 {
@@ -436,7 +449,11 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 	case "DELETE":
 		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
 	}
-	strBuilder.WriteString(")")
+	if endpoint.role == "public" {
+		strBuilder.WriteString(")")	
+	}else{
+		strBuilder.WriteString(")))")	
+	}
 	return strBuilder.String()
 }
 
@@ -488,9 +505,9 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
 	sb.WriteString("\tmux := http.NewServeMux()\n\n")
 	sb.WriteString("\tcontroller.RegisterRoutes(mux)\n\n")
-	sb.WriteString("\tmux.HandleFunc(\"POST /login\", controllers.WebLogin)\n\n")
-	sb.WriteString("\tmux.HandleFunc(\"POST /register\", controllers.WebRegister)\n\n")
-	sb.WriteString("\tmux.HandleFunc(\"POST /logout\", controllers.WebLogout)\n\n")
+	sb.WriteString("\tmux.HandleFunc(\"POST /login\", controller.WebLogin)\n")
+	sb.WriteString("\tmux.HandleFunc(\"POST /register\", controller.WebRegister)\n")
+	sb.WriteString("\tmux.HandleFunc(\"POST /logout\", controller.WebLogout)\n")
 	sb.WriteString("\tstaticServer := http.FileServer(http.Dir(\"src/static\"))\n\n")
 	sb.WriteString("\tmux.Handle(\"GET /static/\", http.StripPrefix(\"/static/\", staticServer))\n")
 	sb.WriteString("\t// 5. Lancement du serveur\n")
@@ -519,7 +536,7 @@ func (wap *webAppMaker) CreateControllerFile() {
 		controllerFile, _ := os.Create(filePath)
 
 		strBuilder.WriteString("package controller\n")
-		fmt.Fprintf(&strBuilder, "import (\n\"net/http\"\n\"text/template\"\n\"%s/src/config\"\n)", strings.ReplaceAll(wap.ProjectName, " ", "_"))
+		fmt.Fprintf(&strBuilder, "import (\n\"net/http\"\n\"text/template\"\n\"%s/src/config\"\n\"%s/src/middlewares\"\n)", strings.ReplaceAll(wap.ProjectName, " ", "_"), strings.ReplaceAll(wap.ProjectName, " ", "_"))
 
 		strBuilder.WriteString(wap.PageRenderer())
 
@@ -678,7 +695,7 @@ func (wap *webAppMaker) WebAppGenerator() {
 		fmt.Println("Has user model")
 		GenerateWebAuthController(projectpath, usermodel, wap.ProjectName)
 		GenerateWebSessionMiddleware(projectpath)
-	}else{
+	} else {
 		fmt.Println("no user model")
 	}
 	wap.mainExporter()

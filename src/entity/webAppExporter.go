@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
@@ -668,5 +669,12 @@ func (wap *webAppMaker) WebAppGenerator() {
 	// wap.CreateModelFile()
 	wap.CreateControllerFile()
 	wap.GenerateView()
+	usermodel, hasUserModel := FindUserModel(wap.BDD.models)
+	projectpath := filepath.Join(config.PROJECT_DIR, wap.ProjectName, "web-app")
+	if hasUserModel {
+		GenerateWebAuthController(projectpath, usermodel)
+	}else{
+		fmt.Println("no user model")
+	}
 	wap.mainExporter()
 }

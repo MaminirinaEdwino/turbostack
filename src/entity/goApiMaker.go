@@ -104,6 +104,12 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 			fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, CorrectUriParamsWriting(uri), funcName)
 		}
 		sb.WriteString("}\n\n")
+
+		sb.WriteString(`func RegisterAuthRoutes(mux *http.ServeMux){
+mux.HandleFunc("POST /login", controllers.Login)
+mux.HandleFunc("POST /register", controllers.Register)
+mux.HandleFunc("POST /loginadmin", controllers.LoginAdmin)
+}`)
 	}
 	file.WriteString(sb.String())
 }
@@ -160,7 +166,7 @@ func (mgr *GoApiMaker) controllerAPIExporter(endpoints []Endpoint, projectName s
 			case "PUT":
 				fmt.Println("ep model name", ep.params[0])
 				putScanTargets = append(putScanTargets, ep.params[0])
-				fmt.Fprint(&sb, goapimaker.PutHandler(ep.model[0].nom, strings.ReplaceAll(funcName, " ", "_"), "pg", put_columns, strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"), ep.params[0],strings.Join(putScanTargets, ", ")))
+				fmt.Fprint(&sb, goapimaker.PutHandler(ep.model[0].nom, strings.ReplaceAll(funcName, " ", "_"), "pg", put_columns, strings.ReplaceAll(strings.Join(scanTargets, ", "), "tmp", "res"), ep.params[0], strings.Join(putScanTargets, ", ")))
 			case "GET":
 				if len(ep.params) > 0 {
 					data := struct {
@@ -261,7 +267,9 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 		groupFuncName := strings.ToUpper(cleanGroupName[:1]) + cleanGroupName[1:]
 		fmt.Fprintf(&sb, "\troutes.RegisterRoutes%s(mux)\n", groupFuncName)
 	}
+
 	fmt.Fprintln(&sb, "\thandlers.RegisterDocsRoute(mux)\n")
+	fmt.Fprintln(&sb, "\troutes.RegisterAuthRoutes(mux)\n")
 
 	sb.WriteString("\n\t// 4. Application du middleware CORS\n")
 	sb.WriteString("\thandler := middlewares.CorsMiddleware(mux)\n\n")

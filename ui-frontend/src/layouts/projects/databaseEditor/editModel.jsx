@@ -117,7 +117,7 @@ export default function EditModel({ modelList, setModelList, setToggle, index })
         setToggle("none")
     }
 
-    return (<form className="bg-white dark:bg-gray-900 border border-couleur1/10 dark:border-white/10 m-4 p-6 rounded-2xl shadow-xl flex flex-col gap-4 transition-all">
+    return (<form className="bg-white dark:bg-gray-900 border border-couleur1/10 dark:border-white/10 m-4 p-6 rounded-2xl shadow-xl flex flex-col gap-4 transition-all  max-h-[70vh] overflow-scroll">
         <h3 className="font-bold text-2xl text-couleur1 dark:text-gray-100 tracking-tight">Edit Table</h3>
 
         <div className="p-2 flex flex-col gap-1.5">

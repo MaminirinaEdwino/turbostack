@@ -37,7 +37,16 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	fmt.Println(projectpath)
 	fmt.Println(GenerateAndWriteOpenAPIJson(projectpath, &Project))
 	fmt.Println(GenerateDocsHandlerFile(projectpath))
-	// CopySwaggerUiDir(projectpath)
+	usermodel, hasUserModel := FindUserModel(bdd.models)
+	if hasUserModel {
+		fmt.Println("has user model")
+		GenerateAuthController(projectpath, usermodel)
+		generateLoginHandler("login", usermodel.GetNom(), "user")
+		generateLoginHandler("login", usermodel.GetNom(), "admin")
+	}else{
+		fmt.Println("no model")
+	}
+
 	fmt.Printf("Exportation de l'API terminée pour le projet : %s\n", projectName)
 }
 

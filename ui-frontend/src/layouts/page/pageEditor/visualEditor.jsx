@@ -13,7 +13,7 @@ import PropertiesTab from "./components/propertieTab";
 import PseudoClassTab from "./components/pseudoClassTab";
 import HtmlPropertiesTab from "./components/htmlPropertieTab";
 import TreeBlocks from "./components/treeBlocks";
-import { Globe, Layers, Settings2 } from "lucide-react";
+import { Globe, Layers, Settings2, Type } from "lucide-react";
 
 
 export default function VisualEditor({

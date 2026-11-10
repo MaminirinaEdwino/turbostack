@@ -80,6 +80,9 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 	sb.WriteString("\t\"")
 	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
 	sb.WriteString("/src/controllers\"\n")
+	sb.WriteString("\t\"")
+	sb.WriteString(strings.ReplaceAll(projectName, " ", "_"))
+	sb.WriteString("/src/middlewares\"\n")
 	sb.WriteString(")\n\n")
 
 	// Groupement des endpoints par nom de modèle
@@ -100,8 +103,14 @@ func (mgr *GoApiMaker) routesAPIExporter(endpoints []Endpoint, projectName strin
 			method := ep.GetMethod()
 			uri := ep.GetUri()
 			eName := ep.GetNom()
-			funcName := strings.ToUpper(eName[:1]) + strings.ReplaceAll(eName[1:], " ", "_")
-			fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, CorrectUriParamsWriting(uri), funcName)
+			if ep.role != "public" {
+				funcName := strings.ToUpper(eName[:1]) + strings.ReplaceAll(eName[1:], " ", "_")
+				fmt.Fprintf(&sb, "\tmux.Handle(\"%s %s\", middlewares.AuthMiddleware(\"%s\")(http.HandlerFunc(controllers.%s)))\n", method, CorrectUriParamsWriting(uri), ep.role, funcName)
+			} else {
+				funcName := strings.ToUpper(eName[:1]) + strings.ReplaceAll(eName[1:], " ", "_")
+				fmt.Fprintf(&sb, "\tmux.HandleFunc(\"%s %s\", controllers.%s)\n", method, CorrectUriParamsWriting(uri), funcName)
+			}
+
 		}
 		sb.WriteString("}\n\n")
 

@@ -33,11 +33,14 @@ export default function EditEndpoint({
   const availableModels = project?.bdd?.models || [];
 
   // Extraction dynamique des rôles depuis la table User
-  const userModel = availableModels.find((m) => m.nom === "User");
-  const roleField = userModel?.champs.find((c) => c.nom === "role");
-  const availableRoles = roleField?.default_value
-    ? ["public", ...roleField.default_value.split(",").map((r) => r.trim())]
-    : ["public"];
+  const userModel = availableModels.find(m => {
+        const nomLower = m.nom.toLowerCase();
+        return nomLower.includes("user") || nomLower.includes("utilisateur");
+    });
+    const roleField = userModel?.champs.find(c => c.nom === "role");
+    const availableRoles = roleField?.default_value
+        ? ["public", "admin", ...roleField.default_value.split(',').map(r => r.trim())]
+        : ["public"];
 
   // Initialize endpoint state with data from the selected endpoint
   useEffect(() => {

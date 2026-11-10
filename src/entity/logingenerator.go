@@ -107,6 +107,99 @@ func Verify(secret string, token string, leeway float64) (map[string]any, error)
 }
 `
 }
+func GenerateWebSessionMiddleware(projectPath string) error {
+    filePath := fmt.Sprintf("%s/src/middlewares/session.go", projectPath)
+
+    code := `package middlewares
+
+import (
+	"context"
+	"net/http"
+)
+
+type contextKey string
+const SessionUserKey contextKey = "session_user"
+
+// RequireSession vérifie si l'utilisateur possède un cookie de session valide
+func RequireSession(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("session_user")
+		if err != nil || cookie.Value == "" {
+			// Rediriger vers la page de login si non authentifié
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		// Injecter le nom d'utilisateur / session dans le contexte
+		ctx := context.WithValue(r.Context(), SessionUserKey, cookie.Value)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+`
+    return os.WriteFile(filePath, []byte(code), 0644)
+}
+
+func  GenerateApiAuthMiddleware(projectPath, projectName string) error {
+    filePath := fmt.Sprintf("%s/src/middlewares/auth.go", projectPath)
+    
+    code := `package middlewares
+
+import (
+	"context"
+	"net/http"
+	"strings"
+	"%s/src/controllers"
+	// "github.com/vites/turbojwt" // Ton package turbojwt
+)
+
+const JwtSecret = "turbostack_super_secret_key"
+
+// ContextKey pour stocker les infos utilisateur dans la requête
+type contextKey string
+const UserContextKey contextKey = "user"
+
+func AuthMiddleware(requiredRole string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			authHeader := r.Header.Get("Authorization")
+			if authHeader == "" {
+				http.Error(w, "Authorization header missing", http.StatusUnauthorized)
+				return
+			}
+
+			parts := strings.Split(authHeader, " ")
+			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+				http.Error(w, "Invalid authorization header format", http.StatusUnauthorized)
+				return
+			}
+
+			tokenStr := parts[1]
+
+			// Décoder et valider le token avec turbojwt
+			claims, err := controllers.Verify(JwtSecret, tokenStr, 0)
+			if err != nil {
+				http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
+				return
+			}
+
+			// Vérification optionnelle du rôle si requis
+			if requiredRole != "" {
+				role, ok := claims["role"].(string)
+				if !ok || role != requiredRole {
+					http.Error(w, "Access forbidden: insufficient rights", http.StatusForbidden)
+					return
+				}
+			}
+
+			// Injecter les claims dans le contexte de la requête
+			ctx := context.WithValue(r.Context(), UserContextKey, claims)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+`
+    return os.WriteFile(filePath, []byte(fmt.Sprintf(code, projectName)), 0644)
+}
 
 func FindUserModel(models []Model) (Model, bool) {
 	for _, model := range models {

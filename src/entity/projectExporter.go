@@ -43,6 +43,7 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 		GenerateAuthController(projectpath, usermodel)
 		generateLoginHandler("login", usermodel.GetNom(), "user")
 		generateLoginHandler("login", usermodel.GetNom(), "admin")
+		GenerateApiAuthMiddleware(projectpath, strings.ReplaceAll(projectName, " ", "_"))
 	}else{
 		fmt.Println("no model")
 	}

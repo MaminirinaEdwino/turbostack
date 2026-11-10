@@ -3,7 +3,7 @@ import { Check, X, Plus, Trash2, Database } from "lucide-react";
 import { useState } from "react";
 
 export default function NewEndpoint({ project, setProject, setToggle }) {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
     const [endpoint, setEndpoint] = useState({
         nom: "",
         uri: "/",
@@ -22,10 +22,13 @@ export default function NewEndpoint({ project, setProject, setToggle }) {
     const availableModels = project.bdd?.models || [];
 
     // Extraction dynamique des rôles depuis la table User
-    const userModel = availableModels.find(m => m.nom === "User");
+    const userModel = availableModels.find(m => {
+        const nomLower = m.nom.toLowerCase();
+        return nomLower.includes("user") || nomLower.includes("utilisateur");
+    });
     const roleField = userModel?.champs.find(c => c.nom === "role");
     const availableRoles = roleField?.default_value
-        ? ["public", ...roleField.default_value.split(',').map(r => r.trim())]
+        ? ["public", "admin", ...roleField.default_value.split(',').map(r => r.trim())]
         : ["public"];
 
     const handleSave = (e) => {

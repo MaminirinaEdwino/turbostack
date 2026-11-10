@@ -673,6 +673,7 @@ func (wap *webAppMaker) WebAppGenerator() {
 	projectpath := filepath.Join(config.PROJECT_DIR, wap.ProjectName, "web-app")
 	if hasUserModel {
 		GenerateWebAuthController(projectpath, usermodel)
+		GenerateWebSessionMiddleware(projectpath)
 	}else{
 		fmt.Println("no user model")
 	}

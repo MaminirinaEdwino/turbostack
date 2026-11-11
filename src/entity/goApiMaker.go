@@ -2,8 +2,10 @@ package entity
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/MaminirinaEdwino/turbostack/src/config"
@@ -225,6 +227,17 @@ func (mgr *GoApiMaker) middlewareAPIExporter(projectName string) {
 	goapimaker.MiddlewareWriter(projectName)
 }
 
+func FetchProjectByName(name string)ProjectJSON {
+	var pJson ProjectJSON
+	filePath := filepath.Join(config.PROJECT_DIR, name+".json")
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Println(err, "by name")
+	}
+	json.Unmarshal(file, &pJson)
+	return pJson
+}
+
 func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string) {
 	filePath := fmt.Sprintf("%s/%s/api/main.go", config.PROJECT_DIR, projectName)
 	file, err := os.Create(filePath)
@@ -276,15 +289,18 @@ func (mgr *GoApiMaker) mainAPIExporter(endpoints []Endpoint, projectName string)
 		groupFuncName := strings.ToUpper(cleanGroupName[:1]) + cleanGroupName[1:]
 		fmt.Fprintf(&sb, "\troutes.RegisterRoutes%s(mux)\n", groupFuncName)
 	}
+	project := FetchProjectByName(projectName)
 
 	fmt.Fprintln(&sb, "\thandlers.RegisterDocsRoute(mux)\n")
-	fmt.Fprintln(&sb, "\troutes.RegisterAuthRoutes(mux)\n")
-
+	_, hasUser := FindUserModel(project.ToModel().bdd.models)
+	if hasUser {
+		fmt.Fprintln(&sb, "\troutes.RegisterAuthRoutes(mux)\n")
+	}
 	sb.WriteString("\n\t// 4. Application du middleware CORS\n")
 	sb.WriteString("\thandler := middlewares.CorsMiddleware(mux)\n\n")
 
 	sb.WriteString("\t// 5. Lancement du serveur\n")
-	sb.WriteString("\tport := \":8080\"\n")
+	sb.WriteString("\tport := \":8000\"\n")
 	sb.WriteString("\tfmt.Printf(\"TurboStack API running on http://localhost%s\\n\", port)\n")
 	sb.WriteString("\tlog.Fatal(http.ListenAndServe(port, handler))\n")
 	sb.WriteString("}\n")

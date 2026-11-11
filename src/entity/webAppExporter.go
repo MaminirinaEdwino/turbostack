@@ -407,7 +407,7 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 
 	if endpoint.role == "public" {
 		fmt.Fprintf(&strBuilder, "\nmux.HandleFunc(\"%s %s\", func(w http.ResponseWriter, r *http.Request) {", method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
-	}else{
+	} else {
 		fmt.Fprintf(&strBuilder, "\nmux.Handle(\"%s %s\", middlewares.RequireSession(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {", method, wap.HandleURIParamsSyntaxeForGo(endpoint.uri))
 	}
 	switch endpoint.method {
@@ -450,9 +450,9 @@ func (wap *webAppMaker) WriteControllerForObjectOrArrayReturn(endpoint Endpoint)
 		fmt.Fprint(&strBuilder, WebAppDeleteActionTemplate(goapimaker.DbCallerPGWebApp(), endpoint.params[0], goapimaker.Delete(endpoint.model[0].nom, endpoint.params[0]), endpoint.redirectUri))
 	}
 	if endpoint.role == "public" {
-		strBuilder.WriteString(")")	
-	}else{
-		strBuilder.WriteString(")))")	
+		strBuilder.WriteString(")")
+	} else {
+		strBuilder.WriteString(")))")
 	}
 	return strBuilder.String()
 }
@@ -505,13 +505,19 @@ func (mgr *webAppMaker) mainExporter() {
 	sb.WriteString("\t// 2. Initialisation du Router (Mux)\n")
 	sb.WriteString("\tmux := http.NewServeMux()\n\n")
 	sb.WriteString("\tcontroller.RegisterRoutes(mux)\n\n")
-	sb.WriteString("\tmux.HandleFunc(\"POST /login\", controller.WebLogin)\n")
-	sb.WriteString("\tmux.HandleFunc(\"POST /register\", controller.WebRegister)\n")
-	sb.WriteString("\tmux.HandleFunc(\"POST /logout\", controller.WebLogout)\n")
+
+	project := FetchProjectByName(mgr.ProjectName)
+	_, hasUser := FindUserModel(project.BDD.ToModel().models)
+	if hasUser {
+		sb.WriteString("\tmux.HandleFunc(\"POST /login\", controller.WebLogin)\n")
+		sb.WriteString("\tmux.HandleFunc(\"POST /register\", controller.WebRegister)\n")
+		sb.WriteString("\tmux.HandleFunc(\"POST /logout\", controller.WebLogout)\n")
+	}
+
 	sb.WriteString("\tstaticServer := http.FileServer(http.Dir(\"src/static\"))\n\n")
 	sb.WriteString("\tmux.Handle(\"GET /static/\", http.StripPrefix(\"/static/\", staticServer))\n")
 	sb.WriteString("\t// 5. Lancement du serveur\n")
-	sb.WriteString("\tport := \":8080\"\n")
+	sb.WriteString("\tport := \":8000\"\n")
 	sb.WriteString("\tfmt.Printf(\"🚀 TurboStack API running on http://localhost%s\\n\", port)\n")
 	sb.WriteString("\tlog.Fatal(http.ListenAndServe(port, mux))\n")
 	sb.WriteString("}\n")

@@ -40,7 +40,7 @@ func (mgr *ProjectManager) ExporterAPI(Project Project) {
 	usermodel, hasUserModel := FindUserModel(bdd.models)
 	if hasUserModel {
 		fmt.Println("has user model")
-		GenerateAuthController(projectpath, usermodel)
+		GenerateAuthController(projectpath, usermodel, projectName)
 		generateLoginHandler("login", usermodel.GetNom(), "user")
 		generateLoginHandler("login", usermodel.GetNom(), "admin")
 		GenerateApiAuthMiddleware(projectpath, strings.ReplaceAll(projectName, " ", "_"))

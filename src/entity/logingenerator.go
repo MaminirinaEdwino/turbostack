@@ -229,7 +229,7 @@ func FindUserModel(models []Model) (Model, bool) {
 	return Model{}, false
 }
 
-func GenerateAuthController(projectPath string, userModel Model) error {
+func GenerateAuthController(projectPath string, userModel Model, projectName string) error {
 	tableName := strings.ToLower(userModel.GetNom())
 	filePath := fmt.Sprintf("%s/src/controllers/auth_controller.go", projectPath)
 	turboPath := fmt.Sprintf("%s/src/controllers/turbojwt.go", projectPath)
@@ -242,7 +242,7 @@ func GenerateAuthController(projectPath string, userModel Model) error {
 	sb.WriteString("\t\"database/sql\"\n")
 	sb.WriteString("\t\"encoding/json\"\n")
 	sb.WriteString("\t\"net/http\"\n")
-	sb.WriteString(fmt.Sprintf("\t\"%s/src/config\"\n", filepath.Base(projectPath))) // Remplace selon ton module
+	sb.WriteString(fmt.Sprintf("\t\"%s/src/config\"\n", strings.ReplaceAll(projectName, " ", "_"))) // Remplace selon ton module
 
 	sb.WriteString(")\n\n")
 

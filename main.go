@@ -24,7 +24,7 @@ func OpenDetachedPreviewWindow() {
 	prevWv := webview.New(true)
 	prevWv.SetTitle("TurboStack - Preview")
 	prevWv.SetSize(1024, 768, webview.HintNone)
-	prevWv.Navigate("http://localhost:5173/?mode=preview")
+	prevWv.Navigate("http://localhost:1627/?mode=preview")
 	pMgr.RegisterAll(prevWv)
 	go prevWv.Run()
 }
@@ -81,6 +81,6 @@ func main() {
 		}))
 	}()
 
-	w.Navigate("http://localhost:5173")
+	w.Navigate("http://localhost:1627")
 	w.Run()
 }

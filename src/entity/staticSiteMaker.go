@@ -14,7 +14,7 @@ type Staticsitemaker struct{}
 
 func (ssm *Staticsitemaker) SetupStaticArch(name string) {
 	projectPath := fmt.Sprintf("%s/static/", name)
-	os.RemoveAll(config.PROJECT_DIR+"/"+projectPath)
+	os.RemoveAll(config.PROJECT_DIR + "/" + projectPath)
 	dirList := []string{
 		"static/css",
 		"static/js",
@@ -154,6 +154,7 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 		id := fmt.Sprintf("%v", block.id)
 		inputType := fmt.Sprintf("%v", block.inputType)
 		placeholder := fmt.Sprintf("%v", block.placeholder)
+		href := fmt.Sprintf("%v", block.href)
 
 		if tag == "img" {
 			fmt.Fprintf(&sb, "<img src=\"%s\" class=\"%s\" data-block-id=\"%s\" />", content, className, id)
@@ -161,9 +162,9 @@ func (mgr *Staticsitemaker) RenderBlocksToHTML(blocks []pageContent, projectName
 		} else if tag == "input" {
 			fmt.Fprintf(&sb, "<input type=\"%s\" class=\"%s\" data-block-id=\"%s\" placeholder=\"%s\"/>", inputType, className, id, placeholder)
 			continue
-		}
+		} 
 
-		fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" > ", tag, className, id)
+		fmt.Fprintf(&sb, "<%s class=\"%s\" data-block-id=\"%s\" href=\"%s\"> ", tag, className, id, href)
 		var cssVal map[string]map[string]string
 		if style != "" {
 			er := json.Unmarshal([]byte(style), &cssVal)

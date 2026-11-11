@@ -100,7 +100,7 @@ export default function PageEditor({ projectName }) {
   const siteData =
     project?.type === "static" ? project?.site_statique : project?.web_app;
 
-  const compKey = siteData?.composants ? "composants" : "composant";
+  const compKey = siteData?.composants ? "composants" : "composants";
   const activeItem =
     editingType === "page"
       ? (selectedPageIndex != null)
@@ -231,7 +231,7 @@ export default function PageEditor({ projectName }) {
     setProject((prev) => {
       if (!prev) return prev;
       const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
+      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composants";
       const itemsKey = editingType === "page" ? "pages" : actualCompKey;
       const index = editingType === "page" ? selectedPageIndex : selectedComponentIndex;
 
@@ -313,7 +313,7 @@ export default function PageEditor({ projectName }) {
     setProject((prev) => {
       if (!prev) return prev;
       const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
+      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composants";
 
       const newComponent = {
         id: Math.random().toString(36).substr(2, 9),
@@ -336,7 +336,7 @@ export default function PageEditor({ projectName }) {
     setProject((prev) => {
       if (!prev) return prev;
       const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composant";
+      const actualCompKey = prev[typeKey]?.composants ? "composants" : "composants";
       const updatedComponents = prev[typeKey][actualCompKey].filter(
         (_, i) => i !== index,
       );
@@ -351,6 +351,7 @@ export default function PageEditor({ projectName }) {
     showToast("Saving project...", "loading");
     try {
       await GoApp.saveProject(projectName, JSON.stringify(project));
+      console.log(project.site_statique.composants)
       showToast("Project saved successfully!");
     } catch (e) {
       console.error(e);

@@ -81,6 +81,6 @@ func main() {
 		}))
 	}()
 
-	w.Navigate("http://localhost:1627")
+	w.Navigate("http://localhost:5173")
 	w.Run()
 }

@@ -122,7 +122,7 @@ type SiteStatiqueJSON struct {
 type WebAppJSON struct {
 	Pages       []PageJSON       `json:"pages"`
 	Role        []string         `json:"role"`
-	Composant   []ComposantJSON  `json:"composant"`
+	Composant   []ComposantJSON  `json:"composants"`
 	BDD         BDDJSON          `json:"bdd"`
 	Controllers []ControllerJSON `json:"controllers"`
 }

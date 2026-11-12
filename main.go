@@ -34,8 +34,8 @@ func main() {
 	homeDir, err := os.UserHomeDir()
 	fmt.Printf("DEBUG - HomeDir: %s (Err: %v)\n", homeDir, err)
 	fmt.Printf("DEBUG - Env HOME: %s\n", os.Getenv("HOME"))
-	
-	chatbot.Reseaux, chatbot.MotsUniques, chatbot.TagsIntents, _  = chatbot.ChargerModele()
+
+	chatbot.Reseaux, chatbot.MotsUniques, chatbot.TagsIntents, _ = chatbot.ChargerModele()
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -81,6 +81,6 @@ func main() {
 		}))
 	}()
 
-	w.Navigate("http://localhost:5173")
+	w.Navigate("http://localhost:1627")
 	w.Run()
 }

@@ -271,8 +271,8 @@ export default function UnifiedEditor({ projectName }) {
 
         setProject(prev => {
             if (!prev) return prev;
-            const typeKey = prev.type === "static" ? "site_statique" : "web_app";
-            const compKey = prev[typeKey]?.composants ? "composants" : "composant";
+            const typeKey = prev.type === "static" ? "site_statique" : "webapp";
+            const compKey = prev[typeKey]?.composants ? "composants" : "composants";
 
             if (prev[typeKey]?.[compKey]?.some(c => c.nom === name)) {
                 showToast("Ce composant existe déjà", "error");

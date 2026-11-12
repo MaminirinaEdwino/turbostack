@@ -355,7 +355,11 @@ func (wap *webAppMaker) WriteReturnType(endpoint Endpoint) string {
 	fmt.Fprint(&strBuilder, "type returnType struct{\n")
 	for _, val := range endpoint.returnContent {
 		for _, field := range val.attributs {
-			fmt.Fprintf(&strBuilder, "%s %s `json:\"%s\"`\n", utils.ToUpperFirstLetter(field.nom), field.type_champs, field.nom)
+			fd := field.type_champs
+			if field.type_champs =="text" {
+				fd = "string"
+			}
+			fmt.Fprintf(&strBuilder, "%s %s `json:\"%s\"`\n", utils.ToUpperFirstLetter(field.nom), fd, field.nom)
 		}
 	}
 	fmt.Fprint(&strBuilder, "}\n")
@@ -527,8 +531,9 @@ func (mgr *webAppMaker) mainExporter() {
 
 func (mgr *webAppMaker) writeModSumFile() {
 	projectName := strings.ReplaceAll(mgr.ProjectName, " ", "_")
-	modfilepath := fmt.Sprintf("%s/%s/web-app/go.mod", config.PROJECT_DIR, projectName)
-	sumfilepath := fmt.Sprintf("%s/%s/web-app/go.sum", config.PROJECT_DIR, projectName)
+	modfilepath := fmt.Sprintf("%s/%s/web-app/go.mod", config.PROJECT_DIR, mgr.ProjectName)
+	sumfilepath := fmt.Sprintf("%s/%s/web-app/go.sum", config.PROJECT_DIR, mgr.ProjectName)
+	fmt.Println(modfilepath, sumfilepath)
 	modfile, _ := os.Create(modfilepath)
 	modfile.WriteString(goapimaker.WriteGoMod(strings.ReplaceAll(projectName, " ", "_")))
 	sumfile, _ := os.Create(sumfilepath)
